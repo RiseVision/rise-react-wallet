@@ -3,12 +3,16 @@ import 'bootstrap/dist/css/bootstrap-theme.css';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { IntlProvider } from 'react-intl';
+
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
 ReactDOM.render(
-  <App />,
+  <IntlProvider locale="en">
+    <App />
+  </IntlProvider>,
   document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();

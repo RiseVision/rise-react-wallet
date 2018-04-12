@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Button } from 'react-bootstrap';
 import './App.css';
 
@@ -10,10 +11,21 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">
+            <FormattedMessage
+              id="app.welcome"
+              defaultMessage="Welcome to React"
+              description="Welcome message"
+            />
+          </h1>
         </header>
         <p className="App-intro">
-          To get started, edit <code>src/containers/App.tsx</code> and save to reload.
+          <FormattedMessage
+            id="app.to-get-started"
+            defaultMessage="To get started, edit {filename} and save to reload."
+            values={{ filename: <code>src/containers/App.tsx</code> }}
+            description="Get started"
+          />
         </p>
         <Button bsStyle="primary">Bootstrap button</Button>
       </div>
