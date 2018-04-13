@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Button, Icon } from 'material-ui';
 import './App.css';
 
 const logo = require('../images/logo.svg');
@@ -26,6 +27,9 @@ class App extends React.Component {
             description="Get started"
           />
         </p>
+        <Button variant="raised" color="primary">
+          <Icon>done</Icon> Material UI button
+        </Button>
       </div>
     );
   }
