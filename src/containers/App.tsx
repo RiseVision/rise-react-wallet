@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Button } from 'react-bootstrap';
 import './App.css';
 
 const logo = require('../images/logo.svg');
@@ -27,7 +26,6 @@ class App extends React.Component {
             description="Get started"
           />
         </p>
-        <Button bsStyle="primary">Bootstrap button</Button>
       </div>
     );
   }
