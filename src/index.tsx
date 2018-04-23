@@ -2,14 +2,17 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { IntlProvider } from 'react-intl';
 
+import ThemeProvider from  './containers/ThemeProvider';
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
-import './index.css';
 
-ReactDOM.render(
+const root = (
   <IntlProvider locale="en">
-    <App />
-  </IntlProvider>,
-  document.getElementById('root') as HTMLElement
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  </IntlProvider>
 );
+
+ReactDOM.render(root, document.getElementById('root') as HTMLElement);
 registerServiceWorker();
