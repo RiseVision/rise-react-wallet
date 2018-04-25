@@ -6,7 +6,27 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 
-class OnboardingAddAccountPage extends React.Component {
+interface Props {
+  onOpenChooseLanguage: () => void;
+  onOpenNewAccount: () => void;
+}
+
+class OnboardingAddAccountPage extends React.Component<Props> {
+  constructor(props: Props) {
+    super(props);
+
+    this.handleNewAccountClicked = this.handleNewAccountClicked.bind(this);
+    this.handleChooseLanguageClicked = this.handleChooseLanguageClicked.bind(this);
+  }
+
+  handleNewAccountClicked() {
+    this.props.onOpenNewAccount();
+  }
+
+  handleChooseLanguageClicked() {
+    this.props.onOpenChooseLanguage();
+  }
+
   render() {
     return (
       <ModalPaper>
@@ -18,7 +38,7 @@ class OnboardingAddAccountPage extends React.Component {
           />
         </ModalPaperHeader>
         <List>
-          <ListItem button={true}>
+          <ListItem button={true} onClick={this.handleNewAccountClicked}>
             <ListItemText
               primary={(
                 <FormattedMessage
@@ -56,7 +76,7 @@ class OnboardingAddAccountPage extends React.Component {
             />
             <KeyboardArrowRight />
           </ListItem>
-          <ListItem button={true}>
+          <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
             <ListItemIcon>
               <LanguageIcon />
             </ListItemIcon>

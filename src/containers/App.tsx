@@ -3,20 +3,55 @@ import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';
 import OnboardingNewAccountPage from '../containers/OnboardingNewAccountPage';
 
-class App extends React.Component {
-  render() {
-    let view = 'new-account';
+interface Props {
+}
 
+interface State {
+  page: string;
+}
+
+class App extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      page: 'onboarding-add-account',
+    };
+
+    this.handleOpenOnboardinChooseLanguagePage = this.handleOpenOnboardinChooseLanguagePage.bind(this);
+    this.handleOpenOnboardingAddAccountPage = this.handleOpenOnboardingAddAccountPage.bind(this);
+    this.handleOpenOnboardingNewAccountPage = this.handleOpenOnboardingNewAccountPage.bind(this);
+  }
+
+  handleOpenOnboardinChooseLanguagePage() {
+    this.setState({ page: 'onboarding-choose-language' });
+  }
+
+  handleOpenOnboardingAddAccountPage() {
+    this.setState({ page: 'onboarding-add-account' });
+  }
+
+  handleOpenOnboardingNewAccountPage() {
+    this.setState({ page: 'onboarding-new-account' });
+  }
+
+  render() {
     return (
       <React.Fragment>
-        {view === 'add-account' && (
-          <OnboardingAddAccountPage />
+        {this.state.page === 'onboarding-add-account' && (
+          <OnboardingAddAccountPage
+            onOpenChooseLanguage={this.handleOpenOnboardinChooseLanguagePage}
+            onOpenNewAccount={this.handleOpenOnboardingNewAccountPage}
+          />
         )}
-        {view === 'choose-language' && (
-          <OnboardingChooseLanguagePage />
+        {this.state.page === 'onboarding-choose-language' && (
+          <OnboardingChooseLanguagePage
+            onLanguageSelected={this.handleOpenOnboardingAddAccountPage}
+          />
         )}
-        {view === 'new-account' && (
-          <OnboardingNewAccountPage />
+        {this.state.page === 'onboarding-new-account' && (
+          <OnboardingNewAccountPage
+            onGoBack={this.handleOpenOnboardingAddAccountPage}
+          />
         )}
       </React.Fragment>
     );

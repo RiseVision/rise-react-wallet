@@ -5,7 +5,11 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 
-class OnboardingNewAccountPage extends React.Component {
+interface Props {
+  onGoBack: (locale: string) => void;
+}
+
+class OnboardingNewAccountPage extends React.Component<Props> {
   render() {
     return (
       <ModalPaper>

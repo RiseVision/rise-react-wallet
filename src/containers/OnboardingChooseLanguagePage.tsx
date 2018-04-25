@@ -46,7 +46,21 @@ let availableLanguages = [{
   label: '繼續用中文',
 }];
 
-class OnboardingChooseLanguagePage extends React.Component {
+interface Props {
+  onLanguageSelected: (locale: string) => void;
+}
+
+class OnboardingChooseLanguagePage extends React.Component<Props> {
+  constructor(props: Props) {
+    super(props);
+
+    this.handleLanguageClicked = this.handleLanguageClicked.bind(this);
+  }
+
+  handleLanguageClicked(locale: string) {
+    this.props.onLanguageSelected(locale);
+  }
+
   render() {
     // Order languages by browser preference
     let userLanguages = navigator.languages
@@ -72,7 +86,11 @@ class OnboardingChooseLanguagePage extends React.Component {
         </ModalPaperHeader>
         <List>
           {languages.map(lang => (
-            <ListItem key={lang.locale} button={true}>
+            <ListItem
+              key={lang.locale}
+              button={true}
+              onClick={this.handleLanguageClicked.bind(this, lang.locale)}
+            >
               <ListItemIcon>
                 <LanguageIcon />
               </ListItemIcon>
