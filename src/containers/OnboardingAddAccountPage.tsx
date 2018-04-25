@@ -13,7 +13,7 @@ class OnboardingAddAccountPage extends React.Component {
         <ModalPaperHeader>
           <FormattedMessage
             id="onboarding-add-account.title"
-            description="Add account view title"
+            description="Add account screen title"
             defaultMessage="RISE wallet"
           />
         </ModalPaperHeader>

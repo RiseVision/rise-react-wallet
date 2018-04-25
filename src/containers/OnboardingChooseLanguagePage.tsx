@@ -66,7 +66,7 @@ class OnboardingChooseLanguagePage extends React.Component {
         <ModalPaperHeader>
           <FormattedMessage
             id="onboarding-choose-language.title"
-            description="Choose language view title"
+            description="Choose language screen title"
             defaultMessage="RISE wallet"
           />
         </ModalPaperHeader>

@@ -1,10 +1,11 @@
 import * as React from 'react';
 import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';
+import OnboardingNewAccountPage from '../containers/OnboardingNewAccountPage';
 
 class App extends React.Component {
   render() {
-    let view = 'choose-language';
+    let view = 'new-account';
 
     return (
       <React.Fragment>
@@ -13,6 +14,9 @@ class App extends React.Component {
         )}
         {view === 'choose-language' && (
           <OnboardingChooseLanguagePage />
+        )}
+        {view === 'new-account' && (
+          <OnboardingNewAccountPage />
         )}
       </React.Fragment>
     );
