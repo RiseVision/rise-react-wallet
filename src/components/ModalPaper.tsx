@@ -29,8 +29,10 @@ const stylesDecorator = withStyles<ModalPaperClassKey>(
 interface Props {
 }
 
-const ModalPaper = stylesDecorator(
-  class extends React.Component<Props & WithStyles<ModalPaperClassKey>> {
+type DecoratedProps = Props & WithStyles<ModalPaperClassKey>;
+
+const ModalPaper = stylesDecorator<Props>(
+  class extends React.Component<DecoratedProps> {
     render() {
       const { classes, children } = this.props;
       return (

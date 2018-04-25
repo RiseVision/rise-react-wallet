@@ -6,14 +6,24 @@ import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 
 interface Props {
-  onGoBack: (locale: string) => void;
+  onGoBack: () => void;
 }
 
 class OnboardingNewAccountPage extends React.Component<Props> {
+  constructor(props: Props) {
+    super(props);
+
+    this.handleBackClick = this.handleBackClick.bind(this);
+  }
+
+  handleBackClick() {
+    this.props.onGoBack();
+  }
+
   render() {
     return (
       <ModalPaper>
-        <ModalPaperHeader>
+        <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-new-account.title"
             description="Create account screen title"
