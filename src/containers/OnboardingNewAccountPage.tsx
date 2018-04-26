@@ -26,8 +26,8 @@ class OnboardingNewAccountPage extends React.Component<Props> {
         <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-new-account.title"
-            description="Create account screen title"
-            defaultMessage="Create an account"
+            description="New account screen title"
+            defaultMessage="New account"
           />
         </ModalPaperHeader>
         <List>
@@ -37,15 +37,15 @@ class OnboardingNewAccountPage extends React.Component<Props> {
                 <FormattedMessage
                   id="onboarding-new-account.using-mnemonic"
                   description="New account w/ a mnemonic button title"
-                  defaultMessage="New account with a mnemonic passphrase"
+                  defaultMessage="Create an account using a secret"
                 />
               )}
               secondary={(
                 <FormattedMessage
                   id="onboarding-new-account.using-mnemonic-tip"
                   description="New account w/ a mnemonic button tip"
-                  defaultMessage={'I want to create a new RISE account that '
-                    + 'can be accessed with a passphrase'}
+                  defaultMessage={'I want to create a new account that '
+                    + 'can be accessed using a mnemonic secret'}
                 />
               )}
             />
@@ -57,15 +57,15 @@ class OnboardingNewAccountPage extends React.Component<Props> {
                 <FormattedMessage
                   id="onboarding-new-account.using-ledger"
                   description="New account w/ Ledger button title"
-                  defaultMessage="New account with a Ledger hardware wallet"
+                  defaultMessage="Import an account from hardware wallet"
                 />
               )}
               secondary={(
                 <FormattedMessage
                   id="onboarding-new-account.using-ledger-tip"
                   description="New account w/ Ledger button tip"
-                  defaultMessage={'I want to create a new RISE account that '
-                    + 'can be accessed with a Ledger hardware wallet'}
+                  defaultMessage={'I want to import a new account from my '
+                    + 'Ledger hardware wallet'}
                 />
               )}
             />

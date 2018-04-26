@@ -70,7 +70,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
                 <FormattedMessage
                   id="onboarding-add-account.existing-account-tip"
                   description="Existing account button tip"
-                  defaultMessage="I want to access an account that already exists on the RISE network"
+                  defaultMessage="I want to access an existing account on the RISE network"
                 />
               )}
             />

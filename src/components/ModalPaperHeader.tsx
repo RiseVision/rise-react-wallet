@@ -5,7 +5,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import * as classNames from 'classnames';
 import { withStyles, WithStyles } from 'material-ui/styles';
 
-type ModalPaperHeaderClassKey = 
+type ModalPaperHeaderClassKey =
   | 'root'
   | 'content'
   | 'backButton'
