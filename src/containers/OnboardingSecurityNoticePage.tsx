@@ -88,9 +88,9 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
           id="onboarding-security-notice.correct-url-tip"
           description="Tip about checking the browser URL"
           defaultMessage={
-            'When accessing this wallet, always enter the URL yourself or use a bookmark that ' +
-            'you yourself created. Never trust links posted to social media, sent in emails or ' +
-            'listed on other websites.'
+            'When accessing this wallet, always type the URL into the browser address bar ' +
+            'yourself or use a bookmark that you yourself created. Never trust links posted ' +
+            'on social media, in search results, sent in emails or listed on other websites.'
           }
         />
       ), (
