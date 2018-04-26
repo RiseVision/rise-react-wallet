@@ -2,6 +2,7 @@ import * as React from 'react';
 import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';
 import OnboardingNewAccountPage from '../containers/OnboardingNewAccountPage';
+import OnboardingSecurityNoticePage from '../containers/OnboardingSecurityNoticePage';
 
 interface Props {
 }
@@ -20,6 +21,7 @@ class App extends React.Component<Props, State> {
     this.handleOpenOnboardinChooseLanguagePage = this.handleOpenOnboardinChooseLanguagePage.bind(this);
     this.handleOpenOnboardingAddAccountPage = this.handleOpenOnboardingAddAccountPage.bind(this);
     this.handleOpenOnboardingNewAccountPage = this.handleOpenOnboardingNewAccountPage.bind(this);
+    this.handleOpenOnboardingSecurityNoticePage = this.handleOpenOnboardingSecurityNoticePage.bind(this);
   }
 
   handleOpenOnboardinChooseLanguagePage() {
@@ -32,6 +34,10 @@ class App extends React.Component<Props, State> {
 
   handleOpenOnboardingNewAccountPage() {
     this.setState({ page: 'onboarding-new-account' });
+  }
+
+  handleOpenOnboardingSecurityNoticePage() {
+    this.setState({ page: 'onboarding-security-notice' });
   }
 
   render() {
@@ -51,6 +57,13 @@ class App extends React.Component<Props, State> {
         {this.state.page === 'onboarding-new-account' && (
           <OnboardingNewAccountPage
             onGoBack={this.handleOpenOnboardingAddAccountPage}
+            onGenerateMnemonic={this.handleOpenOnboardingSecurityNoticePage}
+          />
+        )}
+        {this.state.page === 'onboarding-security-notice' && (
+          <OnboardingSecurityNoticePage
+            onGoBack={this.handleOpenOnboardingNewAccountPage}
+            onContinue={this.handleOpenOnboardingNewAccountPage}
           />
         )}
       </React.Fragment>

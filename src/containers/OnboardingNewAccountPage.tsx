@@ -7,6 +7,7 @@ import ModalPaperHeader from '../components/ModalPaperHeader';
 
 interface Props {
   onGoBack: () => void;
+  onGenerateMnemonic: () => void;
 }
 
 class OnboardingNewAccountPage extends React.Component<Props> {
@@ -14,10 +15,15 @@ class OnboardingNewAccountPage extends React.Component<Props> {
     super(props);
 
     this.handleBackClick = this.handleBackClick.bind(this);
+    this.handleMnemonicClick = this.handleMnemonicClick.bind(this);
   }
 
   handleBackClick() {
     this.props.onGoBack();
+  }
+
+  handleMnemonicClick() {
+    this.props.onGenerateMnemonic();
   }
 
   render() {
@@ -31,7 +37,7 @@ class OnboardingNewAccountPage extends React.Component<Props> {
           />
         </ModalPaperHeader>
         <List>
-          <ListItem button={true}>
+          <ListItem button={true} onClick={this.handleMnemonicClick}>
             <ListItemText
               primary={(
                 <FormattedMessage

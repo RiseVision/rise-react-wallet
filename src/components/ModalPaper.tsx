@@ -3,7 +3,8 @@ import Paper from 'material-ui/Paper';
 import { withStyles, WithStyles } from 'material-ui/styles';
 
 type ModalPaperClassKey = 
-  | 'root';
+  | 'root'
+  | 'paper';
 
 const stylesDecorator = withStyles<ModalPaperClassKey>(
   {
@@ -22,6 +23,9 @@ const stylesDecorator = withStyles<ModalPaperClassKey>(
       background: `linear-gradient(45deg, #3fbb90 0%, #ade690 100%)`,
       backgroundAttachment: 'fixed',
     },
+    paper: {
+      maxWidth: 500,
+    },
   },
   { name: 'ModalPaper' }
 );
@@ -37,7 +41,7 @@ const ModalPaper = stylesDecorator<Props>(
       const { classes, children } = this.props;
       return (
         <div className={classes.root}>
-          <Paper>
+          <Paper className={classes.paper}>
             {children}
           </Paper>
         </div>
