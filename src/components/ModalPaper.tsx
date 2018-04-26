@@ -2,26 +2,36 @@ import * as React from 'react';
 import Paper from 'material-ui/Paper';
 import { withStyles, WithStyles } from 'material-ui/styles';
 
-type ModalPaperClassKey = 
-  | 'root'
+type ModalPaperClassKey =
+  | 'background'
+  | 'content'
   | 'paper';
 
 const stylesDecorator = withStyles<ModalPaperClassKey>(
   {
-    root: {
+    background: {
+      position: 'fixed',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: '100vh',
+
+      backgroundColor: '#3fbb90',
+      background: `linear-gradient(45deg, #3fbb90 0%, #ade690 100%)`,
+      backgroundAttachment: 'fixed',
+    },
+    content: {
       position: 'absolute',
       top: 0,
       left: 0,
       minWidth: '100%',
       minHeight: '100%',
 
+      overflow: 'auto',
+
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-
-      backgroundColor: '#3fbb90',
-      background: `linear-gradient(45deg, #3fbb90 0%, #ade690 100%)`,
-      backgroundAttachment: 'fixed',
     },
     paper: {
       maxWidth: 500,
@@ -40,11 +50,14 @@ const ModalPaper = stylesDecorator<Props>(
     render() {
       const { classes, children } = this.props;
       return (
-        <div className={classes.root}>
-          <Paper className={classes.paper}>
-            {children}
-          </Paper>
-        </div>
+        <React.Fragment>
+          <div className={classes.background} />
+          <div className={classes.content}>
+            <Paper className={classes.paper}>
+              {children}
+            </Paper>
+          </div>
+        </React.Fragment>
       );
     }
   }
