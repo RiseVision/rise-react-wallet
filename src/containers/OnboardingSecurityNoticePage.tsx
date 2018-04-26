@@ -139,7 +139,7 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
             <FormattedMessage
               id="onboarding-security-notice.title"
               description="Security notice screen title"
-              defaultMessage="Security notice"
+              defaultMessage="Security tips"
             />
           </ModalPaperHeader>
           <div className={classes.content}>
