@@ -34,6 +34,10 @@ const stylesDecorator = withStyles<ModalPaperClassKey>(
       justifyContent: 'center',
     },
     paper: {
+      marginTop: 20,
+      marginBottom: 20,
+      marginLeft: 10,
+      marginRight: 10,
       maxWidth: 500,
     },
   },
