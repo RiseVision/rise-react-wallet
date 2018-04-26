@@ -51,13 +51,7 @@ interface Props {
 }
 
 class OnboardingChooseLanguagePage extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-
-    this.handleLanguageClicked = this.handleLanguageClicked.bind(this);
-  }
-
-  handleLanguageClicked(locale: string) {
+  handleLanguageClicked = (locale: string) => {
     this.props.onLanguageSelected(locale);
   }
 

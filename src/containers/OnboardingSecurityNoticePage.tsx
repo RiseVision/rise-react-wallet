@@ -64,23 +64,19 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
       this.state = {
         currentTip: 0,
       };
-
-      this.handleBackClick = this.handleBackClick.bind(this);
-      this.handleNextTipClick = this.handleNextTipClick.bind(this);
-      this.handleContinueClick = this.handleContinueClick.bind(this);
     }
 
-    handleBackClick() {
+    handleBackClick = () => {
       this.props.onGoBack();
     }
 
-    handleNextTipClick() {
+    handleNextTipClick = () => {
       this.setState((prevState) => {
         return { currentTip: prevState.currentTip + 1 };
       });
     }
 
-    handleContinueClick() {
+    handleContinueClick = () => {
       this.props.onContinue();
     }
 

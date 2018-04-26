@@ -17,26 +17,21 @@ class App extends React.Component<Props, State> {
     this.state = {
       page: 'onboarding-add-account',
     };
-
-    this.handleOpenOnboardinChooseLanguagePage = this.handleOpenOnboardinChooseLanguagePage.bind(this);
-    this.handleOpenOnboardingAddAccountPage = this.handleOpenOnboardingAddAccountPage.bind(this);
-    this.handleOpenOnboardingNewAccountPage = this.handleOpenOnboardingNewAccountPage.bind(this);
-    this.handleOpenOnboardingSecurityNoticePage = this.handleOpenOnboardingSecurityNoticePage.bind(this);
   }
 
-  handleOpenOnboardinChooseLanguagePage() {
+  handleOpenOnboardinChooseLanguagePage = () => {
     this.setState({ page: 'onboarding-choose-language' });
   }
 
-  handleOpenOnboardingAddAccountPage() {
+  handleOpenOnboardingAddAccountPage = () => {
     this.setState({ page: 'onboarding-add-account' });
   }
 
-  handleOpenOnboardingNewAccountPage() {
+  handleOpenOnboardingNewAccountPage = () => {
     this.setState({ page: 'onboarding-new-account' });
   }
 
-  handleOpenOnboardingSecurityNoticePage() {
+  handleOpenOnboardingSecurityNoticePage = () => {
     this.setState({ page: 'onboarding-security-notice' });
   }
 

@@ -47,13 +47,7 @@ type DecoratedProps = Props & WithStyles<ModalPaperHeaderClassKey>;
 
 const ModalPaperHeader = stylesDecorator<Props>(
   class extends React.Component<DecoratedProps> {
-    constructor(props: DecoratedProps) {
-      super(props);
-
-      this.handleBackClick = this.handleBackClick.bind(this);
-    }
-
-    handleBackClick() {
+    handleBackClick = () => {
       if (this.props.onBackClick) {
         this.props.onBackClick();
       }

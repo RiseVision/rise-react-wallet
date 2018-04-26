@@ -12,18 +12,11 @@ interface Props {
 }
 
 class OnboardingAddAccountPage extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-
-    this.handleNewAccountClicked = this.handleNewAccountClicked.bind(this);
-    this.handleChooseLanguageClicked = this.handleChooseLanguageClicked.bind(this);
-  }
-
-  handleNewAccountClicked() {
+  handleNewAccountClicked = () => {
     this.props.onOpenNewAccount();
   }
 
-  handleChooseLanguageClicked() {
+  handleChooseLanguageClicked = () => {
     this.props.onOpenChooseLanguage();
   }
 

@@ -11,18 +11,11 @@ interface Props {
 }
 
 class OnboardingNewAccountPage extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-
-    this.handleBackClick = this.handleBackClick.bind(this);
-    this.handleMnemonicClick = this.handleMnemonicClick.bind(this);
-  }
-
-  handleBackClick() {
+  handleBackClick = () => {
     this.props.onGoBack();
   }
 
-  handleMnemonicClick() {
+  handleMnemonicClick = () => {
     this.props.onGenerateMnemonic();
   }
 
