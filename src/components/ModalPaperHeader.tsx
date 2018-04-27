@@ -58,7 +58,7 @@ const ModalPaperHeader = stylesDecorator<Props>(
       return (
         <div className={classes.root}>
           {backButton && (
-            <Button className={classes.backButton} onClick={this.handleBackClick} size="small">
+            <Button className={classes.backButton} onClick={this.handleBackClick} size="small" tabIndex={-1}>
               <KeyboardArrowLeft />
             </Button>
           )}
