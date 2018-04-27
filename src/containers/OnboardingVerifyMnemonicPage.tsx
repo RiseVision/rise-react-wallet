@@ -68,15 +68,15 @@ const stylesDecorator = withStyles<OnboardingVerifyMnemonicPageClassKey>(
 );
 
 interface Props {
-  onGoBack: () => void;
+  onClose: () => void;
 }
 
 type DecoratedProps = Props & WithStyles<OnboardingVerifyMnemonicPageClassKey>;
 
 const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
   class extends React.Component<DecoratedProps> {
-    handleBackClick = () => {
-      this.props.onGoBack();
+    handleCloseClick = () => {
+      this.props.onClose();
     }
 
     render() {
@@ -88,7 +88,7 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
 
       return (
         <ModalPaper>
-          <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
+          <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
             <FormattedMessage
               id="onboarding-verify-mnemonic.title"
               description="New mnemonic screen title"

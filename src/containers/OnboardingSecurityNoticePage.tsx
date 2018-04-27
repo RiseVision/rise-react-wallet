@@ -47,7 +47,7 @@ const stylesDecorator = withStyles<OnboardingSecurityNoticePageClassKey>(
 );
 
 interface Props {
-  onGoBack: () => void;
+  onClose: () => void;
   onContinue: () => void;
 }
 
@@ -66,8 +66,8 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
       };
     }
 
-    handleBackClick = () => {
-      this.props.onGoBack();
+    handleCloseClick = () => {
+      this.props.onClose();
     }
 
     handleNextTipClick = () => {
@@ -135,7 +135,7 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
 
       return (
         <ModalPaper>
-          <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
+          <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
             <FormattedMessage
               id="onboarding-security-notice.title"
               description="Security notice screen title"

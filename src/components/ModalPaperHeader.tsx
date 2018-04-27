@@ -2,6 +2,7 @@ import * as React from 'react';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import Close from '@material-ui/icons/Close';
 import * as classNames from 'classnames';
 import { withStyles, WithStyles } from 'material-ui/styles';
 
@@ -9,7 +10,9 @@ type ModalPaperHeaderClassKey =
   | 'root'
   | 'content'
   | 'backButton'
-  | 'withBack';
+  | 'withoutBack'
+  | 'closeButton'
+  | 'withoutClose';
 
 const stylesDecorator = withStyles<ModalPaperHeaderClassKey>(
   (theme) => {
@@ -25,11 +28,19 @@ const stylesDecorator = withStyles<ModalPaperHeaderClassKey>(
         paddingTop: 10,
         paddingBottom: 10,
       },
-      withBack: {
+      withoutClose: {
         marginRight: theme.spacing.unit * 8, // Width of the back button
+      },
+      withoutBack: {
+        marginLeft: theme.spacing.unit * 8, // Width of the back button
       },
       backButton: {
         borderTopRightRadius: 0,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+      },
+      closeButton: {
+        borderTopLeftRadius: 0,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
       },
@@ -41,6 +52,8 @@ const stylesDecorator = withStyles<ModalPaperHeaderClassKey>(
 interface Props {
   backButton?: boolean;
   onBackClick?: () => void;
+  closeButton?: boolean;
+  onCloseClick?: () => void;
 }
 
 type DecoratedProps = Props & WithStyles<ModalPaperHeaderClassKey>;
@@ -53,8 +66,14 @@ const ModalPaperHeader = stylesDecorator<Props>(
       }
     }
 
+    handleCloseClick = () => {
+      if (this.props.onCloseClick) {
+        this.props.onCloseClick();
+      }
+    }
+
     render() {
-      const { classes, backButton, children } = this.props;
+      const { classes, backButton, closeButton, children } = this.props;
       return (
         <div className={classes.root}>
           {backButton && (
@@ -65,13 +84,19 @@ const ModalPaperHeader = stylesDecorator<Props>(
           <Typography
             className={classNames(
               classes.content,
-              !!backButton && classes.withBack,
+              (!backButton && !!closeButton) && classes.withoutBack,
+              (!!backButton && !closeButton) && classes.withoutClose,
             )}
             variant="headline"
             align="center"
           >
             {children}
           </Typography>
+          {closeButton && (
+            <Button className={classes.closeButton} onClick={this.handleCloseClick} size="small" tabIndex={-1}>
+              <Close />
+            </Button>
+          )}
         </div>
       );
     }

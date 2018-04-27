@@ -67,19 +67,19 @@ class App extends React.Component<Props, State> {
         )}
         {this.state.page === 'onboarding-security-notice' && (
           <OnboardingSecurityNoticePage
-            onGoBack={this.handleOpenOnboardingNewAccountPage}
+            onClose={this.handleOpenOnboardingNewAccountPage}
             onContinue={this.handleOpenOnboardingNewMnemonicPage}
           />
         )}
         {this.state.page === 'onboarding-new-mnemonic' && (
           <OnboardingNewMnemonicPage
-            onGoBack={this.handleOpenOnboardingNewAccountPage}
+            onClose={this.handleOpenOnboardingNewAccountPage}
             onVerifyMnemonic={this.handleOpenOnboardingVerifyMnemonicPage}
           />
         )}
         {this.state.page === 'onboarding-verify-mnemonic' && (
           <OnboardingVerifyMnemonicPage
-            onGoBack={this.handleOpenOnboardingNewMnemonicPage}
+            onClose={this.handleOpenOnboardingNewAccountPage}
           />
         )}
       </React.Fragment>
