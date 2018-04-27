@@ -3,6 +3,8 @@ import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';
 import OnboardingNewAccountPage from '../containers/OnboardingNewAccountPage';
 import OnboardingSecurityNoticePage from '../containers/OnboardingSecurityNoticePage';
+import OnboardingNewMnemonicPage from '../containers/OnboardingNewMnemonicPage';
+import OnboardingVerifyMnemonicPage from '../containers/OnboardingVerifyMnemonicPage';
 
 interface Props {
 }
@@ -15,7 +17,7 @@ class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      page: 'onboarding-add-account',
+      page: 'onboarding-verify-mnemonic',
     };
   }
 
@@ -33,6 +35,14 @@ class App extends React.Component<Props, State> {
 
   handleOpenOnboardingSecurityNoticePage = () => {
     this.setState({ page: 'onboarding-security-notice' });
+  }
+
+  handleOpenOnboardingNewMnemonicPage = () => {
+    this.setState({ page: 'onboarding-new-mnemonic' });
+  }
+
+  handleOpenOnboardingVerifyMnemonicPage = () => {
+    this.setState({ page: 'onboarding-verify-mnemonic' });
   }
 
   render() {
@@ -58,7 +68,18 @@ class App extends React.Component<Props, State> {
         {this.state.page === 'onboarding-security-notice' && (
           <OnboardingSecurityNoticePage
             onGoBack={this.handleOpenOnboardingNewAccountPage}
-            onContinue={this.handleOpenOnboardingNewAccountPage}
+            onContinue={this.handleOpenOnboardingNewMnemonicPage}
+          />
+        )}
+        {this.state.page === 'onboarding-new-mnemonic' && (
+          <OnboardingNewMnemonicPage
+            onGoBack={this.handleOpenOnboardingNewAccountPage}
+            onVerifyMnemonic={this.handleOpenOnboardingVerifyMnemonicPage}
+          />
+        )}
+        {this.state.page === 'onboarding-verify-mnemonic' && (
+          <OnboardingVerifyMnemonicPage
+            onGoBack={this.handleOpenOnboardingNewMnemonicPage}
           />
         )}
       </React.Fragment>
