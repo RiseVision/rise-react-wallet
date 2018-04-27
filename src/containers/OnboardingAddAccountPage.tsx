@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import LanguageIcon from '@material-ui/icons/Language';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 
@@ -48,7 +48,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
                 />
               )}
             />
-            <KeyboardArrowRight />
+            <ChevronRight />
           </ListItem>
           <ListItem button={true}>
             <ListItemText
@@ -67,7 +67,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
                 />
               )}
             />
-            <KeyboardArrowRight />
+            <ChevronRight />
           </ListItem>
           <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
             <ListItemIcon>
@@ -80,7 +80,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
                 defaultMessage="Change language"
               />
             </ListItemText>
-            <KeyboardArrowRight />
+            <ChevronRight />
           </ListItem>
         </List>
       </ModalPaper>

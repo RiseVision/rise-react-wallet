@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import List, { ListItem, ListItemText } from 'material-ui/List';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 
@@ -48,7 +48,7 @@ class OnboardingNewAccountPage extends React.Component<Props> {
                 />
               )}
             />
-            <KeyboardArrowRight />
+            <ChevronRight />
           </ListItem>
           <ListItem button={true}>
             <ListItemText
@@ -68,7 +68,7 @@ class OnboardingNewAccountPage extends React.Component<Props> {
                 />
               )}
             />
-            <KeyboardArrowRight />
+            <ChevronRight />
           </ListItem>
         </List>
       </ModalPaper>

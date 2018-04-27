@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import LanguageIcon from '@material-ui/icons/Language';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 
@@ -89,7 +89,7 @@ class OnboardingChooseLanguagePage extends React.Component<Props> {
                 <LanguageIcon />
               </ListItemIcon>
               <ListItemText>{lang.label}</ListItemText>
-              <KeyboardArrowRight />
+              <ChevronRight />
             </ListItem>
           ))}
         </List>

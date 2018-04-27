@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import * as classNames from 'classnames';
 import { withStyles, WithStyles } from 'material-ui/styles';
 
@@ -59,7 +59,7 @@ const ModalPaperHeader = stylesDecorator<Props>(
         <div className={classes.root}>
           {backButton && (
             <Button className={classes.backButton} onClick={this.handleBackClick} size="small" tabIndex={-1}>
-              <KeyboardArrowLeft />
+              <ChevronLeft />
             </Button>
           )}
           <Typography
