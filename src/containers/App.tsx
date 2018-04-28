@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as bip39 from 'bip39';
 import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';
 import OnboardingNewAccountPage from '../containers/OnboardingNewAccountPage';
@@ -11,38 +12,71 @@ interface Props {
 
 interface State {
   page: string;
+  mnemonic: string[] | null;
 }
 
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      page: 'onboarding-verify-mnemonic',
+      page: 'onboarding-new-mnemonic',
+      mnemonic: this.newMnemonic(),
     };
   }
 
+  newMnemonic(): string[] {
+    return bip39.generateMnemonic().split(' ');
+  }
+
   handleOpenOnboardinChooseLanguagePage = () => {
-    this.setState({ page: 'onboarding-choose-language' });
+    this.setState({
+      page: 'onboarding-choose-language',
+      mnemonic: null,
+    });
   }
 
   handleOpenOnboardingAddAccountPage = () => {
-    this.setState({ page: 'onboarding-add-account' });
+    this.setState({
+      page: 'onboarding-add-account',
+      mnemonic: null,
+    });
   }
 
   handleOpenOnboardingNewAccountPage = () => {
-    this.setState({ page: 'onboarding-new-account' });
+    this.setState({
+      page: 'onboarding-new-account',
+      mnemonic: null,
+    });
   }
 
   handleOpenOnboardingSecurityNoticePage = () => {
-    this.setState({ page: 'onboarding-security-notice' });
+    this.setState({
+      page: 'onboarding-security-notice',
+      mnemonic: null,
+    });
   }
 
   handleOpenOnboardingNewMnemonicPage = () => {
-    this.setState({ page: 'onboarding-new-mnemonic' });
+    this.setState({
+      page: 'onboarding-new-mnemonic',
+      mnemonic: this.newMnemonic(),
+    });
   }
 
   handleOpenOnboardingVerifyMnemonicPage = () => {
-    this.setState({ page: 'onboarding-verify-mnemonic' });
+    this.setState((prevState) => {
+      if (prevState.mnemonic) {
+        return {
+          page: 'onboarding-verify-mnemonic',
+          mnemonic: prevState.mnemonic,
+        };
+      } else {
+        return {
+          page: 'onboarding-new-mnemonic',
+          mnemonic: this.newMnemonic(),
+        };
+      }
+    });
   }
 
   render() {
@@ -71,15 +105,18 @@ class App extends React.Component<Props, State> {
             onContinue={this.handleOpenOnboardingNewMnemonicPage}
           />
         )}
-        {this.state.page === 'onboarding-new-mnemonic' && (
+        {this.state.page === 'onboarding-new-mnemonic' && !!this.state.mnemonic && (
           <OnboardingNewMnemonicPage
+            mnemonic={this.state.mnemonic}
             onClose={this.handleOpenOnboardingNewAccountPage}
             onVerifyMnemonic={this.handleOpenOnboardingVerifyMnemonicPage}
           />
         )}
-        {this.state.page === 'onboarding-verify-mnemonic' && (
+        {this.state.page === 'onboarding-verify-mnemonic' && !!this.state.mnemonic && (
           <OnboardingVerifyMnemonicPage
+            mnemonic={this.state.mnemonic}
             onClose={this.handleOpenOnboardingNewAccountPage}
+            onMnemonicVerified={this.handleOpenOnboardingNewAccountPage}
           />
         )}
       </React.Fragment>

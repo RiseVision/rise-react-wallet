@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
+import * as classNames from 'classnames';
 import { withStyles, WithStyles } from 'material-ui/styles';
 
 type OnboardingVerifyMnemonicPageClassKey =
@@ -13,7 +14,8 @@ type OnboardingVerifyMnemonicPageClassKey =
   | 'mnemonic'
   | 'wordGroup'
   | 'wordLabel'
-  | 'wordValue';
+  | 'wordValue'
+  | 'currentWordValue';
 
 function round(val: number) {
   return Math.round(val * 1e5) / 1e5;
@@ -61,6 +63,11 @@ const stylesDecorator = withStyles<OnboardingVerifyMnemonicPageClassKey>(
         minWidth: `${round(64 / mnemonicFontSize)}em`,
         height: `${round(24.5 / mnemonicFontSize)}em`,
         borderBottom: '1px dotted #999',
+        color: '#999'
+      },
+      currentWordValue: {
+        color: theme.palette.text.primary,
+        borderBottom: '1px dashed #000',
       },
     };
   },
@@ -68,23 +75,103 @@ const stylesDecorator = withStyles<OnboardingVerifyMnemonicPageClassKey>(
 );
 
 interface Props {
+  mnemonic: string[];
   onClose: () => void;
+  onMnemonicVerified: () => void;
+}
+
+interface State {
+  mnemonic: string[];
+  uncheckedIndices: number[];
+  currentWordIndex: number;
+  currentWordValue: string;
+  currentWordInvalid: boolean;
 }
 
 type DecoratedProps = Props & WithStyles<OnboardingVerifyMnemonicPageClassKey>;
 
 const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps> {
+  class extends React.Component<DecoratedProps, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+      if (mnemonicsEquals(prevState.mnemonic, nextProps.mnemonic)) {
+        return null;
+      }
+
+      const { mnemonic } = nextProps;
+      let uncheckedIndices = nextProps.mnemonic.map((_, i) => i);
+      let randIdx = Math.trunc(Math.random() * uncheckedIndices.length);
+      const currentWordIndex = uncheckedIndices.splice(randIdx, 1)[0];
+
+      return {
+        mnemonic,
+        uncheckedIndices,
+        currentWordIndex,
+        currentWordValue: '',
+        currentWordInvalid: false,
+      };
+    }
+
+    constructor(props: DecoratedProps) {
+      super(props);
+      this.state = {
+        mnemonic: [],
+        uncheckedIndices: [],
+        currentWordIndex: 0,
+        currentWordValue: '',
+        currentWordInvalid: false,
+      };
+    }
+
     handleCloseClick = () => {
       this.props.onClose();
     }
 
+    handleCurrentWordChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+      let value = ev.target.value;
+      value = value.toLowerCase().trim();
+
+      this.setState({
+        currentWordValue: value,
+      });
+    }
+
+    handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
+      ev.preventDefault();
+
+      const { mnemonic, currentWordValue } = this.state;
+      let { currentWordIndex } = this.state;
+
+      if (mnemonic[currentWordIndex] !== currentWordValue) {
+        this.setState({ currentWordInvalid: true });
+      } else if (this.state.uncheckedIndices.length > 0) {
+        let uncheckedIndices = this.state.uncheckedIndices.slice();
+        let randIdx = Math.trunc(Math.random() * uncheckedIndices.length);
+        currentWordIndex = uncheckedIndices.splice(randIdx, 1)[0];
+
+        this.setState({
+          uncheckedIndices,
+          currentWordIndex,
+          currentWordValue: '',
+          currentWordInvalid: false,
+        });
+      } else {
+        this.props.onMnemonicVerified();
+      }
+    }
+
     render() {
       const { classes } = this.props;
-      let words: Array<'unchecked' | 'active' | 'checked'> = [
-        'unchecked', 'unchecked', 'checked', 'active', 'unchecked', 'unchecked',
-        'checked', 'unchecked', 'checked', 'unchecked', 'checked', 'unchecked',
-      ];
+      const { mnemonic, uncheckedIndices, currentWordIndex } = this.state;
+
+      const words: Array<'unchecked' | 'checked' | 'current'> = mnemonic.map((_, idx) => {
+        if (idx === currentWordIndex) {
+          return 'current';
+        } else if (uncheckedIndices.indexOf(idx) >= 0) {
+          return 'unchecked';
+        } else {
+          return 'checked';
+        }
+      });
 
       return (
         <ModalPaper>
@@ -95,15 +182,27 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
               defaultMessage="Check mnemonic"
             />
           </ModalPaperHeader>
-          <Grid container={true} className={classes.content} spacing={16} justify="center">
+          <Grid
+            container={true}
+            className={classes.content}
+            spacing={16}
+            justify="center"
+            component="form"
+            onSubmit={this.handleFormSubmit}
+          >
             <Grid item={true} xs={12} hidden={{xsDown: true}}>
               <Typography component="p" variant="title" className={classes.mnemonic}>
                 {words.map((state, idx) => (
                   <React.Fragment key={idx}>
                     <span className={classes.wordGroup}>
                       <span className={classes.wordLabel}>#{idx + 1}</span>
-                      <span className={classes.wordValue}>
-                        {state === 'active' && '?'}
+                      <span
+                        className={classNames(
+                          classes.wordValue,
+                          state === 'current' && classes.currentWordValue,
+                        )}
+                      >
+                        {state === 'current' && '?'}
                         {state === 'checked' && '✓'}
                       </span>
                     </span>
@@ -114,17 +213,28 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
             <Grid item={true} xs={12}>
               <Typography>
                 Verify that you wrote down your mnemonic correctly. Enter
-                the <strong>4th word</strong> into the text field below.
+                the <strong>{currentWordIndex + 1}th word</strong> into the text field below.
               </Typography>
             </Grid>
             <Grid item={true} xs={12}>
               <TextField
-                label="Word #4"
+                label={'Word #' + (currentWordIndex + 1)}
                 fullWidth={true}
+                error={this.state.currentWordInvalid}
+                value={this.state.currentWordValue}
+                onChange={this.handleCurrentWordChange}
               />
             </Grid>
             <Grid item={true} xs={12}>
-              <Button fullWidth={true}>Verify &amp; continue</Button>
+              {this.state.uncheckedIndices.length > 0 ? (
+                <Button type="submit" fullWidth={true}>
+                  Verify
+                </Button>
+              ) : (
+                <Button type="submit" fullWidth={true}>
+                  Verify &amp; continue
+                </Button>
+              )}
             </Grid>
           </Grid>
         </ModalPaper>
@@ -132,5 +242,17 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
     }
   }
 );
+
+function mnemonicsEquals(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export default OnboardingVerifyMnemonicPage;

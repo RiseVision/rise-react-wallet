@@ -55,6 +55,7 @@ const stylesDecorator = withStyles<OnboardingNewMnemonicPageClassKey>(
 );
 
 interface Props {
+  mnemonic: string[];
   onClose: () => void;
   onVerifyMnemonic: () => void;
 }
@@ -72,11 +73,8 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes } = this.props;
-      let words = [
-        'shrimp', 'bridge', 'inject', 'quantum', 'slight', 'wasp',
-        'staff', 'lizard', 'learn', 'effort', 'review', 'galaxy',
-      ];
+      const { classes, mnemonic } = this.props;
+      const wordCount = mnemonic.length;
 
       return (
         <ModalPaper>
@@ -90,12 +88,12 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
           <Grid container={true} className={classes.content} spacing={16} justify="center">
             <Grid item={true} xs={12}>
               <Typography>
-                This is your new 12-word mnemonic secret:
+                This is your new {wordCount}-word mnemonic secret:
               </Typography>
             </Grid>
             <Grid item={true} xs={12}>
               <Typography className={classes.mnemonic} component="p" variant="title">
-                {words.map((word, idx) => (
+                {mnemonic.map((word, idx) => (
                   <React.Fragment key={idx}>
                     {idx > 0 && ' '}
                     <span className={classes.wordGroup}>
