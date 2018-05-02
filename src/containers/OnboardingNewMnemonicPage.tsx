@@ -46,6 +46,7 @@ const stylesDecorator = withStyles<OnboardingNewMnemonicPageClassKey>(
         lineHeight: '1em',
         opacity: 0.5,
         userSelect: 'none',
+        whiteSpace: 'pre',
       },
       wordValue: {
       },
@@ -97,7 +98,7 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
                   <React.Fragment key={idx}>
                     {idx > 0 && ' '}
                     <span className={classes.wordGroup}>
-                      <span className={classes.wordLabel}>#{idx + 1}</span>
+                      <span className={classes.wordLabel}>{'#' + (idx + 1) + ' '}</span>
                       <span className={classes.wordValue}>{word}</span>
                     </span>
                   </React.Fragment>
