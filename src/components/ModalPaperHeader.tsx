@@ -25,8 +25,7 @@ const stylesDecorator = withStyles<ModalPaperHeaderClassKey>(
       },
       content: {
         flex: 1,
-        paddingTop: 10,
-        paddingBottom: 10,
+        padding: 10,
       },
       withoutClose: {
         marginRight: theme.spacing.unit * 8, // Width of the back button
