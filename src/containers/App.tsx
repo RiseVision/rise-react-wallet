@@ -1,11 +1,13 @@
 import * as React from 'react';
 import * as bip39 from 'bip39';
+import { LiskWallet } from 'dpos-offline';
 import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';
 import OnboardingNewAccountPage from '../containers/OnboardingNewAccountPage';
 import OnboardingSecurityNoticePage from '../containers/OnboardingSecurityNoticePage';
 import OnboardingNewMnemonicPage from '../containers/OnboardingNewMnemonicPage';
 import OnboardingVerifyMnemonicPage from '../containers/OnboardingVerifyMnemonicPage';
+import OnboardingAccountCreatedPage from '../containers/OnboardingAccountCreatedPage';
 
 interface Props {
 }
@@ -13,14 +15,16 @@ interface Props {
 interface State {
   page: string;
   mnemonic: string[] | null;
+  address: string | null;
 }
 
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      page: 'onboarding-new-mnemonic',
-      mnemonic: this.newMnemonic(),
+      page: 'onboarding-add-account',
+      address: null,
+      mnemonic: null,
     };
   }
 
@@ -28,7 +32,7 @@ class App extends React.Component<Props, State> {
     return bip39.generateMnemonic().split(' ');
   }
 
-  handleOpenOnboardinChooseLanguagePage = () => {
+  handleOpenOnboardingChooseLanguagePage = () => {
     this.setState({
       page: 'onboarding-choose-language',
       mnemonic: null,
@@ -79,12 +83,31 @@ class App extends React.Component<Props, State> {
     });
   }
 
+  handleOpenOnboardingAccountCreatedPage = () => {
+    this.setState((prevState) => {
+      if (prevState.mnemonic) {
+        const wallet = new LiskWallet(prevState.mnemonic.join(' '), 'R');
+        return {
+          page: 'onboarding-account-created',
+          mnemonic: null,
+          address: wallet.address,
+        };
+      } else {
+        return {
+          page: 'onboarding-add-account',
+          mnemonic: null,
+          address: null,
+        };
+      }
+    });
+  }
+
   render() {
     return (
       <React.Fragment>
         {this.state.page === 'onboarding-add-account' && (
           <OnboardingAddAccountPage
-            onOpenChooseLanguage={this.handleOpenOnboardinChooseLanguagePage}
+            onOpenChooseLanguage={this.handleOpenOnboardingChooseLanguagePage}
             onOpenNewAccount={this.handleOpenOnboardingNewAccountPage}
           />
         )}
@@ -116,7 +139,13 @@ class App extends React.Component<Props, State> {
           <OnboardingVerifyMnemonicPage
             mnemonic={this.state.mnemonic}
             onClose={this.handleOpenOnboardingNewAccountPage}
-            onMnemonicVerified={this.handleOpenOnboardingNewAccountPage}
+            onMnemonicVerified={this.handleOpenOnboardingAccountCreatedPage}
+          />
+        )}
+        {this.state.page === 'onboarding-account-created' && !!this.state.address && (
+          <OnboardingAccountCreatedPage
+            accountAddress={this.state.address}
+            onOpenOverview={this.handleOpenOnboardingAddAccountPage}
           />
         )}
       </React.Fragment>
