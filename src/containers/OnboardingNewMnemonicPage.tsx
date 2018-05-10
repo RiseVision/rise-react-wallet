@@ -5,14 +5,26 @@ import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
+import * as classNames from 'classnames';
 import { withStyles, WithStyles } from 'material-ui/styles';
 
 type OnboardingNewMnemonicPageClassKey =
   | 'content'
   | 'mnemonic'
-  | 'wordGroup'
-  | 'wordLabel'
-  | 'wordValue';
+  | 'separator'
+  | 'word'
+  | 'word-1'
+  | 'word-2'
+  | 'word-3'
+  | 'word-4'
+  | 'word-5'
+  | 'word-6'
+  | 'word-7'
+  | 'word-8'
+  | 'word-9'
+  | 'word-10'
+  | 'word-11'
+  | 'word-12';
 
 function round(val: number) {
   return Math.round(val * 1e5) / 1e5;
@@ -24,32 +36,50 @@ const stylesDecorator = withStyles<OnboardingNewMnemonicPageClassKey>(
     const mnemonicFontSize = 21;
     const mnemonicLineHeight = 24.5;
 
+    let wordLabels = {};
+    for (let i = 1; i <= 12; i++) {
+      wordLabels[`&.${i}::before`] = { content: `"${i}"` };
+    }
+
     return {
       content: {
         padding: 20,
       },
       mnemonic: {
-        wordSpacing: '0.4em',
         fontSize: pxToRem(mnemonicFontSize),
         lineHeight: `${round((mnemonicLineHeight + 20) / mnemonicFontSize)}em`,
         textAlign: 'center',
       },
-      wordGroup: {
+      separator: {
+      },
+      word: {
+        display: 'inline-block',
         position: 'relative',
+        marginLeft: '0.2em',
+        marginRight: '0.2em',
+        '&::before': {
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: `${round((mnemonicLineHeight + 8) / 10)}em`,
+          fontSize: pxToRem(10),
+          lineHeight: '1em',
+          opacity: 0.5,
+          userSelect: 'none',
+        },
       },
-      wordLabel: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: `${round((mnemonicLineHeight + 3) / 10)}em`,
-        fontSize: pxToRem(10),
-        lineHeight: '1em',
-        opacity: 0.5,
-        userSelect: 'none',
-        whiteSpace: 'pre',
-      },
-      wordValue: {
-      },
+      'word-1': { '&::before': { content: '"#1"' } },
+      'word-2': { '&::before': { content: '"#2"' } },
+      'word-3': { '&::before': { content: '"#3"' } },
+      'word-4': { '&::before': { content: '"#4"' } },
+      'word-5': { '&::before': { content: '"#5"' } },
+      'word-6': { '&::before': { content: '"#6"' } },
+      'word-7': { '&::before': { content: '"#7"' } },
+      'word-8': { '&::before': { content: '"#8"' } },
+      'word-9': { '&::before': { content: '"#9"' } },
+      'word-10': { '&::before': { content: '"#10"' } },
+      'word-11': { '&::before': { content: '"#11"' } },
+      'word-12': { '&::before': { content: '"#12"' } },
     };
   },
   { name: 'OnboardingNewMnemonicPage' }
@@ -97,9 +127,13 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
                 {mnemonic.map((word, idx) => (
                   <React.Fragment key={idx}>
                     {idx > 0 && ' '}
-                    <span className={classes.wordGroup}>
-                      <span className={classes.wordLabel}>{'#' + (idx + 1) + ' '}</span>
-                      <span className={classes.wordValue}>{word}</span>
+                    <span
+                      className={classNames(
+                        classes.word,
+                        classes[`word-${idx + 1}`],
+                      )}
+                    >
+                      {word}
                     </span>
                   </React.Fragment>
                 ))}
