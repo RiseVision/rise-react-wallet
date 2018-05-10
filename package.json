@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/bip39": "^2.4.0",
+    "@types/bytebuffer": "^5.0.37",
     "@types/classnames": "^2.2.3",
     "@types/jest": "^22.2.2",
     "@types/node": "^9.6.4",
