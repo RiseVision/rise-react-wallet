@@ -35,6 +35,7 @@ const stylesDecorator = withStyles<OnboardingExistingAccountPageClassKey>(
 );
 
 interface Props {
+  accountAddress?: string;
   onGoBack: () => void;
   onAddressEntered: (address: string) => void;
 }
@@ -49,12 +50,28 @@ type DecoratedProps = Props & WithStyles<OnboardingExistingAccountPageClassKey>;
 
 const OnboardingExistingAccountPage = stylesDecorator<Props>(
   class extends React.Component<DecoratedProps, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+      const address = nextProps.accountAddress || '';
+      if (prevState.address === address) {
+        return null;
+      }
+
+      const normalizedAddress = normalizeAddress(address);
+      return {
+        address,
+        addressInvalid: false,
+        normalizedAddress,
+      };
+    }
+
     constructor(props: DecoratedProps) {
       super(props);
+
+      const address = props.accountAddress || '';
       this.state = {
-        address: '',
+        address,
         addressInvalid: false,
-        normalizedAddress: '',
+        normalizedAddress: normalizeAddress(address),
       };
     }
 

@@ -9,6 +9,7 @@ import OnboardingNewMnemonicPage from '../containers/OnboardingNewMnemonicPage';
 import OnboardingVerifyMnemonicPage from '../containers/OnboardingVerifyMnemonicPage';
 import OnboardingAccountCreatedPage from '../containers/OnboardingAccountCreatedPage';
 import OnboardingExistingAccountPage from '../containers/OnboardingExistingAccountPage';
+import OnboardingExistingAccountTypePage from '../containers/OnboardingExistingAccountTypePage';
 
 interface Props {
 }
@@ -43,6 +44,7 @@ class App extends React.Component<Props, State> {
   handleOpenOnboardingAddAccountPage = () => {
     this.setState({
       page: 'onboarding-add-account',
+      address: null,
       mnemonic: null,
     });
   }
@@ -50,6 +52,7 @@ class App extends React.Component<Props, State> {
   handleOpenOnboardingNewAccountPage = () => {
     this.setState({
       page: 'onboarding-new-account',
+      address: null,
       mnemonic: null,
     });
   }
@@ -57,6 +60,7 @@ class App extends React.Component<Props, State> {
   handleOpenOnboardingSecurityNoticePage = () => {
     this.setState({
       page: 'onboarding-security-notice',
+      address: null,
       mnemonic: null,
     });
   }
@@ -64,6 +68,7 @@ class App extends React.Component<Props, State> {
   handleOpenOnboardingNewMnemonicPage = () => {
     this.setState({
       page: 'onboarding-new-mnemonic',
+      address: null,
       mnemonic: this.newMnemonic(),
     });
   }
@@ -73,11 +78,13 @@ class App extends React.Component<Props, State> {
       if (prevState.mnemonic) {
         return {
           page: 'onboarding-verify-mnemonic',
+          address: null,
           mnemonic: prevState.mnemonic,
         };
       } else {
         return {
           page: 'onboarding-new-mnemonic',
+          address: null,
           mnemonic: this.newMnemonic(),
         };
       }
@@ -107,7 +114,14 @@ class App extends React.Component<Props, State> {
     this.setState({
       page: 'onboarding-existing-account',
       mnemonic: null,
-      address: null,
+    });
+  }
+
+  handleOpenOnboardingExistingAccountTypePage = (address: string) => {
+    this.setState({
+      page: 'onboarding-existing-account-type',
+      address: address,
+      mnemonic: null,
     });
   }
 
@@ -160,8 +174,16 @@ class App extends React.Component<Props, State> {
         )}
         {this.state.page === 'onboarding-existing-account' && (
           <OnboardingExistingAccountPage
+            accountAddress={this.state.address || ''}
             onGoBack={this.handleOpenOnboardingAddAccountPage}
-            onAddressEntered={this.handleOpenOnboardingAddAccountPage}
+            onAddressEntered={this.handleOpenOnboardingExistingAccountTypePage}
+          />
+        )}
+        {this.state.page === 'onboarding-existing-account-type' && (
+          <OnboardingExistingAccountTypePage
+            onGoBack={this.handleOpenOnboardingExistingAccountPage}
+            onFullAccessSelected={this.handleOpenOnboardingAddAccountPage}
+            onReadAccessSelected={this.handleOpenOnboardingAddAccountPage}
           />
         )}
       </React.Fragment>
