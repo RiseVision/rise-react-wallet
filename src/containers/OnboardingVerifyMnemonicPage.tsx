@@ -57,6 +57,7 @@ const stylesDecorator = withStyles<OnboardingVerifyMnemonicPageClassKey>(
         lineHeight: '1em',
         opacity: 0.5,
         userSelect: 'none',
+        pointerEvents: 'none',
       },
       wordValue: {
         display: 'block',

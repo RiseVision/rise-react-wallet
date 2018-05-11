@@ -66,6 +66,7 @@ const stylesDecorator = withStyles<OnboardingNewMnemonicPageClassKey>(
           lineHeight: '1em',
           opacity: 0.5,
           userSelect: 'none',
+          pointerEvents: 'none',
         },
       },
       'word-1': { '&::before': { content: '"#1"' } },
