@@ -59,10 +59,10 @@ const OnboardingAccountCreatedPage = stylesDecorator<Props>(
             <Grid item={true} xs={12}>
               <Grid container={true} justify="center" alignItems="center" spacing={8}>
                 <Grid item={true}>
-                  <AccountIcon size={64} address={accountAddress} />
+                  <Typography>{accountAddress}</Typography>
                 </Grid>
                 <Grid item={true}>
-                  <Typography>{accountAddress}</Typography>
+                  <AccountIcon size={64} address={accountAddress} />
                 </Grid>
               </Grid>
             </Grid>

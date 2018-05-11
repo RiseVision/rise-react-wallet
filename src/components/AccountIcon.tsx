@@ -1,19 +1,27 @@
 import * as React from 'react';
+import * as classNames from 'classnames';
 import { withStyles, WithStyles } from 'material-ui/styles';
 import jdenticon from '../utils/jdenticon';
 
+const riseIcon = require('../images/rise_icon.svg');
+
 type AccountIconClassKey =
-  | 'root';
+  | 'root'
+  | 'placeholder';
 
 const stylesDecorator = withStyles<AccountIconClassKey>(
   {
     root: {
+    },
+    placeholder: {
+      opacity: 0.1,
     },
   },
   { name: 'AccountIcon' }
 );
 
 interface Props {
+  className?: string;
   size?: number;
   address: string;
 }
@@ -34,20 +42,45 @@ const AccountIcon = stylesDecorator<Props>(
 
     generateSvg() {
       const svgElement = this.svgElement.current;
+      const { address } = this.props;
       if (svgElement) {
-        jdenticon.update(svgElement, this.props.address, 0.1);
+        jdenticon.update(svgElement, address, 0);
       }
     }
 
     render() {
-      const { classes, size } = this.props;
+      const { classes, address } = this.props;
+      let size = this.props.size || 48;
       return (
-        <svg
-          className={classes.root}
-          ref={this.svgElement}
-          width={size || 64}
-          height={size || 64}
-        />
+        <div
+          className={classNames(
+            classes.root,
+            this.props.className,
+          )}
+          style={{
+            width: size,
+            height: size,
+          }}
+        >
+          <svg
+            ref={this.svgElement}
+            style={!address ? {
+              display: 'none',
+            } : {
+            }}
+            width={size}
+            height={size}
+          />
+          {!address && (
+            <img
+              className={classes.placeholder}
+              src={riseIcon}
+              alt="RISE icon"
+              width={size}
+              height={size}
+            />
+          )}
+        </div>
       );
     }
   }

@@ -9,11 +9,16 @@ import ModalPaperHeader from '../components/ModalPaperHeader';
 interface Props {
   onOpenChooseLanguage: () => void;
   onOpenNewAccount: () => void;
+  onOpenExistingAccount: () => void;
 }
 
 class OnboardingAddAccountPage extends React.Component<Props> {
   handleNewAccountClicked = () => {
     this.props.onOpenNewAccount();
+  }
+
+  handleExistingAccountClicked = () => {
+    this.props.onOpenExistingAccount();
   }
 
   handleChooseLanguageClicked = () => {
@@ -50,7 +55,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
             />
             <ChevronRight />
           </ListItem>
-          <ListItem button={true}>
+          <ListItem button={true} onClick={this.handleExistingAccountClicked}>
             <ListItemText
               primary={(
                 <FormattedMessage

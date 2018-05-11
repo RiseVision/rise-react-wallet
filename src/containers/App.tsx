@@ -8,6 +8,7 @@ import OnboardingSecurityNoticePage from '../containers/OnboardingSecurityNotice
 import OnboardingNewMnemonicPage from '../containers/OnboardingNewMnemonicPage';
 import OnboardingVerifyMnemonicPage from '../containers/OnboardingVerifyMnemonicPage';
 import OnboardingAccountCreatedPage from '../containers/OnboardingAccountCreatedPage';
+import OnboardingExistingAccountPage from '../containers/OnboardingExistingAccountPage';
 
 interface Props {
 }
@@ -102,6 +103,14 @@ class App extends React.Component<Props, State> {
     });
   }
 
+  handleOpenOnboardingExistingAccountPage = () => {
+    this.setState({
+      page: 'onboarding-existing-account',
+      mnemonic: null,
+      address: null,
+    });
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -109,6 +118,7 @@ class App extends React.Component<Props, State> {
           <OnboardingAddAccountPage
             onOpenChooseLanguage={this.handleOpenOnboardingChooseLanguagePage}
             onOpenNewAccount={this.handleOpenOnboardingNewAccountPage}
+            onOpenExistingAccount={this.handleOpenOnboardingExistingAccountPage}
           />
         )}
         {this.state.page === 'onboarding-choose-language' && (
@@ -146,6 +156,12 @@ class App extends React.Component<Props, State> {
           <OnboardingAccountCreatedPage
             accountAddress={this.state.address}
             onOpenOverview={this.handleOpenOnboardingAddAccountPage}
+          />
+        )}
+        {this.state.page === 'onboarding-existing-account' && (
+          <OnboardingExistingAccountPage
+            onGoBack={this.handleOpenOnboardingAddAccountPage}
+            onAddressEntered={this.handleOpenOnboardingAddAccountPage}
           />
         )}
       </React.Fragment>
