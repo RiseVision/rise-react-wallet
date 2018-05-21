@@ -1,6 +1,9 @@
 import * as React from 'react';
+import { IntlProvider } from 'react-intl';
 import * as bip39 from 'bip39';
 import { LiskWallet } from 'dpos-offline';
+import { Locale, getUserLocales } from '../utils/i18n';
+import ThemeProvider from  '../containers/ThemeProvider';
 import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';
 import OnboardingNewAccountPage from '../containers/OnboardingNewAccountPage';
@@ -15,6 +18,7 @@ interface Props {
 }
 
 interface State {
+  locale: Locale;
   page: string;
   mnemonic: string[] | null;
   address: string | null;
@@ -23,7 +27,12 @@ interface State {
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+
+    // TODO: Attempt to restore locale from a cookie/local storage.
+    const locale = getUserLocales()[0] || 'en';
+
     this.state = {
+      locale,
       page: 'onboarding-add-account',
       address: null,
       mnemonic: null,
@@ -37,6 +46,15 @@ class App extends React.Component<Props, State> {
   handleOpenOnboardingChooseLanguagePage = () => {
     this.setState({
       page: 'onboarding-choose-language',
+      mnemonic: null,
+    });
+  }
+
+  handleLanguageSelected = (locale: Locale) => {
+    this.setState({
+      locale: locale,
+      page: 'onboarding-add-account',
+      address: null,
       mnemonic: null,
     });
   }
@@ -127,66 +145,68 @@ class App extends React.Component<Props, State> {
 
   render() {
     return (
-      <React.Fragment>
-        {this.state.page === 'onboarding-add-account' && (
-          <OnboardingAddAccountPage
-            onOpenChooseLanguage={this.handleOpenOnboardingChooseLanguagePage}
-            onOpenNewAccount={this.handleOpenOnboardingNewAccountPage}
-            onOpenExistingAccount={this.handleOpenOnboardingExistingAccountPage}
-          />
-        )}
-        {this.state.page === 'onboarding-choose-language' && (
-          <OnboardingChooseLanguagePage
-            onLanguageSelected={this.handleOpenOnboardingAddAccountPage}
-          />
-        )}
-        {this.state.page === 'onboarding-new-account' && (
-          <OnboardingNewAccountPage
-            onGoBack={this.handleOpenOnboardingAddAccountPage}
-            onGenerateMnemonic={this.handleOpenOnboardingSecurityNoticePage}
-          />
-        )}
-        {this.state.page === 'onboarding-security-notice' && (
-          <OnboardingSecurityNoticePage
-            onClose={this.handleOpenOnboardingNewAccountPage}
-            onContinue={this.handleOpenOnboardingNewMnemonicPage}
-          />
-        )}
-        {this.state.page === 'onboarding-new-mnemonic' && !!this.state.mnemonic && (
-          <OnboardingNewMnemonicPage
-            mnemonic={this.state.mnemonic}
-            onClose={this.handleOpenOnboardingNewAccountPage}
-            onVerifyMnemonic={this.handleOpenOnboardingVerifyMnemonicPage}
-          />
-        )}
-        {this.state.page === 'onboarding-verify-mnemonic' && !!this.state.mnemonic && (
-          <OnboardingVerifyMnemonicPage
-            mnemonic={this.state.mnemonic}
-            onClose={this.handleOpenOnboardingNewAccountPage}
-            onMnemonicVerified={this.handleOpenOnboardingAccountCreatedPage}
-          />
-        )}
-        {this.state.page === 'onboarding-account-created' && !!this.state.address && (
-          <OnboardingAccountCreatedPage
-            accountAddress={this.state.address}
-            onOpenOverview={this.handleOpenOnboardingAddAccountPage}
-          />
-        )}
-        {this.state.page === 'onboarding-existing-account' && (
-          <OnboardingExistingAccountPage
-            accountAddress={this.state.address || ''}
-            onGoBack={this.handleOpenOnboardingAddAccountPage}
-            onAddressEntered={this.handleOpenOnboardingExistingAccountTypePage}
-          />
-        )}
-        {this.state.page === 'onboarding-existing-account-type' && (
-          <OnboardingExistingAccountTypePage
-            onGoBack={this.handleOpenOnboardingExistingAccountPage}
-            onFullAccessSelected={this.handleOpenOnboardingAddAccountPage}
-            onReadAccessSelected={this.handleOpenOnboardingAddAccountPage}
-          />
-        )}
-      </React.Fragment>
+      <IntlProvider locale={this.state.locale}>
+        <ThemeProvider>
+          {this.state.page === 'onboarding-add-account' && (
+            <OnboardingAddAccountPage
+              onOpenChooseLanguage={this.handleOpenOnboardingChooseLanguagePage}
+              onOpenNewAccount={this.handleOpenOnboardingNewAccountPage}
+              onOpenExistingAccount={this.handleOpenOnboardingExistingAccountPage}
+            />
+          )}
+          {this.state.page === 'onboarding-choose-language' && (
+            <OnboardingChooseLanguagePage
+              onLanguageSelected={this.handleLanguageSelected}
+            />
+          )}
+          {this.state.page === 'onboarding-new-account' && (
+            <OnboardingNewAccountPage
+              onGoBack={this.handleOpenOnboardingAddAccountPage}
+              onGenerateMnemonic={this.handleOpenOnboardingSecurityNoticePage}
+            />
+          )}
+          {this.state.page === 'onboarding-security-notice' && (
+            <OnboardingSecurityNoticePage
+              onClose={this.handleOpenOnboardingNewAccountPage}
+              onContinue={this.handleOpenOnboardingNewMnemonicPage}
+            />
+          )}
+          {this.state.page === 'onboarding-new-mnemonic' && !!this.state.mnemonic && (
+            <OnboardingNewMnemonicPage
+              mnemonic={this.state.mnemonic}
+              onClose={this.handleOpenOnboardingNewAccountPage}
+              onVerifyMnemonic={this.handleOpenOnboardingVerifyMnemonicPage}
+            />
+          )}
+          {this.state.page === 'onboarding-verify-mnemonic' && !!this.state.mnemonic && (
+            <OnboardingVerifyMnemonicPage
+              mnemonic={this.state.mnemonic}
+              onClose={this.handleOpenOnboardingNewAccountPage}
+              onMnemonicVerified={this.handleOpenOnboardingAccountCreatedPage}
+            />
+          )}
+          {this.state.page === 'onboarding-account-created' && !!this.state.address && (
+            <OnboardingAccountCreatedPage
+              accountAddress={this.state.address}
+              onOpenOverview={this.handleOpenOnboardingAddAccountPage}
+            />
+          )}
+          {this.state.page === 'onboarding-existing-account' && (
+            <OnboardingExistingAccountPage
+              accountAddress={this.state.address || ''}
+              onGoBack={this.handleOpenOnboardingAddAccountPage}
+              onAddressEntered={this.handleOpenOnboardingExistingAccountTypePage}
+            />
+          )}
+          {this.state.page === 'onboarding-existing-account-type' && (
+            <OnboardingExistingAccountTypePage
+              onGoBack={this.handleOpenOnboardingExistingAccountPage}
+              onFullAccessSelected={this.handleOpenOnboardingAddAccountPage}
+              onReadAccessSelected={this.handleOpenOnboardingAddAccountPage}
+            />
+          )}
+        </ThemeProvider>
+      </IntlProvider>
     );
   }
 }
