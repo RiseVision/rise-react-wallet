@@ -3,16 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^v1.0.0",
     "@material-ui/icons": "^1.0.0",
     "bip39": "^2.5.0",
     "classnames": "^2.2.5",
     "dpos-offline": "^1.4.0",
     "jdenticon": "^2.1.0",
-    "@material-ui/core": "^v1.0.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-intl": "^2.4.0",
-    "react-scripts-ts": "2.15.1"
+    "react-scripts-ts": "2.15.1",
+    "svg-country-flags": "^1.2.1"
   },
   "scripts": {
     "start": "react-scripts-ts start",

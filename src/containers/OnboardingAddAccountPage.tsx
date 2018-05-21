@@ -2,12 +2,11 @@ import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import LanguageIcon from '@material-ui/icons/Language';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
+import FlagIcon from '../components/FlagIcon';
 
 interface Props {
   onOpenChooseLanguage: () => void;
@@ -78,9 +77,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
             <ChevronRight />
           </ListItem>
           <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
-            <ListItemIcon>
-              <LanguageIcon />
-            </ListItemIcon>
+            <FlagIcon countryCode="gb" />
             <ListItemText>
               <FormattedMessage
                 id="onboarding-add-account.change-language"
