@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import Typography from 'material-ui/Typography';
-import Grid from 'material-ui/Grid';
-import TextField from 'material-ui/TextField';
-import Button from 'material-ui/Button';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Hidden from '@material-ui/core/Hidden';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import * as classNames from 'classnames';
-import { withStyles, WithStyles } from 'material-ui/styles';
+import { withStyles, WithStyles } from '@material-ui/core/styles';
 
 type OnboardingVerifyMnemonicPageClassKey =
   | 'content'
@@ -191,26 +192,28 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
             component="form"
             onSubmit={this.handleFormSubmit}
           >
-            <Grid item={true} xs={12} hidden={{xsDown: true}}>
-              <Typography component="p" variant="title" className={classes.mnemonic}>
-                {words.map((state, idx) => (
-                  <React.Fragment key={idx}>
-                    <span className={classes.wordGroup}>
-                      <span className={classes.wordLabel}>#{idx + 1}</span>
-                      <span
-                        className={classNames(
-                          classes.wordValue,
-                          state === 'current' && classes.currentWordValue,
-                        )}
-                      >
-                        {state === 'current' && '?'}
-                        {state === 'checked' && '✓'}
+            <Hidden xsDown={true}>
+              <Grid item={true} xs={12}>
+                <Typography component="p" variant="title" className={classes.mnemonic}>
+                  {words.map((state, idx) => (
+                    <React.Fragment key={idx}>
+                      <span className={classes.wordGroup}>
+                        <span className={classes.wordLabel}>#{idx + 1}</span>
+                        <span
+                          className={classNames(
+                            classes.wordValue,
+                            state === 'current' && classes.currentWordValue,
+                          )}
+                        >
+                          {state === 'current' && '?'}
+                          {state === 'checked' && '✓'}
+                        </span>
                       </span>
-                    </span>
-                  </React.Fragment>
-                ))}
-              </Typography>
-            </Grid>
+                    </React.Fragment>
+                  ))}
+                </Typography>
+              </Grid>
+            </Hidden>
             <Grid item={true} xs={12}>
               <Typography>
                 Verify that you wrote down your mnemonic correctly. Enter

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { CssBaseline } from 'material-ui';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import { lightGreen } from 'material-ui/colors';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import lightGreen from '@material-ui/core/colors/lightGreen';
 import jdenticon from '../utils/jdenticon';
 
 const theme = createMuiTheme({
