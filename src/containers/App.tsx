@@ -163,6 +163,7 @@ class App extends React.Component<Props, State> {
       });
       page = (
         <OnboardingAddAccountPage
+          locale={this.state.locale}
           onOpenChooseLanguage={this.handleOpenOnboardingChooseLanguagePage}
           onOpenNewAccount={this.handleOpenOnboardingNewAccountPage}
           onOpenExistingAccount={this.handleOpenOnboardingExistingAccountPage}

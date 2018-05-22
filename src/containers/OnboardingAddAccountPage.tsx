@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Locale, getMainCountryForLocale } from '../utils/i18n';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -9,6 +10,7 @@ import ModalPaperHeader from '../components/ModalPaperHeader';
 import FlagIcon from '../components/FlagIcon';
 
 interface Props {
+  locale: Locale;
   onOpenChooseLanguage: () => void;
   onOpenNewAccount: () => void;
   onOpenExistingAccount: () => void;
@@ -77,7 +79,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
             <ChevronRight />
           </ListItem>
           <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
-            <FlagIcon countryCode="gb" />
+            <FlagIcon countryCode={getMainCountryForLocale(this.props.locale)} />
             <ListItemText>
               <FormattedMessage
                 id="onboarding-add-account.change-language"
