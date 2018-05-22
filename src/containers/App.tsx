@@ -3,6 +3,7 @@ import { IntlProvider } from 'react-intl';
 import * as bip39 from 'bip39';
 import { LiskWallet } from 'dpos-offline';
 import { Locale, getUserLocales } from '../utils/i18n';
+import { importTranslation } from '../translations';
 import ThemeProvider from  '../containers/ThemeProvider';
 import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';

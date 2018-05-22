@@ -1,0 +1,27 @@
+[
+  {
+    "id": "onboarding-new-account.title",
+    "description": "New account screen title",
+    "defaultMessage": "New account"
+  },
+  {
+    "id": "onboarding-new-account.using-mnemonic",
+    "description": "New account w/ a mnemonic button title",
+    "defaultMessage": "Create an account using a secret"
+  },
+  {
+    "id": "onboarding-new-account.using-mnemonic-tip",
+    "description": "New account w/ a mnemonic button tip",
+    "defaultMessage": "I want to create a new account that can be accessed using a mnemonic secret"
+  },
+  {
+    "id": "onboarding-new-account.using-ledger",
+    "description": "New account w/ Ledger button title",
+    "defaultMessage": "Import an account from hardware wallet"
+  },
+  {
+    "id": "onboarding-new-account.using-ledger-tip",
+    "description": "New account w/ Ledger button tip",
+    "defaultMessage": "I want to import a new account from my Ledger hardware wallet"
+  }
+]

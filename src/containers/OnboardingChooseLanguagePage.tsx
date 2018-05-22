@@ -6,65 +6,26 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
-import FlagIcon, { CountryCode } from '../components/FlagIcon';
-import { Locale, Locales, getUserLocales } from '../utils/i18n';
+import FlagIcon from '../components/FlagIcon';
+import { Locale, Locales, getUserLocales, getMainCountryForLocale } from '../utils/i18n';
 
 // Labels are hard-coded here as we want to load the actual localization data
 // after the user has selected the language, not before.
-const languagesChoices: {
-  [P in Locale]: {
-    countryCode: CountryCode;
-    label: string;
-  };
+const localeLabels: {
+  [P in Locale]: string;
 } = {
-  de: {
-    countryCode: 'de',
-    label: 'Weiter auf Deutsch',
-  },
-  en: {
-    countryCode: 'gb',
-    label: 'Continue in English',
-  },
-  es: {
-    countryCode: 'es',
-    label: 'Continuar en español',
-  },
-  et: {
-    countryCode: 'ee',
-    label: 'Jätka eesti keeles',
-  },
-  fr: {
-    countryCode: 'fr',
-    label: 'Continuer en français',
-  },
-  hu: {
-    countryCode: 'hu',
-    label: 'Folytatás magyarul',
-  },
-  nl: {
-    countryCode: 'nl',
-    label: 'Ga door in het Nederlands',
-  },
-  pl: {
-    countryCode: 'pl',
-    label: 'Kontynuuj po polsku',
-  },
-  ro: {
-    countryCode: 'ro',
-    label: 'Continuați în română',
-  },
-  ru: {
-    countryCode: 'ru',
-    label: 'Продолжить на русском',
-  },
-  uk: {
-    countryCode: 'ua',
-    label: 'Продовжуйте по-українськи',
-  },
-  zh: {
-    countryCode: 'cn',
-    label: '繼續用中文',
-  },
+  de: 'Weiter auf Deutsch',
+  en: 'Continue in English',
+  es: 'Continuar en español',
+  et: 'Jätka eesti keeles',
+  fr: 'Continuer en français',
+  hu: 'Folytatás magyarul',
+  nl: 'Ga door in het Nederlands',
+  pl: 'Kontynuuj po polsku',
+  ro: 'Continuați în română',
+  ru: 'Продолжить на русском',
+  uk: 'Продовжуйте по-українськи',
+  zh: '繼續用中文',
 };
 
 interface Props {
@@ -82,7 +43,8 @@ class OnboardingChooseLanguagePage extends React.Component<Props> {
     let languages = Locales.map((locale) => {
       return {
         locale: locale,
-        ...languagesChoices[locale],
+        countryCode: getMainCountryForLocale(locale),
+        label: localeLabels[locale],
       };
     });
     languages.sort((a, b) => {

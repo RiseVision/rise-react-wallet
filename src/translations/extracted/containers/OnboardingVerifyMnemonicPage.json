@@ -1,0 +1,7 @@
+[
+  {
+    "id": "onboarding-verify-mnemonic.title",
+    "description": "New mnemonic screen title",
+    "defaultMessage": "Check mnemonic"
+  }
+]

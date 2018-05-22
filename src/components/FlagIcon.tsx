@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { CountryCode } from '../utils/i18n';
 
 type FlagIconClassKey =
   | 'root';
@@ -19,7 +20,9 @@ const stylesDecorator = withStyles<FlagIconClassKey>(
   { name: 'AccountIcon' }
 );
 
-const countryFlags = {
+const countryFlags: {
+  [P in CountryCode]: string;
+} = {
   de: require('svg-country-flags/svg/de.svg'),
   gb: require('svg-country-flags/svg/gb.svg'),
   es: require('svg-country-flags/svg/es.svg'),
@@ -33,8 +36,6 @@ const countryFlags = {
   ua: require('svg-country-flags/svg/ua.svg'),
   cn: require('svg-country-flags/svg/cn.svg'),
 };
-
-export type CountryCode = keyof typeof countryFlags;
 
 interface Props {
   className?: string;

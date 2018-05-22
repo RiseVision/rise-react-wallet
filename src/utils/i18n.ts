@@ -1,20 +1,55 @@
-const localeInfo = {
-  en: null,
-  de: null,
-  es: null,
-  et: null,
-  fr: null,
-  hu: null,
-  nl: null,
-  pl: null,
-  ro: null,
-  ru: null,
-  uk: null,
-  zh: null,
+export type Locale =
+  | 'en'
+  | 'de'
+  | 'es'
+  | 'et'
+  | 'fr'
+  | 'hu'
+  | 'nl'
+  | 'pl'
+  | 'ro'
+  | 'ru'
+  | 'uk'
+  | 'zh';
+
+export type CountryCode =
+  | 'de'
+  | 'gb'
+  | 'es'
+  | 'ee'
+  | 'fr'
+  | 'hu'
+  | 'nl'
+  | 'pl'
+  | 'ro'
+  | 'ru'
+  | 'ua'
+  | 'cn';
+
+const localeInfo: {
+  [P in Locale]: {
+    mainCountry: CountryCode;
+  };
+} = {
+  en: { mainCountry: 'gb' },
+  de: { mainCountry: 'de' },
+  es: { mainCountry: 'es' },
+  et: { mainCountry: 'ee' },
+  fr: { mainCountry: 'fr' },
+  hu: { mainCountry: 'hu' },
+  nl: { mainCountry: 'nl' },
+  pl: { mainCountry: 'pl' },
+  ro: { mainCountry: 'ro' },
+  ru: { mainCountry: 'ru' },
+  uk: { mainCountry: 'ua' },
+  zh: { mainCountry: 'cn' },
 };
 
-export type Locale = keyof typeof localeInfo;
 export const Locales: Locale[] = Object.keys(localeInfo) as Locale[];
+
+export function getMainCountryForLocale(locale: Locale): CountryCode {
+  return localeInfo[locale].mainCountry;
+}
 
 export function getUserLocales(): Locale[] {
   return navigator.languages
