@@ -2,18 +2,10 @@ import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 import * as bip39 from 'bip39';
 import { LiskWallet } from 'dpos-offline';
+import { asyncComponent, Configuration as AsyncConfig } from 'react-async-component';
 import { Locale, getUserLocales } from '../utils/i18n';
 import { importTranslation } from '../translations';
 import ThemeProvider from  '../containers/ThemeProvider';
-import OnboardingAddAccountPage from '../containers/OnboardingAddAccountPage';
-import OnboardingChooseLanguagePage from '../containers/OnboardingChooseLanguagePage';
-import OnboardingNewAccountPage from '../containers/OnboardingNewAccountPage';
-import OnboardingSecurityNoticePage from '../containers/OnboardingSecurityNoticePage';
-import OnboardingNewMnemonicPage from '../containers/OnboardingNewMnemonicPage';
-import OnboardingVerifyMnemonicPage from '../containers/OnboardingVerifyMnemonicPage';
-import OnboardingAccountCreatedPage from '../containers/OnboardingAccountCreatedPage';
-import OnboardingExistingAccountPage from '../containers/OnboardingExistingAccountPage';
-import OnboardingExistingAccountTypePage from '../containers/OnboardingExistingAccountTypePage';
 
 interface Props {
 }
@@ -23,6 +15,24 @@ interface State {
   page: string;
   mnemonic: string[] | null;
   address: string | null;
+}
+
+function translatedComponent<P>(locale: Locale, config: AsyncConfig<P>): React.ComponentType<P> {
+  const makeComponent = (messages: {}, InnerComponent: React.ComponentType<P>) => (props: P) => (
+    <IntlProvider key={locale} locale={locale} messages={messages}>
+      <InnerComponent {...props} />
+    </IntlProvider>
+  );
+  return asyncComponent({
+    ...config,
+    resolve: () => {
+      return Promise.all([config.resolve(), importTranslation(locale)])
+        .then(([mod, messages]) => {
+          const InnerComponent = 'default' in mod ? mod.default : mod;
+          return makeComponent(messages, InnerComponent);
+        });
+    },
+  });
 }
 
 class App extends React.Component<Props, State> {
@@ -145,69 +155,116 @@ class App extends React.Component<Props, State> {
   }
 
   render() {
+    let page = null;
+
+    if (this.state.page === 'onboarding-add-account') {
+      const OnboardingAddAccountPage = translatedComponent(this.state.locale, {
+        resolve: () => import('../containers/OnboardingAddAccountPage'),
+      });
+      page = (
+        <OnboardingAddAccountPage
+          onOpenChooseLanguage={this.handleOpenOnboardingChooseLanguagePage}
+          onOpenNewAccount={this.handleOpenOnboardingNewAccountPage}
+          onOpenExistingAccount={this.handleOpenOnboardingExistingAccountPage}
+        />
+      );
+
+    } else if (this.state.page === 'onboarding-choose-language') {
+      const OnboardingChooseLanguagePage = translatedComponent(this.state.locale, {
+        resolve: () => import('../containers/OnboardingChooseLanguagePage'),
+      });
+      page = (
+        <OnboardingChooseLanguagePage
+          onLanguageSelected={this.handleLanguageSelected}
+        />
+      );
+
+    } else if (this.state.page === 'onboarding-new-account') {
+      const OnboardingNewAccountPage = translatedComponent(this.state.locale, {
+        resolve: () => import('../containers/OnboardingNewAccountPage'),
+      });
+      page = (
+        <OnboardingNewAccountPage
+          onGoBack={this.handleOpenOnboardingAddAccountPage}
+          onGenerateMnemonic={this.handleOpenOnboardingSecurityNoticePage}
+        />
+      );
+
+    } else if (this.state.page === 'onboarding-security-notice') {
+        const OnboardingSecurityNoticePage = translatedComponent(this.state.locale, {
+          resolve: () => import('../containers/OnboardingSecurityNoticePage'),
+        });
+        page = (
+          <OnboardingSecurityNoticePage
+            onClose={this.handleOpenOnboardingNewAccountPage}
+            onContinue={this.handleOpenOnboardingNewMnemonicPage}
+          />
+        );
+
+    } else if (this.state.page === 'onboarding-new-mnemonic' && !!this.state.mnemonic) {
+      const OnboardingNewMnemonicPage = translatedComponent(this.state.locale, {
+        resolve: () => import('../containers/OnboardingNewMnemonicPage'),
+      });
+      page = (
+        <OnboardingNewMnemonicPage
+          mnemonic={this.state.mnemonic}
+          onClose={this.handleOpenOnboardingNewAccountPage}
+          onVerifyMnemonic={this.handleOpenOnboardingVerifyMnemonicPage}
+        />
+      );
+
+    } else if (this.state.page === 'onboarding-verify-mnemonic' && !!this.state.mnemonic) {
+      const OnboardingVerifyMnemonicPage = translatedComponent(this.state.locale, {
+        resolve: () => import('../containers/OnboardingVerifyMnemonicPage'),
+      });
+      page = (
+        <OnboardingVerifyMnemonicPage
+          mnemonic={this.state.mnemonic}
+          onClose={this.handleOpenOnboardingNewAccountPage}
+          onMnemonicVerified={this.handleOpenOnboardingAccountCreatedPage}
+        />
+      );
+
+    } else if (this.state.page === 'onboarding-account-created' && !!this.state.address) {
+      const OnboardingAccountCreatedPage = translatedComponent(this.state.locale, {
+        resolve: () => import('../containers/OnboardingAccountCreatedPage'),
+      });
+      page = (
+        <OnboardingAccountCreatedPage
+          accountAddress={this.state.address}
+          onOpenOverview={this.handleOpenOnboardingAddAccountPage}
+        />
+      );
+
+    } else if (this.state.page === 'onboarding-existing-account') {
+      const OnboardingExistingAccountPage = translatedComponent(this.state.locale, {
+        resolve: () => import('../containers/OnboardingExistingAccountPage'),
+      });
+      page = (
+        <OnboardingExistingAccountPage
+          accountAddress={this.state.address || ''}
+          onGoBack={this.handleOpenOnboardingAddAccountPage}
+          onAddressEntered={this.handleOpenOnboardingExistingAccountTypePage}
+        />
+      );
+
+    } else if (this.state.page === 'onboarding-existing-account-type') {
+      const OnboardingExistingAccountTypePage = translatedComponent(this.state.locale, {
+        resolve: () => import('../containers/OnboardingExistingAccountTypePage'),
+      });
+      page = (
+        <OnboardingExistingAccountTypePage
+          onGoBack={this.handleOpenOnboardingExistingAccountPage}
+          onFullAccessSelected={this.handleOpenOnboardingAddAccountPage}
+          onReadAccessSelected={this.handleOpenOnboardingAddAccountPage}
+        />
+      );
+    }
+
     return (
-      <IntlProvider locale={this.state.locale}>
-        <ThemeProvider>
-          {this.state.page === 'onboarding-add-account' && (
-            <OnboardingAddAccountPage
-              onOpenChooseLanguage={this.handleOpenOnboardingChooseLanguagePage}
-              onOpenNewAccount={this.handleOpenOnboardingNewAccountPage}
-              onOpenExistingAccount={this.handleOpenOnboardingExistingAccountPage}
-            />
-          )}
-          {this.state.page === 'onboarding-choose-language' && (
-            <OnboardingChooseLanguagePage
-              onLanguageSelected={this.handleLanguageSelected}
-            />
-          )}
-          {this.state.page === 'onboarding-new-account' && (
-            <OnboardingNewAccountPage
-              onGoBack={this.handleOpenOnboardingAddAccountPage}
-              onGenerateMnemonic={this.handleOpenOnboardingSecurityNoticePage}
-            />
-          )}
-          {this.state.page === 'onboarding-security-notice' && (
-            <OnboardingSecurityNoticePage
-              onClose={this.handleOpenOnboardingNewAccountPage}
-              onContinue={this.handleOpenOnboardingNewMnemonicPage}
-            />
-          )}
-          {this.state.page === 'onboarding-new-mnemonic' && !!this.state.mnemonic && (
-            <OnboardingNewMnemonicPage
-              mnemonic={this.state.mnemonic}
-              onClose={this.handleOpenOnboardingNewAccountPage}
-              onVerifyMnemonic={this.handleOpenOnboardingVerifyMnemonicPage}
-            />
-          )}
-          {this.state.page === 'onboarding-verify-mnemonic' && !!this.state.mnemonic && (
-            <OnboardingVerifyMnemonicPage
-              mnemonic={this.state.mnemonic}
-              onClose={this.handleOpenOnboardingNewAccountPage}
-              onMnemonicVerified={this.handleOpenOnboardingAccountCreatedPage}
-            />
-          )}
-          {this.state.page === 'onboarding-account-created' && !!this.state.address && (
-            <OnboardingAccountCreatedPage
-              accountAddress={this.state.address}
-              onOpenOverview={this.handleOpenOnboardingAddAccountPage}
-            />
-          )}
-          {this.state.page === 'onboarding-existing-account' && (
-            <OnboardingExistingAccountPage
-              accountAddress={this.state.address || ''}
-              onGoBack={this.handleOpenOnboardingAddAccountPage}
-              onAddressEntered={this.handleOpenOnboardingExistingAccountTypePage}
-            />
-          )}
-          {this.state.page === 'onboarding-existing-account-type' && (
-            <OnboardingExistingAccountTypePage
-              onGoBack={this.handleOpenOnboardingExistingAccountPage}
-              onFullAccessSelected={this.handleOpenOnboardingAddAccountPage}
-              onReadAccessSelected={this.handleOpenOnboardingAddAccountPage}
-            />
-          )}
-        </ThemeProvider>
-      </IntlProvider>
+      <ThemeProvider>
+        {page}
+      </ThemeProvider>
     );
   }
 }
