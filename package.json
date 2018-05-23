@@ -21,9 +21,36 @@
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
-    "trans:compile": "tsc -p . --target ES6 --module esnext --jsx preserve --outDir extracted",
-    "trans:extract": "babel \"extracted/**/*.jsx\"",
-    "trans:manage": "node scripts/translationRunner.js"
+    "riw:prepare": "rm -r tmp/transpiled/; tsc -p . --target ES6 --module esnext --jsx preserve --outDir tmp/transpiled",
+    "riw:translate": "riw app translate",
+    "riw:status": "riw app status"
+  },
+  "riw": {
+    "defaultLocale": "en",
+    "targetLocales": [
+      "de",
+      "es",
+      "et",
+      "fr",
+      "it",
+      "hu",
+      "nl",
+      "pl",
+      "ro",
+      "ru",
+      "uk",
+      "zh",
+      "zh"
+    ],
+    "translationsDatabaseFile": "riw-db.json",
+    "sourceDirs": [
+      "tmp/transpiled/**/*.js",
+      "tmp/transpiled/**/*.jsx"
+    ],
+    "reactIntlAutoConfig": false,
+    "outputMode": "file-per-locale",
+    "translationsOutputFile": "src/translations/locales/[locale].json",
+    "todoFile": "translations-todo.json"
   },
   "devDependencies": {
     "@types/bip39": "^2.4.0",
@@ -35,11 +62,10 @@
     "@types/react-dom": "^16.0.5",
     "@types/react-intl": "^2.3.8",
     "babel-cli": "^6.26.0",
-    "babel-plugin-react-intl": "^2.4.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
-    "react-intl-translations-manager": "^5.0.3",
+    "riw": "^0.8.0",
     "typescript": "^2.8.3"
   }
 }

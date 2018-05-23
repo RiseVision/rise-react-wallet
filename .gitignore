@@ -10,7 +10,9 @@
 /build
 
 # translations
-/extracted
+/tmp
+/src/translations/locales/en.json
+/translations-todo.json
 
 # misc
 .DS_Store
