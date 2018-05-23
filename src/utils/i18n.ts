@@ -4,6 +4,7 @@ export type Locale =
   | 'es'
   | 'et'
   | 'fr'
+  | 'it'
   | 'hu'
   | 'nl'
   | 'pl'
@@ -18,6 +19,7 @@ export type CountryCode =
   | 'es'
   | 'ee'
   | 'fr'
+  | 'it'
   | 'hu'
   | 'nl'
   | 'pl'
@@ -36,6 +38,7 @@ const localeInfo: {
   es: { mainCountry: 'es' },
   et: { mainCountry: 'ee' },
   fr: { mainCountry: 'fr' },
+  it: { mainCountry: 'it' },
   hu: { mainCountry: 'hu' },
   nl: { mainCountry: 'nl' },
   pl: { mainCountry: 'pl' },

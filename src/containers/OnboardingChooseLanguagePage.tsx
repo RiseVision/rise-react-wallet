@@ -19,6 +19,7 @@ const localeLabels: {
   es: 'Continuar en español',
   et: 'Jätka eesti keeles',
   fr: 'Continuer en français',
+  it: 'Continua in italiano',
   hu: 'Folytatás magyarul',
   nl: 'Ga door in het Nederlands',
   pl: 'Kontynuuj po polsku',

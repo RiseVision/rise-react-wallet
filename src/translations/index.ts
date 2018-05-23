@@ -21,6 +21,7 @@ const translations: {
   es: () => import('./es'),
   et: () => import('./et'),
   fr: () => import('./fr'),
+  it: () => import('./it'),
   hu: () => import('./hu'),
   nl: () => import('./nl'),
   pl: () => import('./pl'),
