@@ -18,7 +18,6 @@ const translations: {
   [P in Locale]: () => Promise<TranslationModule>;
 } = {
   de: () => import('./de'),
-  en: () => import('./en'),
   es: () => import('./es'),
   et: () => import('./et'),
   fr: () => import('./fr'),
@@ -29,6 +28,13 @@ const translations: {
   ru: () => import('./ru'),
   uk: () => import('./uk'),
   zh: () => import('./zh'),
+  // Project language doesn't need to load anything extra
+  en: () => Promise.resolve({
+    default: {
+      data: [],
+      messages: {},
+    },
+  }),
 };
 
 export function importTranslation(locale: Locale): Promise<Messages> {
