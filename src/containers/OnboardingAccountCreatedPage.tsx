@@ -53,7 +53,11 @@ const OnboardingAccountCreatedPage = stylesDecorator<Props>(
           >
             <Grid item={true} xs={12}>
               <Typography>
-                A new acccount has been generated, with the following address:
+                <FormattedMessage
+                  id="onboarding-account-created.account-with-address-created"
+                  description="Text introducing the new account address"
+                  defaultMessage="A new acccount has been generated, with the following address:"
+                />
               </Typography>
             </Grid>
             <Grid item={true} xs={12}>
@@ -68,13 +72,23 @@ const OnboardingAccountCreatedPage = stylesDecorator<Props>(
             </Grid>
             <Grid item={true} xs={12}>
               <Typography>
-                Every account gets an automatically generated image associated with it. This can be used to
-                double-check that the address was entered correctly when sending RISE.
+                <FormattedMessage
+                  id="onboarding-account-created.explain-image"
+                  description="Explain account image"
+                  defaultMessage={
+                    `Every account gets an automatically generated image associated with it. This can ` +
+                    `be used to double-check that the address was entered correctly when sending RISE.`
+                  }
+                />
               </Typography>
             </Grid>
             <Grid item={true} xs={12}>
               <Button fullWidth={true} onClick={this.handleOverviewClick}>
-                Go to account overview
+                <FormattedMessage
+                  id="onboarding-account-created.continue"
+                  description="Continue button label"
+                  defaultMessage="Go to account overview"
+                />
               </Button>
             </Grid>
           </Grid>

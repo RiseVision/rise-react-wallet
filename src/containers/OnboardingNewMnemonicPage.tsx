@@ -120,7 +120,14 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
           <Grid container={true} className={classes.content} spacing={16} justify="center">
             <Grid item={true} xs={12}>
               <Typography>
-                This is your new {wordCount}-word mnemonic secret:
+                <FormattedMessage
+                  id="onboarding-new-mnemonic.mnemonic-pretext"
+                  description="Text before the mnemonic secret"
+                  defaultMessage={`This is your new {wordCount, number}-word mnemonic secret:`}
+                  values={{
+                    wordCount,
+                  }}
+                />
               </Typography>
             </Grid>
             <Grid item={true} xs={12}>
@@ -142,17 +149,33 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
             </Grid>
             <Grid item={true} xs={12}>
               <Typography>
-                Write your mnemonic down on a physical piece of paper so that you could
-                store it in a safe place later.
+                <FormattedMessage
+                  id="onboarding-new-mnemonic.write-mnemonic-down"
+                  description="Instructions to write down the mnemonic"
+                  defaultMessage={
+                    `Write your mnemonic down on a physical piece of paper so ` +
+                    `that you could store it in a safe place later.`
+                  }
+                />
               </Typography>
             </Grid>
             <Grid item={true} xs={12}>
               <Typography>
-                NB! Anyone who knows this can transfer funds out of your account.
+                <FormattedMessage
+                  id="onboarding-new-mnemonic.mnemonic-grants-full-access"
+                  description="Final notice about the seriousness of mnemonic"
+                  defaultMessage="NB! Anyone who knows this can transfer funds out of your account."
+                />
               </Typography>
             </Grid>
             <Grid item={true} xs={12}>
-              <Button fullWidth={true} onClick={this.handleContinueClick}>Continue</Button>
+              <Button fullWidth={true} onClick={this.handleContinueClick}>
+                <FormattedMessage
+                  id="onboarding-new-mnemonic.continue"
+                  description="Continue button label"
+                  defaultMessage="Continue"
+                />
+              </Button>
             </Grid>
           </Grid>
         </ModalPaper>

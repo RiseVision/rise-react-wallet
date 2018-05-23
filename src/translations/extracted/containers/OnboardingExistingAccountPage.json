@@ -3,5 +3,25 @@
     "id": "onboarding-existing-account.title",
     "description": "Existing account screen title",
     "defaultMessage": "Existing account"
+  },
+  {
+    "id": "onboarding-existing-account.enter-address-text",
+    "description": "Text asking the user to fill the input field",
+    "defaultMessage": "Enter the address of an existing RISE account you wish to access:"
+  },
+  {
+    "id": "onboarding-existing-account.address-input-label",
+    "description": "Account address input label",
+    "defaultMessage": "Account address"
+  },
+  {
+    "id": "onboarding-existing-account.continue",
+    "description": "Continue button label",
+    "defaultMessage": "Continue"
+  },
+  {
+    "id": "onboarding-existing-account.recover-from-mnemonic",
+    "description": "Instructions for people who forgot their account address",
+    "defaultMessage": "Forgotten your address but have your secret mnemonic? Click here"
   }
 ]

@@ -33,5 +33,15 @@
     "id": "onboarding-security-notice.keep-in-mind",
     "description": "Notice before the list of tips",
     "defaultMessage": "Things to keep in mind to increase the security of your funds:"
+  },
+  {
+    "id": "onboarding-security-notice.next-tip",
+    "description": "Button label for when there are more tips to be revealed",
+    "defaultMessage": "Next tip"
+  },
+  {
+    "id": "onboarding-security-notice.continue",
+    "description": "Button label for when all of the tips have been seen",
+    "defaultMessage": "Continue"
   }
 ]

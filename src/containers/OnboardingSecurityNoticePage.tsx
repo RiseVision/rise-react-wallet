@@ -171,7 +171,11 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
                 onClick={this.handleNextTipClick}
                 fullWidth={true}
               >
-                Next tip
+                <FormattedMessage
+                  id="onboarding-security-notice.next-tip"
+                  description="Button label for when there are more tips to be revealed"
+                  defaultMessage="Next tip"
+                />
               </Button>
             ) : (
               <Button
@@ -179,7 +183,11 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
                 onClick={this.handleContinueClick}
                 fullWidth={true}
               >
-                Continue
+                <FormattedMessage
+                  id="onboarding-security-notice.continue"
+                  description="Button label for when all of the tips have been seen"
+                  defaultMessage="Continue"
+                />
               </Button>
             )}
           </div>

@@ -1,7 +1,32 @@
 [
   {
     "id": "onboarding-verify-mnemonic.title",
-    "description": "New mnemonic screen title",
+    "description": "Verify mnemonic screen title",
     "defaultMessage": "Check mnemonic"
+  },
+  {
+    "id": "onboarding-verify-mnemonic.verify-mnemonic",
+    "description": "Instructions to verify the Nth word of the mnemonic",
+    "defaultMessage": "Verify that you wrote down your mnemonic correctly. Enter the {whichWordInBold} into the text field below."
+  },
+  {
+    "id": "onboarding-verify-mnemonic.verify-mnemonic-which-word",
+    "description": "Highlighted Nth word message to be injected",
+    "defaultMessage": "{whichWord, selectordinal, one {#st word} two {#nd word} few {#rd word} other {#th word}}"
+  },
+  {
+    "id": "onboarding-verify-mnemonic.input-label-which-word",
+    "description": "Word number to enter into the text field",
+    "defaultMessage": "Word #{whichWord, number}"
+  },
+  {
+    "id": "onboarding-verify-mnemonic.verify",
+    "description": "Verify button label",
+    "defaultMessage": "Verify"
+  },
+  {
+    "id": "onboarding-verify-mnemonic.verify-and-continue",
+    "description": "Verify button label",
+    "defaultMessage": "Verify & continue"
   }
 ]

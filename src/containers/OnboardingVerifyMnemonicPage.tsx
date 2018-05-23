@@ -180,7 +180,7 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
           <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
             <FormattedMessage
               id="onboarding-verify-mnemonic.title"
-              description="New mnemonic screen title"
+              description="Verify mnemonic screen title"
               defaultMessage="Check mnemonic"
             />
           </ModalPaperHeader>
@@ -216,13 +216,48 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
             </Hidden>
             <Grid item={true} xs={12}>
               <Typography>
-                Verify that you wrote down your mnemonic correctly. Enter
-                the <strong>{currentWordIndex + 1}th word</strong> into the text field below.
+                <FormattedMessage
+                  id="onboarding-verify-mnemonic.verify-mnemonic"
+                  description="Instructions to verify the Nth word of the mnemonic"
+                  defaultMessage={
+                    `Verify that you wrote down your mnemonic correctly. ` +
+                    `Enter the {whichWordInBold} into the text field below.`
+                  }
+                  values={{
+                    whichWordInBold: (
+                      <FormattedMessage
+                        tagName="strong"
+                        id="onboarding-verify-mnemonic.verify-mnemonic-which-word"
+                        description="Highlighted Nth word message to be injected"
+                        defaultMessage={
+                          `{whichWord, selectordinal,` +
+                          ` one {#st word}` +
+                          ` two {#nd word}` +
+                          ` few {#rd word}` +
+                          ` other {#th word}` +
+                          `}`
+                        }
+                        values={{
+                          whichWord: currentWordIndex + 1,
+                        }}
+                      />
+                    ),
+                  }}
+                />
               </Typography>
             </Grid>
             <Grid item={true} xs={12}>
               <TextField
-                label={'Word #' + (currentWordIndex + 1)}
+                label={(
+                  <FormattedMessage
+                    id="onboarding-verify-mnemonic.input-label-which-word"
+                    description="Word number to enter into the text field"
+                    defaultMessage="Word #{whichWord, number}"
+                    values={{
+                      whichWord: currentWordIndex + 1,
+                    }}
+                  />
+                )}
                 fullWidth={true}
                 error={this.state.currentWordInvalid}
                 value={this.state.currentWordValue}
@@ -232,11 +267,19 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
             <Grid item={true} xs={12}>
               {this.state.uncheckedIndices.length > 0 ? (
                 <Button type="submit" fullWidth={true}>
-                  Verify
+                  <FormattedMessage
+                    id="onboarding-verify-mnemonic.verify"
+                    description="Verify button label"
+                    defaultMessage="Verify"
+                  />
                 </Button>
               ) : (
                 <Button type="submit" fullWidth={true}>
-                  Verify &amp; continue
+                  <FormattedMessage
+                    id="onboarding-verify-mnemonic.verify-and-continue"
+                    description="Verify button label"
+                    defaultMessage="Verify & continue"
+                  />
                 </Button>
               )}
             </Grid>

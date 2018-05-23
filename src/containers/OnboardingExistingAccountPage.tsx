@@ -129,13 +129,25 @@ const OnboardingExistingAccountPage = stylesDecorator<Props>(
             onSubmit={this.handleFormSubmit}
           >
             <Grid item={true} xs={12}>
-              <Typography>Enter the address of an existing RISE account you wish to access:</Typography>
+              <Typography>
+                <FormattedMessage
+                  id="onboarding-existing-account.enter-address-text"
+                  description="Text asking the user to fill the input field"
+                  defaultMessage="Enter the address of an existing RISE account you wish to access:"
+                />
+              </Typography>
             </Grid>
             <Grid item={true} xs={12}>
               <div className={classes.accountContainer}>
                 <TextField
                   className={classes.accountField}
-                  label="Account address"
+                  label={(
+                    <FormattedMessage
+                      id="onboarding-existing-account.address-input-label"
+                      description="Account address input label"
+                      defaultMessage="Account address"
+                    />
+                  )}
                   error={this.state.addressInvalid}
                   value={this.state.address}
                   onChange={this.handleAddressChange}
@@ -150,12 +162,20 @@ const OnboardingExistingAccountPage = stylesDecorator<Props>(
             </Grid>
             <Grid item={true} xs={12}>
               <Button type="submit" fullWidth={true}>
-                Continue
+                <FormattedMessage
+                  id="onboarding-existing-account.continue"
+                  description="Continue button label"
+                  defaultMessage="Continue"
+                />
               </Button>
             </Grid>
             <Grid item={true} xs={12}>
               <Typography>
-                Forgotten your address but have your secret mnemonic? Click here
+                <FormattedMessage
+                  id="onboarding-existing-account.recover-from-mnemonic"
+                  description="Instructions for people who forgot their account address"
+                  defaultMessage="Forgotten your address but have your secret mnemonic? Click here"
+                />
               </Typography>
             </Grid>
           </Grid>
