@@ -2,10 +2,11 @@ import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 import * as bip39 from 'bip39';
 import { LiskWallet } from 'dpos-offline';
-import { asyncComponent, Configuration as AsyncConfig } from 'react-async-component';
+import { asyncComponent } from 'react-async-component';
 import { Locale, getUserLocales } from '../utils/i18n';
 import { importTranslation } from '../translations';
-import ThemeProvider from  '../containers/ThemeProvider';
+import ModalBackground from '../components/ModalBackground';
+import ThemeProvider from  './ThemeProvider';
 
 interface Props {
 }
@@ -17,19 +18,28 @@ interface State {
   address: string | null;
 }
 
-function translatedComponent<P>(locale: Locale, config: AsyncConfig<P>): React.ComponentType<P> {
-  const makeComponent = (messages: {}, InnerComponent: React.ComponentType<P>) => (props: P) => (
+function AppLoading<P>(state: State): (props: P) => JSX.Element {
+  return (_) => (
+    <ModalBackground />
+  );
+}
+
+type ComponentPromise<P> = Promise<React.ComponentType<P> | {default: React.ComponentType<P>}>;
+
+function wrapComponent<P>(state: State, resolve: () => ComponentPromise<P>): React.ComponentType<P> {
+  const { locale } = state;
+  const wrapper = (messages: {}, InnerComponent: React.ComponentType<P>) => (props: P) => (
     <IntlProvider key={locale} locale={locale} messages={messages}>
       <InnerComponent {...props} />
     </IntlProvider>
   );
   return asyncComponent({
-    ...config,
+    LoadingComponent: AppLoading<P>(state),
     resolve: () => {
-      return Promise.all([config.resolve(), importTranslation(locale)])
+      return Promise.all([resolve(), importTranslation(locale)])
         .then(([mod, messages]) => {
           const InnerComponent = 'default' in mod ? mod.default : mod;
-          return makeComponent(messages, InnerComponent);
+          return wrapper(messages, InnerComponent);
         });
     },
   });
@@ -158,9 +168,10 @@ class App extends React.Component<Props, State> {
     let page = null;
 
     if (this.state.page === 'onboarding-add-account') {
-      const OnboardingAddAccountPage = translatedComponent(this.state.locale, {
-        resolve: () => import('../containers/OnboardingAddAccountPage'),
-      });
+      const OnboardingAddAccountPage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingAddAccountPage'),
+      );
       page = (
         <OnboardingAddAccountPage
           locale={this.state.locale}
@@ -171,9 +182,10 @@ class App extends React.Component<Props, State> {
       );
 
     } else if (this.state.page === 'onboarding-choose-language') {
-      const OnboardingChooseLanguagePage = translatedComponent(this.state.locale, {
-        resolve: () => import('../containers/OnboardingChooseLanguagePage'),
-      });
+      const OnboardingChooseLanguagePage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingChooseLanguagePage'),
+      );
       page = (
         <OnboardingChooseLanguagePage
           onLanguageSelected={this.handleLanguageSelected}
@@ -181,9 +193,10 @@ class App extends React.Component<Props, State> {
       );
 
     } else if (this.state.page === 'onboarding-new-account') {
-      const OnboardingNewAccountPage = translatedComponent(this.state.locale, {
-        resolve: () => import('../containers/OnboardingNewAccountPage'),
-      });
+      const OnboardingNewAccountPage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingNewAccountPage'),
+      );
       page = (
         <OnboardingNewAccountPage
           onGoBack={this.handleOpenOnboardingAddAccountPage}
@@ -192,20 +205,22 @@ class App extends React.Component<Props, State> {
       );
 
     } else if (this.state.page === 'onboarding-security-notice') {
-        const OnboardingSecurityNoticePage = translatedComponent(this.state.locale, {
-          resolve: () => import('../containers/OnboardingSecurityNoticePage'),
-        });
-        page = (
-          <OnboardingSecurityNoticePage
-            onClose={this.handleOpenOnboardingNewAccountPage}
-            onContinue={this.handleOpenOnboardingNewMnemonicPage}
-          />
-        );
+      const OnboardingSecurityNoticePage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingSecurityNoticePage'),
+      );
+      page = (
+        <OnboardingSecurityNoticePage
+          onClose={this.handleOpenOnboardingNewAccountPage}
+          onContinue={this.handleOpenOnboardingNewMnemonicPage}
+        />
+      );
 
     } else if (this.state.page === 'onboarding-new-mnemonic' && !!this.state.mnemonic) {
-      const OnboardingNewMnemonicPage = translatedComponent(this.state.locale, {
-        resolve: () => import('../containers/OnboardingNewMnemonicPage'),
-      });
+      const OnboardingNewMnemonicPage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingNewMnemonicPage'),
+      );
       page = (
         <OnboardingNewMnemonicPage
           mnemonic={this.state.mnemonic}
@@ -215,9 +230,10 @@ class App extends React.Component<Props, State> {
       );
 
     } else if (this.state.page === 'onboarding-verify-mnemonic' && !!this.state.mnemonic) {
-      const OnboardingVerifyMnemonicPage = translatedComponent(this.state.locale, {
-        resolve: () => import('../containers/OnboardingVerifyMnemonicPage'),
-      });
+      const OnboardingVerifyMnemonicPage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingVerifyMnemonicPage'),
+      );
       page = (
         <OnboardingVerifyMnemonicPage
           mnemonic={this.state.mnemonic}
@@ -227,9 +243,10 @@ class App extends React.Component<Props, State> {
       );
 
     } else if (this.state.page === 'onboarding-account-created' && !!this.state.address) {
-      const OnboardingAccountCreatedPage = translatedComponent(this.state.locale, {
-        resolve: () => import('../containers/OnboardingAccountCreatedPage'),
-      });
+      const OnboardingAccountCreatedPage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingAccountCreatedPage'),
+      );
       page = (
         <OnboardingAccountCreatedPage
           accountAddress={this.state.address}
@@ -238,9 +255,10 @@ class App extends React.Component<Props, State> {
       );
 
     } else if (this.state.page === 'onboarding-existing-account') {
-      const OnboardingExistingAccountPage = translatedComponent(this.state.locale, {
-        resolve: () => import('../containers/OnboardingExistingAccountPage'),
-      });
+      const OnboardingExistingAccountPage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingExistingAccountPage'),
+      );
       page = (
         <OnboardingExistingAccountPage
           accountAddress={this.state.address || ''}
@@ -250,9 +268,10 @@ class App extends React.Component<Props, State> {
       );
 
     } else if (this.state.page === 'onboarding-existing-account-type') {
-      const OnboardingExistingAccountTypePage = translatedComponent(this.state.locale, {
-        resolve: () => import('../containers/OnboardingExistingAccountTypePage'),
-      });
+      const OnboardingExistingAccountTypePage = wrapComponent(
+        this.state,
+        () => import('../containers/OnboardingExistingAccountTypePage'),
+      );
       page = (
         <OnboardingExistingAccountTypePage
           onGoBack={this.handleOpenOnboardingExistingAccountPage}
