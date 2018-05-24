@@ -5,7 +5,7 @@ import { LiskWallet } from 'dpos-offline';
 import { asyncComponent } from 'react-async-component';
 import { Locale, getUserLocales } from '../utils/i18n';
 import { importTranslation } from '../translations';
-import ModalBackground from '../components/ModalBackground';
+import ModalBackdrop from '../components/ModalBackdrop';
 import ThemeProvider from  './ThemeProvider';
 
 interface Props {
@@ -20,7 +20,7 @@ interface State {
 
 function AppLoading<P>(state: State): (props: P) => JSX.Element {
   return (_) => (
-    <ModalBackground />
+    <ModalBackdrop open={true} />
   );
 }
 

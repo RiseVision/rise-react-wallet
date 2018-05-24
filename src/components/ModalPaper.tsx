@@ -1,22 +1,25 @@
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
-import ModalBackground from './ModalBackground';
+import Modal from '@material-ui/core/Modal';
+import ModalBackdrop from './ModalBackdrop';
 import { withStyles, WithStyles } from '@material-ui/core/styles';
 
 type ModalPaperClassKey =
+  | 'modal'
   | 'content'
   | 'paper';
 
 const stylesDecorator = withStyles<ModalPaperClassKey>(
   {
+    modal: {
+      overflow: 'auto',
+    },
     content: {
       position: 'absolute',
       top: 0,
       left: 0,
       minWidth: '100%',
       minHeight: '100%',
-
-      overflow: 'auto',
 
       display: 'flex',
       alignItems: 'center',
@@ -43,14 +46,17 @@ const ModalPaper = stylesDecorator<Props>(
     render() {
       const { classes, children } = this.props;
       return (
-        <React.Fragment>
-          <ModalBackground />
+        <Modal
+          open={true}
+          className={classes.modal}
+          BackdropComponent={ModalBackdrop}
+        >
           <div className={classes.content}>
             <Paper className={classes.paper}>
               {children}
             </Paper>
           </div>
-        </React.Fragment>
+        </Modal>
       );
     }
   }
