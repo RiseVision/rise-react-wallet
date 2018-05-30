@@ -30,6 +30,7 @@ const localeLabels: {
 };
 
 interface Props {
+  open: boolean;
   onLanguageSelected: (locale: Locale) => void;
 }
 
@@ -58,7 +59,7 @@ class OnboardingChooseLanguagePage extends React.Component<Props> {
     });
 
     return (
-      <ModalPaper>
+      <ModalPaper open={this.props.open}>
         <ModalPaperHeader>
           <FormattedMessage
             id="onboarding-choose-language.title"

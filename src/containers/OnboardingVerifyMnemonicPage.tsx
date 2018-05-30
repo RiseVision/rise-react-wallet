@@ -77,6 +77,7 @@ const stylesDecorator = withStyles<OnboardingVerifyMnemonicPageClassKey>(
 );
 
 interface Props {
+  open: boolean;
   mnemonic: string[];
   onClose: () => void;
   onMnemonicVerified: () => void;
@@ -162,7 +163,7 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes } = this.props;
+      const { classes, open } = this.props;
       const { mnemonic, uncheckedIndices, currentWordIndex } = this.state;
 
       const words: Array<'unchecked' | 'checked' | 'current'> = mnemonic.map((_, idx) => {
@@ -176,7 +177,7 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
       });
 
       return (
-        <ModalPaper>
+        <ModalPaper open={open}>
           <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
             <FormattedMessage
               id="onboarding-verify-mnemonic.title"

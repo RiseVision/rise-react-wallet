@@ -35,6 +35,7 @@ const stylesDecorator = withStyles<OnboardingExistingAccountPageClassKey>(
 );
 
 interface Props {
+  open: boolean;
   accountAddress?: string;
   onGoBack: () => void;
   onAddressEntered: (address: string) => void;
@@ -110,10 +111,10 @@ const OnboardingExistingAccountPage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes } = this.props;
+      const { classes, open } = this.props;
 
       return (
-        <ModalPaper>
+        <ModalPaper open={open}>
           <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
             <FormattedMessage
               id="onboarding-existing-account.title"

@@ -8,6 +8,7 @@ import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 
 interface Props {
+  open: boolean;
   onGoBack: () => void;
   onGenerateMnemonic: () => void;
 }
@@ -23,7 +24,7 @@ class OnboardingNewAccountPage extends React.Component<Props> {
 
   render() {
     return (
-      <ModalPaper>
+      <ModalPaper open={this.props.open}>
         <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-new-account.title"

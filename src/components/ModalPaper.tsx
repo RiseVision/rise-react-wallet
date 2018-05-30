@@ -1,7 +1,9 @@
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
 import Modal from '@material-ui/core/Modal';
+import Fade from '@material-ui/core/Fade';
 import ModalBackdrop from './ModalBackdrop';
+import { duration } from '@material-ui/core/styles/transitions';
 import { withStyles, WithStyles } from '@material-ui/core/styles';
 
 type ModalPaperClassKey =
@@ -37,6 +39,7 @@ const stylesDecorator = withStyles<ModalPaperClassKey>(
 );
 
 interface Props {
+  open: boolean;
 }
 
 type DecoratedProps = Props & WithStyles<ModalPaperClassKey>;
@@ -44,18 +47,31 @@ type DecoratedProps = Props & WithStyles<ModalPaperClassKey>;
 const ModalPaper = stylesDecorator<Props>(
   class extends React.Component<DecoratedProps> {
     render() {
-      const { classes, children } = this.props;
+      const { classes, open, children } = this.props;
+      const transitionDuration = {
+        enter: duration.enteringScreen,
+        exit: duration.leavingScreen,
+      };
       return (
         <Modal
-          open={true}
+          open={open}
           className={classes.modal}
+          BackdropProps={{
+            transitionDuration,
+          }}
           BackdropComponent={ModalBackdrop}
         >
-          <div className={classes.content}>
-            <Paper className={classes.paper}>
-              {children}
-            </Paper>
-          </div>
+          <Fade
+            appear={true}
+            in={open}
+            timeout={transitionDuration}
+          >
+            <div className={classes.content}>
+              <Paper className={classes.paper}>
+                {children}
+              </Paper>
+            </div>
+          </Fade>
         </Modal>
       );
     }

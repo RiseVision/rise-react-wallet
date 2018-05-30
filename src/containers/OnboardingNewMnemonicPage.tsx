@@ -87,6 +87,7 @@ const stylesDecorator = withStyles<OnboardingNewMnemonicPageClassKey>(
 );
 
 interface Props {
+  open: boolean;
   mnemonic: string[];
   onClose: () => void;
   onVerifyMnemonic: () => void;
@@ -105,11 +106,11 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes, mnemonic } = this.props;
+      const { classes, open, mnemonic } = this.props;
       const wordCount = mnemonic.length;
 
       return (
-        <ModalPaper>
+        <ModalPaper open={open}>
           <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
             <FormattedMessage
               id="onboarding-new-mnemonic.title"

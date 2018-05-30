@@ -10,6 +10,7 @@ import ModalPaperHeader from '../components/ModalPaperHeader';
 import FlagIcon from '../components/FlagIcon';
 
 interface Props {
+  open: boolean;
   locale: Locale;
   onOpenChooseLanguage: () => void;
   onOpenNewAccount: () => void;
@@ -31,7 +32,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
 
   render() {
     return (
-      <ModalPaper>
+      <ModalPaper open={this.props.open}>
         <ModalPaperHeader>
           <FormattedMessage
             id="onboarding-add-account.title"

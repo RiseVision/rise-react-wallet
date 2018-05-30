@@ -21,6 +21,7 @@ const stylesDecorator = withStyles<OnboardingAccountCreatedPageClassKey>(
 );
 
 interface Props {
+  open: boolean;
   accountAddress: string;
   onOpenOverview: () => void;
 }
@@ -34,10 +35,10 @@ const OnboardingAccountCreatedPage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes, accountAddress } = this.props;
+      const { classes, open, accountAddress } = this.props;
 
       return (
-        <ModalPaper>
+        <ModalPaper open={open}>
           <ModalPaperHeader>
             <FormattedMessage
               id="onboarding-account-created.title"

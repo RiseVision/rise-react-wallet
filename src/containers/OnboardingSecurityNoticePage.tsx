@@ -47,6 +47,7 @@ const stylesDecorator = withStyles<OnboardingSecurityNoticePageClassKey>(
 );
 
 interface Props {
+  open: boolean;
   onClose: () => void;
   onContinue: () => void;
 }
@@ -81,7 +82,7 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes } = this.props;
+      const { classes, open } = this.props;
 
       const tips = [(
         <FormattedMessage
@@ -134,7 +135,7 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
       )];
 
       return (
-        <ModalPaper>
+        <ModalPaper open={open}>
           <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
             <FormattedMessage
               id="onboarding-security-notice.title"

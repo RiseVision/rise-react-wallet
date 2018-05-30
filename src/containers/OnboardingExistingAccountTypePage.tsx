@@ -8,6 +8,7 @@ import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 
 interface Props {
+  open: boolean;
   onGoBack: () => void;
   onFullAccessSelected: () => void;
   onReadAccessSelected: () => void;
@@ -28,7 +29,7 @@ class OnboardingExistingAccountTypePage extends React.Component<Props> {
 
   render() {
     return (
-      <ModalPaper>
+      <ModalPaper open={this.props.open}>
         <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-existing-account-type.title"
