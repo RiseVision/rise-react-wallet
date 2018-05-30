@@ -166,7 +166,6 @@ class Onboarding extends React.Component<Props, State> {
 
   handleOpenOnboardingExistingAccountPage = () => {
     this.setState({
-      address: null,
       mnemonic: null,
     });
     this.props.onPageChanged('onboarding-existing-account');

@@ -53,6 +53,7 @@ interface Props {
 }
 
 interface State {
+  open: boolean;
   currentTip: number;
 }
 
@@ -60,9 +61,23 @@ type DecoratedProps = Props & WithStyles<OnboardingSecurityNoticePageClassKey>;
 
 const OnboardingSecurityNoticePage = stylesDecorator<Props>(
   class extends React.Component<DecoratedProps, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+      let state = {
+        ...prevState,
+        open: nextProps.open,
+      };
+
+      if (state.open) {
+        state.currentTip = 0;
+      }
+
+      return state;
+    }
+
     constructor(props: DecoratedProps) {
       super(props);
       this.state = {
+        open: props.open,
         currentTip: 0,
       };
     }
@@ -82,7 +97,8 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes, open } = this.props;
+      const { open } = this.state;
+      const { classes } = this.props;
 
       const tips = [(
         <FormattedMessage

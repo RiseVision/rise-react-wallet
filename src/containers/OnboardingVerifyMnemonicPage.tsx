@@ -84,6 +84,7 @@ interface Props {
 }
 
 interface State {
+  open: boolean;
   mnemonic: string[];
   uncheckedIndices: number[];
   currentWordIndex: number;
@@ -96,27 +97,36 @@ type DecoratedProps = Props & WithStyles<OnboardingVerifyMnemonicPageClassKey>;
 const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
   class extends React.Component<DecoratedProps, State> {
     static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
-      if (mnemonicsEquals(prevState.mnemonic, nextProps.mnemonic)) {
-        return null;
+      let state = {
+        ...prevState,
+        open: nextProps.open,
+      };
+
+      if (state.open) {
+        if (!mnemonicsEquals(state.mnemonic, nextProps.mnemonic)) {
+          const { mnemonic } = nextProps;
+          let uncheckedIndices = nextProps.mnemonic.map((_, i) => i);
+          let randIdx = Math.trunc(Math.random() * uncheckedIndices.length);
+          const currentWordIndex = uncheckedIndices.splice(randIdx, 1)[0];
+
+          state = {
+            ...state,
+            mnemonic,
+            uncheckedIndices,
+            currentWordIndex,
+            currentWordValue: '',
+            currentWordInvalid: false,
+          };
+        }
       }
 
-      const { mnemonic } = nextProps;
-      let uncheckedIndices = nextProps.mnemonic.map((_, i) => i);
-      let randIdx = Math.trunc(Math.random() * uncheckedIndices.length);
-      const currentWordIndex = uncheckedIndices.splice(randIdx, 1)[0];
-
-      return {
-        mnemonic,
-        uncheckedIndices,
-        currentWordIndex,
-        currentWordValue: '',
-        currentWordInvalid: false,
-      };
+      return state;
     }
 
     constructor(props: DecoratedProps) {
       super(props);
       this.state = {
+        open: props.open,
         mnemonic: [],
         uncheckedIndices: [],
         currentWordIndex: 0,
@@ -163,8 +173,8 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes, open } = this.props;
-      const { mnemonic, uncheckedIndices, currentWordIndex } = this.state;
+      const { classes } = this.props;
+      const { open, mnemonic, uncheckedIndices, currentWordIndex } = this.state;
 
       const words: Array<'unchecked' | 'checked' | 'current'> = mnemonic.map((_, idx) => {
         if (idx === currentWordIndex) {

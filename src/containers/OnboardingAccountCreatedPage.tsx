@@ -26,16 +26,43 @@ interface Props {
   onOpenOverview: () => void;
 }
 
+interface State {
+  open: boolean;
+  accountAddress: string;
+}
+
 type DecoratedProps = Props & WithStyles<OnboardingAccountCreatedPageClassKey>;
 
 const OnboardingAccountCreatedPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps> {
+  class extends React.Component<DecoratedProps, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+      let state = {
+        ...prevState,
+        open: nextProps.open,
+      };
+
+      if (state.open) {
+        state.accountAddress = nextProps.accountAddress;
+      }
+
+      return state;
+    }
+
+    constructor(props: DecoratedProps) {
+      super(props);
+      this.state = {
+        open: props.open,
+        accountAddress: props.accountAddress,
+      };
+    }
+
     handleOverviewClick = () => {
       this.props.onOpenOverview();
     }
 
     render() {
-      const { classes, open, accountAddress } = this.props;
+      const { classes } = this.props;
+      const { open, accountAddress } = this.state;
 
       return (
         <ModalPaper open={open}>

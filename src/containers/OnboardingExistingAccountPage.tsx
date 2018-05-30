@@ -42,6 +42,7 @@ interface Props {
 }
 
 interface State {
+  open: boolean;
   address: string;
   addressInvalid: boolean;
   normalizedAddress: string;
@@ -52,17 +53,22 @@ type DecoratedProps = Props & WithStyles<OnboardingExistingAccountPageClassKey>;
 const OnboardingExistingAccountPage = stylesDecorator<Props>(
   class extends React.Component<DecoratedProps, State> {
     static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
-      const address = nextProps.accountAddress || '';
-      if (prevState.address === address) {
-        return null;
+      let state = {
+        ...prevState,
+        open: nextProps.open,
+      };
+
+      if (state.open) {
+        const address = nextProps.accountAddress || '';
+        if (state.address !== address) {
+          const normalizedAddress = normalizeAddress(address);
+          state.address = address;
+          state.normalizedAddress = normalizedAddress;
+          state.addressInvalid = false;
+        }
       }
 
-      const normalizedAddress = normalizeAddress(address);
-      return {
-        address,
-        addressInvalid: false,
-        normalizedAddress,
-      };
+      return state;
     }
 
     constructor(props: DecoratedProps) {
@@ -70,6 +76,7 @@ const OnboardingExistingAccountPage = stylesDecorator<Props>(
 
       const address = props.accountAddress || '';
       this.state = {
+        open: props.open,
         address,
         addressInvalid: false,
         normalizedAddress: normalizeAddress(address),
@@ -111,7 +118,8 @@ const OnboardingExistingAccountPage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes, open } = this.props;
+      const { classes } = this.props;
+      const { open, address, addressInvalid, normalizedAddress } = this.state;
 
       return (
         <ModalPaper open={open}>
@@ -149,15 +157,15 @@ const OnboardingExistingAccountPage = stylesDecorator<Props>(
                       defaultMessage="Account address"
                     />
                   )}
-                  error={this.state.addressInvalid}
-                  value={this.state.address}
+                  error={addressInvalid}
+                  value={address}
                   onChange={this.handleAddressChange}
                   onBlur={this.handleAddressBlur}
                 />
                 <AccountIcon
                   className={classes.accountIcon}
                   size={48}
-                  address={this.state.normalizedAddress}
+                  address={normalizedAddress}
                 />
               </div>
             </Grid>

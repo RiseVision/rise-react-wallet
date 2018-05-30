@@ -93,10 +93,36 @@ interface Props {
   onVerifyMnemonic: () => void;
 }
 
+interface State {
+  open: boolean;
+  mnemonic: string[];
+}
+
 type DecoratedProps = Props & WithStyles<OnboardingNewMnemonicPageClassKey>;
 
 const OnboardingNewMnemonicPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps> {
+  class extends React.Component<DecoratedProps, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+      let state = {
+        ...prevState,
+        open: nextProps.open,
+      };
+
+      if (state.open) {
+        state.mnemonic = nextProps.mnemonic;
+      }
+
+      return state;
+    }
+
+    constructor(props: DecoratedProps) {
+      super(props);
+      this.state = {
+        open: props.open,
+        mnemonic: props.mnemonic,
+      };
+    }
+
     handleCloseClick = () => {
       this.props.onClose();
     }
@@ -106,7 +132,8 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
     }
 
     render() {
-      const { classes, open, mnemonic } = this.props;
+      const { classes } = this.props;
+      const { open, mnemonic } = this.state;
       const wordCount = mnemonic.length;
 
       return (
