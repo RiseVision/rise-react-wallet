@@ -34,7 +34,7 @@ class OnboardingExistingAccountTypePage extends React.Component<Props> {
           <FormattedMessage
             id="onboarding-existing-account-type.title"
             description="Existing account type screen title"
-            defaultMessage="Select account type"
+            defaultMessage="Account type"
           />
         </ModalPaperHeader>
         <List>
