@@ -26,6 +26,8 @@ const stylesDecorator = withStyles<ModalPaperClassKey>(
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+
+      outline: 'none',
     },
     paper: {
       marginTop: 20,
