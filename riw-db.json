@@ -21,12 +21,12 @@
                 "et": "Ava konto ülevaade"
             }
         },
-        "RISE wallet": {
+        "{icon} RISE wallet": {
             "Add account screen title": {
-                "et": "RISE rahakott"
+                "et": "{icon} RISE rahakott"
             },
             "Choose language screen title": {
-                "et": "RISE rahakott"
+                "et": "{icon} RISE rahakott"
             }
         },
         "New account": {
