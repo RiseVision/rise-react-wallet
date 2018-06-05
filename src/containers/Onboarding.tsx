@@ -11,6 +11,7 @@ import OnboardingVerifyMnemonicPage from './OnboardingVerifyMnemonicPage';
 import OnboardingAccountCreatedPage from './OnboardingAccountCreatedPage';
 import OnboardingExistingAccountPage from './OnboardingExistingAccountPage';
 import OnboardingExistingAccountTypePage from './OnboardingExistingAccountTypePage';
+import OnboardingTestOverPage from './OnboardingTestOverPage';
 
 interface Props {
   locale: Locale;
@@ -79,7 +80,7 @@ class Onboarding extends React.Component<Props, State> {
         <OnboardingAccountCreatedPage
           open={page === 'onboarding-account-created' && !!this.state.address}
           accountAddress={this.state.address || '<N/A>'}
-          onOpenOverview={this.handleOpenOnboardingAddAccountPage}
+          onOpenOverview={this.handleOpenOnboardingTestOverPage}
         />
         <OnboardingExistingAccountPage
           open={page === 'onboarding-existing-account'}
@@ -90,8 +91,12 @@ class Onboarding extends React.Component<Props, State> {
         <OnboardingExistingAccountTypePage
           open={page === 'onboarding-existing-account-type'}
           onGoBack={this.handleOpenOnboardingExistingAccountPage}
-          onFullAccessSelected={this.handleOpenOnboardingAddAccountPage}
-          onReadAccessSelected={this.handleOpenOnboardingAddAccountPage}
+          onFullAccessSelected={this.handleOpenOnboardingTestOverPage}
+          onReadAccessSelected={this.handleOpenOnboardingTestOverPage}
+        />
+        <OnboardingTestOverPage
+          open={page === 'onboarding-test-over'}
+          onGoHome={this.handleOpenOnboardingAddAccountPage}
         />
       </React.Fragment>
     );
@@ -177,6 +182,14 @@ class Onboarding extends React.Component<Props, State> {
       mnemonic: null,
     });
     this.props.onPageChanged('onboarding-existing-account-type');
+  }
+
+  handleOpenOnboardingTestOverPage = () => {
+    this.setState({
+      mnemonic: null,
+      address: null,
+    });
+    this.props.onPageChanged('onboarding-test-over');
   }
 }
 
