@@ -8,6 +8,21 @@ import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import FlagIcon from '../components/FlagIcon';
+import { withStyles, WithStyles } from '@material-ui/core/styles';
+
+const riseIcon = require('../images/rise_icon.svg');
+
+type OnboardingAddAccountPageClassKey =
+  | 'titleIcon';
+
+const stylesDecorator = withStyles<OnboardingAddAccountPageClassKey>(
+  {
+    titleIcon: {
+      margin: '-4px 4px',
+    },
+  },
+  { name: 'OnboardingAddAccountPage' }
+);
 
 interface Props {
   open: boolean;
@@ -17,83 +32,99 @@ interface Props {
   onOpenExistingAccount: () => void;
 }
 
-class OnboardingAddAccountPage extends React.Component<Props> {
-  handleNewAccountClicked = () => {
-    this.props.onOpenNewAccount();
-  }
+type DecoratedProps = Props & WithStyles<OnboardingAddAccountPageClassKey>;
 
-  handleExistingAccountClicked = () => {
-    this.props.onOpenExistingAccount();
-  }
+const OnboardingAddAccountPage = stylesDecorator<Props>(
+  class extends React.Component<DecoratedProps> {
+    handleNewAccountClicked = () => {
+      this.props.onOpenNewAccount();
+    }
 
-  handleChooseLanguageClicked = () => {
-    this.props.onOpenChooseLanguage();
-  }
+    handleExistingAccountClicked = () => {
+      this.props.onOpenExistingAccount();
+    }
 
-  render() {
-    return (
-      <ModalPaper open={this.props.open}>
-        <ModalPaperHeader>
-          <FormattedMessage
-            id="onboarding-add-account.title"
-            description="Add account screen title"
-            defaultMessage="RISE wallet"
-          />
-        </ModalPaperHeader>
-        <List>
-          <ListItem button={true} onClick={this.handleNewAccountClicked}>
-            <ListItemText
-              primary={(
-                <FormattedMessage
-                  id="onboarding-add-account.new-account"
-                  description="New account button title"
-                  defaultMessage="New account"
-                />
-              )}
-              secondary={(
-                <FormattedMessage
-                  id="onboarding-add-account.new-account-tip"
-                  description="New account button tip"
-                  defaultMessage="I want to create a new account on the RISE network"
-                />
-              )}
+    handleChooseLanguageClicked = () => {
+      this.props.onOpenChooseLanguage();
+    }
+
+    render() {
+      const { classes } = this.props;
+
+      return (
+        <ModalPaper open={this.props.open}>
+          <ModalPaperHeader>
+            <FormattedMessage
+              id="onboarding-add-account.title"
+              description="Add account screen title"
+              defaultMessage="{icon} RISE wallet"
+              values={{
+                icon: (
+                  <img
+                    className={classes.titleIcon}
+                    src={riseIcon}
+                    height={24}
+                    alt=""
+                  />
+                ),
+              }}
             />
-            <ChevronRight />
-          </ListItem>
-          <ListItem button={true} onClick={this.handleExistingAccountClicked}>
-            <ListItemText
-              primary={(
-                <FormattedMessage
-                  id="onboarding-add-account.existing-account"
-                  description="Existing account button title"
-                  defaultMessage="Existing account"
-                />
-              )}
-              secondary={(
-                <FormattedMessage
-                  id="onboarding-add-account.existing-account-tip"
-                  description="Existing account button tip"
-                  defaultMessage="I want to access an existing account on the RISE network"
-                />
-              )}
-            />
-            <ChevronRight />
-          </ListItem>
-          <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
-            <FlagIcon countryCode={getMainCountryForLocale(this.props.locale)} />
-            <ListItemText>
-              <FormattedMessage
-                id="onboarding-add-account.change-language"
-                description="Change language button label"
-                defaultMessage="Change language"
+          </ModalPaperHeader>
+          <List>
+            <ListItem button={true} onClick={this.handleNewAccountClicked}>
+              <ListItemText
+                primary={(
+                  <FormattedMessage
+                    id="onboarding-add-account.new-account"
+                    description="New account button title"
+                    defaultMessage="New account"
+                  />
+                )}
+                secondary={(
+                  <FormattedMessage
+                    id="onboarding-add-account.new-account-tip"
+                    description="New account button tip"
+                    defaultMessage="I want to create a new account on the RISE network"
+                  />
+                )}
               />
-            </ListItemText>
-            <ChevronRight />
-          </ListItem>
-        </List>
-      </ModalPaper>
-    );
+              <ChevronRight />
+            </ListItem>
+            <ListItem button={true} onClick={this.handleExistingAccountClicked}>
+              <ListItemText
+                primary={(
+                  <FormattedMessage
+                    id="onboarding-add-account.existing-account"
+                    description="Existing account button title"
+                    defaultMessage="Existing account"
+                  />
+                )}
+                secondary={(
+                  <FormattedMessage
+                    id="onboarding-add-account.existing-account-tip"
+                    description="Existing account button tip"
+                    defaultMessage="I want to access an existing account on the RISE network"
+                  />
+                )}
+              />
+              <ChevronRight />
+            </ListItem>
+            <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
+              <FlagIcon countryCode={getMainCountryForLocale(this.props.locale)} />
+              <ListItemText>
+                <FormattedMessage
+                  id="onboarding-add-account.change-language"
+                  description="Change language button label"
+                  defaultMessage="Change language"
+                />
+              </ListItemText>
+              <ChevronRight />
+            </ListItem>
+          </List>
+        </ModalPaper>
+      );
+    }
   }
-}
+);
 
 export default OnboardingAddAccountPage;
