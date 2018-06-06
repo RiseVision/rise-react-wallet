@@ -8,75 +8,64 @@ import Button from '@material-ui/core/Button';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import * as classNames from 'classnames';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-type OnboardingVerifyMnemonicPageClassKey =
-  | 'content'
-  | 'mnemonic'
-  | 'wordGroup'
-  | 'wordLabel'
-  | 'wordValue'
-  | 'currentWordValue';
+const styles = (theme: Theme) => {
+  const { pxToRem } = theme.typography;
+  const mnemonicFontSize = 16;
+  const mnemonicLineHeight = 24.5;
+
+  return createStyles({
+    content: {
+      padding: 20,
+    },
+    mnemonic: {
+      display: 'flex',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      fontSize: pxToRem(mnemonicFontSize),
+      lineHeight: `${round(mnemonicLineHeight / mnemonicFontSize)}em`,
+      verticalAlign: 'bottom',
+      textAlign: 'center',
+      userSelect: 'none',
+    },
+    wordGroup: {
+      position: 'relative',
+      marginTop: pxToRem(10),
+      marginBottom: pxToRem(10),
+      marginLeft: '0.35em',
+      marginRight: '0.35em',
+    },
+    wordLabel: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: `${round((mnemonicLineHeight + 3) / 10)}em`,
+      fontSize: pxToRem(10),
+      lineHeight: '1em',
+      opacity: 0.5,
+      userSelect: 'none',
+      pointerEvents: 'none',
+    },
+    wordValue: {
+      display: 'block',
+      minWidth: `${round(64 / mnemonicFontSize)}em`,
+      height: `${round(24.5 / mnemonicFontSize)}em`,
+      borderBottom: '1px dotted #999',
+      color: '#999'
+    },
+    currentWordValue: {
+      color: theme.palette.text.primary,
+      borderBottom: '1px dashed #000',
+    },
+  });
+};
 
 function round(val: number) {
   return Math.round(val * 1e5) / 1e5;
 }
 
-const stylesDecorator = withStyles<OnboardingVerifyMnemonicPageClassKey>(
-  (theme) => {
-    const { pxToRem } = theme.typography;
-    const mnemonicFontSize = 16;
-    const mnemonicLineHeight = 24.5;
-
-    return {
-      content: {
-        padding: 20,
-      },
-      mnemonic: {
-        display: 'flex',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        fontSize: pxToRem(mnemonicFontSize),
-        lineHeight: `${round(mnemonicLineHeight / mnemonicFontSize)}em`,
-        verticalAlign: 'bottom',
-        textAlign: 'center',
-        userSelect: 'none',
-      },
-      wordGroup: {
-        position: 'relative',
-        marginTop: pxToRem(10),
-        marginBottom: pxToRem(10),
-        marginLeft: '0.35em',
-        marginRight: '0.35em',
-      },
-      wordLabel: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: `${round((mnemonicLineHeight + 3) / 10)}em`,
-        fontSize: pxToRem(10),
-        lineHeight: '1em',
-        opacity: 0.5,
-        userSelect: 'none',
-        pointerEvents: 'none',
-      },
-      wordValue: {
-        display: 'block',
-        minWidth: `${round(64 / mnemonicFontSize)}em`,
-        height: `${round(24.5 / mnemonicFontSize)}em`,
-        borderBottom: '1px dotted #999',
-        color: '#999'
-      },
-      currentWordValue: {
-        color: theme.palette.text.primary,
-        borderBottom: '1px dashed #000',
-      },
-    };
-  },
-  { name: 'OnboardingVerifyMnemonicPage' }
-);
-
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   open: boolean;
   mnemonic: string[];
   onClose: () => void;
@@ -92,11 +81,11 @@ interface State {
   currentWordInvalid: boolean;
 }
 
-type DecoratedProps = Props & WithStyles<OnboardingVerifyMnemonicPageClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'OnboardingVerifyMnemonicPage' });
 
-const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps, State> {
-    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+const OnboardingVerifyMnemonicPage = stylesDecorator(
+  class extends React.Component<Props, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
       let state = {
         ...prevState,
         open: nextProps.open,
@@ -123,7 +112,7 @@ const OnboardingVerifyMnemonicPage = stylesDecorator<Props>(
       return state;
     }
 
-    constructor(props: DecoratedProps) {
+    constructor(props: Props) {
       super(props);
       this.state = {
         open: props.open,

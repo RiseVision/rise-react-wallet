@@ -1,35 +1,28 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import jdenticon from '../utils/jdenticon';
 
 const riseIcon = require('../images/rise_icon.svg');
 
-type AccountIconClassKey =
-  | 'root'
-  | 'placeholder';
-
-const stylesDecorator = withStyles<AccountIconClassKey>(
-  {
-    root: {
-    },
-    placeholder: {
-      opacity: 0.1,
-    },
+const styles = createStyles({
+  root: {
   },
-  { name: 'AccountIcon' }
-);
+  placeholder: {
+    opacity: 0.1,
+  },
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   className?: string;
   size?: number;
   address: string;
 }
 
-type DecoratedProps = Props & WithStyles<AccountIconClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'AccountIcon' });
 
-const AccountIcon = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps> {
+const AccountIcon = stylesDecorator(
+  class extends React.Component<Props> {
     readonly svgElement = React.createRef<SVGSVGElement>();
 
     componentDidMount() {

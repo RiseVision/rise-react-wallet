@@ -2,40 +2,38 @@ import * as React from 'react';
 import Fade from '@material-ui/core/Fade';
 import { BackdropProps } from '@material-ui/core/Backdrop';
 import * as classNames from 'classnames';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-type ModalBackdropClassKey =
-  | 'root'
-  | 'invisible';
+const styles = createStyles({
+  root: {
+    position: 'fixed',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '100vh',
 
-const stylesDecorator = withStyles<ModalBackdropClassKey>(
-  {
-    root: {
-      position: 'fixed',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      height: '100vh',
+    backgroundColor: '#3fbb90',
+    backgroundImage: `linear-gradient(45deg, #3fbb90 0%, #ade690 100%)`,
+    backgroundAttachment: 'fixed',
 
-      backgroundColor: '#3fbb90',
-      backgroundImage: `linear-gradient(45deg, #3fbb90 0%, #ade690 100%)`,
-      backgroundAttachment: 'fixed',
-
-      // Remove grey highlight
-      WebkitTapHighlightColor: 'transparent',
-    },
-    invisible: {
-      backgroundColor: 'transparent',
-      backgroundImage: 'none',
-    },
+    // Remove grey highlight
+    WebkitTapHighlightColor: 'transparent',
   },
-  { name: 'ModalBackdrop' }
-);
+  invisible: {
+    backgroundColor: 'transparent',
+    backgroundImage: 'none',
+  },
+});
 
-type DecoratedProps = BackdropProps & WithStyles<ModalBackdropClassKey>;
+type BaseProps = BackdropProps & WithStyles<typeof styles>;
 
-const ModalBackdrop = stylesDecorator<BackdropProps>(
-  class extends React.Component<DecoratedProps> {
+interface Props extends BaseProps {
+}
+
+const stylesDecorator = withStyles(styles, { name: 'ModalBackdrop' });
+
+const ModalBackdrop = stylesDecorator(
+  class extends React.Component<Props> {
     render() {
       const { classes, className, invisible, open, transitionDuration, ...other } = this.props;
       return (

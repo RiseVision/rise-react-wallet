@@ -8,7 +8,7 @@ import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import FlagIcon from '../components/FlagIcon';
 import { Locale, Locales, getUserLocales, getMainCountryForLocale } from '../utils/i18n';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
 const riseIcon = require('../images/rise_icon.svg');
 
@@ -32,27 +32,21 @@ const localeLabels: {
   zh: '繼續用中文',
 };
 
-type OnboardingChooseLanguagePageClassKey =
-  | 'titleIcon';
-
-const stylesDecorator = withStyles<OnboardingChooseLanguagePageClassKey>(
-  {
-    titleIcon: {
-      margin: '-4px 4px',
-    },
+const styles = createStyles({
+  titleIcon: {
+    margin: '-4px 4px',
   },
-  { name: 'OnboardingChooseLanguagePage' }
-);
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   open: boolean;
   onLanguageSelected: (locale: Locale) => void;
 }
 
-type DecoratedProps = Props & WithStyles<OnboardingChooseLanguagePageClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage' });
 
-const OnboardingChooseLanguagePage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps> {
+const OnboardingChooseLanguagePage = stylesDecorator(
+  class extends React.Component<Props> {
     handleLanguageClicked = (locale: Locale) => {
       this.props.onLanguageSelected(locale);
     }

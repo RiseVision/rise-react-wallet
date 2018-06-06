@@ -3,24 +3,18 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import AccountIcon from '../components/AccountIcon';
 
-type OnboardingAccountCreatedPageClassKey =
-  | 'content';
-
-const stylesDecorator = withStyles<OnboardingAccountCreatedPageClassKey>(
-  {
-    content: {
-      padding: 20,
-    },
+const styles = createStyles({
+  content: {
+    padding: 20,
   },
-  { name: 'OnboardingAccountCreatedPage' }
-);
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   open: boolean;
   accountAddress: string;
   onOpenOverview: () => void;
@@ -31,11 +25,11 @@ interface State {
   accountAddress: string;
 }
 
-type DecoratedProps = Props & WithStyles<OnboardingAccountCreatedPageClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'OnboardingAccountCreatedPage' });
 
-const OnboardingAccountCreatedPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps, State> {
-    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+const OnboardingAccountCreatedPage = stylesDecorator(
+  class extends React.Component<Props, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
       let state = {
         ...prevState,
         open: nextProps.open,
@@ -48,7 +42,7 @@ const OnboardingAccountCreatedPage = stylesDecorator<Props>(
       return state;
     }
 
-    constructor(props: DecoratedProps) {
+    constructor(props: Props) {
       super(props);
       this.state = {
         open: props.open,

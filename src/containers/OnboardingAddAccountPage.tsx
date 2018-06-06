@@ -8,23 +8,17 @@ import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import FlagIcon from '../components/FlagIcon';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
 const riseIcon = require('../images/rise_icon.svg');
 
-type OnboardingAddAccountPageClassKey =
-  | 'titleIcon';
-
-const stylesDecorator = withStyles<OnboardingAddAccountPageClassKey>(
-  {
-    titleIcon: {
-      margin: '-4px 4px',
-    },
+const styles = createStyles({
+  titleIcon: {
+    margin: '-4px 4px',
   },
-  { name: 'OnboardingAddAccountPage' }
-);
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   open: boolean;
   locale: Locale;
   onOpenChooseLanguage: () => void;
@@ -32,10 +26,10 @@ interface Props {
   onOpenExistingAccount: () => void;
 }
 
-type DecoratedProps = Props & WithStyles<OnboardingAddAccountPageClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
 
-const OnboardingAddAccountPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps> {
+const OnboardingAddAccountPage = stylesDecorator(
+  class extends React.Component<Props> {
     handleNewAccountClicked = () => {
       this.props.onOpenNewAccount();
     }
