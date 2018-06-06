@@ -5,23 +5,17 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-type OnboardingTestOverPageClassKey =
-  | 'content';
-
-const stylesDecorator = withStyles<OnboardingTestOverPageClassKey>(
-  {
-    content: {
-      padding: 20,
-      textAlign: 'center',
-      maxWidth: 400,
-    },
+const styles = createStyles({
+  content: {
+    padding: 20,
+    textAlign: 'center',
+    maxWidth: 400,
   },
-  { name: 'OnboardingTestOverPage' }
-);
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   open: boolean;
   onGoHome: () => void;
 }
@@ -30,11 +24,11 @@ interface State {
   open: boolean;
 }
 
-type DecoratedProps = Props & WithStyles<OnboardingTestOverPageClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'OnboardingTestOverPage' });
 
-const OnboardingTestOverPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps, State> {
-    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+const OnboardingTestOverPage = stylesDecorator(
+  class extends React.Component<Props, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
       let state = {
         ...prevState,
         open: nextProps.open,
@@ -43,7 +37,7 @@ const OnboardingTestOverPage = stylesDecorator<Props>(
       return state;
     }
 
-    constructor(props: DecoratedProps) {
+    constructor(props: Props) {
       super(props);
 
       this.state = {
