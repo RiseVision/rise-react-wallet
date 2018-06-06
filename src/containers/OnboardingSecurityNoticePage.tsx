@@ -54,7 +54,7 @@ const OnboardingSecurityNoticePage = stylesDecorator(
         open: nextProps.open,
       };
 
-      if (state.open) {
+      if (!prevState.open && state.open) {
         state.currentTip = 0;
       }
 
