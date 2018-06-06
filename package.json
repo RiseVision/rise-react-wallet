@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^v1.0.0",
-    "@material-ui/icons": "^1.0.0",
+    "@material-ui/core": "^v1.2.0",
+    "@material-ui/icons": "^1.1.0",
     "bip39": "^2.5.0",
     "classnames": "^2.2.5",
     "dpos-offline": "^1.4.0",
@@ -54,7 +54,7 @@
   "devDependencies": {
     "@types/bip39": "^2.4.0",
     "@types/bytebuffer": "^5.0.37",
-    "@types/classnames": "^2.2.3",
+    "@types/classnames": "^2.2.4",
     "@types/jest": "^22.2.3",
     "@types/node": "^10.0.6",
     "@types/react": "^16.3.14",
