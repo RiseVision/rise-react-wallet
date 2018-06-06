@@ -1,24 +1,18 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import { CountryCode } from '../utils/i18n';
 
-type FlagIconClassKey =
-  | 'root';
-
-const stylesDecorator = withStyles<FlagIconClassKey>(
-  {
-    root: {
-      width: 30,
-      height: 18,
-      borderRadius: 3,
-      backgroundSize: 'cover',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-    },
+const styles = createStyles({
+  root: {
+    width: 30,
+    height: 18,
+    borderRadius: 3,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
   },
-  { name: 'AccountIcon' }
-);
+});
 
 const countryFlags: {
   [P in CountryCode]: string;
@@ -38,15 +32,15 @@ const countryFlags: {
   cn: require('svg-country-flags/svg/cn.svg'),
 };
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   className?: string;
   countryCode: CountryCode;
 }
 
-type DecoratedProps = Props & WithStyles<FlagIconClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'AccountIcon' });
 
-const FlagIcon = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps> {
+const FlagIcon = stylesDecorator(
+  class extends React.Component<Props> {
     render() {
       const {
         classes,

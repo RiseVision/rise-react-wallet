@@ -6,87 +6,66 @@ import Button from '@material-ui/core/Button';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import * as classNames from 'classnames';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-type OnboardingNewMnemonicPageClassKey =
-  | 'content'
-  | 'mnemonic'
-  | 'separator'
-  | 'word'
-  | 'word-1'
-  | 'word-2'
-  | 'word-3'
-  | 'word-4'
-  | 'word-5'
-  | 'word-6'
-  | 'word-7'
-  | 'word-8'
-  | 'word-9'
-  | 'word-10'
-  | 'word-11'
-  | 'word-12';
+const styles = (theme: Theme) => {
+  const { pxToRem } = theme.typography;
+  const mnemonicFontSize = 21;
+  const mnemonicLineHeight = 24.5;
+
+  let wordLabels = {};
+  for (let i = 1; i <= 12; i++) {
+    wordLabels[`&.${i}::before`] = { content: `"${i}"` };
+  }
+
+  return createStyles({
+    content: {
+      padding: 20,
+    },
+    mnemonic: {
+      fontSize: pxToRem(mnemonicFontSize),
+      lineHeight: `${round((mnemonicLineHeight + 20) / mnemonicFontSize)}em`,
+      textAlign: 'center',
+    },
+    separator: {
+    },
+    word: {
+      display: 'inline-block',
+      position: 'relative',
+      marginLeft: '0.2em',
+      marginRight: '0.2em',
+      '&::before': {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: `${round((mnemonicLineHeight + 8) / 10)}em`,
+        fontSize: pxToRem(10),
+        lineHeight: '1em',
+        opacity: 0.5,
+        userSelect: 'none',
+        pointerEvents: 'none',
+      },
+    },
+    'word-1': { '&::before': { content: '"#1"' } },
+    'word-2': { '&::before': { content: '"#2"' } },
+    'word-3': { '&::before': { content: '"#3"' } },
+    'word-4': { '&::before': { content: '"#4"' } },
+    'word-5': { '&::before': { content: '"#5"' } },
+    'word-6': { '&::before': { content: '"#6"' } },
+    'word-7': { '&::before': { content: '"#7"' } },
+    'word-8': { '&::before': { content: '"#8"' } },
+    'word-9': { '&::before': { content: '"#9"' } },
+    'word-10': { '&::before': { content: '"#10"' } },
+    'word-11': { '&::before': { content: '"#11"' } },
+    'word-12': { '&::before': { content: '"#12"' } },
+  });
+};
 
 function round(val: number) {
   return Math.round(val * 1e5) / 1e5;
 }
 
-const stylesDecorator = withStyles<OnboardingNewMnemonicPageClassKey>(
-  (theme) => {
-    const { pxToRem } = theme.typography;
-    const mnemonicFontSize = 21;
-    const mnemonicLineHeight = 24.5;
-
-    let wordLabels = {};
-    for (let i = 1; i <= 12; i++) {
-      wordLabels[`&.${i}::before`] = { content: `"${i}"` };
-    }
-
-    return {
-      content: {
-        padding: 20,
-      },
-      mnemonic: {
-        fontSize: pxToRem(mnemonicFontSize),
-        lineHeight: `${round((mnemonicLineHeight + 20) / mnemonicFontSize)}em`,
-        textAlign: 'center',
-      },
-      separator: {
-      },
-      word: {
-        display: 'inline-block',
-        position: 'relative',
-        marginLeft: '0.2em',
-        marginRight: '0.2em',
-        '&::before': {
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: `${round((mnemonicLineHeight + 8) / 10)}em`,
-          fontSize: pxToRem(10),
-          lineHeight: '1em',
-          opacity: 0.5,
-          userSelect: 'none',
-          pointerEvents: 'none',
-        },
-      },
-      'word-1': { '&::before': { content: '"#1"' } },
-      'word-2': { '&::before': { content: '"#2"' } },
-      'word-3': { '&::before': { content: '"#3"' } },
-      'word-4': { '&::before': { content: '"#4"' } },
-      'word-5': { '&::before': { content: '"#5"' } },
-      'word-6': { '&::before': { content: '"#6"' } },
-      'word-7': { '&::before': { content: '"#7"' } },
-      'word-8': { '&::before': { content: '"#8"' } },
-      'word-9': { '&::before': { content: '"#9"' } },
-      'word-10': { '&::before': { content: '"#10"' } },
-      'word-11': { '&::before': { content: '"#11"' } },
-      'word-12': { '&::before': { content: '"#12"' } },
-    };
-  },
-  { name: 'OnboardingNewMnemonicPage' }
-);
-
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   open: boolean;
   mnemonic: string[];
   onClose: () => void;
@@ -98,11 +77,11 @@ interface State {
   mnemonic: string[];
 }
 
-type DecoratedProps = Props & WithStyles<OnboardingNewMnemonicPageClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'OnboardingNewMnemonicPage' });
 
-const OnboardingNewMnemonicPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps, State> {
-    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+const OnboardingNewMnemonicPage = stylesDecorator(
+  class extends React.Component<Props, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
       let state = {
         ...prevState,
         open: nextProps.open,
@@ -115,7 +94,7 @@ const OnboardingNewMnemonicPage = stylesDecorator<Props>(
       return state;
     }
 
-    constructor(props: DecoratedProps) {
+    constructor(props: Props) {
       super(props);
       this.state = {
         open: props.open,

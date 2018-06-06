@@ -4,61 +4,48 @@ import Typography from '@material-ui/core/Typography';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import Close from '@material-ui/icons/Close';
 import * as classNames from 'classnames';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-type ModalPaperHeaderClassKey =
-  | 'root'
-  | 'content'
-  | 'backButton'
-  | 'withoutBack'
-  | 'closeButton'
-  | 'withoutClose';
-
-const stylesDecorator = withStyles<ModalPaperHeaderClassKey>(
-  (theme) => {
-    return {
-      root: {
-        borderTopLeftRadius: 2, // Needs to match that of <Paper />
-        borderTopRightRadius: 2, // Needs to match that of <Paper />
-        backgroundColor: '#f6f6f6',
-        display: 'flex',
-      },
-      content: {
-        flex: 1,
-        padding: 10,
-      },
-      withoutClose: {
-        marginRight: theme.spacing.unit * 8, // Width of the back button
-      },
-      withoutBack: {
-        marginLeft: theme.spacing.unit * 8, // Width of the back button
-      },
-      backButton: {
-        borderTopRightRadius: 0,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
-      },
-      closeButton: {
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
-      },
-    };
+const styles = (theme: Theme) => createStyles({
+  root: {
+    borderTopLeftRadius: 2, // Needs to match that of <Paper />
+    borderTopRightRadius: 2, // Needs to match that of <Paper />
+    backgroundColor: '#f6f6f6',
+    display: 'flex',
   },
-  { name: 'ModalPaperHeader' }
-);
+  content: {
+    flex: 1,
+    padding: 10,
+  },
+  withoutClose: {
+    marginRight: theme.spacing.unit * 8, // Width of the back button
+  },
+  withoutBack: {
+    marginLeft: theme.spacing.unit * 8, // Width of the back button
+  },
+  backButton: {
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  closeButton: {
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   backButton?: boolean;
   onBackClick?: () => void;
   closeButton?: boolean;
   onCloseClick?: () => void;
 }
 
-type DecoratedProps = Props & WithStyles<ModalPaperHeaderClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'ModalPaperHeader' });
 
-const ModalPaperHeader = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps> {
+const ModalPaperHeader = stylesDecorator(
+  class extends React.Component<Props> {
     handleBackClick = () => {
       if (this.props.onBackClick) {
         this.props.onBackClick();

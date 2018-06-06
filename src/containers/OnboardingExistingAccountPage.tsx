@@ -7,34 +7,25 @@ import Button from '@material-ui/core/Button';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import AccountIcon from '../components/AccountIcon';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-type OnboardingExistingAccountPageClassKey =
-  | 'content'
-  | 'accountContainer'
-  | 'accountField'
-  | 'accountIcon';
-
-const stylesDecorator = withStyles<OnboardingExistingAccountPageClassKey>(
-  {
-    content: {
-      padding: 20,
-    },
-    accountContainer: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    accountField: {
-      flex: 1,
-    },
-    accountIcon: {
-      marginLeft: 10,
-    },
+const styles = createStyles({
+  content: {
+    padding: 20,
   },
-  { name: 'OnboardingExistingAccountPage' }
-);
+  accountContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  accountField: {
+    flex: 1,
+  },
+  accountIcon: {
+    marginLeft: 10,
+  },
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   open: boolean;
   accountAddress?: string;
   onGoBack: () => void;
@@ -48,11 +39,11 @@ interface State {
   normalizedAddress: string;
 }
 
-type DecoratedProps = Props & WithStyles<OnboardingExistingAccountPageClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'OnboardingExistingAccountPage' });
 
-const OnboardingExistingAccountPage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps, State> {
-    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+const OnboardingExistingAccountPage = stylesDecorator(
+  class extends React.Component<Props, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
       let state = {
         ...prevState,
         open: nextProps.open,
@@ -71,7 +62,7 @@ const OnboardingExistingAccountPage = stylesDecorator<Props>(
       return state;
     }
 
-    constructor(props: DecoratedProps) {
+    constructor(props: Props) {
       super(props);
 
       const address = props.accountAddress || '';

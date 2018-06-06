@@ -6,47 +6,34 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import * as classNames from 'classnames';
-import { withStyles, WithStyles } from '@material-ui/core/styles';
+import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-type OnboardingSecurityNoticePageClassKey =
-  | 'content'
-  | 'pretext'
-  | 'tipContainer'
-  | 'tipText'
-  | 'inactiveTipText'
-  | 'button';
-
-const stylesDecorator = withStyles<OnboardingSecurityNoticePageClassKey>(
-  (theme) => {
-    return {
-      content: {
-        padding: 20,
-      },
-      pretext: {
-        marginBottom: 5,
-      },
-      tipContainer: {
-        paddingLeft: 20,
-      },
-      tipText: {
-        display: 'list-item',
-        listStyle: 'disc',
-        marginTop: 5,
-        marginBottom: 5,
-      },
-      inactiveTipText: {
-        opacity: 0.65,
-        transition: theme.transitions.create('opacity'),
-      },
-      button: {
-        marginTop: 5,
-      },
-    };
+const styles = (theme: Theme) => createStyles({
+  content: {
+    padding: 20,
   },
-  { name: 'OnboardingSecurityNoticePage' }
-);
+  pretext: {
+    marginBottom: 5,
+  },
+  tipContainer: {
+    paddingLeft: 20,
+  },
+  tipText: {
+    display: 'list-item',
+    listStyle: 'disc',
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  inactiveTipText: {
+    opacity: 0.65,
+    transition: theme.transitions.create('opacity'),
+  },
+  button: {
+    marginTop: 5,
+  },
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   open: boolean;
   onClose: () => void;
   onContinue: () => void;
@@ -57,11 +44,11 @@ interface State {
   currentTip: number;
 }
 
-type DecoratedProps = Props & WithStyles<OnboardingSecurityNoticePageClassKey>;
+const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage' });
 
-const OnboardingSecurityNoticePage = stylesDecorator<Props>(
-  class extends React.Component<DecoratedProps, State> {
-    static getDerivedStateFromProps(nextProps: Readonly<DecoratedProps>, prevState: State): Partial<State> | null {
+const OnboardingSecurityNoticePage = stylesDecorator(
+  class extends React.Component<Props, State> {
+    static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
       let state = {
         ...prevState,
         open: nextProps.open,
@@ -74,7 +61,7 @@ const OnboardingSecurityNoticePage = stylesDecorator<Props>(
       return state;
     }
 
-    constructor(props: DecoratedProps) {
+    constructor(props: Props) {
       super(props);
       this.state = {
         open: props.open,
