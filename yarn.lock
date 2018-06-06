@@ -67,7 +67,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/bytebuffer@^5.0.37":
+"@types/bytebuffer@^5.0.33", "@types/bytebuffer@^5.0.37":
   version "5.0.37"
   resolved "https://registry.yarnpkg.com/@types/bytebuffer/-/bytebuffer-5.0.37.tgz#795c0082cfb8c43a4cf3a8fc97d108ec76e59579"
   dependencies:
@@ -2379,13 +2379,16 @@ dotenv@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
 
-dpos-offline@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-1.4.0.tgz#bf51c2d59494de6d9600d414430f32d937f0ca7a"
+dpos-offline@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-1.5.0.tgz#3cb5c3a1b81dbf48515ff815ca3e3237ce0a3439"
   dependencies:
+    "@types/bytebuffer" "^5.0.33"
     bignumber.js "^4.0.4"
     bytebuffer "^5.0.1"
     is-empty "^1.2.0"
+    tweetnacl "^1.0.0"
+    tweetnacl-util "^0.15.0"
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -7409,9 +7412,17 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
+tweetnacl-util@^0.15.0:
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/tweetnacl-util/-/tweetnacl-util-0.15.0.tgz#4576c1cee5e2d63d207fee52f1ba02819480bc75"
+
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
+
+tweetnacl@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.0.tgz#713d8b818da42068740bf68386d0479e66fc8a7b"
 
 type-check@~0.3.2:
   version "0.3.2"
