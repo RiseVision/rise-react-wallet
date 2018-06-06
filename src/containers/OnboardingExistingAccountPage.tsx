@@ -49,7 +49,7 @@ const OnboardingExistingAccountPage = stylesDecorator(
         open: nextProps.open,
       };
 
-      if (state.open) {
+      if (!prevState.open && state.open) {
         const address = nextProps.accountAddress || '';
         if (state.address !== address) {
           const normalizedAddress = normalizeAddress(address);
