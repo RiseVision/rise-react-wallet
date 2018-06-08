@@ -8,8 +8,9 @@ import Hidden from '@material-ui/core/Hidden';
 import Drawer from '@material-ui/core/Drawer';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Theme, createStyles, withStyles, WithStyles, withTheme, WithTheme } from '@material-ui/core/styles';
+import DrawerContent from './DrawerContent';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -78,7 +79,7 @@ const Wallet = withTheme()(stylesDecorator(injectIntl(
       const { intl, classes, theme } = this.props;
 
       const drawer = (
-        <span>Drawer content TODO</span>
+        <DrawerContent />
       );
 
       return (
