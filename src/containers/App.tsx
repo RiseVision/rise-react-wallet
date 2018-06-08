@@ -9,6 +9,7 @@ interface Props {
 }
 
 const importOnboarding = () => import('./Onboarding').then((m) => m.default);
+const importWallet = () => import('./Wallet').then((m) => m.default);
 
 // tslint:disable-next-line:no-any
 type LoaderFactory<T> = (...args: any[]) => Promise<T>;
@@ -30,6 +31,7 @@ interface State {
   };
   components: {
     onboarding?: LoadState<typeof importOnboarding>;
+    wallet?: LoadState<typeof importWallet>;
   };
 }
 
@@ -76,6 +78,8 @@ class App extends React.Component<Props, State> {
         nextState = this.loadTranslation(nextState, locale) || nextState;
         if (isOnboarding) {
           nextState = this.loadOnboardingComponent(nextState) || nextState;
+        } else {
+          nextState = this.loadWalletComponent(nextState) || nextState;
         }
 
         return nextState;
@@ -172,6 +176,50 @@ class App extends React.Component<Props, State> {
     };
   }
 
+  loadWalletComponent(state: Readonly<State>): (State | null) {
+    const doLoad = !state.components.wallet;
+    if (!doLoad) {
+      return null;
+    }
+
+    let isCancelled = false;
+    const initialLoad: LoadState<typeof importWallet> = {
+      state: 'loading',
+      cancel: () => { isCancelled = true; },
+    };
+
+    const setLoadState = (value: LoadState<typeof importWallet>) => {
+      if (isCancelled) {
+        return;
+      }
+      this.setState((prevState) => {
+        const isCurrentLoad = prevState.components.wallet === initialLoad;
+        if (!isCurrentLoad) {
+          return null;
+        }
+        return {
+          components: {
+            ...prevState.components,
+            wallet: value,
+          },
+        };
+      });
+    };
+
+    importWallet().then(
+      (val) => setLoadState({ state: 'done', value: val }),
+      (err) => setLoadState({ state: 'error', error: err }),
+    );
+
+    return {
+      ...state,
+      components: {
+        ...state.components,
+        wallet: initialLoad,
+      },
+    };
+  }
+
   componentDidMount() {
     // Set the state to trigger async load of modules
     this.setState(this.state);
@@ -232,6 +280,18 @@ class App extends React.Component<Props, State> {
             onPageChanged={this.handlePageChanged}
             onLocaleChanged={this.handleLocaleChanged}
           />
+        );
+      }
+    } else {
+      const asyncComponent = this.state.components.wallet;
+      if (!asyncComponent || asyncComponent.state === 'loading') {
+        isLoading = true;
+      } else if (asyncComponent.state === 'error') {
+        currentError = currentError || asyncComponent.error;
+      } else if (asyncComponent.state === 'done') {
+        const Wallet = asyncComponent.value;
+        content = (
+          <Wallet />
         );
       }
     }
