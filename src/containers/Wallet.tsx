@@ -1,14 +1,11 @@
 import * as React from 'react';
-import { InjectedIntlProps, injectIntl, defineMessages } from 'react-intl';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Hidden from '@material-ui/core/Hidden';
 import Drawer from '@material-ui/core/Drawer';
-import MenuIcon from '@material-ui/icons/Menu';
 import { Theme, createStyles, withStyles, WithStyles, withTheme, WithTheme } from '@material-ui/core/styles';
 import DrawerContent from './DrawerContent';
+import WalletToolbar from './WalletToolbar';
 
 const drawerWidth = 280;
 
@@ -26,11 +23,6 @@ const styles = (theme: Theme) => createStyles({
     marginLeft: drawerWidth,
     [theme.breakpoints.up('md')]: {
       width: `calc(100% - ${drawerWidth}px)`,
-    },
-  },
-  drawerIcon: {
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
     },
   },
   drawerPaper: {
@@ -54,19 +46,11 @@ interface State {
   mobileDrawerOpen: boolean;
 }
 
-type DecoratedProps = Props & InjectedIntlProps & WithTheme;
+type DecoratedProps = Props & WithTheme;
 
 const stylesDecorator = withStyles(styles, { 'name': 'Wallet' });
 
-const messages = defineMessages({
-  openDrawerAriaLabel: {
-    id: 'wallet.open-drawer-aria-label',
-    description: 'Accessibility label for open drawer icon',
-    defaultMessage: 'Open drawer',
-  },
-});
-
-const Wallet = withTheme()(stylesDecorator(injectIntl(
+const Wallet = withTheme()(stylesDecorator(
   class extends React.Component<DecoratedProps, State> {
     constructor(props: DecoratedProps) {
       super(props);
@@ -76,7 +60,7 @@ const Wallet = withTheme()(stylesDecorator(injectIntl(
     }
 
     render() {
-      const { intl, classes, theme } = this.props;
+      const { classes, theme } = this.props;
 
       const drawer = (
         <DrawerContent />
@@ -85,20 +69,9 @@ const Wallet = withTheme()(stylesDecorator(injectIntl(
       return (
         <div className={classes.root}>
           <AppBar className={classes.appBar}>
-            <Toolbar>
-              <IconButton
-                className={classes.drawerIcon}
-                aria-label={intl.formatMessage(
-                  messages.openDrawerAriaLabel)}
-                color="inherit"
-                onClick={this.handleDrawerToggle}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="title" color="inherit" noWrap={true}>
-                Title TODO
-              </Typography>
-            </Toolbar>
+            <WalletToolbar
+              onToggleDrawer={this.handleDrawerToggle}
+            />
           </AppBar>
           <Hidden mdUp={true}>
             <Drawer
@@ -141,6 +114,6 @@ const Wallet = withTheme()(stylesDecorator(injectIntl(
       });
     }
   }
-)));
+));
 
 export default Wallet;
