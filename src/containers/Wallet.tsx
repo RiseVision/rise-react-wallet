@@ -1,11 +1,10 @@
 import * as React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Typography from '@material-ui/core/Typography';
 import Hidden from '@material-ui/core/Hidden';
 import Drawer from '@material-ui/core/Drawer';
 import { Theme, createStyles, withStyles, WithStyles, withTheme, WithTheme } from '@material-ui/core/styles';
 import DrawerContent from './DrawerContent';
-import WalletToolbar from './WalletToolbar';
+import WalletAppBar from './WalletAppBar';
+import AccountOverview from './AccountOverview';
 
 const drawerWidth = 280;
 
@@ -40,6 +39,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
+  page: string;
 }
 
 interface State {
@@ -49,8 +49,9 @@ interface State {
 type DecoratedProps = Props & WithTheme;
 
 const stylesDecorator = withStyles(styles, { 'name': 'Wallet' });
+const themeDecorator = withTheme();
 
-const Wallet = withTheme()(stylesDecorator(
+const Wallet = stylesDecorator<Props>(themeDecorator<DecoratedProps>(
   class extends React.Component<DecoratedProps, State> {
     constructor(props: DecoratedProps) {
       super(props);
@@ -60,7 +61,7 @@ const Wallet = withTheme()(stylesDecorator(
     }
 
     render() {
-      const { classes, theme } = this.props;
+      const { classes, theme, page } = this.props;
 
       const drawer = (
         <DrawerContent />
@@ -68,11 +69,11 @@ const Wallet = withTheme()(stylesDecorator(
 
       return (
         <div className={classes.root}>
-          <AppBar className={classes.appBar}>
-            <WalletToolbar
-              onToggleDrawer={this.handleDrawerToggle}
-            />
-          </AppBar>
+          <WalletAppBar
+            className={classes.appBar}
+            page={page}
+            onToggleDrawer={this.handleDrawerToggle}
+          />
           <Hidden mdUp={true}>
             <Drawer
               variant="temporary"
@@ -100,9 +101,9 @@ const Wallet = withTheme()(stylesDecorator(
           </Hidden>
           <main className={classes.content}>
             <div className={classes.toolbar} />
-            <Typography>
-              Content TODO
-            </Typography>
+            {page === 'account-overview' && (
+              <AccountOverview />
+            )}
           </main>
         </div>
       );

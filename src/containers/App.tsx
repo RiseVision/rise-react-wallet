@@ -291,7 +291,9 @@ class App extends React.Component<Props, State> {
       } else if (asyncComponent.state === 'done') {
         const Wallet = asyncComponent.value;
         content = (
-          <Wallet />
+          <Wallet
+            page={this.state.page}
+          />
         );
       }
     }
