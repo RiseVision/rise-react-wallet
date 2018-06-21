@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
+import { InjectedIntlProps, injectIntl, defineMessages } from 'react-intl';
 import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -84,12 +85,33 @@ interface Props extends WithStyles<typeof styles> {
   balance_in_fiat: string;
 }
 
+type DecoratedProps = Props & InjectedIntlProps;
+
 const stylesDecorator = withStyles(styles, { name: 'AccountOverviewHeader' });
 
-const AccountOverviewHeader = stylesDecorator(
-  class extends React.Component<Props> {
+const messages = defineMessages({
+  aliasAriaLabel: {
+    id: 'account-overview-header.alias-aria-label',
+    description: 'Accessibility label for account name/alias',
+    defaultMessage: 'Account',
+  },
+  addressAriaLabel: {
+    id: 'account-overview-header.address-aria-label',
+    description: 'Accessibility label for account address',
+    defaultMessage: 'Account address',
+  },
+  balanceAriaLabel: {
+    id: 'account-overview-header.balance-aria-label',
+    description: 'Accessibility label for account balance',
+    defaultMessage: 'Balance',
+  },
+});
+
+const AccountOverviewHeader = stylesDecorator(injectIntl(
+  class extends React.Component<DecoratedProps> {
     render() {
       const {
+        intl,
         classes,
         address,
         alias,
@@ -99,7 +121,7 @@ const AccountOverviewHeader = stylesDecorator(
 
       return (
         <Paper square={true} className={classes.container}>
-          <div className={classes.icon}>
+          <div className={classes.icon} aria-hidden={true}>
             <AccountIcon
               size={64}
               address={address}
@@ -111,10 +133,16 @@ const AccountOverviewHeader = stylesDecorator(
               classes.account_section,
             )}
           >
-            <Typography className={classes.primary_text}>
+            <Typography
+              className={classes.primary_text}
+              aria-label={intl.formatMessage(messages.aliasAriaLabel)}
+            >
               {alias}
             </Typography>
-            <Typography className={classes.secondary_text}>
+            <Typography
+              className={classes.secondary_text}
+              aria-label={intl.formatMessage(messages.addressAriaLabel)}
+            >
               {address}
             </Typography>
           </div>
@@ -125,7 +153,10 @@ const AccountOverviewHeader = stylesDecorator(
               classes.balance_section,
             )}
           >
-            <Typography className={classes.primary_text}>
+            <Typography
+              className={classes.primary_text}
+              aria-label={intl.formatMessage(messages.balanceAriaLabel)}
+            >
               {balance}
             </Typography>
             <Typography className={classes.secondary_text}>
@@ -136,6 +167,6 @@ const AccountOverviewHeader = stylesDecorator(
       );
     }
   }
-);
+));
 
 export default AccountOverviewHeader;
