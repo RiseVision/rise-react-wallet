@@ -11,23 +11,57 @@ import green from '@material-ui/core/colors/green';
 
 const styles = (theme: Theme) => {
   return createStyles({
-    summary_content: {
+    expanded: {},
+    summaryRoot: {
+      padding: `0 ${theme.spacing.unit * 3}px 0 ${theme.spacing.unit * 3}px`,
+      [theme.breakpoints.down('xs')]: {
+        padding: `0 ${theme.spacing.unit * 2}px 0 ${theme.spacing.unit * 2}px`,
+      },
+      '&$expanded': {
+        [theme.breakpoints.down('xs')]: {
+          minHeight: 58,
+        },
+      },
+    },
+    summaryContent: {
       display: 'flex',
       alignItems: 'center',
+      '& > :last-child': {
+        [theme.breakpoints.down('xs')]: {
+          paddingRight: 0,
+        },
+      },
+      '&$expanded': {
+        [theme.breakpoints.down('xs')]: {
+          margin: '14px 0',
+        },
+      },
     },
-    summary_summary: {
+    summaryExpandIcon: {
+      [theme.breakpoints.down('xs')]: {
+        display: 'none',
+      },
+    },
+    summarySummary: {
       flex: 1,
       marginRight: 2 * theme.spacing.unit,
+      wordBreak: 'break-word',
     },
-    summary_incoming_amount: {
+    summaryIncomingAmount: {
       color: green[800],
     },
-    short_text: {
+    detailsRoot: {
+      padding: `${theme.spacing.unit}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+      [theme.breakpoints.down('xs')]: {
+        padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px`,
+      },
+    },
+    shortText: {
       [theme.breakpoints.up('sm')]: {
         display: 'none',
       },
     },
-    long_text: {
+    longText: {
       [theme.breakpoints.down('xs')]: {
         display: 'none',
       },
@@ -174,31 +208,38 @@ const TxDetailsExpansionPanel = stylesDecorator(injectIntl(
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
             classes={{
-              content: classes.summary_content,
+              root: classes.summaryRoot,
+              content: classes.summaryContent,
+              expanded: classes.expanded,
+              expandIcon: classes.summaryExpandIcon,
             }}
           >
-            <div className={classes.summary_summary}>
-              <Typography
-                className={classes.long_text}
-              >
-                {summaryLong}
-              </Typography>
-              <Typography
-                className={classes.short_text}
-                aria-label={summaryLong}
-              >
-                {/* Use the long summary instead of short one for screen readers */}
-                <span aria-hidden={true}>
-                  {summaryShort}
-                </span>
-              </Typography>
-            </div>
+            <Typography
+              className={classNames(
+                classes.summarySummary,
+                classes.longText,
+              )}
+            >
+              {summaryLong}
+            </Typography>
+            <Typography
+              className={classNames(
+                classes.summarySummary,
+                classes.shortText,
+              )}
+              aria-label={summaryLong}
+            >
+              {/* Use the long summary instead of short one for screen readers */}
+              <span aria-hidden={true}>
+                {summaryShort}
+              </span>
+            </Typography>
             <div>
               <Typography
                 className={classNames(
-                  classes.long_text,
+                  classes.longText,
                   {
-                    [classes.summary_incoming_amount]: amount > 0,
+                    [classes.summaryIncomingAmount]: amount > 0,
                   },
                 )}
                 variant="body2"
@@ -207,9 +248,9 @@ const TxDetailsExpansionPanel = stylesDecorator(injectIntl(
               </Typography>
               <Typography
                 className={classNames(
-                  classes.short_text,
+                  classes.shortText,
                   {
-                    [classes.summary_incoming_amount]: amount > 0,
+                    [classes.summaryIncomingAmount]: amount > 0,
                   },
                 )}
                 variant="body2"
@@ -222,7 +263,11 @@ const TxDetailsExpansionPanel = stylesDecorator(injectIntl(
               </Typography>
             </div>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          <ExpansionPanelDetails
+            classes={{
+              root: classes.detailsRoot,
+            }}
+          >
             <Typography>
               TODO: Transaction details
             </Typography>

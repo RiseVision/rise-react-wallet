@@ -6,7 +6,7 @@ import TxDetailsExpansionPanel from '../components/TxDetailsExpansionPanel';
 
 const styles = (theme: Theme) => createStyles({
   content: {
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing.unit * 2,
   },
   date_group_title: {
     marginTop: theme.spacing.unit * 2,
