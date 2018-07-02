@@ -44,6 +44,8 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
+  address: string;
+  alias: string;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
@@ -51,7 +53,7 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 const DrawerContent = stylesDecorator(
   class extends React.Component<Props> {
     render() {
-      const { classes } = this.props;
+      const { classes, address, alias } = this.props;
 
       return (
         <React.Fragment>
@@ -90,23 +92,12 @@ const DrawerContent = stylesDecorator(
             >
               <ListItemAvatar>
                 <Avatar className={classes.accountAvatar}>
-                  <AccountIcon size={24} address="3884823134173068029R" />
+                  <AccountIcon size={24} address={address} />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary="Demo account"
-                secondary="3884823134173068029R"
-              />
-            </ListItem>
-            <ListItem button={true}>
-              <ListItemAvatar>
-                <Avatar className={classes.accountAvatar}>
-                  <AccountIcon size={24} address="14310415683989235040R" />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary="Unnamed account"
-                secondary="14310415683989235040R"
+                primary={alias}
+                secondary={address}
               />
             </ListItem>
             <ListItem button={true}>

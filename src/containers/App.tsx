@@ -26,6 +26,7 @@ type LoadState<T extends LoaderFactory<any>> =
 interface State {
   locale: Locale;
   page: string;
+  address: string | null;
   translations: {
     [L in Locale]?: LoadState<typeof importTranslation>;
   };
@@ -45,6 +46,7 @@ class App extends React.Component<Props, State> {
     this.state = {
       locale,
       page: 'onboarding-add-account',
+      address: null,
       translations: {},
       components: {},
     };
@@ -293,6 +295,8 @@ class App extends React.Component<Props, State> {
         content = (
           <Wallet
             page={this.state.page}
+            address={this.state.address}
+            onPageChanged={this.handlePageChanged}
           />
         );
       }
@@ -331,8 +335,16 @@ class App extends React.Component<Props, State> {
     );
   }
 
-  handlePageChanged = (page: string) => {
-    this.setState({ page });
+  handlePageChanged = (page: string, props?: {
+    address?: string | null,
+  }) => {
+    let address;
+    if (props && props.address) {
+      address = props.address;
+    } else {
+      address = this.state.address;
+    }
+    this.setState({ page, address });
   }
 
   handleLocaleChanged = (locale: Locale) => {

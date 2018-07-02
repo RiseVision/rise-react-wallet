@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { BackdropProps } from '@material-ui/core/Backdrop';
 import Paper from '@material-ui/core/Paper';
 import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
@@ -34,6 +35,7 @@ const styles = createStyles({
 
 interface Props extends WithStyles<typeof styles> {
   open: boolean;
+  BackdropComponent?: React.ReactType<BackdropProps>;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'ModalPaper' });
@@ -41,7 +43,7 @@ const stylesDecorator = withStyles(styles, { name: 'ModalPaper' });
 const ModalPaper = stylesDecorator(
   class extends React.Component<Props> {
     render() {
-      const { classes, open, children } = this.props;
+      const { classes, open, children, BackdropComponent } = this.props;
       const transitionDuration = {
         enter: duration.enteringScreen,
         exit: duration.leavingScreen,
@@ -53,7 +55,7 @@ const ModalPaper = stylesDecorator(
           BackdropProps={{
             transitionDuration,
           }}
-          BackdropComponent={ModalBackdrop}
+          BackdropComponent={BackdropComponent || ModalBackdrop}
         >
           <Fade
             appear={true}

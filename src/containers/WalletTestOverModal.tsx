@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Backdrop from '@material-ui/core/Backdrop';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
@@ -24,9 +25,9 @@ interface State {
   open: boolean;
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingTestOverPage' });
+const stylesDecorator = withStyles(styles, { name: 'WalletTestOverModal' });
 
-const OnboardingTestOverPage = stylesDecorator(
+const WalletTestOverModal = stylesDecorator(
   class extends React.Component<Props, State> {
     static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
       let state = {
@@ -54,7 +55,7 @@ const OnboardingTestOverPage = stylesDecorator(
       const { open } = this.state;
 
       return (
-        <ModalPaper open={open}>
+        <ModalPaper open={open} BackdropComponent={Backdrop}>
           <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
             <FormattedMessage
               id="onboarding-test-over.title"
@@ -96,4 +97,4 @@ const OnboardingTestOverPage = stylesDecorator(
   }
 );
 
-export default OnboardingTestOverPage;
+export default WalletTestOverModal;
