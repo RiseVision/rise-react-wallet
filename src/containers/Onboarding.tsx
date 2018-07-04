@@ -2,14 +2,9 @@ import * as React from 'react';
 import * as bip39 from 'bip39';
 import { LiskWallet } from 'dpos-offline';
 import { Locale } from '../utils/i18n';
-import OnboardingAddAccountPage from './OnboardingAddAccountPage';
-import OnboardingChooseLanguagePage from './OnboardingChooseLanguagePage';
-import OnboardingNewAccountPage from './OnboardingNewAccountPage';
-import OnboardingSecurityNoticePage from './OnboardingSecurityNoticePage';
 import OnboardingNewMnemonicPage from './OnboardingNewMnemonicPage';
 import OnboardingVerifyMnemonicPage from './OnboardingVerifyMnemonicPage';
 import OnboardingAccountCreatedPage from './OnboardingAccountCreatedPage';
-import OnboardingExistingAccountPage from './OnboardingExistingAccountPage';
 import OnboardingExistingAccountTypePage from './OnboardingExistingAccountTypePage';
 
 interface Props {
@@ -39,7 +34,7 @@ class Onboarding extends React.Component<Props, State> {
   }
 
   render() {
-    const { locale, page } = this.props;
+    const { page } = this.props;
 
     return (
       <React.Fragment>

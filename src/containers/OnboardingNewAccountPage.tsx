@@ -21,11 +21,11 @@ interface Props {
 @observer
 class OnboardingNewAccountPage extends React.Component<Props> {
   handleBackClick = () => {
-    this.props.store.router.goTo(onboardingAddAccountRoute);
+    this.props.store!.router.goTo(onboardingAddAccountRoute);
   }
 
   handleMnemonicClick = () => {
-    this.props.store.router.goTo(onboardingSecurityNoticeRoute);
+    this.props.store!.router.goTo(onboardingSecurityNoticeRoute);
   }
 
   render() {

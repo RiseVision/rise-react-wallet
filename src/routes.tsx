@@ -4,12 +4,13 @@ import { Route } from 'mobx-router';
 // components
 import OnboardingAddAccountPage from './containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from './containers/OnboardingChooseLanguagePage';
-import OnboardingExistingAccountPage from './containers/OnboardingExistingAccountPage';
+// import OnboardingExistingAccountPage from './containers/OnboardingExistingAccountPage';
 import OnboardingNewAccountPage from './containers/OnboardingNewAccountPage';
 import OnboardingSecurityNoticePage from './containers/OnboardingSecurityNoticePage';
+import Store from './store';
 // import Wallet from "./containers/Wallet";
 
-export const onboardingAddAccountRoute = new Route({
+export const onboardingAddAccountRoute = new Route<Store>({
   path: '/onboarding/add-account',
   component: (
     <React.Fragment>
@@ -19,14 +20,14 @@ export const onboardingAddAccountRoute = new Route({
   )
 });
 
-export const homeRoute = new Route({
+export const homeRoute = new Route<Store>({
   path: '/',
-  onEnter: (route, params, store, queryParams) => {
+  onEnter: (route: Route<Store>, params: {}, store: Store) => {
     store.router.goTo(onboardingAddAccountRoute);
   }
 });
 
-export const onboardingChooseLanguageRoute = new Route({
+export const onboardingChooseLanguageRoute = new Route<Store>({
   path: '/onboarding/choose-language',
   component: (
     <React.Fragment>
@@ -36,7 +37,7 @@ export const onboardingChooseLanguageRoute = new Route({
   )
 });
 
-export const onboardingExistingAccountRoute = new Route({
+export const onboardingExistingAccountRoute = new Route<Store>({
   path: '/onboarding/existing-account'
   // component: (
   //   <React.Fragment>
@@ -47,7 +48,7 @@ export const onboardingExistingAccountRoute = new Route({
   // )
 });
 
-export const onboardingNewAccountRoute = new Route({
+export const onboardingNewAccountRoute = new Route<Store>({
   path: '/onboarding/new-account',
   component: (
     <React.Fragment>
@@ -57,7 +58,7 @@ export const onboardingNewAccountRoute = new Route({
   )
 });
 
-export const onboardingSecurityNoticeRoute = new Route({
+export const onboardingSecurityNoticeRoute = new Route<Store>({
   path: '/onboarding/security-notice',
   component: (
     <React.Fragment>
@@ -67,7 +68,7 @@ export const onboardingSecurityNoticeRoute = new Route({
   )
 });
 
-export const onboardingNewMnemonicRoute = new Route({
+export const onboardingNewMnemonicRoute = new Route<Store>({
   path: '/onboarding/new-mnemonic',
   component: (
     <React.Fragment>

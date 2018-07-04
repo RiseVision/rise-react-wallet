@@ -56,8 +56,8 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage
 @observer
 class OnboardingChooseLanguagePage extends React.Component<Props> {
   handleLanguageClicked = async (locale: Locale) => {
-    await this.props.store.changeLanguage(locale);
-    this.props.store.router.goTo(onboardingAddAccountRoute);
+    await this.props.store!.changeLanguage(locale);
+    this.props.store!.router.goTo(onboardingAddAccountRoute);
   }
 
   render() {

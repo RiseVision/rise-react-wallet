@@ -114,7 +114,7 @@ class OnboardingExistingAccountPage extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.props;
-    const { open, address, addressInvalid, normalizedAddress } = this.state;
+    const { address, addressInvalid, normalizedAddress } = this.state;
 
     return (
       <ModalPaper open={true}>

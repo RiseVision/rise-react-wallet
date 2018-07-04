@@ -26,7 +26,7 @@ class App extends React.Component<Props, State> {
     let currentError = null;
     let isLoading = false;
 
-    const store = this.props.store;
+    const store = this.props.store!;
     let locale = store.locale;
 
     let translations = store.translations[locale];

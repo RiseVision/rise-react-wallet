@@ -7,7 +7,7 @@ import {
   onboardingNewAccountRoute
 } from '../routes';
 import Store from '../store';
-import { Locale, getMainCountryForLocale } from '../utils/i18n';
+import { getMainCountryForLocale } from '../utils/i18n';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -35,15 +35,15 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' })
 @observer
 class OnboardingAddAccountPage extends React.Component<Props> {
   handleNewAccountClicked = () => {
-    this.props.store.router.goTo(onboardingNewAccountRoute);
+    this.props.store!.router.goTo(onboardingNewAccountRoute);
   }
 
   handleExistingAccountClicked = () => {
-    this.props.store.router.goTo(onboardingExistingAccountRoute);
+    this.props.store!.router.goTo(onboardingExistingAccountRoute);
   }
 
   handleChooseLanguageClicked = () => {
-    this.props.store.router.goTo(onboardingChooseLanguageRoute);
+    this.props.store!.router.goTo(onboardingChooseLanguageRoute);
   }
 
   render() {
@@ -108,7 +108,7 @@ class OnboardingAddAccountPage extends React.Component<Props> {
             <ChevronRight />
           </ListItem>
           <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
-            <FlagIcon countryCode={getMainCountryForLocale(store.locale)} />
+            <FlagIcon countryCode={getMainCountryForLocale(store!.locale)} />
             <ListItemText>
               <FormattedMessage
                 id="onboarding-add-account.change-language"

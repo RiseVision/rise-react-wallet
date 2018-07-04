@@ -66,7 +66,7 @@ class OnboardingSecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    this.props.store.router.goTo(onboardingNewAccountRoute);
+    this.props.store!.router.goTo(onboardingNewAccountRoute);
   }
 
   handleNextTipClick = () => {
@@ -76,7 +76,7 @@ class OnboardingSecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleContinueClick = () => {
-    this.props.store.router.goTo(onboardingNewMnemonicRoute);
+    this.props.store!.router.goTo(onboardingNewMnemonicRoute);
   }
 
   render() {
