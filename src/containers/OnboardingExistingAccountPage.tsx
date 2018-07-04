@@ -1,4 +1,4 @@
-import {inject, observer} from "mobx-react";
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@material-ui/core/Grid';
@@ -9,7 +9,7 @@ import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import AccountIcon from '../components/AccountIcon';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import Store from "../store";
+import Store from '../store';
 
 const styles = createStyles({
   content: {
@@ -28,7 +28,7 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store: Store
+  store: Store;
   open: boolean;
   accountAddress?: string;
   onGoBack: () => void;
@@ -44,7 +44,7 @@ interface State {
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingExistingAccountPage' });
 
-@inject("store")
+@inject('store')
 @observer
 class OnboardingExistingAccountPage extends React.Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
@@ -186,7 +186,7 @@ class OnboardingExistingAccountPage extends React.Component<Props, State> {
       </ModalPaper>
     );
   }
-};
+}
 
 function normalizeAddress(address: string): string {
   const normalizedAddress = address.toUpperCase();

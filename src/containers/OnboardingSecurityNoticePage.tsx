@@ -45,7 +45,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store
+  store?: Store;
 }
 
 interface State {
@@ -54,7 +54,7 @@ interface State {
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage' });
 
-@inject("store")
+@inject('store')
 @observer
 class OnboardingSecurityNoticePage extends React.Component<Props, State> {
 
@@ -66,7 +66,7 @@ class OnboardingSecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    this.props.store.router.goTo(onboardingNewAccountRoute)
+    this.props.store.router.goTo(onboardingNewAccountRoute);
   }
 
   handleNextTipClick = () => {
@@ -76,7 +76,7 @@ class OnboardingSecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleContinueClick = () => {
-    this.props.store.router.goTo(onboardingNewMnemonicRoute)
+    this.props.store.router.goTo(onboardingNewMnemonicRoute);
   }
 
   render() {

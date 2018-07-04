@@ -14,18 +14,18 @@ import {
 import Store from '../store';
 
 interface Props {
-  store?: Store
+  store?: Store;
 }
 
-@inject("store")
+@inject('store')
 @observer
 class OnboardingNewAccountPage extends React.Component<Props> {
   handleBackClick = () => {
-    this.props.store.router.goTo(onboardingAddAccountRoute)
+    this.props.store.router.goTo(onboardingAddAccountRoute);
   }
 
   handleMnemonicClick = () => {
-    this.props.store.router.goTo(onboardingSecurityNoticeRoute)
+    this.props.store.router.goTo(onboardingSecurityNoticeRoute);
   }
 
   render() {

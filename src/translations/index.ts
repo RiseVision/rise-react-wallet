@@ -33,15 +33,13 @@ const translations: {
   en: async () => ({
     default: {
       data: [],
-      messages: {},
-    },
-  }),
+      messages: {}
+    }
+  })
 };
 
 export async function importTranslation(locale: Locale): Promise<Messages> {
-  let data = await translations[locale]()
-  // TODO debug
-  console.log(`Loaded translation ${locale}`, data)
+  let data = await translations[locale]();
   // Automatically inject locale data into runtime
   addLocaleData(data.default.data);
 

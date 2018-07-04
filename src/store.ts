@@ -7,7 +7,7 @@ export default class Store {
   router = new RouterStore();
 
   @observable translations: { [L in Locale]?: Messages } = {};
-  @observable translation_error: Error | null = null;
+  @observable translationError: Error | null = null;
 
   // TODO: Attempt to restore locale from a cookie/local storage.
   @observable locale = getUserLocales()[0] || 'en';
@@ -17,7 +17,7 @@ export default class Store {
 
   @action
   async loadTranslation(locale: Locale) {
-    this.translation_error = null;
+    this.translationError = null;
     if (this.translations[locale]) {
       return;
     }
@@ -25,7 +25,7 @@ export default class Store {
     try {
       this.translations[locale] = await importTranslation(locale);
     } catch (err) {
-      this.translation_error = err;
+      this.translationError = err;
     }
   }
 

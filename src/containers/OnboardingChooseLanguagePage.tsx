@@ -47,17 +47,17 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store
+  store?: Store;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage' });
 
-@inject("store")
+@inject('store')
 @observer
 class OnboardingChooseLanguagePage extends React.Component<Props> {
   handleLanguageClicked = async (locale: Locale) => {
     await this.props.store.changeLanguage(locale);
-    this.props.store.router.goTo(onboardingAddAccountRoute)
+    this.props.store.router.goTo(onboardingAddAccountRoute);
   }
 
   render() {

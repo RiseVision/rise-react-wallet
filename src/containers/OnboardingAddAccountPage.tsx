@@ -26,24 +26,24 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store
+  store?: Store;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
 
-@inject("store")
+@inject('store')
 @observer
 class OnboardingAddAccountPage extends React.Component<Props> {
   handleNewAccountClicked = () => {
-    this.props.store.router.goTo(onboardingNewAccountRoute)
+    this.props.store.router.goTo(onboardingNewAccountRoute);
   }
 
   handleExistingAccountClicked = () => {
-    this.props.store.router.goTo(onboardingExistingAccountRoute)
+    this.props.store.router.goTo(onboardingExistingAccountRoute);
   }
 
   handleChooseLanguageClicked = () => {
-    this.props.store.router.goTo(onboardingChooseLanguageRoute)
+    this.props.store.router.goTo(onboardingChooseLanguageRoute);
   }
 
   render() {
