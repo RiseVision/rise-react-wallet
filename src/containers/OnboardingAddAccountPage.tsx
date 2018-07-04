@@ -1,5 +1,12 @@
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import {
+  onboardingChooseLanguageRoute,
+  onboardingExistingAccountRoute,
+  onboardingNewAccountRoute
+} from '../routes';
+import Store from '../store';
 import { Locale, getMainCountryForLocale } from '../utils/i18n';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -19,106 +26,103 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  open: boolean;
-  locale: Locale;
-  onOpenChooseLanguage: () => void;
-  onOpenNewAccount: () => void;
-  onOpenExistingAccount: () => void;
+  store?: Store
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
 
-const OnboardingAddAccountPage = stylesDecorator(
-  class extends React.Component<Props> {
-    handleNewAccountClicked = () => {
-      this.props.onOpenNewAccount();
-    }
-
-    handleExistingAccountClicked = () => {
-      this.props.onOpenExistingAccount();
-    }
-
-    handleChooseLanguageClicked = () => {
-      this.props.onOpenChooseLanguage();
-    }
-
-    render() {
-      const { classes } = this.props;
-
-      return (
-        <ModalPaper open={this.props.open}>
-          <ModalPaperHeader>
-            <FormattedMessage
-              id="onboarding-add-account.title"
-              description="Add account screen title"
-              defaultMessage="{icon} RISE wallet"
-              values={{
-                icon: (
-                  <img
-                    className={classes.titleIcon}
-                    src={riseIcon}
-                    height={24}
-                    alt=""
-                  />
-                ),
-              }}
-            />
-          </ModalPaperHeader>
-          <List>
-            <ListItem button={true} onClick={this.handleNewAccountClicked}>
-              <ListItemText
-                primary={(
-                  <FormattedMessage
-                    id="onboarding-add-account.new-account"
-                    description="New account button title"
-                    defaultMessage="New account"
-                  />
-                )}
-                secondary={(
-                  <FormattedMessage
-                    id="onboarding-add-account.new-account-tip"
-                    description="New account button tip"
-                    defaultMessage="I want to create a new account on the RISE network"
-                  />
-                )}
-              />
-              <ChevronRight />
-            </ListItem>
-            <ListItem button={true} onClick={this.handleExistingAccountClicked}>
-              <ListItemText
-                primary={(
-                  <FormattedMessage
-                    id="onboarding-add-account.existing-account"
-                    description="Existing account button title"
-                    defaultMessage="Existing account"
-                  />
-                )}
-                secondary={(
-                  <FormattedMessage
-                    id="onboarding-add-account.existing-account-tip"
-                    description="Existing account button tip"
-                    defaultMessage="I want to access an existing account on the RISE network"
-                  />
-                )}
-              />
-              <ChevronRight />
-            </ListItem>
-            <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
-              <FlagIcon countryCode={getMainCountryForLocale(this.props.locale)} />
-              <ListItemText>
-                <FormattedMessage
-                  id="onboarding-add-account.change-language"
-                  description="Change language button label"
-                  defaultMessage="Change language"
-                />
-              </ListItemText>
-              <ChevronRight />
-            </ListItem>
-          </List>
-        </ModalPaper>
-      );
-    }
+@inject("store")
+@observer
+class OnboardingAddAccountPage extends React.Component<Props> {
+  handleNewAccountClicked = () => {
+    this.props.store.router.goTo(onboardingNewAccountRoute)
   }
-);
 
-export default OnboardingAddAccountPage;
+  handleExistingAccountClicked = () => {
+    this.props.store.router.goTo(onboardingExistingAccountRoute)
+  }
+
+  handleChooseLanguageClicked = () => {
+    this.props.store.router.goTo(onboardingChooseLanguageRoute)
+  }
+
+  render() {
+    const { classes, store } = this.props;
+
+    return (
+      <ModalPaper open={true}>
+        <ModalPaperHeader>
+          <FormattedMessage
+            id="onboarding-add-account.title"
+            description="Add account screen title"
+            defaultMessage="{icon} RISE wallet"
+            values={{
+              icon: (
+                <img
+                  className={classes.titleIcon}
+                  src={riseIcon}
+                  height={24}
+                  alt=""
+                />
+              ),
+            }}
+          />
+        </ModalPaperHeader>
+        <List>
+          <ListItem button={true} onClick={this.handleNewAccountClicked}>
+            <ListItemText
+              primary={(
+                <FormattedMessage
+                  id="onboarding-add-account.new-account"
+                  description="New account button title"
+                  defaultMessage="New account"
+                />
+              )}
+              secondary={(
+                <FormattedMessage
+                  id="onboarding-add-account.new-account-tip"
+                  description="New account button tip"
+                  defaultMessage="I want to create a new account on the RISE network"
+                />
+              )}
+            />
+            <ChevronRight />
+          </ListItem>
+          <ListItem button={true} onClick={this.handleExistingAccountClicked}>
+            <ListItemText
+              primary={(
+                <FormattedMessage
+                  id="onboarding-add-account.existing-account"
+                  description="Existing account button title"
+                  defaultMessage="Existing account"
+                />
+              )}
+              secondary={(
+                <FormattedMessage
+                  id="onboarding-add-account.existing-account-tip"
+                  description="Existing account button tip"
+                  defaultMessage="I want to access an existing account on the RISE network"
+                />
+              )}
+            />
+            <ChevronRight />
+          </ListItem>
+          <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
+            <FlagIcon countryCode={getMainCountryForLocale(store.locale)} />
+            <ListItemText>
+              <FormattedMessage
+                id="onboarding-add-account.change-language"
+                description="Change language button label"
+                defaultMessage="Change language"
+              />
+            </ListItemText>
+            <ChevronRight />
+          </ListItem>
+        </List>
+      </ModalPaper>
+    );
+  }
+}
+
+// TODO make it a decorator
+export default stylesDecorator(OnboardingAddAccountPage);

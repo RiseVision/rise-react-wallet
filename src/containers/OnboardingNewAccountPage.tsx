@@ -1,3 +1,4 @@
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import List from '@material-ui/core/List';
@@ -6,25 +7,30 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
+import {
+  onboardingAddAccountRoute,
+  onboardingSecurityNoticeRoute
+} from '../routes';
+import Store from '../store';
 
 interface Props {
-  open: boolean;
-  onGoBack: () => void;
-  onGenerateMnemonic: () => void;
+  store?: Store
 }
 
+@inject("store")
+@observer
 class OnboardingNewAccountPage extends React.Component<Props> {
   handleBackClick = () => {
-    this.props.onGoBack();
+    this.props.store.router.goTo(onboardingAddAccountRoute)
   }
 
   handleMnemonicClick = () => {
-    this.props.onGenerateMnemonic();
+    this.props.store.router.goTo(onboardingSecurityNoticeRoute)
   }
 
   render() {
     return (
-      <ModalPaper open={this.props.open}>
+      <ModalPaper open={true}>
         <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-new-account.title"

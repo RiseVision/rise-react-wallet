@@ -43,7 +43,7 @@ class Onboarding extends React.Component<Props, State> {
 
     return (
       <React.Fragment>
-        <OnboardingAddAccountPage
+        {/*<OnboardingAddAccountPage
           open={page === 'onboarding-add-account'}
           locale={locale}
           onOpenChooseLanguage={this.handleOpenOnboardingChooseLanguagePage}
@@ -63,7 +63,7 @@ class Onboarding extends React.Component<Props, State> {
           open={page === 'onboarding-security-notice'}
           onClose={this.handleOpenOnboardingNewAccountPage}
           onContinue={this.handleOpenOnboardingNewMnemonicPage}
-        />
+        />*/}
         <OnboardingNewMnemonicPage
           open={page === 'onboarding-new-mnemonic' && !!this.state.mnemonic}
           mnemonic={this.state.mnemonic || ['<N/A>']}
@@ -81,12 +81,12 @@ class Onboarding extends React.Component<Props, State> {
           accountAddress={this.state.address || '<N/A>'}
           onOpenOverview={this.handleOpenOnboardingAddAccountPage}
         />
-        <OnboardingExistingAccountPage
+        {/*<OnboardingExistingAccountPage
           open={page === 'onboarding-existing-account'}
           accountAddress={this.state.address || ''}
           onGoBack={this.handleOpenOnboardingAddAccountPage}
           onAddressEntered={this.handleOpenOnboardingExistingAccountTypePage}
-        />
+        />*/}
         <OnboardingExistingAccountTypePage
           open={page === 'onboarding-existing-account-type'}
           onGoBack={this.handleOpenOnboardingExistingAccountPage}

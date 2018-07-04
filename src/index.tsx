@@ -2,7 +2,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './containers/App';
-import routes from './routes';
+import * as routes from './routes';
 import Store from './store';
 import registerServiceWorker from './registerServiceWorker';
 import { startRouter } from 'mobx-router';

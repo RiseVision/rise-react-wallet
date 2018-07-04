@@ -28,4 +28,10 @@ export default class Store {
       this.translation_error = err;
     }
   }
+
+  @action
+  async changeLanguage(locale: Locale) {
+    await this.loadTranslation(locale);
+    this.locale = locale;
+  }
 }
