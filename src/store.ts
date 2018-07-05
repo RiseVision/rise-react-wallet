@@ -1,3 +1,4 @@
+import { LiskWallet } from 'dpos-offline';
 import { action, observable, configure, runInAction } from 'mobx';
 import { getUserLocales, Locale } from './utils/i18n';
 import { RouterStore } from 'mobx-router';
@@ -11,6 +12,8 @@ export default class Store {
 
   translations: { [L in Locale]?: Messages } = {};
   @observable translationError: Error | null = null;
+  @observable address: string | null = null;
+  @observable mnemonic: string[] | null = null;
 
   // TODO: Attempt to restore locale from a cookie/local storage.
   @observable locale = getUserLocales()[0] || 'en';
@@ -27,7 +30,6 @@ export default class Store {
 
     try {
       const ret = await importTranslation(locale);
-      // alter the store
       this.translations[locale] = ret;
     } catch (err) {
       // alter the store
@@ -44,5 +46,12 @@ export default class Store {
     runInAction(() => {
       this.locale = locale;
     });
+  }
+
+  @action
+  onAccountCreated(mnemonic: string[]) {
+    this.mnemonic = mnemonic;
+    const wallet = new LiskWallet(mnemonic.join(' '), 'R');
+    this.address = wallet.address;
   }
 }

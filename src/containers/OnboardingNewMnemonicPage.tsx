@@ -1,3 +1,5 @@
+import * as bip39 from 'bip39';
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
@@ -7,6 +9,11 @@ import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import * as classNames from 'classnames';
 import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import {
+  onboardingNewAccountRoute,
+  onboardingVerifyMnemonicsRoute
+} from '../routes';
+import Store from '../store';
 
 const styles = (theme: Theme) => {
   const { pxToRem } = theme.typography;
@@ -61,134 +68,124 @@ const styles = (theme: Theme) => {
   });
 };
 
+function newMnemonic(): string[] {
+  return bip39.generateMnemonic().split(' ');
+}
+
 function round(val: number) {
   return Math.round(val * 1e5) / 1e5;
 }
 
 interface Props extends WithStyles<typeof styles> {
-  open: boolean;
-  mnemonic: string[];
-  onClose: () => void;
-  onVerifyMnemonic: () => void;
+  store?: Store;
+  mnemonic?: string[];
 }
 
 interface State {
-  open: boolean;
   mnemonic: string[];
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingNewMnemonicPage' });
 
-const OnboardingNewMnemonicPage = stylesDecorator(
-  class extends React.Component<Props, State> {
-    static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
-      let state = {
-        ...prevState,
-        open: nextProps.open,
-      };
+@inject('store')
+@observer
+class OnboardingNewMnemonicPage extends React.Component<Props, State> {
 
-      if (state.open) {
-        state.mnemonic = nextProps.mnemonic;
-      }
-
-      return state;
-    }
-
-    constructor(props: Props) {
-      super(props);
-      this.state = {
-        open: props.open,
-        mnemonic: props.mnemonic,
-      };
-    }
-
-    handleCloseClick = () => {
-      this.props.onClose();
-    }
-
-    handleContinueClick = () => {
-      this.props.onVerifyMnemonic();
-    }
-
-    render() {
-      const { classes } = this.props;
-      const { open, mnemonic } = this.state;
-      const wordCount = mnemonic.length;
-
-      return (
-        <ModalPaper open={open}>
-          <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
-            <FormattedMessage
-              id="onboarding-new-mnemonic.title"
-              description="New mnemonic screen title"
-              defaultMessage="Write this down"
-            />
-          </ModalPaperHeader>
-          <Grid container={true} className={classes.content} spacing={16} justify="center">
-            <Grid item={true} xs={12}>
-              <Typography>
-                <FormattedMessage
-                  id="onboarding-new-mnemonic.mnemonic-pretext"
-                  description="Text before the mnemonic secret"
-                  defaultMessage={`This is your new {wordCount, number}-word mnemonic secret:`}
-                  values={{
-                    wordCount,
-                  }}
-                />
-              </Typography>
-            </Grid>
-            <Grid item={true} xs={12}>
-              <Typography className={classes.mnemonic} component="p" variant="title">
-                {mnemonic.map((word, idx) => (
-                  <React.Fragment key={idx}>
-                    {idx > 0 && ' '}
-                    <span
-                      className={classNames(
-                        classes.word,
-                        classes[`word-${idx + 1}`],
-                      )}
-                    >
-                      {word}
-                    </span>
-                  </React.Fragment>
-                ))}
-              </Typography>
-            </Grid>
-            <Grid item={true} xs={12}>
-              <Typography>
-                <FormattedMessage
-                  id="onboarding-new-mnemonic.write-mnemonic-down"
-                  description="Instructions to write down the mnemonic"
-                  defaultMessage={
-                    `Write your mnemonic down on a physical piece of paper so ` +
-                    `that you could store it in a safe place later.`
-                  }
-                />
-              </Typography>
-            </Grid>
-            <Grid item={true} xs={12}>
-              <Typography>
-                <FormattedMessage
-                  id="onboarding-new-mnemonic.mnemonic-grants-full-access"
-                  description="Final notice about the seriousness of mnemonic"
-                  defaultMessage="NB! Anyone who knows this can transfer funds out of your account."
-                />
-              </Typography>
-            </Grid>
-            <Grid item={true} xs={12}>
-              <Button fullWidth={true} onClick={this.handleContinueClick}>
-                <FormattedMessage
-                  id="onboarding-new-mnemonic.continue"
-                  description="Continue button label"
-                  defaultMessage="Continue"
-                />
-              </Button>
-            </Grid>
-          </Grid>
-        </ModalPaper>
-      );
-    }
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      mnemonic: props.mnemonic || newMnemonic(),
+    };
   }
-);
 
-export default OnboardingNewMnemonicPage;
+  handleCloseClick = () => {
+    this.props.store!.router.goTo(onboardingNewAccountRoute);
+  }
+
+  handleContinueClick = () => {
+    this.props.store!.mnemonic = this.state.mnemonic;
+    this.props.store!.router.goTo(onboardingVerifyMnemonicsRoute);
+  }
+
+  render() {
+    const { classes } = this.props;
+    const { mnemonic } = this.state;
+    const wordCount = mnemonic.length;
+
+    return (
+      <ModalPaper open={true}>
+        <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
+          <FormattedMessage
+            id="onboarding-new-mnemonic.title"
+            description="New mnemonic screen title"
+            defaultMessage="Write this down"
+          />
+        </ModalPaperHeader>
+        <Grid container={true} className={classes.content} spacing={16} justify="center">
+          <Grid item={true} xs={12}>
+            <Typography>
+              <FormattedMessage
+                id="onboarding-new-mnemonic.mnemonic-pretext"
+                description="Text before the mnemonic secret"
+                defaultMessage={`This is your new {wordCount, number}-word mnemonic secret:`}
+                values={{
+                  wordCount,
+                }}
+              />
+            </Typography>
+          </Grid>
+          <Grid item={true} xs={12}>
+            <Typography className={classes.mnemonic} component="p" variant="title">
+              {mnemonic.map((word, idx) => (
+                <React.Fragment key={idx}>
+                  {idx > 0 && ' '}
+                  <span
+                    className={classNames(
+                      classes.word,
+                      classes[`word-${idx + 1}`],
+                    )}
+                  >
+                    {word}
+                  </span>
+                </React.Fragment>
+              ))}
+            </Typography>
+          </Grid>
+          <Grid item={true} xs={12}>
+            <Typography>
+              <FormattedMessage
+                id="onboarding-new-mnemonic.write-mnemonic-down"
+                description="Instructions to write down the mnemonic"
+                defaultMessage={
+                  `Write your mnemonic down on a physical piece of paper so ` +
+                  `that you could store it in a safe place later.`
+                }
+              />
+            </Typography>
+          </Grid>
+          <Grid item={true} xs={12}>
+            <Typography>
+              <FormattedMessage
+                id="onboarding-new-mnemonic.mnemonic-grants-full-access"
+                description="Final notice about the seriousness of mnemonic"
+                defaultMessage="NB! Anyone who knows this can transfer funds out of your account."
+              />
+            </Typography>
+          </Grid>
+          <Grid item={true} xs={12}>
+            <Button fullWidth={true} onClick={this.handleContinueClick}>
+              <FormattedMessage
+                id="onboarding-new-mnemonic.continue"
+                description="Continue button label"
+                defaultMessage="Continue"
+              />
+            </Button>
+          </Grid>
+        </Grid>
+      </ModalPaper>
+    );
+  }
+}
+
+// TODO make it a decorator
+export default stylesDecorator(OnboardingNewMnemonicPage);

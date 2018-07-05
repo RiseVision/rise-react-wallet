@@ -1,23 +1,25 @@
 import * as React from 'react';
-import ModalBackdrop from './components/ModalBackdrop';
 import { Route } from 'mobx-router';
 // components
+import OnboardingAccountCreatedPage from './containers/OnboardingAccountCreatedPage';
+import Onboarding from './containers/Onboarding';
 import OnboardingAddAccountPage from './containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from './containers/OnboardingChooseLanguagePage';
 import OnboardingExistingAccountPage from './containers/OnboardingExistingAccountPage';
 import OnboardingExistingAccountTypePage from './containers/OnboardingExistingAccountTypePage';
 import OnboardingNewAccountPage from './containers/OnboardingNewAccountPage';
+import OnboardingNewMnemonicPage from './containers/OnboardingNewMnemonicPage';
 import OnboardingSecurityNoticePage from './containers/OnboardingSecurityNoticePage';
+import OnboardingVerifyMnemonicPage from './containers/OnboardingVerifyMnemonicPage';
 import Store from './store';
 // import Wallet from "./containers/Wallet";
 
 export const onboardingAddAccountRoute = new Route<Store>({
   path: '/onboarding/add-account',
   component: (
-    <React.Fragment>
-      <ModalBackdrop open={true} transitionDuration={0} />
+    <Onboarding>
       <OnboardingAddAccountPage />
-    </React.Fragment>
+    </Onboarding>
   )
 });
 
@@ -31,60 +33,81 @@ export const homeRoute = new Route<Store>({
 export const onboardingChooseLanguageRoute = new Route<Store>({
   path: '/onboarding/choose-language',
   component: (
-    <React.Fragment>
-      <ModalBackdrop open={true} transitionDuration={0} />
+    <Onboarding>
       <OnboardingChooseLanguagePage />
-    </React.Fragment>
+    </Onboarding>
   )
 });
 
 export const onboardingExistingAccountRoute = new Route<Store>({
   path: '/onboarding/existing-account',
   component: (
-    <React.Fragment>
-      <ModalBackdrop open={true} transitionDuration={0} />
-      <OnboardingExistingAccountPage accountAddress={'test test test'} />
-    </React.Fragment>
+    <Onboarding>
+      <OnboardingExistingAccountPage />
+    </Onboarding>
   )
 });
 
 export const onboardingExistingAccountTypeRoute = new Route<Store>({
   path: '/onboarding/existing-account-type',
   component: (
-    <React.Fragment>
-      <ModalBackdrop open={true} transitionDuration={0} />
+    <Onboarding>
       <OnboardingExistingAccountTypePage />
-    </React.Fragment>
+    </Onboarding>
   )
 });
 
 export const onboardingNewAccountRoute = new Route<Store>({
   path: '/onboarding/new-account',
   component: (
-    <React.Fragment>
-      <ModalBackdrop open={true} transitionDuration={0} />
+    <Onboarding>
       <OnboardingNewAccountPage />
-    </React.Fragment>
+    </Onboarding>
+  )
+});
+
+export const onboardingNewMnemonicsRoute = new Route<Store>({
+  path: '/onboarding/new-mnemonic',
+  component: (
+    <Onboarding>
+      <OnboardingNewMnemonicPage />
+    </Onboarding>
+  )
+});
+
+export const onboardingVerifyMnemonicsRoute = new Route<Store>({
+  path: '/onboarding/verify-mnemonic',
+  component: (
+    <Onboarding>
+      <OnboardingVerifyMnemonicPage />
+    </Onboarding>
+  )
+});
+
+export const onboardingAccountCreatedRoute = new Route<Store>({
+  path: '/onboarding/account-created',
+  component: (
+    <Onboarding>
+      <OnboardingAccountCreatedPage />
+    </Onboarding>
   )
 });
 
 export const onboardingSecurityNoticeRoute = new Route<Store>({
   path: '/onboarding/security-notice',
   component: (
-    <React.Fragment>
-      <ModalBackdrop open={true} transitionDuration={0} />
+    <Onboarding>
       <OnboardingSecurityNoticePage />
-    </React.Fragment>
+    </Onboarding>
   )
 });
 
 export const onboardingNewMnemonicRoute = new Route<Store>({
   path: '/onboarding/new-mnemonic',
   component: (
-    <React.Fragment>
-      <ModalBackdrop open={true} transitionDuration={0} />
-      <OnboardingSecurityNoticePage />
-    </React.Fragment>
+    <Onboarding>
+      <OnboardingNewMnemonicPage />
+    </Onboarding>
   )
 });
 
