@@ -9,7 +9,7 @@ configure({ enforceActions: true });
 export default class Store {
   router = new RouterStore();
 
-  @observable translations: { [L in Locale]?: Messages } = {};
+  translations: { [L in Locale]?: Messages } = {};
   @observable translationError: Error | null = null;
 
   // TODO: Attempt to restore locale from a cookie/local storage.
@@ -28,9 +28,7 @@ export default class Store {
     try {
       const ret = await importTranslation(locale);
       // alter the store
-      runInAction(() => {
-        this.translations[locale] = ret;
-      });
+      this.translations[locale] = ret;
     } catch (err) {
       // alter the store
       runInAction(() => {
