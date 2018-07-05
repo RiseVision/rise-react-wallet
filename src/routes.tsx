@@ -4,7 +4,8 @@ import { Route } from 'mobx-router';
 // components
 import OnboardingAddAccountPage from './containers/OnboardingAddAccountPage';
 import OnboardingChooseLanguagePage from './containers/OnboardingChooseLanguagePage';
-// import OnboardingExistingAccountPage from './containers/OnboardingExistingAccountPage';
+import OnboardingExistingAccountPage from './containers/OnboardingExistingAccountPage';
+import OnboardingExistingAccountTypePage from './containers/OnboardingExistingAccountTypePage';
 import OnboardingNewAccountPage from './containers/OnboardingNewAccountPage';
 import OnboardingSecurityNoticePage from './containers/OnboardingSecurityNoticePage';
 import Store from './store';
@@ -38,14 +39,23 @@ export const onboardingChooseLanguageRoute = new Route<Store>({
 });
 
 export const onboardingExistingAccountRoute = new Route<Store>({
-  path: '/onboarding/existing-account'
-  // component: (
-  //   <React.Fragment>
-  //     <ModalBackdrop open={true} transitionDuration={0} />
-  //     // @ts-ignore
-  //     <OnboardingExistingAccountPage/>
-  //   </React.Fragment>
-  // )
+  path: '/onboarding/existing-account',
+  component: (
+    <React.Fragment>
+      <ModalBackdrop open={true} transitionDuration={0} />
+      <OnboardingExistingAccountPage accountAddress={'test test test'} />
+    </React.Fragment>
+  )
+});
+
+export const onboardingExistingAccountTypeRoute = new Route<Store>({
+  path: '/onboarding/existing-account-type',
+  component: (
+    <React.Fragment>
+      <ModalBackdrop open={true} transitionDuration={0} />
+      <OnboardingExistingAccountTypePage />
+    </React.Fragment>
+  )
 });
 
 export const onboardingNewAccountRoute = new Route<Store>({

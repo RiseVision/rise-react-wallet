@@ -9,58 +9,57 @@ import ModalPaper from '../components/ModalPaper';
 import ModalPaperHeader from '../components/ModalPaperHeader';
 import AccountIcon from '../components/AccountIcon';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import {
+  onboardingAddAccountRoute,
+  onboardingExistingAccountTypeRoute
+} from '../routes';
 import Store from '../store';
 
 const styles = createStyles({
   content: {
-    padding: 20,
+    padding: 20
   },
   accountContainer: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   accountField: {
-    flex: 1,
+    flex: 1
   },
   accountIcon: {
-    marginLeft: 10,
-  },
+    marginLeft: 10
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store: Store;
-  open: boolean;
+  store?: Store;
   accountAddress?: string;
-  onGoBack: () => void;
-  onAddressEntered: (address: string) => void;
 }
 
 interface State {
-  open: boolean;
   address: string;
   addressInvalid: boolean;
   normalizedAddress: string;
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingExistingAccountPage' });
+const stylesDecorator = withStyles(styles, {
+  name: 'OnboardingExistingAccountPage'
+});
 
 @inject('store')
 @observer
 class OnboardingExistingAccountPage extends React.Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
     let state = {
-      ...prevState,
-      open: nextProps.open,
+      ...prevState
     };
 
-    if (!prevState.open && state.open) {
-      const address = nextProps.accountAddress || '';
-      if (state.address !== address) {
-        const normalizedAddress = normalizeAddress(address);
-        state.address = address;
-        state.normalizedAddress = normalizedAddress;
-        state.addressInvalid = false;
-      }
+    const address = nextProps.accountAddress || '';
+    if (address && !state.address) {
+      const normalizedAddress = normalizeAddress(address);
+      state.address = address;
+      state.normalizedAddress = normalizedAddress;
+      state.addressInvalid = false;
     }
 
     return state;
@@ -71,15 +70,14 @@ class OnboardingExistingAccountPage extends React.Component<Props, State> {
 
     const address = props.accountAddress || '';
     this.state = {
-      open: props.open,
       address,
       addressInvalid: false,
-      normalizedAddress: normalizeAddress(address),
+      normalizedAddress: normalizeAddress(address)
     };
   }
 
   handleBackClick = () => {
-    this.props.onGoBack();
+    this.props.store!.router.goTo(onboardingAddAccountRoute);
   }
 
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
@@ -92,7 +90,7 @@ class OnboardingExistingAccountPage extends React.Component<Props, State> {
       return;
     }
 
-    this.props.onAddressEntered(normalizedAddress);
+    this.props.store!.router.goTo(onboardingExistingAccountTypeRoute);
   }
 
   handleAddressChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +100,7 @@ class OnboardingExistingAccountPage extends React.Component<Props, State> {
     this.setState({
       address,
       addressInvalid: false,
-      normalizedAddress,
+      normalizedAddress
     });
   }
 
@@ -145,13 +143,13 @@ class OnboardingExistingAccountPage extends React.Component<Props, State> {
             <div className={classes.accountContainer}>
               <TextField
                 className={classes.accountField}
-                label={(
+                label={
                   <FormattedMessage
                     id="onboarding-existing-account.address-input-label"
                     description="Account address input label"
                     defaultMessage="Account address"
                   />
-                )}
+                }
                 error={addressInvalid}
                 value={address}
                 onChange={this.handleAddressChange}

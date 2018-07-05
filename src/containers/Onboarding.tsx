@@ -81,13 +81,13 @@ class Onboarding extends React.Component<Props, State> {
           accountAddress={this.state.address || ''}
           onGoBack={this.handleOpenOnboardingAddAccountPage}
           onAddressEntered={this.handleOpenOnboardingExistingAccountTypePage}
-        />*/}
+        />
         <OnboardingExistingAccountTypePage
           open={page === 'onboarding-existing-account-type'}
           onGoBack={this.handleOpenOnboardingExistingAccountPage}
           onFullAccessSelected={this.handleOpenOnboardingAddAccountPage}
           onReadAccessSelected={this.handleOpenOnboardingAddAccountPage}
-        />
+        />*/}
       </React.Fragment>
     );
   }
