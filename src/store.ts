@@ -1,7 +1,10 @@
-import { action, observable } from 'mobx';
+import { action, observable, configure, runInAction } from 'mobx';
 import { getUserLocales, Locale } from './utils/i18n';
 import { RouterStore } from 'mobx-router';
 import { importTranslation, Messages } from './translations';
+
+// make sure only actions modify the store
+configure({ enforceActions: true });
 
 export default class Store {
   router = new RouterStore();
@@ -23,15 +26,25 @@ export default class Store {
     }
 
     try {
-      this.translations[locale] = await importTranslation(locale);
+      const ret = await importTranslation(locale);
+      // alter the store
+      runInAction(() => {
+        this.translations[locale] = ret;
+      });
     } catch (err) {
-      this.translationError = err;
+      // alter the store
+      runInAction(() => {
+        this.translationError = err;
+      });
     }
   }
 
   @action
   async changeLanguage(locale: Locale) {
     await this.loadTranslation(locale);
-    this.locale = locale;
+    // alter the store
+    runInAction(() => {
+      this.locale = locale;
+    });
   }
 }
