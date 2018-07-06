@@ -1,32 +1,12 @@
 export type Locale =
   | 'en'
-  | 'de'
-  | 'es'
   | 'et'
-  | 'fr'
-  | 'it'
-  | 'hu'
-  | 'nl'
-  | 'pl'
-  | 'ro'
-  | 'ru'
-  | 'uk'
-  | 'zh';
+  | 'ko';
 
 export type CountryCode =
-  | 'de'
   | 'gb'
-  | 'es'
   | 'ee'
-  | 'fr'
-  | 'it'
-  | 'hu'
-  | 'nl'
-  | 'pl'
-  | 'ro'
-  | 'ru'
-  | 'ua'
-  | 'cn';
+  | 'kr';
 
 const localeInfo: {
   [P in Locale]: {
@@ -34,18 +14,8 @@ const localeInfo: {
   };
 } = {
   en: { mainCountry: 'gb' },
-  de: { mainCountry: 'de' },
-  es: { mainCountry: 'es' },
   et: { mainCountry: 'ee' },
-  fr: { mainCountry: 'fr' },
-  it: { mainCountry: 'it' },
-  hu: { mainCountry: 'hu' },
-  nl: { mainCountry: 'nl' },
-  pl: { mainCountry: 'pl' },
-  ro: { mainCountry: 'ro' },
-  ru: { mainCountry: 'ru' },
-  uk: { mainCountry: 'ua' },
-  zh: { mainCountry: 'cn' },
+  ko: { mainCountry: 'kr' },
 };
 
 export const Locales: Locale[] = Object.keys(localeInfo) as Locale[];

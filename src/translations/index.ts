@@ -17,18 +17,8 @@ interface TranslationModule {
 const translations: {
   [P in Locale]: () => Promise<TranslationModule>;
 } = {
-  de: () => import('./de'),
-  es: () => import('./es'),
   et: () => import('./et'),
-  fr: () => import('./fr'),
-  it: () => import('./it'),
-  hu: () => import('./hu'),
-  nl: () => import('./nl'),
-  pl: () => import('./pl'),
-  ro: () => import('./ro'),
-  ru: () => import('./ru'),
-  uk: () => import('./uk'),
-  zh: () => import('./zh'),
+  ko: () => import('./ko'),
   // Project language doesn't need to load anything extra
   en: () => Promise.resolve({
     default: {

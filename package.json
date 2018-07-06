@@ -27,19 +27,8 @@
   "riw": {
     "defaultLocale": "en",
     "targetLocales": [
-      "de",
-      "es",
       "et",
-      "fr",
-      "it",
-      "hu",
-      "nl",
-      "pl",
-      "ro",
-      "ru",
-      "uk",
-      "zh",
-      "zh"
+      "ko"
     ],
     "translationsDatabaseFile": "riw-db.json",
     "sourceDirs": [
