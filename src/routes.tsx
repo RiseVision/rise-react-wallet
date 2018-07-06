@@ -1,26 +1,22 @@
 import * as React from 'react';
 import { Route } from 'mobx-router';
-import AccountOverview from './containers/AccountOverview';
+import AsyncComponent from './components/AsyncComponent';
 import Store from './store';
-// components
-import OnboardingAccountCreatedPage from './containers/OnboardingAccountCreatedPage';
-import Onboarding from './containers/Onboarding';
-import OnboardingAddAccountPage from './containers/OnboardingAddAccountPage';
-import OnboardingChooseLanguagePage from './containers/OnboardingChooseLanguagePage';
-import OnboardingExistingAccountPage from './containers/OnboardingExistingAccountPage';
-import OnboardingExistingAccountTypePage from './containers/OnboardingExistingAccountTypePage';
-import OnboardingNewAccountPage from './containers/OnboardingNewAccountPage';
-import OnboardingNewMnemonicPage from './containers/OnboardingNewMnemonicPage';
-import OnboardingSecurityNoticePage from './containers/OnboardingSecurityNoticePage';
-import OnboardingVerifyMnemonicPage from './containers/OnboardingVerifyMnemonicPage';
-import Wallet from './containers/Wallet';
+
+type TOnboardingComponents = typeof import ('./containers/onboarding');
+type TWalletComponents = typeof import ('./containers/wallet');
 
 export const onboardingAddAccountRoute = new Route<Store>({
   path: '/onboarding/add-account',
   component: (
-    <Onboarding>
-      <OnboardingAddAccountPage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.AddAccountPage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
@@ -34,89 +30,139 @@ export const homeRoute = new Route<Store>({
 export const onboardingChooseLanguageRoute = new Route<Store>({
   path: '/onboarding/choose-language',
   component: (
-    <Onboarding>
-      <OnboardingChooseLanguagePage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.ChooseLanguagePage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const onboardingExistingAccountRoute = new Route<Store>({
   path: '/onboarding/existing-account',
   component: (
-    <Onboarding>
-      <OnboardingExistingAccountPage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.ExistingAccountPage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const onboardingExistingAccountTypeRoute = new Route<Store>({
   path: '/onboarding/existing-account-type',
   component: (
-    <Onboarding>
-      <OnboardingExistingAccountTypePage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.ExistingAccountTypePage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const onboardingNewAccountRoute = new Route<Store>({
   path: '/onboarding/new-account',
   component: (
-    <Onboarding>
-      <OnboardingNewAccountPage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.NewAccountPage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const onboardingNewMnemonicsRoute = new Route<Store>({
   path: '/onboarding/new-mnemonic',
   component: (
-    <Onboarding>
-      <OnboardingNewMnemonicPage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.NewMnemonicPage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const onboardingVerifyMnemonicsRoute = new Route<Store>({
   path: '/onboarding/verify-mnemonic',
   component: (
-    <Onboarding>
-      <OnboardingVerifyMnemonicPage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.VerifyMnemonicPage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const onboardingAccountCreatedRoute = new Route<Store>({
   path: '/onboarding/account-created',
   component: (
-    <Onboarding>
-      <OnboardingAccountCreatedPage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.AccountCreatedPage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const onboardingSecurityNoticeRoute = new Route<Store>({
   path: '/onboarding/security-notice',
   component: (
-    <Onboarding>
-      <OnboardingSecurityNoticePage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.SecurityNoticePage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const onboardingNewMnemonicRoute = new Route<Store>({
   path: '/onboarding/new-mnemonic',
   component: (
-    <Onboarding>
-      <OnboardingNewMnemonicPage />
-    </Onboarding>
+    <AsyncComponent
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.NewMnemonicPage />
+        </components.Onboarding>
+      )}
+    />
   )
 });
 
 export const accountOverviewRoute = new Route({
   path: '/wallet',
   component: (
-    <Wallet>
-      <AccountOverview />
-    </Wallet>
+    <AsyncComponent
+      resolve={() => import('./containers/wallet')}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountOverview />
+        </components.Wallet>
+      )}
+    />
   )
 });

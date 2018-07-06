@@ -5,11 +5,11 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import ModalPaper from '../components/ModalPaper';
-import ModalPaperHeader from '../components/ModalPaperHeader';
-import AccountIcon from '../components/AccountIcon';
-import { onboardingAddAccountRoute } from '../routes';
-import Store from '../store';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
+import AccountIcon from '../../components/AccountIcon';
+import { onboardingAddAccountRoute } from '../../routes';
+import Store from '../../store';
 
 const styles = createStyles({
   content: {
@@ -29,7 +29,7 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingAccountCreatedPage
 
 @inject('store')
 @observer
-class OnboardingAccountCreatedPage extends React.Component<Props, State> {
+class AccountCreatedPage extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
@@ -111,4 +111,4 @@ class OnboardingAccountCreatedPage extends React.Component<Props, State> {
 }
 
 // TODO make it a decorator
-export default stylesDecorator(OnboardingAccountCreatedPage);
+export default stylesDecorator(AccountCreatedPage);

@@ -10,7 +10,7 @@ import {
   withTheme,
   WithTheme
 } from '@material-ui/core/styles';
-import Store from '../store';
+import Store from '../../store';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';
 

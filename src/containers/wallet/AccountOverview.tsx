@@ -7,9 +7,9 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import AccountOverviewHeader from '../components/AccountOverviewHeader';
-import TxDetailsExpansionPanel from '../components/TxDetailsExpansionPanel';
-import Store from '../store';
+import AccountOverviewHeader from '../../components/AccountOverviewHeader';
+import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
+import Store from '../../store';
 
 const styles = (theme: Theme) =>
   createStyles({

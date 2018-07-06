@@ -5,13 +5,13 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
-import ModalPaper from '../components/ModalPaper';
-import ModalPaperHeader from '../components/ModalPaperHeader';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingAddAccountRoute,
   onboardingSecurityNoticeRoute
-} from '../routes';
-import Store from '../store';
+} from '../../routes';
+import Store from '../../store';
 
 interface Props {
   store?: Store;
@@ -19,7 +19,7 @@ interface Props {
 
 @inject('store')
 @observer
-class OnboardingNewAccountPage extends React.Component<Props> {
+class NewAccountPage extends React.Component<Props> {
   handleBackClick = () => {
     this.props.store!.router.goTo(onboardingAddAccountRoute);
   }
@@ -85,4 +85,4 @@ class OnboardingNewAccountPage extends React.Component<Props> {
   }
 }
 
-export default OnboardingNewAccountPage;
+export default NewAccountPage;

@@ -5,20 +5,20 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
-import ModalPaper from '../components/ModalPaper';
-import ModalPaperHeader from '../components/ModalPaperHeader';
-import FlagIcon from '../components/FlagIcon';
-import Store from '../store';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
+import FlagIcon from '../../components/FlagIcon';
+import Store from '../../store';
 import {
   Locale,
   Locales,
   getUserLocales,
   getMainCountryForLocale
-} from '../utils/i18n';
+} from '../../utils/i18n';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import { onboardingAddAccountRoute } from '../routes';
+import { onboardingAddAccountRoute } from '../../routes';
 
-const riseIcon = require('../images/rise_icon.svg');
+const riseIcon = require('../../images/rise_icon.svg');
 
 // Labels are hard-coded here as we want to load the actual localization data
 // after the user has selected the language, not before.
@@ -54,7 +54,7 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage
 
 @inject('store')
 @observer
-class OnboardingChooseLanguagePage extends React.Component<Props> {
+class ChooseLanguagePage extends React.Component<Props> {
   handleLanguageClicked = async (locale: Locale) => {
     await this.props.store!.changeLanguage(locale);
     this.props.store!.router.goTo(onboardingAddAccountRoute);
@@ -119,4 +119,4 @@ class OnboardingChooseLanguagePage extends React.Component<Props> {
 }
 
 // TODO make it a decorator
-export default stylesDecorator(OnboardingChooseLanguagePage);
+export default stylesDecorator(ChooseLanguagePage);

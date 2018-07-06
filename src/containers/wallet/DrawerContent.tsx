@@ -14,10 +14,10 @@ import LayersIcon from '@material-ui/icons/Layers';
 import PeopleIcon from '@material-ui/icons/People';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddIcon from '@material-ui/icons/Add';
-import AccountIcon from '../components/AccountIcon';
+import AccountIcon from '../../components/AccountIcon';
 import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-const riseIcon = require('../images/rise_icon.svg');
+const riseIcon = require('../../images/rise_icon.svg');
 
 const styles = (theme: Theme) => createStyles({
   toolbar: theme.mixins.toolbar,

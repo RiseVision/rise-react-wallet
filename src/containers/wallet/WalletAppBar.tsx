@@ -19,7 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
-import Store from '../store';
+import Store from '../../store';
 
 const styles = (theme: Theme) =>
   createStyles({

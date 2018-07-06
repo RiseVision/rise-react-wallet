@@ -1,8 +1,8 @@
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import ModalPaper from '../components/ModalPaper';
-import ModalPaperHeader from '../components/ModalPaperHeader';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
@@ -16,8 +16,8 @@ import {
 import {
   onboardingNewAccountRoute,
   onboardingNewMnemonicRoute
-} from '../routes';
-import Store from '../store';
+} from '../../routes';
+import Store from '../../store';
 
 const styles = (theme: Theme) => createStyles({
   content: {
@@ -56,7 +56,7 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage
 
 @inject('store')
 @observer
-class OnboardingSecurityNoticePage extends React.Component<Props, State> {
+class SecurityNoticePage extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
@@ -196,4 +196,4 @@ class OnboardingSecurityNoticePage extends React.Component<Props, State> {
 }
 
 // TODO make it a decorator
-export default stylesDecorator(OnboardingSecurityNoticePage);
+export default stylesDecorator(SecurityNoticePage);

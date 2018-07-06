@@ -5,15 +5,15 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import ModalPaper from '../components/ModalPaper';
-import ModalPaperHeader from '../components/ModalPaperHeader';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
 import * as classNames from 'classnames';
 import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import {
   onboardingNewAccountRoute,
   onboardingVerifyMnemonicsRoute
-} from '../routes';
-import Store from '../store';
+} from '../../routes';
+import Store from '../../store';
 
 const styles = (theme: Theme) => {
   const { pxToRem } = theme.typography;
@@ -89,7 +89,7 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingNewMnemonicPage' }
 
 @inject('store')
 @observer
-class OnboardingNewMnemonicPage extends React.Component<Props, State> {
+class NewMnemonicPage extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
@@ -188,4 +188,4 @@ class OnboardingNewMnemonicPage extends React.Component<Props, State> {
 }
 
 // TODO make it a decorator
-export default stylesDecorator(OnboardingNewMnemonicPage);
+export default stylesDecorator(NewMnemonicPage);

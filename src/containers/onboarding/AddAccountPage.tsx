@@ -5,19 +5,19 @@ import {
   onboardingChooseLanguageRoute,
   onboardingExistingAccountRoute,
   onboardingNewAccountRoute
-} from '../routes';
-import Store from '../store';
-import { getMainCountryForLocale } from '../utils/i18n';
+} from '../../routes';
+import Store from '../../store';
+import { getMainCountryForLocale } from '../../utils/i18n';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
-import ModalPaper from '../components/ModalPaper';
-import ModalPaperHeader from '../components/ModalPaperHeader';
-import FlagIcon from '../components/FlagIcon';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
+import FlagIcon from '../../components/FlagIcon';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
-const riseIcon = require('../images/rise_icon.svg');
+const riseIcon = require('../../images/rise_icon.svg');
 
 const styles = createStyles({
   titleIcon: {
@@ -33,7 +33,7 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' })
 
 @inject('store')
 @observer
-class OnboardingAddAccountPage extends React.Component<Props> {
+class AddAccountPage extends React.Component<Props> {
   handleNewAccountClicked = () => {
     this.props.store!.router.goTo(onboardingNewAccountRoute);
   }
@@ -125,4 +125,4 @@ class OnboardingAddAccountPage extends React.Component<Props> {
 }
 
 // TODO make it a decorator
-export default stylesDecorator(OnboardingAddAccountPage);
+export default stylesDecorator(AddAccountPage);

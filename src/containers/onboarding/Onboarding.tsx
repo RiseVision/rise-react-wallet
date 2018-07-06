@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import * as React from 'react';
-import ModalBackdrop from '../components/ModalBackdrop';
+import ModalBackdrop from '../../components/ModalBackdrop';
 
 interface Props {}
 
