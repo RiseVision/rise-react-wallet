@@ -30,15 +30,12 @@ class App extends React.Component<Props, State> {
     let locale = store.locale;
 
     let translations = store.translations[locale];
-    if (!translations) {
+    if (!translations && locale != 'en') {
       if (store.translationError) {
         currentError = store.translationError;
       } else {
         isLoading = true;
       }
-    }
-
-    if (!translations) {
       // Fallback to English to prevent warnings in console
       locale = 'en';
       translations = {};
@@ -68,11 +65,11 @@ class App extends React.Component<Props, State> {
     return (
       <ThemeProvider>
         <IntlProvider key={locale} locale={locale} messages={translations}>
-            <React.Fragment>
-              {content}
-              <MobxRouter />
-            </React.Fragment>
-          </IntlProvider>
+          <React.Fragment>
+            {content}
+            <MobxRouter />
+          </React.Fragment>
+        </IntlProvider>
       </ThemeProvider>
     );
   }
