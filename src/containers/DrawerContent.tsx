@@ -1,3 +1,4 @@
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
@@ -48,123 +49,124 @@ interface Props extends WithStyles<typeof styles> {
 
 const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 
-const DrawerContent = stylesDecorator(
-  class extends React.Component<Props> {
-    render() {
-      const { classes } = this.props;
+@inject('store')
+@observer
+class DrawerContent extends React.Component<Props> {
+  render() {
+    const { classes } = this.props;
 
-      return (
-        <React.Fragment>
-          <Typography
+    return (
+      <React.Fragment>
+        <Typography
+          className={classNames(
+            classes.toolbar,
+            classes.header,
+          )}
+          variant="title"
+          noWrap={true}
+          align="center"
+        >
+          <FormattedMessage
+            id="drawer-content.header"
+            description="Drawer header title"
+            defaultMessage="{icon} RISE wallet"
+            values={{
+              icon: (
+                <img
+                  className={classes.headerIcon}
+                  src={riseIcon}
+                  height={24}
+                  alt=""
+                />
+              ),
+            }}
+          />
+        </Typography>
+        <Divider />
+        <List>
+          <ListItem
+            button={true}
             className={classNames(
-              classes.toolbar,
-              classes.header,
+              true && classes.selectedListItem,
             )}
-            variant="title"
-            noWrap={true}
-            align="center"
           >
-            <FormattedMessage
-              id="drawer-content.header"
-              description="Drawer header title"
-              defaultMessage="{icon} RISE wallet"
-              values={{
-                icon: (
-                  <img
-                    className={classes.headerIcon}
-                    src={riseIcon}
-                    height={24}
-                    alt=""
-                  />
-                ),
-              }}
+            <ListItemAvatar>
+              <Avatar className={classes.accountAvatar}>
+                <AccountIcon size={24} address="3884823134173068029R" />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary="Demo account"
+              secondary="3884823134173068029R"
             />
-          </Typography>
-          <Divider />
-          <List>
-            <ListItem
-              button={true}
-              className={classNames(
-                true && classes.selectedListItem,
-              )}
-            >
-              <ListItemAvatar>
-                <Avatar className={classes.accountAvatar}>
-                  <AccountIcon size={24} address="3884823134173068029R" />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary="Demo account"
-                secondary="3884823134173068029R"
+          </ListItem>
+          <ListItem button={true}>
+            <ListItemAvatar>
+              <Avatar className={classes.accountAvatar}>
+                <AccountIcon size={24} address="14310415683989235040R" />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary="Unnamed account"
+              secondary="14310415683989235040R"
+            />
+          </ListItem>
+          <ListItem button={true}>
+            <ListItemIcon className={classes.listIcon}>
+              <AddIcon />
+            </ListItemIcon>
+            <ListItemText>
+              <FormattedMessage
+                id="drawer-content.add-account"
+                description="Add account drawer item"
+                defaultMessage="Add an account"
               />
-            </ListItem>
-            <ListItem button={true}>
-              <ListItemAvatar>
-                <Avatar className={classes.accountAvatar}>
-                  <AccountIcon size={24} address="14310415683989235040R" />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary="Unnamed account"
-                secondary="14310415683989235040R"
+            </ListItemText>
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          <ListItem button={true}>
+            <ListItemIcon className={classes.listIcon}>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText>
+              <FormattedMessage
+                id="drawer-content.address-book"
+                description="Address book drawer item"
+                defaultMessage="Address book"
               />
-            </ListItem>
-            <ListItem button={true}>
-              <ListItemIcon className={classes.listIcon}>
-                <AddIcon />
-              </ListItemIcon>
-              <ListItemText>
-                <FormattedMessage
-                  id="drawer-content.add-account"
-                  description="Add account drawer item"
-                  defaultMessage="Add an account"
-                />
-              </ListItemText>
-            </ListItem>
-          </List>
-          <Divider />
-          <List>
-            <ListItem button={true}>
-              <ListItemIcon className={classes.listIcon}>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText>
-                <FormattedMessage
-                  id="drawer-content.address-book"
-                  description="Address book drawer item"
-                  defaultMessage="Address book"
-                />
-              </ListItemText>
-            </ListItem>
-            <ListItem button={true}>
-              <ListItemIcon className={classes.listIcon}>
-                <LayersIcon />
-              </ListItemIcon>
-              <ListItemText>
-                <FormattedMessage
-                  id="drawer-content.block-explorer"
-                  description="Block explorer drawer item"
-                  defaultMessage="Block explorer"
-                />
-              </ListItemText>
-            </ListItem>
-            <ListItem button={true}>
-              <ListItemIcon className={classes.listIcon}>
-                <ExitToAppIcon />
-              </ListItemIcon>
-              <ListItemText>
-                <FormattedMessage
-                  id="drawer-content.sign-out"
-                  description="Sign out drawer item"
-                  defaultMessage="Sign out"
-                />
-              </ListItemText>
-            </ListItem>
-          </List>
-        </React.Fragment>
-      );
-    }
+            </ListItemText>
+          </ListItem>
+          <ListItem button={true}>
+            <ListItemIcon className={classes.listIcon}>
+              <LayersIcon />
+            </ListItemIcon>
+            <ListItemText>
+              <FormattedMessage
+                id="drawer-content.block-explorer"
+                description="Block explorer drawer item"
+                defaultMessage="Block explorer"
+              />
+            </ListItemText>
+          </ListItem>
+          <ListItem button={true}>
+            <ListItemIcon className={classes.listIcon}>
+              <ExitToAppIcon />
+            </ListItemIcon>
+            <ListItemText>
+              <FormattedMessage
+                id="drawer-content.sign-out"
+                description="Sign out drawer item"
+                defaultMessage="Sign out"
+              />
+            </ListItemText>
+          </ListItem>
+        </List>
+      </React.Fragment>
+    );
   }
-);
+}
 
-export default DrawerContent;
+// TODO convert to a TS decorator
+export default stylesDecorator(DrawerContent);

@@ -13,7 +13,6 @@ import {
 import Store from '../store';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';
-import AccountOverview from './AccountOverview';
 
 const drawerWidth = 280;
 
@@ -49,7 +48,6 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   store?: Store;
-  page: string;
 }
 
 interface State {
@@ -72,7 +70,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
   }
 
   render() {
-    const { classes, theme, page } = this.props;
+    const { classes, theme } = this.props;
 
     const drawer = <DrawerContent />;
 
@@ -80,7 +78,6 @@ class Wallet extends React.Component<DecoratedProps, State> {
       <div className={classes.root}>
         <WalletAppBar
           className={classes.appBar}
-          page={page}
           onToggleDrawer={this.handleDrawerToggle}
         />
         <Hidden mdUp={true}>
@@ -110,7 +107,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
         </Hidden>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          {page === 'account-overview' && <AccountOverview />}
+          {this.props.children}
         </main>
       </div>
     );
@@ -120,7 +117,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
     this.setState({
       mobileDrawerOpen: !this.state.mobileDrawerOpen
     });
-  };
+  }
 }
 
 // TODO convert to TS decorators

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Route } from 'mobx-router';
+import AccountOverview from './containers/AccountOverview';
 import Store from './store';
 // components
 import OnboardingAccountCreatedPage from './containers/OnboardingAccountCreatedPage';
@@ -111,7 +112,11 @@ export const onboardingNewMnemonicRoute = new Route<Store>({
   )
 });
 
-export const walletRoute = new Route({
+export const accountOverviewRoute = new Route({
   path: '/wallet',
-  component: <Wallet />
+  component: (
+    <Wallet>
+      <AccountOverview />
+    </Wallet>
+  )
 });

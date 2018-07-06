@@ -30,7 +30,7 @@ class App extends React.Component<Props, State> {
     let locale = store.locale;
 
     let translations = store.translations[locale];
-    if (!translations && locale != 'en') {
+    if (!translations && locale !== 'en') {
       if (store.translationError) {
         currentError = store.translationError;
       } else {
