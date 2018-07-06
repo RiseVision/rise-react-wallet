@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Route } from 'mobx-router';
+import Store from './store';
 // components
 import OnboardingAccountCreatedPage from './containers/OnboardingAccountCreatedPage';
 import Onboarding from './containers/Onboarding';
@@ -11,8 +12,7 @@ import OnboardingNewAccountPage from './containers/OnboardingNewAccountPage';
 import OnboardingNewMnemonicPage from './containers/OnboardingNewMnemonicPage';
 import OnboardingSecurityNoticePage from './containers/OnboardingSecurityNoticePage';
 import OnboardingVerifyMnemonicPage from './containers/OnboardingVerifyMnemonicPage';
-import Store from './store';
-// import Wallet from "./containers/Wallet";
+import Wallet from './containers/Wallet';
 
 export const onboardingAddAccountRoute = new Route<Store>({
   path: '/onboarding/add-account',
@@ -111,8 +111,7 @@ export const onboardingNewMnemonicRoute = new Route<Store>({
   )
 });
 
-// wallet: new Route({
-//   path: "/wallet",
-//   // @ts-ignore
-//   component: <Wallet />,
-// })
+export const walletRoute = new Route({
+  path: '/wallet',
+  component: <Wallet />
+});
