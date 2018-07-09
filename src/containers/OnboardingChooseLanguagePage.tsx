@@ -19,7 +19,7 @@ const localeLabels: {
 } = {
   en: 'Continue in English',
   et: 'Jätka eesti keeles',
-  ko: '계속 한국어로',
+  ko: '한국어로 시작하기',
 };
 
 const styles = createStyles({
