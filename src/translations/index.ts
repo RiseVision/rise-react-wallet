@@ -1,7 +1,7 @@
 import { addLocaleData, Locale as LocaleData } from 'react-intl';
 import { Locale } from '../utils/i18n';
 
-interface Messages {
+export interface Messages {
   [id: string]: string;
 }
 
@@ -30,20 +30,18 @@ const translations: {
   uk: () => import('./uk'),
   zh: () => import('./zh'),
   // Project language doesn't need to load anything extra
-  en: () => Promise.resolve({
+  en: async () => ({
     default: {
       data: [],
-      messages: {},
-    },
-  }),
+      messages: {}
+    }
+  })
 };
 
-export function importTranslation(locale: Locale): Promise<Messages> {
-  return translations[locale]()
-  .then((m) => {
-    // Automatically inject locale data into runtime
-    addLocaleData(m.default.data);
+export async function importTranslation(locale: Locale): Promise<Messages> {
+  let data = await translations[locale]();
+  // Automatically inject locale data into runtime
+  addLocaleData(data.default.data);
 
-    return m.default.messages;
-  });
+  return data.default.messages;
 }

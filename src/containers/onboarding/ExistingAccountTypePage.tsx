@@ -1,35 +1,40 @@
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
-import ModalPaper from '../components/ModalPaper';
-import ModalPaperHeader from '../components/ModalPaperHeader';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
+import {
+  onboardingAddAccountRoute,
+  onboardingExistingAccountRoute
+} from '../../routes';
+import Store from '../../store';
 
 interface Props {
-  open: boolean;
-  onGoBack: () => void;
-  onFullAccessSelected: () => void;
-  onReadAccessSelected: () => void;
+  store?: Store;
 }
 
-class OnboardingExistingAccountTypePage extends React.Component<Props> {
+@inject('store')
+@observer
+class ExistingAccountTypePage extends React.Component<Props> {
   handleBackClick = () => {
-    this.props.onGoBack();
+    this.props.store!.router.goTo(onboardingExistingAccountRoute);
   }
 
   handleFullAccessClick = () => {
-    this.props.onFullAccessSelected();
+    this.props.store!.router.goTo(onboardingAddAccountRoute);
   }
 
   handleReadOnlyClick = () => {
-    this.props.onReadAccessSelected();
+    this.props.store!.router.goTo(onboardingAddAccountRoute);
   }
 
   render() {
     return (
-      <ModalPaper open={this.props.open}>
+      <ModalPaper open={true}>
         <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-existing-account-type.title"
@@ -82,4 +87,4 @@ class OnboardingExistingAccountTypePage extends React.Component<Props> {
   }
 }
 
-export default OnboardingExistingAccountTypePage;
+export default ExistingAccountTypePage;
