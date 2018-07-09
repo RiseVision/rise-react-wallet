@@ -4,19 +4,19 @@
         "Your new account": {
             "Account created screen title": {
                 "et": "Sinu uus konto",
-                "ko": "새로운 어카운트"
+                "ko": "새로운 지갑"
             }
         },
         "A new acccount has been generated, with the following address:": {
             "Text introducing the new account address": {
                 "et": "Uus konto järgneva aadressiga sai loodud:",
-                "ko": "새로운 어카운트가 생성되었습니다. 지갑주소는 :"
+                "ko": "새로운 지갑이 생성되었습니다. 지갑주소는 :"
             }
         },
         "Every account gets an automatically generated image associated with it. This can be used to double-check that the address was entered correctly when sending RISE.": {
             "Explain account image": {
                 "et": "Igale kontole genereeritakse unikaalne pilt. Makseid sooritades saab seda pilti kasutada kontrollimaks, et aadress sai õigesti sisestatud.",
-                "ko": "모든 어카운트는 자동으로 생성된 관련 이미지가 부여됩니다. 해당 이미지는 라이즈 전송시 올바른 주소에 보내고 있는지, 재차 확인할수 있는 용도로 쓰여집니다."
+                "ko": "모든 지갑은 자동으로 생성된 이미지가 하나씩 부여됩니다. 해당 이미지는 라이즈 전송시 올바른 주소에 보내고 있는지, 재차 확인하는 용도로 쓰여집니다."
             }
         },
         "Go to account overview": {
@@ -41,33 +41,33 @@
         "New account": {
             "New account button title": {
                 "et": "Uus konto",
-                "ko": "새로운 어카운트"
+                "ko": "새로운 지갑 만들기"
             },
             "New account screen title": {
                 "et": "Uus konto",
-                "ko": "새 어카운트"
+                "ko": "새로운 지갑"
             }
         },
         "I want to create a new account on the RISE network": {
             "New account button tip": {
                 "et": "Ma tahan luua uue konto RISE blokiahelas",
-                "ko": "새로운 어카운트를 만들고 싶어요."
+                "ko": "새로운 지갑을 만들고 싶어요."
             }
         },
         "Existing account": {
             "Existing account button title": {
                 "et": "Olemasolev konto",
-                "ko": "기존 어카운트"
+                "ko": "기존 지갑"
             },
             "Existing account screen title": {
                 "et": "Olemasolev konto",
-                "ko": "기존 어카운트"
+                "ko": "기존 지갑"
             }
         },
         "I want to access an existing account on the RISE network": {
             "Existing account button tip": {
                 "et": "Ma tahan kasutada olemasolevat kontot RISE blokiahelas",
-                "ko": "기존에 만들었던 어카운트로 들어가고 싶어요."
+                "ko": "기존에 만들었던 지갑으로 접속하고 싶어요."
             }
         },
         "Change language": {
@@ -79,16 +79,16 @@
         "Enter the address of an existing RISE account you wish to access:": {
             "Text asking the user to fill the input field": {
                 "et": "Sisesta olemasoleva RISE konto aadress millele soovid ligipääsu:",
-                "ko": "원하시는 어카운트의 지갑주소를 넣으세요."
+                "ko": "접속을 원하는 지갑의 주소를 넣으세요."
             }
         },
         "Account address": {
             "Account address input label": {
                 "et": "Konto aadress",
-                "ko": "어카운트 주소"
+                "ko": "지갑 주소"
             },
             "Accessibility label for account address": {
-                "ko": "어카운트 주소"
+                "ko": "지갑 주소"
             }
         },
         "Continue": {
@@ -104,115 +104,115 @@
         "Forgotten your address but have your secret mnemonic? Click here": {
             "Instructions for people who forgot their account address": {
                 "et": "Unustasid oma konto aadressi, aga mäletad saladust? Vajuta siia",
-                "ko": "지갑주소를 잊어버리셨나요? 혹시 연상단어를 기억하고 계시다면 이곳을 눌러주세요."
+                "ko": "지갑주소를 잊어버리셨나요? 혹시 비밀단어를 기억하고 계시다면 이곳을 눌러주세요."
             }
         },
         "Account type": {
             "Existing account type screen title": {
                 "et": "Konto tüüp",
-                "ko": "어카운트 타입"
+                "ko": "지갑 타입"
             }
         },
         "Full access account": {
             "Existing full access account button title": {
                 "et": "Täieliku ligipääsuga konto",
-                "ko": "어카운트의 모든권한"
+                "ko": "지갑의 모든 권한"
             }
         },
         "I know the secret mnemonic for this account": {
             "Existing full access account button tip": {
                 "et": "Ma tean saladust selle konto haldamiseks",
-                "ko": "연상단어를 알고있습니다."
+                "ko": "비밀단어를 알고있습니다."
             }
         },
         "Watch only account": {
             "Existing read access account button title": {
                 "et": "Jälgimis ligipääsuga konto",
-                "ko": "어카운트만 보기"
+                "ko": "지갑(보기전용)"
             }
         },
         "I don't know the secret mnemonic for this account": {
             "Existing read access account button tip": {
                 "et": "Ma ei tea selle konto saladust",
-                "ko": "연상단어를 모릅니다."
+                "ko": "비밀단어를 모릅니다."
             }
         },
         "Create an account using a secret": {
             "New account w/ a mnemonic button title": {
                 "et": "Loo uus saladusel baseeruv konto",
-                "ko": "연상단어를 이용한 새 어카운트 만들기"
+                "ko": "비밀단어를 이용한 새 지갑 만들기"
             }
         },
         "I want to create a new account that can be accessed using a mnemonic secret": {
             "New account w/ a mnemonic button tip": {
                 "et": "Ma soovin luua uue konto mille haldamiseks peab teadma saladust",
-                "ko": "연상단어를 이용해서 사용할수있는 새 어카운트를 만들고 싶어요."
+                "ko": "비밀단어를 사용하는 새로운 지갑을 만들고 싶어요."
             }
         },
         "Import an account from hardware wallet": {
             "New account w/ Ledger button title": {
                 "et": "Impordi konto riistvara rahakotist",
-                "ko": "하드웨어 지갑에서 어카운트로 가져오기"
+                "ko": "하드웨어 지갑을 여기로 가져오기"
             }
         },
         "I want to import a new account from my Ledger hardware wallet": {
             "New account w/ Ledger button tip": {
                 "et": "Ma soovin importida uue konto minu Ledger riistvara rahakotist",
-                "ko": "렛져 하드웨어지갑에서 새 어카운트로 가져오기"
+                "ko": "렛저 하드웨어 지갑을 여기로 가져오기"
             }
         },
         "Write this down": {
             "New mnemonic screen title": {
                 "et": "Kirjuta see üles",
-                "ko": "이 연상단어들을 꼭 적어서 보관해 두세요."
+                "ko": "※ 이 단어들을 적어서 보관하세요."
             }
         },
         "This is your new {wordCount, number}-word mnemonic secret:": {
             "Text before the mnemonic secret": {
                 "et": "See on sinu uus {wordCount, number}-sõnaline saladus:",
-                "ko": "{wordCount, number} 이것이 당신의 새로운 연상단어입니다."
+                "ko": "당신의 지갑에 지정된 비밀단어들은 다음과 같습니다."
             }
         },
         "Write your mnemonic down on a physical piece of paper so that you could store it in a safe place later.": {
             "Instructions to write down the mnemonic": {
                 "et": "Kirjuta oma saladus paberile, et saaksid selle hiljem turvalisse kohta talletada.",
-                "ko": "연상단어들을 반드시 노트나 종이에 적어서 꼭 안전한곳에 보관해 두세요!"
+                "ko": "※ 비밀단어들을 반드시 노트나 종이에 적어서 꼭 안전한곳에 보관해 두세요!"
             }
         },
         "NB! Anyone who knows this can transfer funds out of your account.": {
             "Final notice about the seriousness of mnemonic": {
                 "et": "NB! Kõik kes teavad seda saladust saavad raha kontolt ära kanda.",
-                "ko": "주의하세요! 혹시 누군가 당신의 연상단어를 알게 된다면 당신의 지갑에서 몰래 훔쳐갈수도 있습니다."
+                "ko": "※ 주의하세요! 혹시 누군가 당신의 비밀단어를 알게 된다면, 당신의 지갑에서 라이즈를 훔쳐갈수도 있습니다."
             }
         },
         "When accessing this wallet, always type the URL into the browser address bar yourself or use a bookmark that you yourself created. Never trust links posted on social media, in search results, sent in emails or listed on other websites.": {
             "Tip about checking the browser URL": {
                 "et": "Alati kirjuta selle lehe aadress ise lehitseja aadressiribale või kasuta järjehoidjat. Ära kunagi usalda ega kasuta linke sotsiaalmeedias, otsingu tulemustes, e-kirjades või teistel veebilehtedel.",
-                "ko": "이 지갑페이지를 즐겨찾기 해놓으시고, 접속할때는 반드시 즐겨찾기 하신 해당 브라우저의 북마크바를 통해서 접속하세요. 이메일이나 기타 소셜미디어, 웹사이트같은 곳에서 주소 링크을 통한 접속 방법은 절대 신뢰하지 마세요."
+                "ko": "이 지갑 페이지를 즐겨찾기 해놓으시고, 접속시에는 반드시 즐겨찾기 해둔 해당 브라우저의 북마크바를 통해서 접속하세요. 이메일이나 기타 소셜미디어, 웹사이트 등의 주소 링크을 통해 접속하지 마세요."
             }
         },
         "If your browser gives you any sort of security warning about this web wallet, get in touch with us and report it. Do not ignore the warning nor enter your mnemonic secret!": {
             "Tip about truting your browser": {
                 "et": "Kui su interneti lehitseja annab ükskõik missuguse hoiatuse selle veebilehe kohta, kontakteeruge meiega koheselt. Ärge ignoreerige hoiatust ja mitte mingil juhul ärge sisestage oma saladust!",
-                "ko": "혹시 사용하시는 브라우저에서 보안경고가 나타난다면 라이즈 팀에게 연락해 주세요. 보안경고를 무시하고 그대로 연상단어를 입력하시면 절대 안됩니다. "
+                "ko": "혹시 사용하는 브라우저에서 보안경고가 나타난다면, 라이즈 팀에게 연락해 주세요. 보안경고를 무시하고 그대로 비밀단어를 입력하시면 위험합니다. "
             }
         },
         "Only use your own devices when accessing your accounts. Do not enter your mnemonic secret on untrustworthy devices (public computers, friends computers/phones, etc) as they might be littered with malware and keyloggers.": {
             "Tip about untrustworthy devices": {
                 "et": "Ainult kasuta enda seadmeid oma RISE konto haldamiseks. Ära sisesta oma konto saladust ebausaldusväärsetesse seadmetesse (avalikud arvutid, sõprade arvutid/telefonid, jne) - need võivad kubiseda pahavarast.",
-                "ko": "반드시 본인의 기기에서만 접속해 주세요. 공공시설의 컴퓨터나 친구의 컴퓨터, 아는사람의 스마트폰, 피씨방 등등 에서 절대 연상단어를 입력하시면 안됩니다. 해킹의 위험에 노출될수 있습니다."
+                "ko": "반드시 본인의 기기에서만 접속해 주세요.  타인의 컴퓨터나 스마트폰, PC방 등에서 비밀단어를 입력하시면 안됩니다. 해킹의 위험에 노출될 수 있습니다."
             }
         },
         "Always keep your operating system, anti-virus software and browser up to date with latest security updates.": {
             "Tip about installing security updates": {
                 "et": "Alati uuenda oma operatsiooni süsteemi, anti-viirus tarkvara ja internetilehitsejat uusimate turva uuendustega",
-                "ko": "항삭 최신버전의 운영체제를 유지하고, 컴퓨터 백신과 브라우저 업데이트를 최신버전으로 유지해주세요."
+                "ko": "항상 최신버전의 운영체제를 유지하고, 컴퓨터의 백신과 브라우저 업데이트를 최신버전으로 유지해주세요."
             }
         },
         "If possible, prefer hardware wallets over mnemonic secret for storing larger amounts of RISE.": {
             "Tip about using hardware wallets": {
                 "et": "Kui võimalik, eelista riistvara rahakotti saladusele kui hoiustad suuremaid summasid.",
-                "ko": "혹시 아주 많은 수량의 라이즈를 가지고 계시다면 연상기호를 통해 지갑에 보관하시는 것 보다는 하드웨어지갑에 보관하시는 것을 권장 합니다."
+                "ko": "혹시 많은 수량의 라이즈를 가지고 계시다면, 웹이나 데스크톱 지갑보다 하드웨어 지갑에 보관하시는 것을 권장합니다."
             }
         },
         "Security tips": {
@@ -224,7 +224,7 @@
         "Things to keep in mind to increase the security of your funds:": {
             "Notice before the list of tips": {
                 "et": "Mida meeles pidada, et turvaliselt krüptoraha kasutada:",
-                "ko": "여러분의 자산을 안전히 지킬수 있도록 당신이 꼭 알고계셔야 할 보안을 강화 할수 있는 방법"
+                "ko": "안전히 자산을 지킬 수 있는 보안 유지방법"
             }
         },
         "Next tip": {
@@ -236,13 +236,13 @@
         "Check mnemonic": {
             "Verify mnemonic screen title": {
                 "et": "Kontrolli saladust",
-                "ko": "연상단어 확인"
+                "ko": "비밀단어 확인"
             }
         },
         "Verify that you wrote down your mnemonic correctly. Enter the {whichWordInBold} into the text field below.": {
             "Instructions to verify the Nth word of the mnemonic": {
                 "et": "Kontrolli, et kirjutasid oma saladuse õigesti üles. Sisesta {whichWordInBold} all olevasse teksti välja.",
-                "ko": "연상단어들을 옳바르게 적으셨는지 확인하세요. {whichWordInBold} 이 연상단어들을 아래의 칸에 입력해주세요."
+                "ko": "비밀단어들을 올바르게 적으셨나요? {whichWordInBold}를 아래의 칸에 입력해주세요."
             }
         },
         "{whichWord, selectordinal, one {#st word} two {#nd word} few {#rd word} other {#th word}}": {
@@ -254,7 +254,7 @@
         "Word #{whichWord, number}": {
             "Word number to enter into the text field": {
                 "et": "Sõna #{whichWord, number}",
-                "ko": "단어 #{whichWord, number}"
+                "ko": "단어 #{whichWord, number}를 입력해주세요."
             }
         },
         "Verify": {
@@ -271,7 +271,7 @@
         },
         "Account": {
             "Accessibility label for account name/alias": {
-                "ko": "어카운트"
+                "ko": "지갑"
             }
         },
         "Balance": {
@@ -281,42 +281,42 @@
         },
         "Transfer from {alias} ({address})": {
             "Summary text for receive operation with an alias": {
-                "ko": "{alias}의 ({address}) 주소에서 전송"
+                "ko": "{alias}의 ({address})지갑에서 전송됨."
             }
         },
         "From {alias} ({address})": {
             "Summary text for receive operation with an alias (short version)": {
-                "ko": "{alias}의 ({address}) 주소에서"
+                "ko": "{alias}의 ({address})로부터."
             }
         },
         "Transfer from {address}": {
             "Summary text for receive operation without an alias": {
-                "ko": "{address} 주소에서 전송"
+                "ko": "{address}지갑에서 전송됨."
             }
         },
         "From {address}": {
             "Summary text for receive operation without an alias (short version)": {
-                "ko": "{address} 주소에서"
+                "ko": "{address}로부터."
             }
         },
         "Transfer to {alias} ({address})": {
             "Summary text for send operation with an alias": {
-                "ko": "{alias}의 ({address})주소로 전송"
+                "ko": "{alias}의 ({address})지갑으로 전송함."
             }
         },
         "To {alias} ({address})": {
             "Summary text for send operation with an alias (short version)": {
-                "ko": "{alias} 의 ({address}) 주소로"
+                "ko": "{alias}의 ({address})로 전송."
             }
         },
         "Transfer to {address}": {
             "Summary text for send operation without an alias": {
-                "ko": "{address} 주소로 전송"
+                "ko": "{address}지갑으로 전송함."
             }
         },
         "To {address}": {
             "Summary text for send operation without an alias (short version)": {
-                "ko": "{address} 주소로"
+                "ko": "{address}로 전송."
             }
         },
         "This account has no transaction history yet": {
@@ -326,12 +326,12 @@
         },
         "Add an account": {
             "Add account drawer item": {
-                "ko": "어카운트 추가"
+                "ko": "지갑 추가하기"
             }
         },
         "Address book": {
             "Address book drawer item": {
-                "ko": "주소목록"
+                "ko": "지갑 목록"
             }
         },
         "Block explorer": {
@@ -346,12 +346,12 @@
         },
         "Demo account": {
             "Alias for demo account": {
-                "ko": "예시 계정"
+                "ko": "예시 지갑"
             }
         },
         "Unnamed account": {
             "Alias for unnamed account": {
-                "ko": "이름없는 계정"
+                "ko": "이름없는 지갑"
             }
         },
         "Open drawer": {
@@ -361,17 +361,17 @@
         },
         "Account settings": {
             "Tooltip for account settings icon": {
-                "ko": "어카운트 설정"
+                "ko": "지갑 설정"
             }
         },
         "Account overview": {
             "Account overview title": {
-                "ko": "어카운트 개요"
+                "ko": "지갑 개요"
             }
         },
         "End of test": {
             "Test finished screen title": {
-                "ko": "테스트 종료"
+                "ko": "테스트가 종료되었습니다."
             }
         },
         "Thank you for taking the time to participate in this test. Any and all feedback you can give us will help us create a better wallet for the RISE community.": {
@@ -381,7 +381,7 @@
         },
         "Restart test": {
             "Reset button label": {
-                "ko": "테스트 재시작"
+                "ko": "테스트 재시작하기."
             }
         }
     }
