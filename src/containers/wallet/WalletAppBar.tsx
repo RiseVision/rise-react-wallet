@@ -19,7 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
-import Store from '../../store';
+import App from '../../stores/app';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -34,7 +34,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: App;
   className?: string;
   onToggleDrawer: () => void;
 }

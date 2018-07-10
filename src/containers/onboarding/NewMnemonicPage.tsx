@@ -13,7 +13,7 @@ import {
   onboardingNewAccountRoute,
   onboardingVerifyMnemonicsRoute
 } from '../../routes';
-import Store from '../../store';
+import App from '../../stores/app';
 
 const styles = (theme: Theme) => {
   const { pxToRem } = theme.typography;
@@ -77,7 +77,7 @@ function round(val: number) {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: App;
   mnemonic?: string[];
 }
 

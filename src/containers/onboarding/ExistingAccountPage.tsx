@@ -13,7 +13,7 @@ import {
   onboardingAddAccountRoute,
   onboardingExistingAccountTypeRoute
 } from '../../routes';
-import Store from '../../store';
+import App from '../../stores/app';
 
 const styles = createStyles({
   content: {
@@ -32,7 +32,7 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: App;
   accountAddress?: string;
 }
 

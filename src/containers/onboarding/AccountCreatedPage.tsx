@@ -9,7 +9,7 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import AccountIcon from '../../components/AccountIcon';
 import { onboardingAddAccountRoute } from '../../routes';
-import Store from '../../store';
+import App from '../../stores/app';
 
 const styles = createStyles({
   content: {
@@ -18,7 +18,7 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: App;
 }
 
 interface State {

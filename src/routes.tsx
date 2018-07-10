@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Route } from 'mobx-router';
 import AsyncComponent from './components/AsyncComponent';
-import Store from './store';
+import App from './stores/app';
 
 type TOnboardingComponents = typeof import ('./containers/onboarding');
 type TWalletComponents = typeof import ('./containers/wallet');
 
-export const onboardingAddAccountRoute = new Route<Store>({
+export const onboardingAddAccountRoute = new Route<App>({
   path: '/onboarding/add-account',
   component: (
     <AsyncComponent
@@ -20,14 +20,14 @@ export const onboardingAddAccountRoute = new Route<Store>({
   )
 });
 
-export const homeRoute = new Route<Store>({
+export const homeRoute = new Route<App>({
   path: '/',
-  onEnter: (route: Route<Store>, params: {}, store: Store) => {
+  onEnter: (route: Route<App>, params: {}, store: App) => {
     store.router.goTo(onboardingAddAccountRoute);
   }
 });
 
-export const onboardingChooseLanguageRoute = new Route<Store>({
+export const onboardingChooseLanguageRoute = new Route<App>({
   path: '/onboarding/choose-language',
   component: (
     <AsyncComponent
@@ -41,7 +41,7 @@ export const onboardingChooseLanguageRoute = new Route<Store>({
   )
 });
 
-export const onboardingExistingAccountRoute = new Route<Store>({
+export const onboardingExistingAccountRoute = new Route<App>({
   path: '/onboarding/existing-account',
   component: (
     <AsyncComponent
@@ -55,7 +55,7 @@ export const onboardingExistingAccountRoute = new Route<Store>({
   )
 });
 
-export const onboardingExistingAccountTypeRoute = new Route<Store>({
+export const onboardingExistingAccountTypeRoute = new Route<App>({
   path: '/onboarding/existing-account-type',
   component: (
     <AsyncComponent
@@ -69,7 +69,7 @@ export const onboardingExistingAccountTypeRoute = new Route<Store>({
   )
 });
 
-export const onboardingNewAccountRoute = new Route<Store>({
+export const onboardingNewAccountRoute = new Route<App>({
   path: '/onboarding/new-account',
   component: (
     <AsyncComponent
@@ -83,7 +83,7 @@ export const onboardingNewAccountRoute = new Route<Store>({
   )
 });
 
-export const onboardingNewMnemonicsRoute = new Route<Store>({
+export const onboardingNewMnemonicsRoute = new Route<App>({
   path: '/onboarding/new-mnemonic',
   component: (
     <AsyncComponent
@@ -97,7 +97,7 @@ export const onboardingNewMnemonicsRoute = new Route<Store>({
   )
 });
 
-export const onboardingVerifyMnemonicsRoute = new Route<Store>({
+export const onboardingVerifyMnemonicsRoute = new Route<App>({
   path: '/onboarding/verify-mnemonic',
   component: (
     <AsyncComponent
@@ -111,7 +111,7 @@ export const onboardingVerifyMnemonicsRoute = new Route<Store>({
   )
 });
 
-export const onboardingAccountCreatedRoute = new Route<Store>({
+export const onboardingAccountCreatedRoute = new Route<App>({
   path: '/onboarding/account-created',
   component: (
     <AsyncComponent
@@ -125,7 +125,7 @@ export const onboardingAccountCreatedRoute = new Route<Store>({
   )
 });
 
-export const onboardingSecurityNoticeRoute = new Route<Store>({
+export const onboardingSecurityNoticeRoute = new Route<App>({
   path: '/onboarding/security-notice',
   component: (
     <AsyncComponent
@@ -139,7 +139,7 @@ export const onboardingSecurityNoticeRoute = new Route<Store>({
   )
 });
 
-export const onboardingNewMnemonicRoute = new Route<Store>({
+export const onboardingNewMnemonicRoute = new Route<App>({
   path: '/onboarding/new-mnemonic',
   component: (
     <AsyncComponent

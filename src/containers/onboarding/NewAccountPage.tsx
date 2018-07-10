@@ -11,10 +11,10 @@ import {
   onboardingAddAccountRoute,
   onboardingSecurityNoticeRoute
 } from '../../routes';
-import Store from '../../store';
+import App from '../../stores/app';
 
 interface Props {
-  store?: Store;
+  store?: App;
 }
 
 @inject('store')

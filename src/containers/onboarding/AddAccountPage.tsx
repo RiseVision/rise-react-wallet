@@ -6,7 +6,7 @@ import {
   onboardingExistingAccountRoute,
   onboardingNewAccountRoute
 } from '../../routes';
-import Store from '../../store';
+import App from '../../stores/app';
 import { getMainCountryForLocale } from '../../utils/i18n';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -26,7 +26,7 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: App;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });

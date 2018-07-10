@@ -3,12 +3,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './containers/App';
 import * as routes from './routes';
-import Store from './store';
+import App from './stores/app';
 import registerServiceWorker from './registerServiceWorker';
 import { startRouter } from 'mobx-router';
 import { Provider } from 'mobx-react';
 
-const store = new Store();
+const store = new App();
 startRouter(routes, store);
 
 const root = (

@@ -9,7 +9,7 @@ import {
 import Typography from '@material-ui/core/Typography';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
-import Store from '../../store';
+import App from '../../stores/app';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -26,7 +26,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: App;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
