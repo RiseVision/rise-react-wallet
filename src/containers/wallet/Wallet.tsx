@@ -10,7 +10,7 @@ import {
   withTheme,
   WithTheme
 } from '@material-ui/core/styles';
-import App from '../../stores/app';
+import Store from '../../stores/store';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';
 
@@ -47,7 +47,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: App;
+  store?: Store;
 }
 
 interface State {

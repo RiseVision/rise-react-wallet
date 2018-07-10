@@ -14,7 +14,7 @@ import {
   onboardingAccountCreatedRoute,
   onboardingNewAccountRoute
 } from '../../routes';
-import App from '../../stores/app';
+import Store from '../../stores/store';
 
 const styles = (theme: Theme) => {
   const { pxToRem } = theme.typography;
@@ -72,7 +72,7 @@ function round(val: number) {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  store?: App;
+  store?: Store;
   mnemonic?: string[];
 }
 
@@ -143,6 +143,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
         currentWordInvalid: false,
       });
     } else {
+      // TODO actually create the account
       this.props.store!.onAccountCreated(this.state.mnemonic);
       this.props.store!.router.goTo(onboardingAccountCreatedRoute);
     }

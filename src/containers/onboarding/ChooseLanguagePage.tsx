@@ -8,7 +8,7 @@ import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import FlagIcon from '../../components/FlagIcon';
-import App from '../../stores/app';
+import Store from '../../stores/store';
 import {
   Locale,
   Locales,
@@ -47,7 +47,7 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: App;
+  store?: Store;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage' });

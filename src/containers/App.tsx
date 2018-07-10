@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
-import App from '../stores/app';
+import Store from '../stores/store';
 import ThemeProvider from './ThemeProvider';
 import { observer, inject } from 'mobx-react';
 import { MobxRouter } from 'mobx-router';
 
 interface Props {
-  store?: App;
+  store?: Store;
 }
 
 interface State {

@@ -13,7 +13,8 @@ import {
   onboardingAddAccountRoute,
   onboardingExistingAccountTypeRoute
 } from '../../routes';
-import App from '../../stores/app';
+import Store from '../../stores/store';
+import UserStore from '../../stores/user';
 
 const styles = createStyles({
   content: {
@@ -32,7 +33,7 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: App;
+  store?: Store;
   accountAddress?: string;
 }
 
@@ -49,21 +50,6 @@ const stylesDecorator = withStyles(styles, {
 @inject('store')
 @observer
 class ExistingAccountPage extends React.Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): Partial<State> | null {
-    let state = {
-      ...prevState
-    };
-
-    const address = nextProps.accountAddress || '';
-    if (address && !state.address) {
-      const normalizedAddress = normalizeAddress(address);
-      state.address = address;
-      state.normalizedAddress = normalizedAddress;
-      state.addressInvalid = false;
-    }
-
-    return state;
-  }
 
   constructor(props: Props) {
     super(props);
@@ -90,6 +76,7 @@ class ExistingAccountPage extends React.Component<Props, State> {
       return;
     }
 
+    this.props.store!.address = normalizedAddress;
     this.props.store!.router.goTo(onboardingExistingAccountTypeRoute);
   }
 

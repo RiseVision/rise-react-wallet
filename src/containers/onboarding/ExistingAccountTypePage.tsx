@@ -8,27 +8,35 @@ import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
+  accountOverviewRoute,
   onboardingAddAccountRoute,
   onboardingExistingAccountRoute
 } from '../../routes';
-import App from '../../stores/app';
+import Store from '../../stores/store';
+import UserStore from '../../stores/user';
 
 interface Props {
-  store?: App;
+  store?: Store;
+  userStore?: UserStore;
 }
 
 @inject('store')
+@inject('userStore')
 @observer
 class ExistingAccountTypePage extends React.Component<Props> {
   handleBackClick = () => {
     this.props.store!.router.goTo(onboardingExistingAccountRoute);
   }
 
-  handleFullAccessClick = () => {
-    this.props.store!.router.goTo(onboardingAddAccountRoute);
+  handleFullAccessClick = async () => {
+    this.props.userStore!.login(this.props.store.address);
+    this.props.store!.router.goTo(accountOverviewRoute);
+
   }
 
   handleReadOnlyClick = () => {
+    // TODO
+    alert('TODO');
     this.props.store!.router.goTo(onboardingAddAccountRoute);
   }
 

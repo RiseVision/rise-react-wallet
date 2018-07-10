@@ -33,3 +33,8 @@ declare module 'mobx-router' {
     store: Object
   ): void;
 }
+
+declare module "*.json" {
+    const value: any;
+    export default value;
+}

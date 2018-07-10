@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 type Props = {
+  name: string;
   // tslint:disable-next-line:no-any
   loading?: React.ReactElement<any>;
   resolve(): Promise<{}>;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 type State = {
+  name?: string;
   components?: {};
 };
 
@@ -17,7 +19,17 @@ export default class AsyncComponent extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+    this.state = { name: props.name };
     props.resolve().then(components => this.onLoaded(components));
+  }
+
+  // TODO perform this check in render
+  UNSAFE_componentWillUpdate(nextProps: Props, nextState: State) {
+    // new component bundle
+    if (this.props.name !== nextProps.name) {
+      delete nextState.components;
+      nextProps.resolve().then(components => this.onLoaded(components));
+    }
   }
 
   onLoaded(components: {}) {

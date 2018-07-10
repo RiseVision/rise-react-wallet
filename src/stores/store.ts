@@ -7,11 +7,17 @@ import { importTranslation, Messages } from '../translations';
 // make sure only actions modify the store
 configure({ enforceActions: true });
 
-export default class App {
+export type TConfig = {
+  api_url: string
+};
+
+export default class Store {
+
   router = new RouterStore();
 
   translations: { [L in Locale]?: Messages } = {};
   @observable translationError: Error | null = null;
+  // address used during onboarding
   @observable address: string | null = null;
   @observable mnemonic: string[] | null = null;
 
@@ -20,6 +26,8 @@ export default class App {
 
   // TODO store async components here
   components = {};
+
+  constructor(public config: TConfig) {}
 
   @action
   async loadTranslation(locale: Locale) {

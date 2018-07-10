@@ -3,16 +3,24 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './containers/App';
 import * as routes from './routes';
-import App from './stores/app';
+import * as config from './config.json';
+import Store, { TConfig } from './stores/store';
 import registerServiceWorker from './registerServiceWorker';
 import { startRouter } from 'mobx-router';
 import { Provider } from 'mobx-react';
+import UserStore from './stores/user';
 
-const store = new App();
+// tslint:disable-next-line:no-any
+const store = new Store((config as any) as TConfig);
 startRouter(routes, store);
 
+const stores = {
+  store,
+  userStore: new UserStore(store)
+};
+
 const root = (
-  <Provider store={store}>
+  <Provider {...stores}>
     <App />
   </Provider>
 );

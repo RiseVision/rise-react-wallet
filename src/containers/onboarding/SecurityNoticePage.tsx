@@ -17,7 +17,7 @@ import {
   onboardingNewAccountRoute,
   onboardingNewMnemonicRoute
 } from '../../routes';
-import App from '../../stores/app';
+import Store from '../../stores/store';
 
 const styles = (theme: Theme) => createStyles({
   content: {
@@ -45,7 +45,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: App;
+  store?: Store;
 }
 
 interface State {
