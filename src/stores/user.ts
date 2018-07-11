@@ -13,6 +13,26 @@ export default class UserStore {
 
   constructor(public app: Store) {
     this.api = app.config.api_url;
+    for (const account of this.storeadAccounts()) {
+      this.login(account.id, account.readOnly);
+    }
+    // TODO load accounts from user storage
+  }
+
+  /**
+   * Returns the list of stored account IDs.
+   */
+  storeadAccounts(): TStoredAccount[] {
+    return JSON.parse(localStorage.getItem('accounts') || '[]');
+  }
+
+  rememberAccount(account: TStoredAccount) {
+    let accounts = this.storeadAccounts();
+    // check for duplicates
+    if (!accounts.find(a => a.id === account.id)) {
+      accounts.push(account);
+      localStorage.setItem('accounts', JSON.stringify(accounts));
+    }
   }
 
   async loadUser(id: string): Promise<TAccountResponse> {
@@ -25,46 +45,52 @@ export default class UserStore {
   }
 
   @action
-  async login(address: string) {
+  async login(address: string, readOnly: boolean = false) {
     if (!address) {
       throw Error('address required');
     }
     const res = await this.loadUser(address);
-    const account = this.parseAccountReponse(res);
+    const account = parseAccountReponse(res);
     // TODO detect duplicates
     // alter the store
     runInAction(() => {
       this.accounts.push(account);
     });
+    this.rememberAccount({ id: address, readOnly });
     return true;
   }
-
-  parseAccountReponse(res: TAccountResponse): TAccount {
-    return {
-      id: res.account.address,
-      publicKey: res.account.publicKey,
-      // TODO
-      name: '',
-      // TODO
-      mnemonic: '',
-      // TODO
-      mnemonic2: '',
-      // TODO
-      fiatCurrency: 'USD',
-      pinned: false,
-      balance: parseInt(res.account.balance, 10) / 100000000,
-      unconfirmedBalance:
-        parseInt(res.account.unconfirmedBalance, 10) / 100000000,
-      _balance: parseInt(res.account.balance, 10),
-      _unconfirmedBalance: parseInt(res.account.unconfirmedBalance, 10)
-    };
-  }
-
-  mnemonicToAddress(mnemonic: string[]) {
-    const wallet = new LiskWallet(mnemonic.join(' '), 'R');
-    return wallet.address;
-  }
 }
+
+export function parseAccountReponse(res: TAccountResponse): TAccount {
+  return {
+    id: res.account.address,
+    publicKey: res.account.publicKey,
+    // TODO
+    name: '',
+    // TODO
+    mnemonic: '',
+    // TODO
+    mnemonic2: '',
+    // TODO
+    fiatCurrency: 'USD',
+    pinned: false,
+    balance: parseInt(res.account.balance, 10) / 100000000,
+    unconfirmedBalance:
+      parseInt(res.account.unconfirmedBalance, 10) / 100000000,
+    _balance: parseInt(res.account.balance, 10),
+    _unconfirmedBalance: parseInt(res.account.unconfirmedBalance, 10)
+  };
+}
+
+export function mnemonicToAddress(mnemonic: string[]) {
+  const wallet = new LiskWallet(mnemonic.join(' '), 'R');
+  return wallet.address;
+}
+
+export type TStoredAccount = {
+  id: string;
+  readOnly: boolean;
+};
 
 export type TAccount = {
   id: string;
