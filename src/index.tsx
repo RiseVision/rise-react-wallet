@@ -12,6 +12,8 @@ import UserStore from './stores/user';
 
 // tslint:disable-next-line:no-any
 const store = new Store((config as any) as TConfig);
+const userStore = new UserStore(store);
+store.userStore = userStore;
 startRouter(routes, store);
 
 const stores = {

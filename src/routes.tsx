@@ -24,7 +24,11 @@ export const onboardingAddAccountRoute = new Route<Store>({
 export const homeRoute = new Route<Store>({
   path: '/',
   onEnter: (route: Route<Store>, params: {}, store: Store) => {
-    store.router.goTo(onboardingAddAccountRoute);
+    if (!store.userStore.storeadAccounts()) {
+      store.router.goTo(onboardingAddAccountRoute);
+    } else {
+      store.router.goTo(accountOverviewRoute);
+    }
   }
 });
 
