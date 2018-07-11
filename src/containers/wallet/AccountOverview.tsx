@@ -10,6 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
 import Store from '../../stores/store';
+import UserStore from '../../stores/user';
+import { toPairs } from 'lodash';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -27,100 +29,57 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   store?: Store;
+  userStore?: UserStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 
 @inject('store')
+@inject('userStore')
 @observer
 class AccountOverview extends React.Component<Props> {
   render() {
-    let { classes } = this.props;
+    const { classes, userStore } = this.props;
+    const account = userStore.selectedAccount;
 
     return (
       <React.Fragment>
-        <AccountOverviewHeader
-          address="3884823134173068029R"
-          alias="Demo account"
-          balance="123,234.01 RISE"
-          balance_in_fiat="~123.99 USD"
-        />
+        {account ? (
+          <AccountOverviewHeader
+            address={account.id}
+            alias={account.name}
+            balance={account.balance + 'RISE'}
+            balance_in_fiat={userStore.fiatAmount}
+          />
+        ) : null}
         <div className={classes.content}>
-          <Typography
-            className={classes.date_group_title}
-            variant="body2"
-            color="textSecondary"
-          >
-            Yesterday
-          </Typography>
-          <div>
-            <TxDetailsExpansionPanel
-              tx={{
-                kind: 'receive',
-                sender_alias: 'John Wick',
-                sender_address: '5965187292146641611R',
-                amount: 20.33
-              }}
-            />
-            <TxDetailsExpansionPanel
-              tx={{
-                kind: 'send',
-                recipient_alias: 'John Wick',
-                recipient_address: '5965187292146641611R',
-                amount: 1220.33
-              }}
-            />
-          </div>
-          <Typography
-            className={classes.date_group_title}
-            variant="body2"
-            color="textSecondary"
-          >
-            21st of June
-          </Typography>
-          <div>
-            <TxDetailsExpansionPanel
-              tx={{
-                kind: 'receive',
-                sender_alias: 'John Wick',
-                sender_address: '5965187292146641611R',
-                amount: 20.33
-              }}
-            />
-            <TxDetailsExpansionPanel
-              tx={{
-                kind: 'send',
-                recipient_alias: 'John Wick',
-                recipient_address: '5965187292146641611R',
-                amount: 1220.33
-              }}
-            />
-          </div>
-          <Typography
-            className={classes.date_group_title}
-            variant="body2"
-            color="textSecondary"
-          >
-            3rd of June
-          </Typography>
-          <div>
-            <TxDetailsExpansionPanel
-              tx={{
-                kind: 'receive',
-                sender_alias: 'John Wick',
-                sender_address: '5965187292146641611R',
-                amount: 20.33
-              }}
-            />
-            <TxDetailsExpansionPanel
-              tx={{
-                kind: 'send',
-                recipient_alias: 'John Wick',
-                recipient_address: '5965187292146641611R',
-                amount: 1220.33
-              }}
-            />
-          </div>
+          {toPairs(userStore.groupedTransactions).map(
+            ([group, transactions]) => (
+              <React.Fragment>
+                <Typography
+                  className={classes.date_group_title}
+                  variant="body2"
+                  color="textSecondary"
+                >
+                  {group}
+                </Typography>
+                <div>
+                  {transactions.map(transaction => (
+                    <TxDetailsExpansionPanel
+                      key={transaction.id}
+                      tx={{
+                        // TODO set in parseTransactionsReponse
+                        kind: 'receive',
+                        sender_alias: transaction.senderId,
+                        sender_address: transaction.senderId,
+                        amount: transaction.amount
+                      }}
+                    />
+                  ))}
+                </div>
+              </React.Fragment>
+            )
+          )}
         </div>
       </React.Fragment>
     );
