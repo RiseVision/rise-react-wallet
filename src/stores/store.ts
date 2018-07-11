@@ -3,16 +3,16 @@ import { action, observable, configure, runInAction } from 'mobx';
 import { getUserLocales, Locale } from '../utils/i18n';
 import { RouterStore } from 'mobx-router';
 import { importTranslation, Messages } from '../translations';
+import UserStore from "./user";
 
 // make sure only actions modify the store
 configure({ enforceActions: true });
 
 export type TConfig = {
-  api_url: string
+  api_url: string;
 };
 
 export default class Store {
-
   router = new RouterStore();
 
   translations: { [L in Locale]?: Messages } = {};
@@ -26,6 +26,8 @@ export default class Store {
 
   // TODO store async components here
   components = {};
+
+  userStore: UserStore | null;
 
   constructor(public config: TConfig) {}
 

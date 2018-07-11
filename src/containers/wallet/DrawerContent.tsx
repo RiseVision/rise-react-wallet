@@ -15,41 +15,52 @@ import PeopleIcon from '@material-ui/icons/People';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddIcon from '@material-ui/icons/Add';
 import AccountIcon from '../../components/AccountIcon';
-import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import {
+  Theme,
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/styles';
+import Store from '../../stores/store';
+import UserStore from '../../stores/user';
 
 const riseIcon = require('../../images/rise_icon.svg');
 
-const styles = (theme: Theme) => createStyles({
-  toolbar: theme.mixins.toolbar,
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: 'normal',
-    userSelect: 'none',
-  },
-  headerIcon: {
-    margin: '-4px 4px',
-  },
-  selectedListItem: {
-    backgroundColor: theme.palette.action.hover,
-  },
-  accountAvatar: {
-    backgroundColor: 'white',
-  },
-  listIcon: {
-    // Align the list icons to match the alignment of avatars
-    marginLeft: 8,
-    marginRight: 8,
-  },
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    toolbar: theme.mixins.toolbar,
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: 'normal',
+      userSelect: 'none'
+    },
+    headerIcon: {
+      margin: '-4px 4px'
+    },
+    selectedListItem: {
+      backgroundColor: theme.palette.action.hover
+    },
+    accountAvatar: {
+      backgroundColor: 'white'
+    },
+    listIcon: {
+      // Align the list icons to match the alignment of avatars
+      marginLeft: 8,
+      marginRight: 8
+    }
+  });
 
 interface Props extends WithStyles<typeof styles> {
+  store?: Store;
+  userStore?: UserStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 
 @inject('store')
+@inject('userStore')
 @observer
 class DrawerContent extends React.Component<Props> {
   render() {
@@ -58,10 +69,7 @@ class DrawerContent extends React.Component<Props> {
     return (
       <React.Fragment>
         <Typography
-          className={classNames(
-            classes.toolbar,
-            classes.header,
-          )}
+          className={classNames(classes.toolbar, classes.header)}
           variant="title"
           noWrap={true}
           align="center"
@@ -78,51 +86,28 @@ class DrawerContent extends React.Component<Props> {
                   height={24}
                   alt=""
                 />
-              ),
+              )
             }}
           />
         </Typography>
         <Divider />
         <List>
-          <ListItem
-            button={true}
-            className={classNames(
-              true && classes.selectedListItem,
-            )}
-          >
-            <ListItemAvatar>
-              <Avatar className={classes.accountAvatar}>
-                <AccountIcon size={24} address="3884823134173068029R" />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="Demo account"
-              secondary="3884823134173068029R"
-            />
-          </ListItem>
-          <ListItem button={true}>
-            <ListItemAvatar>
-              <Avatar className={classes.accountAvatar}>
-                <AccountIcon size={24} address="14310415683989235040R" />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="Unnamed account"
-              secondary="14310415683989235040R"
-            />
-          </ListItem>
-          <ListItem button={true}>
-            <ListItemIcon className={classes.listIcon}>
-              <AddIcon />
-            </ListItemIcon>
-            <ListItemText>
-              <FormattedMessage
-                id="drawer-content.add-account"
-                description="Add account drawer item"
-                defaultMessage="Add an account"
-              />
-            </ListItemText>
-          </ListItem>
+          {this.props.userStore!.accounts.map(account => (
+            <ListItem
+              button={true}
+              className={classNames(
+                this.props.userStore!.selectedAccount === account &&
+                  classes.selectedListItem
+              )}
+            >
+              <ListItemAvatar>
+                <Avatar className={classes.accountAvatar}>
+                  <AccountIcon size={24} address={account.id} />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={account.name} secondary={account.id} />
+            </ListItem>
+          ))}
         </List>
         <Divider />
         <List>

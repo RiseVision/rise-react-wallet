@@ -10,13 +10,13 @@ export default class UserStore {
   api: string;
 
   @observable accounts = observable.array<TAccount>();
+  @observable selectedAccount: TAccount | null;
 
   constructor(public app: Store) {
     this.api = app.config.api_url;
     for (const account of this.storeadAccounts()) {
       this.login(account.id, account.readOnly);
     }
-    // TODO load accounts from user storage
   }
 
   /**
@@ -51,10 +51,10 @@ export default class UserStore {
     }
     const res = await this.loadUser(address);
     const account = parseAccountReponse(res);
-    // TODO detect duplicates
-    // alter the store
+    // add the acount to the store and mark as selected
     runInAction(() => {
       this.accounts.push(account);
+      this.selectedAccount = account;
     });
     this.rememberAccount({ id: address, readOnly });
     return true;
