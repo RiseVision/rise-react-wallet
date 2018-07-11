@@ -21,17 +21,6 @@ export const onboardingAddAccountRoute = new Route<Store>({
   )
 });
 
-export const homeRoute = new Route<Store>({
-  path: '/',
-  onEnter: (route: Route<Store>, params: {}, store: Store) => {
-    if (!store.userStore.storeadAccounts()) {
-      store.router.goTo(onboardingAddAccountRoute);
-    } else {
-      store.router.goTo(accountOverviewRoute);
-    }
-  }
-});
-
 export const onboardingChooseLanguageRoute = new Route<Store>({
   path: '/onboarding/choose-language',
   component: (
@@ -182,4 +171,15 @@ export const accountOverviewRoute = new Route({
       )}
     />
   )
+});
+
+export const homeRoute = new Route<Store>({
+  path: '/',
+  onEnter: (route: Route<Store>, params: {}, store: Store) => {
+    if (!store.userStore.storeadAccounts()) {
+      store.router.goTo(onboardingAddAccountRoute);
+    } else {
+      store.router.goTo(accountOverviewRoute);
+    }
+  }
 });

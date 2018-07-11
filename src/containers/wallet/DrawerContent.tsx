@@ -99,6 +99,7 @@ class DrawerContent extends React.Component<Props> {
                 this.props.userStore!.selectedAccount === account &&
                   classes.selectedListItem
               )}
+              key={account.id}
             >
               <ListItemAvatar>
                 <Avatar className={classes.accountAvatar}>

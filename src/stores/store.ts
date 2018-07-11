@@ -3,7 +3,7 @@ import { action, observable, configure, runInAction } from 'mobx';
 import { getUserLocales, Locale } from '../utils/i18n';
 import { RouterStore } from 'mobx-router';
 import { importTranslation, Messages } from '../translations';
-import UserStore from "./user";
+import UserStore from './user';
 
 // make sure only actions modify the store
 configure({ enforceActions: true });
