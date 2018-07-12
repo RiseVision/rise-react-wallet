@@ -21,6 +21,7 @@ import {
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
+import { onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
 import UserStore from '../../stores/user';
 
@@ -64,7 +65,7 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 @observer
 class DrawerContent extends React.Component<Props> {
   render() {
-    const { classes } = this.props;
+    const { classes, userStore, store } = this.props;
 
     return (
       <React.Fragment>
@@ -92,13 +93,14 @@ class DrawerContent extends React.Component<Props> {
         </Typography>
         <Divider />
         <List>
-          {this.props.userStore!.accounts.map(account => (
+          {userStore.accounts.map(account => (
             <ListItem
               button={true}
               className={classNames(
-                this.props.userStore!.selectedAccount === account &&
+                userStore.selectedAccount === account &&
                   classes.selectedListItem
               )}
+              onClick={() => userStore.selectAccount(account.id)}
               key={account.id}
             >
               <ListItemAvatar>
@@ -109,6 +111,19 @@ class DrawerContent extends React.Component<Props> {
               <ListItemText primary={account.name} secondary={account.id} />
             </ListItem>
           ))}
+          <ListItem
+            button={true}
+            key="add-account"
+            onClick={() => store.router.goTo(onboardingAddAccountRoute)}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                {/* TODO correct the icon, FUT - mocks */}
+                <AddIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary="Add an account" />
+          </ListItem>
         </List>
         <Divider />
         <List>

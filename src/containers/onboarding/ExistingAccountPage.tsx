@@ -13,7 +13,7 @@ import {
   onboardingAddAccountRoute,
   onboardingExistingAccountTypeRoute
 } from '../../routes';
-import Store from '../../stores/store';
+import Store, { normalizeAddress } from '../../stores/store';
 import UserStore from '../../stores/user';
 
 const styles = createStyles({
@@ -50,7 +50,6 @@ const stylesDecorator = withStyles(styles, {
 @inject('store')
 @observer
 class ExistingAccountPage extends React.Component<Props, State> {
-
   constructor(props: Props) {
     super(props);
 
@@ -170,15 +169,6 @@ class ExistingAccountPage extends React.Component<Props, State> {
         </Grid>
       </ModalPaper>
     );
-  }
-}
-
-function normalizeAddress(address: string): string {
-  const normalizedAddress = address.toUpperCase();
-  if (!normalizedAddress.match(/^\d{1,20}R$/)) {
-    return '';
-  } else {
-    return normalizedAddress;
   }
 }
 

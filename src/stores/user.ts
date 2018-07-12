@@ -24,8 +24,17 @@ export default class UserStore {
 
   constructor(public app: Store) {
     this.api = app.config.api_url;
-    for (const account of this.storedAccounts()) {
-      this.login(account.id, account.readOnly);
+    const accounts = this.storedAccounts();
+    let isSelected = false;
+    const lastSelected = localStorage.getItem('lastSelectedAccount');
+    for (const account of accounts) {
+      // select the first account
+      // TODO memorize the last selected account
+      const select: boolean =
+        (lastSelected && lastSelected === account.id) ||
+        (!lastSelected && !isSelected);
+      this.login(account.id, select, account.readOnly);
+      isSelected = true;
     }
   }
 
@@ -49,22 +58,37 @@ export default class UserStore {
     const res = await fetch(`${this.api}/api/accounts?address=${id}`);
     const json: TAccountResponse | TErrorResponse = await res.json();
     if (!json.success) {
-      throw new Error((json as TErrorResponse).error);
+      // fake the account
+      // TODO confirm if expected
+      // @ts-ignore
+      json.account = {
+        address: id,
+        balance: 0,
+        unconfirmedBalance: 0,
+        secondPassphrase: '',
+        unconfirmedPassphrase: ''
+      };
+      // throw new Error((json as TErrorResponse).error);
     }
-    return json;
+    return json as TAccountResponse;
   }
 
   @action
-  async login(id: string, readOnly: boolean = false) {
+  async login(id: string, select = true, readOnly: boolean = false) {
     if (!id) {
-      throw Error('address required');
+      throw Error('Address required');
+    }
+    if (!normalizeAddress(id)) {
+      throw Error('Invalid address');
     }
     const res = await this.loadUser(id);
     const account = parseAccountReponse(res);
     // add the acount to the store and mark as selected
     runInAction(() => {
       this.accounts.push(account);
-      this.selectAccount(id);
+      if (select) {
+        this.selectAccount(id);
+      }
     });
     this.rememberAccount({ id: id, readOnly });
     return true;
@@ -76,9 +100,15 @@ export default class UserStore {
     if (!account) {
       throw new Error('Unknown account');
     }
+    localStorage.setItem('lastSelectedAccount', id);
+    // cleanup
+    this.recentTransactions.clear();
+    this.fiatAmount = null;
     this.selectedAccount = account;
     this.calculateFiat();
-    this.getRecentTransactions();
+    if (account.publicKey) {
+      this.getRecentTransactions();
+    }
     // TODO calculate fiat
     // TODO refresh latest transactions
   }
