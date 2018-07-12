@@ -23,7 +23,7 @@ export default class UserStore {
 
   constructor(public app: Store) {
     this.api = app.config.api_url;
-    for (const account of this.storeadAccounts()) {
+    for (const account of this.storedAccounts()) {
       this.login(account.id, account.readOnly);
     }
   }
@@ -31,12 +31,12 @@ export default class UserStore {
   /**
    * Returns the list of stored account IDs.
    */
-  storeadAccounts(): TStoredAccount[] {
+  storedAccounts(): TStoredAccount[] {
     return JSON.parse(localStorage.getItem('accounts') || '[]');
   }
 
   rememberAccount(account: TStoredAccount) {
-    let accounts = this.storeadAccounts();
+    let accounts = this.storedAccounts();
     // check for duplicates
     if (!accounts.find(a => a.id === account.id)) {
       accounts.push(account);
