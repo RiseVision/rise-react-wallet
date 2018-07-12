@@ -1,3 +1,4 @@
 {
-  "api_url": "https://twallet.rise.vision"
+  "api_url": "https://twallet.rise.vision",
+  "date_format": "Do of MMM"
 }

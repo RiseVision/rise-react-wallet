@@ -1,7 +1,8 @@
 import * as assert from 'assert';
 import { LiskWallet } from 'dpos-offline';
 import { action, observable, configure, runInAction, computed } from 'mobx';
-import Store from './store';
+import { TxInfo } from '../components/TxDetailsExpansionPanel';
+import Store, { correctTimestamp, normalizeAddress } from './store';
 import * as moment from 'moment-timezone';
 import { groupBy } from 'lodash';
 
@@ -14,11 +15,11 @@ export default class UserStore {
   @observable accounts = observable.array<TAccount>();
   @observable selectedAccount: TAccount | null;
   @observable fiatAmount: string;
-  @observable recentTransactions = observable.array<TTransaction[]>();
+  @observable recentTransactions = observable.array<TTransaction>();
   @computed
   get groupedTransactions(): TGroupedTransactions {
     // @ts-ignore
-    return groupTransitionsByDay(this.recentTransactions);
+    return this.groupTransitionsByDay(this.recentTransactions);
   }
 
   constructor(public app: Store) {
@@ -115,9 +116,11 @@ export default class UserStore {
     runInAction(() => {
       this.recentTransactions.length = 0;
       // @ts-ignore
-      this.recentTransactions.push(...parseTransactionsReponse(unconfirmed));
+      this.recentTransactions.push(
+        ...this.parseTransactionsReponse(unconfirmed)
+      );
       // @ts-ignore
-      this.recentTransactions.push(...parseTransactionsReponse(recent));
+      this.recentTransactions.push(...this.parseTransactionsReponse(recent));
     });
   }
 
@@ -136,6 +139,54 @@ export default class UserStore {
       throw new Error((json as TErrorResponse).error);
     }
     return json;
+  }
+
+  groupTransitionsByDay(transactions: TTransaction[]): TGroupedTransactions {
+    return groupBy(transactions, (transaction: TTransaction) => {
+      return moment(transaction.timestamp)
+        .startOf('day')
+        .calendar(null, {
+          // TODO translate those
+          lastWeek: '[Last] dddd',
+          lastDay: '[Yesterday]',
+          sameDay: '[Today]',
+          nextDay: '[Tomorrow]',
+          nextWeek: 'dddd',
+          sameElse: () => {
+            return this.app.config.date_format;
+          }
+        });
+    });
+  }
+
+  parseTransactionsReponse(res: TTransactionsResponse): TTransaction[] {
+    return res.transactions.map(t => {
+      t.timestamp = correctTimestamp(t.timestamp);
+      t.info =
+        t.senderId === this.selectedAccount.id
+          ? {
+              kind: 'send',
+              recipient_alias: this.idToName(t.recipientId),
+              recipient_address: t.recipientId,
+              amount: t.amount
+            }
+          : {
+              kind: 'receive',
+              sender_alias: this.idToName(t.senderId),
+              sender_address: t.senderId,
+              amount: t.amount
+            };
+      return t;
+    });
+  }
+
+  /**
+   * @returns The name from the address book OR from one of the added accounts
+   *   OR the source ID if not found
+   * TODO
+   */
+  idToName(id: string) {
+    return id;
   }
 }
 
@@ -160,25 +211,6 @@ export function parseAccountReponse(res: TAccountResponse): TAccount {
   };
 }
 
-function groupTransitionsByDay(
-  transactions: TTransaction[]
-): TGroupedTransactions {
-  return groupBy(transactions, function(transaction: TTransaction) {
-    return (
-      moment(transaction.timestamp)
-        .startOf('day')
-        // TODO format to a relative day
-        .format()
-    );
-  });
-}
-
-export function parseTransactionsReponse(
-  res: TTransactionsResponse
-): TTransaction[] {
-  return res.transactions;
-}
-
 export type TGroupedTransactions = { [group: string]: TTransaction[] };
 
 export type TStoredAccount = {
@@ -187,6 +219,7 @@ export type TStoredAccount = {
 };
 
 export type TTransaction = {
+  info: TxInfo;
   amount: 1;
   asset: {};
   blockId: string;

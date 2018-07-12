@@ -10,6 +10,7 @@ configure({ enforceActions: true });
 
 export type TConfig = {
   api_url: string;
+  date_format: string;
 };
 
 export default class Store {
@@ -63,5 +64,20 @@ export default class Store {
     this.mnemonic = mnemonic;
     const wallet = new LiskWallet(mnemonic.join(' '), 'R');
     this.address = wallet.address;
+  }
+}
+
+// magic...
+const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
+export function correctTimestamp(timestamp: number) {
+  return new Date((timestamp + epoch) * 1000).getTime();
+}
+
+export function normalizeAddress(address: string): string {
+  const normalizedAddress = address.toUpperCase();
+  if (!normalizedAddress.match(/^\d{1,20}R$/)) {
+    return '';
+  } else {
+    return normalizedAddress;
   }
 }

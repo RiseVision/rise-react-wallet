@@ -48,7 +48,7 @@ class AccountOverview extends React.Component<Props> {
           <AccountOverviewHeader
             address={account.id}
             alias={account.name}
-            balance={account.balance + 'RISE'}
+            balance={account.balance + ' RISE'}
             balance_in_fiat={userStore.fiatAmount}
           />
         ) : null}
@@ -67,13 +67,7 @@ class AccountOverview extends React.Component<Props> {
                   {transactions.map(transaction => (
                     <TxDetailsExpansionPanel
                       key={transaction.id}
-                      tx={{
-                        // TODO set in parseTransactionsReponse
-                        kind: 'receive',
-                        sender_alias: transaction.senderId,
-                        sender_address: transaction.senderId,
-                        amount: transaction.amount
-                      }}
+                      tx={transaction.info}
                     />
                   ))}
                 </div>

@@ -69,21 +69,21 @@ const styles = (theme: Theme) => {
   });
 };
 
-interface ReceiveTxInfo {
+export interface ReceiveTxInfo {
   kind: 'receive';
   sender_alias: string | null;
   sender_address: string;
   amount: number;
 }
 
-interface SendTxInfo {
+export interface SendTxInfo {
   kind: 'send';
   recipient_alias: string | null;
   recipient_address: string;
   amount: number;
 }
 
-type TxInfo = ReceiveTxInfo | SendTxInfo;
+export type TxInfo = ReceiveTxInfo | SendTxInfo;
 
 interface Props extends WithStyles<typeof styles> {
   tx: TxInfo;
