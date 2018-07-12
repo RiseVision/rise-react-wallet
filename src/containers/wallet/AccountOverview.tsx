@@ -55,7 +55,7 @@ class AccountOverview extends React.Component<Props> {
         <div className={classes.content}>
           {toPairs(userStore.groupedTransactions).map(
             ([group, transactions]) => (
-              <React.Fragment>
+              <React.Fragment key={group}>
                 <Typography
                   className={classes.date_group_title}
                   variant="body2"
