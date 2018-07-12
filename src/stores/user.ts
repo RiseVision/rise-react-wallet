@@ -74,7 +74,7 @@ export default class UserStore {
   }
 
   @action
-  async login(id: string, select = true, readOnly: boolean = false) {
+  async login(id: string, select: boolean = true, readOnly: boolean = false) {
     if (!id) {
       throw Error('Address required');
     }
