@@ -87,6 +87,13 @@ class WalletAppBar extends React.Component<DecoratedProps> {
                 defaultMessage="Account overview"
               />
             )}
+            {currentView.path === '/wallet/settings' && (
+              <FormattedMessage
+                id="wallet-appbar.account-settings-title"
+                description="Account settings title"
+                defaultMessage="Account settings"
+              />
+            )}
           </Typography>
           {currentView.path === '/wallet' && (
             <Tooltip

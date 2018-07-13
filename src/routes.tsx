@@ -173,6 +173,23 @@ export const accountOverviewRoute = new Route({
   )
 });
 
+export const accountSettingsRoute = new Route({
+  path: '/wallet/settings',
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
 export const homeRoute = new Route<Store>({
   path: '/',
   onEnter: (route: Route<Store>, params: {}, store: Store) => {

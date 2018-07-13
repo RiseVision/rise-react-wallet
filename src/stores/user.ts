@@ -83,6 +83,11 @@ export default class UserStore {
     }
     const res = await this.loadUser(id);
     const account = parseAccountReponse(res);
+    const accountNamesJSON = localStorage.getItem('accountNames') || '{}';
+    const accountNames = JSON.parse(accountNamesJSON);
+    if (accountNames[account.id]) {
+      account.name = accountNames[account.id];
+    }
     // add the acount to the store and mark as selected
     runInAction(() => {
       this.accounts.push(account);
@@ -152,6 +157,19 @@ export default class UserStore {
       // @ts-ignore
       this.recentTransactions.push(...this.parseTransactionsReponse(recent));
     });
+  }
+
+  async registerAccount() {
+    // wallet.publicKey
+  }
+
+  @action
+  updateAccountName(name: string) {
+    const accountNamesJSON = localStorage.getItem('accountNames') || '{}';
+    const accountNames = JSON.parse(accountNamesJSON);
+    this.selectedAccount.name = name;
+    accountNames[this.selectedAccount.id] = name;
+    localStorage.setItem('accountNames', JSON.stringify(accountNames));
   }
 
   async loadTransactions(

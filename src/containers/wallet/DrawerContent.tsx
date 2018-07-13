@@ -108,6 +108,7 @@ class DrawerContent extends React.Component<Props> {
                   <AccountIcon size={24} address={account.id} />
                 </Avatar>
               </ListItemAvatar>
+              {/* TODO this doesnt observe */}
               <ListItemText primary={account.name} secondary={account.id} />
             </ListItem>
           ))}
