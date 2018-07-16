@@ -19,6 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { accountSettingsRoute } from '../../routes';
 import Store from '../../stores/store';
 
 const styles = (theme: Theme) =>
@@ -60,7 +61,7 @@ const messages = defineMessages({
 @observer
 class WalletAppBar extends React.Component<DecoratedProps> {
   render() {
-    const { intl, classes } = this.props;
+    const { intl, classes, store } = this.props;
     const currentView = this.props.store!.router.currentView;
 
     return (
@@ -102,6 +103,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               <IconButton
                 aria-label={intl.formatMessage(messages.accountSettingsTooltip)}
                 color="inherit"
+                onClick={() => store.router.goTo(accountSettingsRoute)}
               >
                 <SettingsIcon />
               </IconButton>

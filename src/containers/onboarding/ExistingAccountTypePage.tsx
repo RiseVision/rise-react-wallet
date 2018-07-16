@@ -29,15 +29,21 @@ class ExistingAccountTypePage extends React.Component<Props> {
   }
 
   handleFullAccessClick = async () => {
-    this.props.userStore!.login(this.props.store.address);
+    this.props.userStore!.login(
+      this.props.store.address,
+      { readOnly: false },
+      true
+    );
     this.props.store!.router.goTo(accountOverviewRoute);
-
   }
 
   handleReadOnlyClick = () => {
-    // TODO
-    alert('TODO');
-    this.props.store!.router.goTo(onboardingAddAccountRoute);
+    this.props.userStore!.login(
+      this.props.store.address,
+      { readOnly: true },
+      true
+    );
+    this.props.store!.router.goTo(accountOverviewRoute);
   }
 
   render() {
@@ -53,39 +59,41 @@ class ExistingAccountTypePage extends React.Component<Props> {
         <List>
           <ListItem button={true} onClick={this.handleFullAccessClick}>
             <ListItemText
-              primary={(
+              primary={
                 <FormattedMessage
                   id="onboarding-existing-account-type.full-access"
                   description="Existing full access account button title"
                   defaultMessage="Full access account"
                 />
-              )}
-              secondary={(
+              }
+              secondary={
                 <FormattedMessage
                   id="onboarding-existing-account-type.full-access-tip"
                   description="Existing full access account button tip"
                   defaultMessage={'I know the secret mnemonic for this account'}
                 />
-              )}
+              }
             />
             <ChevronRight />
           </ListItem>
           <ListItem button={true} onClick={this.handleReadOnlyClick}>
             <ListItemText
-              primary={(
+              primary={
                 <FormattedMessage
                   id="onboarding-existing-account-type.read-access"
                   description="Existing read access account button title"
                   defaultMessage="Watch only account"
                 />
-              )}
-              secondary={(
+              }
+              secondary={
                 <FormattedMessage
                   id="onboarding-existing-account-type.read-access-tip"
                   description="Existing read access account button tip"
-                  defaultMessage={'I don\'t know the secret mnemonic for this account'}
+                  defaultMessage={
+                    'I don\'t know the secret mnemonic for this account'
+                  }
                 />
-              )}
+              }
             />
             <ChevronRight />
           </ListItem>

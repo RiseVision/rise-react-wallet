@@ -52,8 +52,13 @@ class SettingsDialog extends React.Component<Props, State> {
     this.props.onClose();
   }
 
+  updateFiat = (global: boolean) => () => {
+    this.props.userStore!.updateFiat(this.state.fiat, global);
+    this.props.onClose();
+  }
+
   render() {
-    const { userStore } = this.props;
+    const { userStore, store } = this.props;
 
     return (
       <React.Fragment>
@@ -117,7 +122,21 @@ class SettingsDialog extends React.Component<Props, State> {
                   defaultMessage="Displayed FIAT currency"
                 />
               </ModalPaperHeader>
-              Content
+              <div>
+                <select name="fiat" onChange={this.handleChange('fiat')}>
+                  {this.props.store!.config.fiat_currencies.map(name => (
+                    <option>{name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Button onClick={this.updateFiat(false)}>
+                  SET FOR THIS ACCOUNT
+                </Button>
+                <Button onClick={this.updateFiat(true)}>
+                  SET FOR ALL ACCOUNTS
+                </Button>
+              </div>
             </React.Fragment>
           )}
         </ModalPaper>

@@ -1,4 +1,5 @@
 {
   "api_url": "https://twallet.rise.vision",
-  "date_format": "Do of MMM"
+  "date_format": "Do of MMM",
+  "fiat_currencies": ["USD", "EUR", "GBP", "CAD", "AUD"]
 }

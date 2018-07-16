@@ -4,7 +4,8 @@ import { action, observable, configure, runInAction, computed } from 'mobx';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
 import Store, { correctTimestamp, normalizeAddress } from './store';
 import * as moment from 'moment-timezone';
-import { groupBy } from 'lodash';
+import { groupBy, pick } from 'lodash';
+import * as lstore from 'store';
 
 // make sure only actions modify the store
 configure({ enforceActions: true });
@@ -26,14 +27,13 @@ export default class UserStore {
     this.api = app.config.api_url;
     const accounts = this.storedAccounts();
     let isSelected = false;
-    const lastSelected = localStorage.getItem('lastSelectedAccount');
+    const lastSelected = lstore.get('lastSelectedAccount');
     for (const account of accounts) {
-      // select the first account
-      // TODO memorize the last selected account
       const select: boolean =
         (lastSelected && lastSelected === account.id) ||
         (!lastSelected && !isSelected);
-      this.login(account.id, select, account.readOnly);
+      // login, merge local data and select the last selected one
+      this.login(account.id, account, select);
       isSelected = true;
     }
   }
@@ -42,19 +42,31 @@ export default class UserStore {
    * Returns the list of stored account IDs.
    */
   storedAccounts(): TStoredAccount[] {
-    return JSON.parse(localStorage.getItem('accounts') || '[]');
+    return lstore.get('accounts') || [];
   }
 
-  rememberAccount(account: TStoredAccount) {
-    let accounts = this.storedAccounts();
-    // check for duplicates
-    if (!accounts.find(a => a.id === account.id)) {
-      accounts.push(account);
-      localStorage.setItem('accounts', JSON.stringify(accounts));
-    }
+  /**
+   * Remember the account in local storage.
+   * @param account
+   */
+  saveAccount(account: TStoredAccount) {
+    // field of TStoredAccount
+    const fields = [
+      'id',
+      'publicKey',
+      'readOnly',
+      'fiatCurrency',
+      'name',
+      'pinned'
+    ];
+    let stored = this.storedAccounts();
+    stored = stored.filter(a => a.id !== account.id);
+    // store the account, but only the selected fields
+    stored.push(pick(account, fields) as TStoredAccount);
+    lstore.set('accounts', stored);
   }
 
-  async loadUser(id: string): Promise<TAccountResponse> {
+  async loadAccount(id: string): Promise<TAccountResponse> {
     const res = await fetch(`${this.api}/api/accounts?address=${id}`);
     const json: TAccountResponse | TErrorResponse = await res.json();
     if (!json.success) {
@@ -74,20 +86,20 @@ export default class UserStore {
   }
 
   @action
-  async login(id: string, select: boolean = true, readOnly: boolean = false) {
+  async login(
+    id: string,
+    local?: Partial<TStoredAccount>,
+    select: boolean = false
+  ) {
     if (!id) {
       throw Error('Address required');
     }
     if (!normalizeAddress(id)) {
       throw Error('Invalid address');
     }
-    const res = await this.loadUser(id);
-    const account = parseAccountReponse(res);
-    const accountNamesJSON = localStorage.getItem('accountNames') || '{}';
-    const accountNames = JSON.parse(accountNamesJSON);
-    if (accountNames[account.id]) {
-      account.name = accountNames[account.id];
-    }
+    const res = await this.loadAccount(id);
+    const account = parseAccountReponse(res, local);
+    // TODO load the remembered
     // add the acount to the store and mark as selected
     runInAction(() => {
       this.accounts.push(account);
@@ -95,8 +107,21 @@ export default class UserStore {
         this.selectAccount(id);
       }
     });
-    this.rememberAccount({ id: id, readOnly });
+    // memorize the account
+    this.saveAccount(account);
     return true;
+  }
+
+  @action
+  selectFiat(fiat: string, accountId?: string) {
+    for (const account of this.accounts) {
+      if (!accountId || accountId === account.id) {
+        account.fiatCurrency = fiat;
+        this.saveAccount(account);
+      }
+    }
+    // clear the calculation for the selected account
+    this.fiatAmount = null;
   }
 
   @action
@@ -105,21 +130,19 @@ export default class UserStore {
     if (!account) {
       throw new Error('Unknown account');
     }
-    localStorage.setItem('lastSelectedAccount', id);
+    lstore.set('lastSelectedAccount', id);
     // cleanup
     this.recentTransactions.clear();
-    this.fiatAmount = null;
     this.selectedAccount = account;
     this.calculateFiat();
     if (account.publicKey) {
       this.getRecentTransactions();
     }
-    // TODO calculate fiat
-    // TODO refresh latest transactions
   }
 
   @action
   async calculateFiat() {
+    this.fiatAmount = null;
     // TODO calculate
     runInAction(() => {
       // TODO check if the same account is still selected
@@ -159,17 +182,39 @@ export default class UserStore {
     });
   }
 
-  async registerAccount() {
-    // wallet.publicKey
+  @action
+  registerAccount(mnemonic: string[]) {
+    const wallet = new LiskWallet(mnemonic.join(' '), 'R');
+    const account = {
+      id: wallet.address,
+      publicKey: wallet.publicKey,
+      name: null,
+      fiatCurrency: 'USD',
+      readOnly: false
+    };
+    this.login(account.id, account, true);
+    return account.id;
   }
 
   @action
   updateAccountName(name: string) {
-    const accountNamesJSON = localStorage.getItem('accountNames') || '{}';
-    const accountNames = JSON.parse(accountNamesJSON);
     this.selectedAccount.name = name;
-    accountNames[this.selectedAccount.id] = name;
-    localStorage.setItem('accountNames', JSON.stringify(accountNames));
+    this.saveAccount(this.selectedAccount);
+  }
+
+  @action
+  updateFiat(fiat: string, global: boolean = false) {
+    assert(fiat, 'FIAT required');
+    if (global) {
+      for (const account of this.accounts) {
+        account.fiatCurrency = fiat;
+        this.saveAccount(account);
+      }
+    } else {
+      this.selectedAccount.fiatCurrency = fiat;
+      this.saveAccount(this.selectedAccount);
+    }
+    this.calculateFiat();
   }
 
   async loadTransactions(
@@ -238,18 +283,25 @@ export default class UserStore {
   }
 }
 
-export function parseAccountReponse(res: TAccountResponse): TAccount {
-  return {
+/**
+ *
+ * @param res Response from the server
+ * @param local Local data for the account. Optional.
+ */
+export function parseAccountReponse(
+  res: TAccountResponse,
+  local?: Partial<TStoredAccount>
+): TAccount {
+  const parsed = {
     id: res.account.address,
     publicKey: res.account.publicKey,
-    // TODO
-    name: '',
+    name: null,
     // TODO
     mnemonic: '',
     // TODO
     mnemonic2: '',
-    // TODO
     fiatCurrency: 'USD',
+    readOnly: false,
     pinned: false,
     balance: parseInt(res.account.balance, 10) / 100000000,
     unconfirmedBalance:
@@ -257,13 +309,21 @@ export function parseAccountReponse(res: TAccountResponse): TAccount {
     _balance: parseInt(res.account.balance, 10),
     _unconfirmedBalance: parseInt(res.account.unconfirmedBalance, 10)
   };
+  return {
+    ...parsed,
+    ...local
+  };
 }
 
 export type TGroupedTransactions = { [group: string]: TTransaction[] };
 
 export type TStoredAccount = {
   id: string;
+  publicKey: string;
   readOnly: boolean;
+  fiatCurrency: string;
+  name: string | null;
+  pinned: boolean;
 };
 
 export type TTransaction = {
@@ -311,6 +371,7 @@ export type TAccount = {
   pinned: boolean;
   balance: number;
   unconfirmedBalance: number;
+  readOnly: boolean;
   _balance: number;
   _unconfirmedBalance: number;
   // voted_delegate: string,

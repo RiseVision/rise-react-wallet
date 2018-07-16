@@ -21,7 +21,7 @@ import {
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import { onboardingAddAccountRoute } from '../../routes';
+import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
 import { orderBy } from 'lodash';
 import UserStore from '../../stores/user';
@@ -65,6 +65,11 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 @inject('userStore')
 @observer
 class DrawerContent extends React.Component<Props> {
+  handleAccountClicked = (id: string) => () => {
+    this.props.userStore!.selectAccount(id);
+    this.props.store!.router.goTo(accountOverviewRoute);
+  }
+
   render() {
     const { classes, userStore, store } = this.props;
 

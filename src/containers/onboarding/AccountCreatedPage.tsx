@@ -8,13 +8,13 @@ import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import AccountIcon from '../../components/AccountIcon';
-import { onboardingAddAccountRoute } from '../../routes';
+import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
 
 const styles = createStyles({
   content: {
-    padding: 20,
-  },
+    padding: 20
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {
@@ -25,16 +25,17 @@ interface State {
   accountAddress: string;
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingAccountCreatedPage' });
+const stylesDecorator = withStyles(styles, {
+  name: 'OnboardingAccountCreatedPage'
+});
 
 @inject('store')
 @observer
 class AccountCreatedPage extends React.Component<Props, State> {
-
   constructor(props: Props) {
     super(props);
     this.state = {
-      accountAddress: props.store!.address || '',
+      accountAddress: props.store!.address || ''
     };
     if (!this.state.accountAddress) {
       this.props.store!.router.goTo(onboardingAddAccountRoute);
@@ -42,7 +43,7 @@ class AccountCreatedPage extends React.Component<Props, State> {
   }
 
   handleOverviewClick = () => {
-    this.props.store!.router.goTo(onboardingAddAccountRoute);
+    this.props.store!.router.goTo(accountOverviewRoute);
   }
 
   render() {
@@ -74,7 +75,12 @@ class AccountCreatedPage extends React.Component<Props, State> {
             </Typography>
           </Grid>
           <Grid item={true} xs={12}>
-            <Grid container={true} justify="center" alignItems="center" spacing={8}>
+            <Grid
+              container={true}
+              justify="center"
+              alignItems="center"
+              spacing={8}
+            >
               <Grid item={true}>
                 <Typography>{accountAddress}</Typography>
               </Grid>

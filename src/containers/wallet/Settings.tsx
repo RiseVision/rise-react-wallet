@@ -64,8 +64,10 @@ class AccountSettings extends React.Component<Props, State> {
   handleFieldClick = field => {
     if (field === 'pinned') {
       runInAction(() => {
-        this.props.userStore!.selectedAccount.pinned = !this.props.userStore!
+        let userStore = this.props.userStore!;
+        userStore.selectedAccount.pinned = !this.props.userStore!
           .selectedAccount.pinned;
+        userStore.saveAccount(userStore.selectedAccount);
       });
     } else {
       this.setState({ dialogOpen: true, dialogField: field });

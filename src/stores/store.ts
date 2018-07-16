@@ -11,6 +11,7 @@ configure({ enforceActions: true });
 export type TConfig = {
   api_url: string;
   date_format: string;
+  fiat_currencies: string[];
 };
 
 export default class Store {
@@ -57,13 +58,6 @@ export default class Store {
     runInAction(() => {
       this.locale = locale;
     });
-  }
-
-  @action
-  onAccountCreated(mnemonic: string[]) {
-    this.mnemonic = mnemonic;
-    const wallet = new LiskWallet(mnemonic.join(' '), 'R');
-    this.address = wallet.address;
   }
 }
 

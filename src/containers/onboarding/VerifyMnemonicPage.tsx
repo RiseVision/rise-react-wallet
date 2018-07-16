@@ -9,12 +9,18 @@ import Button from '@material-ui/core/Button';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import * as classNames from 'classnames';
-import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import {
+  Theme,
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/styles';
 import {
   onboardingAccountCreatedRoute,
   onboardingNewAccountRoute
 } from '../../routes';
 import Store from '../../stores/store';
+import UserStore from '../../stores/user';
 
 const styles = (theme: Theme) => {
   const { pxToRem } = theme.typography;
@@ -73,6 +79,7 @@ function round(val: number) {
 
 interface Props extends WithStyles<typeof styles> {
   store?: Store;
+  userStore?: UserStore;
   mnemonic?: string[];
 }
 
@@ -87,9 +94,9 @@ interface State {
 const stylesDecorator = withStyles(styles, { name: 'OnboardingVerifyMnemonicPage' });
 
 @inject('store')
+@inject('userStore')
 @observer
 class VerifyMnemonicPage extends React.Component<Props, State> {
-
   constructor(props: Props) {
     super(props);
 
@@ -106,7 +113,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
       uncheckedIndices,
       currentWordIndex,
       currentWordValue: '',
-      currentWordInvalid: false,
+      currentWordInvalid: false
     };
   }
 
@@ -119,7 +126,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     value = value.toLowerCase().trim();
 
     this.setState({
-      currentWordValue: value,
+      currentWordValue: value
     });
   }
 
@@ -140,11 +147,14 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
         uncheckedIndices,
         currentWordIndex,
         currentWordValue: '',
-        currentWordInvalid: false,
+        currentWordInvalid: false
       });
     } else {
-      // TODO actually create the account
-      this.props.store!.onAccountCreated(this.state.mnemonic);
+      this.props.store!.address = this.props.userStore!.registerAccount(
+        mnemonic
+      );
+      // TODO clear the onboarding tmp data
+      // this.props.store!.registrationCompleted();
       this.props.store!.router.goTo(onboardingAccountCreatedRoute);
     }
   }
@@ -153,19 +163,24 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     const { classes } = this.props;
     const { mnemonic, uncheckedIndices, currentWordIndex } = this.state;
 
-    const words: Array<'unchecked' | 'checked' | 'current'> = mnemonic.map((_, idx) => {
-      if (idx === currentWordIndex) {
-        return 'current';
-      } else if (uncheckedIndices.indexOf(idx) >= 0) {
-        return 'unchecked';
-      } else {
-        return 'checked';
+    const words: Array<'unchecked' | 'checked' | 'current'> = mnemonic.map(
+      (_, idx) => {
+        if (idx === currentWordIndex) {
+          return 'current';
+        } else if (uncheckedIndices.indexOf(idx) >= 0) {
+          return 'unchecked';
+        } else {
+          return 'checked';
+        }
       }
-    });
+    );
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
+        <ModalPaperHeader
+          closeButton={true}
+          onCloseClick={this.handleCloseClick}
+        >
           <FormattedMessage
             id="onboarding-verify-mnemonic.title"
             description="Verify mnemonic screen title"
@@ -182,7 +197,11 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
         >
           <Hidden xsDown={true}>
             <Grid item={true} xs={12}>
-              <Typography component="p" variant="title" className={classes.mnemonic}>
+              <Typography
+                component="p"
+                variant="title"
+                className={classes.mnemonic}
+              >
                 {words.map((state, idx) => (
                   <React.Fragment key={idx}>
                     <span className={classes.wordGroup}>
@@ -190,7 +209,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
                       <span
                         className={classNames(
                           classes.wordValue,
-                          state === 'current' && classes.currentWordValue,
+                          state === 'current' && classes.currentWordValue
                         )}
                       >
                         {state === 'current' && '?'}
@@ -226,26 +245,26 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
                         `}`
                       }
                       values={{
-                        whichWord: currentWordIndex + 1,
+                        whichWord: currentWordIndex + 1
                       }}
                     />
-                  ),
+                  )
                 }}
               />
             </Typography>
           </Grid>
           <Grid item={true} xs={12}>
             <TextField
-              label={(
+              label={
                 <FormattedMessage
                   id="onboarding-verify-mnemonic.input-label-which-word"
                   description="Word number to enter into the text field"
                   defaultMessage="Word #{whichWord, number}"
                   values={{
-                    whichWord: currentWordIndex + 1,
+                    whichWord: currentWordIndex + 1
                   }}
                 />
-              )}
+              }
               fullWidth={true}
               error={this.state.currentWordInvalid}
               value={this.state.currentWordValue}
