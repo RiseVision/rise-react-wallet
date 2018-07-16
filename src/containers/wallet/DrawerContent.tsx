@@ -23,6 +23,7 @@ import {
 } from '@material-ui/core/styles';
 import { onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
+import { orderBy } from 'lodash';
 import UserStore from '../../stores/user';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -93,25 +94,27 @@ class DrawerContent extends React.Component<Props> {
         </Typography>
         <Divider />
         <List>
-          {userStore.accounts.map(account => (
-            <ListItem
-              button={true}
-              className={classNames(
-                userStore.selectedAccount === account &&
-                  classes.selectedListItem
-              )}
-              onClick={() => userStore.selectAccount(account.id)}
-              key={account.id}
-            >
-              <ListItemAvatar>
-                <Avatar className={classes.accountAvatar}>
-                  <AccountIcon size={24} address={account.id} />
-                </Avatar>
-              </ListItemAvatar>
-              {/* TODO this doesnt observe */}
-              <ListItemText primary={account.name} secondary={account.id} />
-            </ListItem>
-          ))}
+          {orderBy(userStore.accounts, ['pinned', 'name'], ['desc', 'asc']).map(
+            account => (
+              <ListItem
+                button={true}
+                className={classNames(
+                  userStore.selectedAccount === account &&
+                    classes.selectedListItem
+                )}
+                onClick={this.handleAccountClicked(account.id)}
+                key={account.id}
+              >
+                <ListItemAvatar>
+                  <Avatar className={classes.accountAvatar}>
+                    <AccountIcon size={24} address={account.id} />
+                  </Avatar>
+                </ListItemAvatar>
+                {/* TODO this doesnt observe */}
+                <ListItemText primary={account.name} secondary={account.id} />
+              </ListItem>
+            )
+          )}
           <ListItem
             button={true}
             key="add-account"
