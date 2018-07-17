@@ -56,7 +56,7 @@ class SettingsDialog extends React.Component<Props, State> {
 
   handleBackClick = () => {
     this.props.onClose();
-  };
+  }
 
   handleChange = (field: string) => (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -71,23 +71,23 @@ class SettingsDialog extends React.Component<Props, State> {
         fiat: value
       });
     }
-  };
+  }
 
   updateName = () => {
     this.props.userStore!.updateAccountName(this.state.name!);
     this.props.onClose();
-  };
+  }
 
   updateFiat = (global: boolean) => () => {
     this.props.userStore!.updateFiat(this.state.fiat, global);
     this.props.onClose();
-  };
+  }
 
   escListener = (event: KeyboardEvent) => {
     if (event.keyCode === 27) {
       this.props.onClose();
     }
-  };
+  }
 
   componentDidMount() {
     document.addEventListener('keyup', this.escListener);
