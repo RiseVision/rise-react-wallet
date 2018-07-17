@@ -44,6 +44,10 @@ class SettingsDialog extends React.Component<Props, State> {
       this.setState({
         name: event.target.value
       });
+    } else if (field === 'fiat') {
+      this.setState({
+        fiat: event.target.value
+      });
     }
   }
 
@@ -125,7 +129,9 @@ class SettingsDialog extends React.Component<Props, State> {
               <div>
                 <select name="fiat" onChange={this.handleChange('fiat')}>
                   {this.props.store!.config.fiat_currencies.map(name => (
-                    <option>{name}</option>
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
                   ))}
                 </select>
               </div>
