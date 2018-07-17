@@ -15,7 +15,7 @@ export default class UserStore {
 
   @observable accounts = observable.array<TAccount>();
   @observable selectedAccount: TAccount | null;
-  @observable fiatAmount: string;
+  @observable fiatAmount: string | null;
   @observable recentTransactions = observable.array<TTransaction>();
   @computed
   get groupedTransactions(): TGroupedTransactions {
@@ -146,7 +146,7 @@ export default class UserStore {
     // TODO calculate
     runInAction(() => {
       // TODO check if the same account is still selected
-      this.fiatAmount = '~666.99 ' + this.selectedAccount.fiatCurrency;
+      this.fiatAmount = '~666.99 ' + this.selectedAccount!.fiatCurrency;
     });
   }
 
@@ -157,13 +157,13 @@ export default class UserStore {
       limit: amount,
       orderBy: 'timestamp:desc',
       // TODO recipient and sender are the same account?
-      recipientId: this.selectedAccount.id,
-      senderPublicKey: this.selectedAccount.publicKey
+      recipientId: this.selectedAccount!.id,
+      senderPublicKey: this.selectedAccount!.publicKey
     });
     const unconfirmedPromise = this.loadTransactions(
       {
-        address: this.selectedAccount.id,
-        senderPublicKey: this.selectedAccount.publicKey
+        address: this.selectedAccount!.id,
+        senderPublicKey: this.selectedAccount!.publicKey
       },
       false
     );
@@ -198,8 +198,8 @@ export default class UserStore {
 
   @action
   updateAccountName(name: string) {
-    this.selectedAccount.name = name;
-    this.saveAccount(this.selectedAccount);
+    this.selectedAccount!.name = name;
+    this.saveAccount(this.selectedAccount!);
   }
 
   @action
@@ -211,8 +211,8 @@ export default class UserStore {
         this.saveAccount(account);
       }
     } else {
-      this.selectedAccount.fiatCurrency = fiat;
-      this.saveAccount(this.selectedAccount);
+      this.selectedAccount!.fiatCurrency = fiat;
+      this.saveAccount(this.selectedAccount!);
     }
     this.calculateFiat();
   }
@@ -235,10 +235,11 @@ export default class UserStore {
   }
 
   groupTransitionsByDay(transactions: TTransaction[]): TGroupedTransactions {
+    // @ts-ignore wrong lodash typing for groupBy
     return groupBy(transactions, (transaction: TTransaction) => {
       return moment(transaction.timestamp)
         .startOf('day')
-        .calendar(null, {
+        .calendar(undefined, {
           // TODO translate those
           lastWeek: '[Last] dddd',
           lastDay: '[Yesterday]',
@@ -256,7 +257,7 @@ export default class UserStore {
     return res.transactions.map(t => {
       t.timestamp = correctTimestamp(t.timestamp);
       t.info =
-        t.senderId === this.selectedAccount.id
+        t.senderId === this.selectedAccount!.id
           ? {
               kind: 'send',
               recipient_alias: this.idToName(t.recipientId),
@@ -364,7 +365,7 @@ export type TTransactionsResponse = {
 export type TAccount = {
   id: string;
   publicKey: string;
-  name: string;
+  name: string | null;
   mnemonic: string;
   mnemonic2: string;
   fiatCurrency: string;

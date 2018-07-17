@@ -14,7 +14,6 @@ import {
   onboardingExistingAccountTypeRoute
 } from '../../routes';
 import Store, { normalizeAddress } from '../../stores/store';
-import UserStore from '../../stores/user';
 
 const styles = createStyles({
   content: {
