@@ -25,11 +25,21 @@ const styles = (theme: Theme) =>
       background: 'white',
       marginBottom: '1px',
       fontWeight: 'normal',
-      textTransform: 'none'
+      textTransform: 'none',
+      height: '3.5em'
     },
-    right: {
-      // TODO styles
-      marginLeft: '10em'
+    buttonContent: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      display: 'flex',
+      width: '100%',
+      '& > span:nth-child(2)': {
+        color: 'gray'
+      }
+    },
+    arrow: {
+      verticalAlign: 'middle',
+      marginLeft: '1em'
     }
   });
 
@@ -61,13 +71,13 @@ class AccountSettings extends React.Component<Props, State> {
     super(props);
   }
 
-  handleFieldClick = field => {
+  handleFieldClick = (field: string) => {
     if (field === 'pinned') {
       runInAction(() => {
-        let userStore = this.props.userStore!;
-        userStore.selectedAccount.pinned = !this.props.userStore!
-          .selectedAccount.pinned;
-        userStore.saveAccount(userStore.selectedAccount);
+        const userStore = this.props.userStore!;
+        const selectedAccount = userStore.selectedAccount!;
+        selectedAccount.pinned = !selectedAccount.pinned;
+        userStore.saveAccount(selectedAccount);
       });
     } else {
       this.setState({ dialogOpen: true, dialogField: field });
@@ -76,7 +86,7 @@ class AccountSettings extends React.Component<Props, State> {
 
   render() {
     const { classes, userStore } = this.props;
-    const account = userStore.selectedAccount;
+    const account = userStore!.selectedAccount!;
 
     if (!account) {
       // TODO loading indicator
@@ -98,11 +108,13 @@ class AccountSettings extends React.Component<Props, State> {
             className={classes.button}
             onClick={() => this.handleFieldClick('name')}
           >
-            Account name
-            <span className={classes.right}>
-              {userStore.selectedAccount.name}
-              <ArrowFwd />
-            </span>
+            <div className={classes.buttonContent}>
+              <span>Account name</span>
+              <span>
+                {account.name}
+                <ArrowFwd className={classes.arrow} />
+              </span>
+            </div>
           </Button>
           <Button
             name="pinned"
@@ -110,11 +122,13 @@ class AccountSettings extends React.Component<Props, State> {
             className={classes.button}
             onClick={() => this.handleFieldClick('pinned')}
           >
-            Pinned account
-            <span className={classes.right}>
-              {userStore.selectedAccount.pinned ? 'Yes' : 'No'}
-              <ArrowFwd />
-            </span>
+            <div className={classes.buttonContent}>
+              <span>Pinned account</span>
+              <span>
+                {account.pinned ? 'Yes' : 'No'}
+                <ArrowFwd className={classes.arrow} />
+              </span>
+            </div>
           </Button>
           <Button
             name="delegate"
@@ -122,10 +136,13 @@ class AccountSettings extends React.Component<Props, State> {
             className={classes.button}
             onClick={() => this.handleFieldClick('delegate')}
           >
-            Voted delegate
-            <span className={classes.right}>
-              TODO <ArrowFwd />
-            </span>
+            <div className={classes.buttonContent}>
+              <span>Voted delegate</span>
+              <span>
+                TODO
+                <ArrowFwd className={classes.arrow} />
+              </span>
+            </div>
           </Button>
           <Button
             name="fiat"
@@ -133,11 +150,13 @@ class AccountSettings extends React.Component<Props, State> {
             className={classes.button}
             onClick={() => this.handleFieldClick('fiat')}
           >
-            Displayed FIAT currency
-            <span className={classes.right}>
-              {userStore.selectedAccount.fiatCurrency}
-              <ArrowFwd />
-            </span>
+            <div className={classes.buttonContent}>
+              <span>Displayed FIAT currency</span>
+              <span>
+                {account.fiatCurrency}
+                <ArrowFwd className={classes.arrow} />
+              </span>
+            </div>
           </Button>
         </div>
       </React.Fragment>

@@ -34,7 +34,12 @@ declare module 'mobx-router' {
   ): void;
 }
 
-declare module "*.json" {
-    const value: any;
-    export default value;
+declare module '*.json' {
+  const value: any;
+  export default value;
+}
+
+declare module 'store' {
+  const value: any;
+  export = value;
 }

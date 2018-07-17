@@ -99,12 +99,12 @@ class DrawerContent extends React.Component<Props> {
         </Typography>
         <Divider />
         <List>
-          {orderBy(userStore.accounts, ['pinned', 'name'], ['desc', 'asc']).map(
+          {orderBy(userStore!.accounts, ['pinned', 'name'], ['desc', 'asc']).map(
             account => (
               <ListItem
                 button={true}
                 className={classNames(
-                  userStore.selectedAccount === account &&
+                  userStore!.selectedAccount === account &&
                     classes.selectedListItem
                 )}
                 onClick={this.handleAccountClicked(account.id)}
@@ -123,7 +123,7 @@ class DrawerContent extends React.Component<Props> {
           <ListItem
             button={true}
             key="add-account"
-            onClick={() => store.router.goTo(onboardingAddAccountRoute)}
+            onClick={() => store!.router.goTo(onboardingAddAccountRoute)}
           >
             <ListItemAvatar>
               <Avatar>
