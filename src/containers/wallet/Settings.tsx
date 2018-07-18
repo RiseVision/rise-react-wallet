@@ -16,7 +16,10 @@ import SettingsDialog from './SettingsDialog';
 const styles = (theme: Theme) =>
   createStyles({
     content: {
-      padding: theme.spacing.unit * 2
+      padding: theme.spacing.unit * 2,
+      '& > button': {
+        borderRadius: 0
+      }
     },
     button: {
       width: '100%',
@@ -27,6 +30,9 @@ const styles = (theme: Theme) =>
       fontWeight: 'normal',
       textTransform: 'none',
       height: '3.5em'
+    },
+    remove: {
+      color: 'red'
     },
     buttonContent: {
       flexDirection: 'row',
@@ -154,6 +160,48 @@ class AccountSettings extends React.Component<Props, State> {
               <span>Displayed FIAT currency</span>
               <span>
                 {account.fiatCurrency}
+                <ArrowFwd className={classes.arrow} />
+              </span>
+            </div>
+          </Button>
+          <p>Advanced settings</p>
+          <Button
+            name="mnemonic2"
+            variant="contained"
+            className={classes.button}
+            onClick={() => this.handleFieldClick('mnemonic2')}
+          >
+            <div className={classes.buttonContent}>
+              <span>2nd passphrase</span>
+              <span>
+                {account.mnemonic2 ? 'Set' : 'Not set'}
+                <ArrowFwd className={classes.arrow} />
+              </span>
+            </div>
+          </Button>
+          <Button
+            name="deletageRegistration"
+            variant="contained"
+            className={classes.button}
+            onClick={() => this.handleFieldClick('deletageRegistration')}
+          >
+            <div className={classes.buttonContent}>
+              <span>Delegate registration</span>
+              <span>
+                TODO Not registered
+                <ArrowFwd className={classes.arrow} />
+              </span>
+            </div>
+          </Button>
+          <Button
+            name="removeAccount"
+            variant="contained"
+            className={classes.button + ' ' + classes.remove}
+            onClick={() => this.handleFieldClick('removeAccount')}
+          >
+            <div className={classes.buttonContent}>
+              <span>Remove account from vallet</span>
+              <span>
                 <ArrowFwd className={classes.arrow} />
               </span>
             </div>

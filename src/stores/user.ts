@@ -217,6 +217,15 @@ export default class UserStore {
     this.calculateFiat();
   }
 
+  @action
+  removeAccount(id: string) {
+    this.accounts.remove(this.selectedAccount!);
+    lstore.set('accounts', this.storedAccounts().filter(a => a.id !== id));
+    if (this.accounts.length) {
+      this.selectAccount(this.accounts[0].id);
+    }
+  }
+
   async loadTransactions(
     params: TTransactionsRequest,
     confirmed: boolean = true
