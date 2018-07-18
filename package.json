@@ -33,7 +33,8 @@
     "riw:translate": "riw app translate",
     "riw:status": "riw app status",
     "tsc": "tsc --project tsconfig.prod.json --noEmit",
-    "tslint": "npx tslint --project tslint.prod.json 'src/**/*.{ts,tsx}'"
+    "tslint": "npx tslint --fix --project tslint.prod.json 'src/**/*.{ts,tsx}'",
+    "precommit": "npm run tsc && npm run tslint"
   },
   "pre-commit": [
     "tsc",
