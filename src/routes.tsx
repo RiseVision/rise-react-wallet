@@ -193,7 +193,7 @@ export const accountSettingsRoute = new Route({
 export const homeRoute = new Route<Store>({
   path: '/',
   onEnter: (route: Route<Store>, params: {}, store: Store) => {
-    if (!store.userStore.storedAccounts()) {
+    if (!store.userStore!.storedAccounts()) {
       store.router.goTo(onboardingAddAccountRoute);
     } else {
       store.router.goTo(accountOverviewRoute);

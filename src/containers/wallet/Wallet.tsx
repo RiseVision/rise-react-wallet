@@ -69,7 +69,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
     };
   }
 
-  render() {
+  render(): React.ReactElement<HTMLDivElement> {
     const { classes, theme } = this.props;
 
     const drawer = <DrawerContent />;

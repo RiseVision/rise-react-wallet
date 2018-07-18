@@ -80,7 +80,7 @@ const styles = (theme: Theme) => {
 
 interface Props extends WithStyles<typeof styles> {
   address: string;
-  alias: string;
+  alias: string | null;
   balance: string;
   balance_in_fiat: string;
 }

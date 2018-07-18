@@ -1,4 +1,3 @@
-import { LiskWallet } from 'dpos-offline';
 import { action, observable, configure, runInAction } from 'mobx';
 import { getUserLocales, Locale } from '../utils/i18n';
 import { RouterStore } from 'mobx-router';

@@ -103,7 +103,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               <IconButton
                 aria-label={intl.formatMessage(messages.accountSettingsTooltip)}
                 color="inherit"
-                onClick={() => store.router.goTo(accountSettingsRoute)}
+                onClick={() => store!.router.goTo(accountSettingsRoute)}
               >
                 <SettingsIcon />
               </IconButton>

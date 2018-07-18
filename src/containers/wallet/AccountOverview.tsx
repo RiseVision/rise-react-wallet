@@ -40,7 +40,7 @@ const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 class AccountOverview extends React.Component<Props> {
   render() {
     const { classes, userStore } = this.props;
-    const account = userStore.selectedAccount;
+    const account = userStore!.selectedAccount;
 
     return (
       <React.Fragment>
@@ -49,11 +49,11 @@ class AccountOverview extends React.Component<Props> {
             address={account.id}
             alias={account.name}
             balance={account.balance + ' RISE'}
-            balance_in_fiat={userStore.fiatAmount}
+            balance_in_fiat={userStore!.fiatAmount!}
           />
         ) : null}
         <div className={classes.content}>
-          {toPairs(userStore.groupedTransactions).map(
+          {toPairs(userStore!.groupedTransactions).map(
             ([group, transactions]) => (
               <React.Fragment key={group}>
                 <Typography
