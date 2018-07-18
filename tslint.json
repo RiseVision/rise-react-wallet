@@ -1,5 +1,6 @@
 {
-    "extends": ["tslint-react"],
+    "defaultSeverity": "warning",
+    "extends": "./node_modules/tslint-react/tslint-react.json",
     "rules": {
         "align": [
             true,

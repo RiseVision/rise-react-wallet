@@ -1,3 +1,4 @@
+/* tslint:disable */
 declare module 'mobx-router' {
   import * as React from 'react';
   export type TRouteDef<GStore> = {
