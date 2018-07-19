@@ -108,108 +108,88 @@ class AccountSettings extends React.Component<Props, State> {
           />
         )}
         <div className={classes.content}>
-          <Button
-            name="name"
-            variant="contained"
-            className={classes.button}
+          <SettingRow
+            classes={classes}
             onClick={() => this.handleFieldClick('name')}
-          >
-            <div className={classes.buttonContent}>
-              <span>Account name</span>
-              <span>
-                {account.name}
-                <ArrowFwd className={classes.arrow} />
-              </span>
-            </div>
-          </Button>
-          <Button
-            name="pinned"
-            variant="contained"
-            className={classes.button}
+            label="Account name"
+            value={account.name || ''}
+          />
+          <SettingRow
+            classes={classes}
             onClick={() => this.handleFieldClick('pinned')}
-          >
-            <div className={classes.buttonContent}>
-              <span>Pinned account</span>
-              <span>
-                {account.pinned ? 'Yes' : 'No'}
-                <ArrowFwd className={classes.arrow} />
-              </span>
-            </div>
-          </Button>
-          <Button
-            name="delegate"
-            variant="contained"
-            className={classes.button}
+            label="Pinned account"
+            value={account.pinned ? 'Yes' : 'No'}
+          />
+          <SettingRow
+            classes={classes}
             onClick={() => this.handleFieldClick('delegate')}
-          >
-            <div className={classes.buttonContent}>
-              <span>Voted delegate</span>
-              <span>
-                TODO
-                <ArrowFwd className={classes.arrow} />
-              </span>
-            </div>
-          </Button>
-          <Button
-            name="fiat"
-            variant="contained"
-            className={classes.button}
+            label="Voted delegate"
+            value="TODO"
+          />
+          <SettingRow
+            classes={classes}
             onClick={() => this.handleFieldClick('fiat')}
-          >
-            <div className={classes.buttonContent}>
-              <span>Displayed FIAT currency</span>
-              <span>
-                {account.fiatCurrency}
-                <ArrowFwd className={classes.arrow} />
-              </span>
-            </div>
-          </Button>
+            label="Displayed FIAT currency"
+            value={account.fiatCurrency}
+          />
           <p>Advanced settings</p>
-          <Button
-            name="mnemonic2"
-            variant="contained"
-            className={classes.button}
+          <SettingRow
+            classes={classes}
             onClick={() => this.handleFieldClick('mnemonic2')}
-          >
-            <div className={classes.buttonContent}>
-              <span>2nd passphrase</span>
-              <span>
-                {account.mnemonic2 ? 'Set' : 'Not set'}
-                <ArrowFwd className={classes.arrow} />
-              </span>
-            </div>
-          </Button>
-          <Button
-            name="deletageRegistration"
-            variant="contained"
-            className={classes.button}
+            label="2nd passphrase"
+            value={account.mnemonic2 ? 'Set' : 'Not set'}
+          />
+          <SettingRow
+            classes={classes}
             onClick={() => this.handleFieldClick('deletageRegistration')}
-          >
-            <div className={classes.buttonContent}>
-              <span>Delegate registration</span>
-              <span>
-                TODO Not registered
-                <ArrowFwd className={classes.arrow} />
-              </span>
-            </div>
-          </Button>
-          <Button
-            name="removeAccount"
-            variant="contained"
-            className={classes.button + ' ' + classes.remove}
+            label="Delegate registration"
+            value="TODO Not registered"
+          />
+          <SettingRow
+            classes={classes}
             onClick={() => this.handleFieldClick('removeAccount')}
-          >
-            <div className={classes.buttonContent}>
-              <span>Remove account from vallet</span>
-              <span>
-                <ArrowFwd className={classes.arrow} />
-              </span>
-            </div>
-          </Button>
+            label="Account name"
+            value=""
+            buttonClass={classes.remove}
+          />
         </div>
       </React.Fragment>
     );
   }
+}
+
+function SettingRow({
+  classes,
+  label,
+  value,
+  buttonClass,
+  onClick
+}: {
+  classes: Record<
+    'button' | 'content' | 'remove' | 'buttonContent' | 'arrow',
+    string
+  >;
+  label: string;
+  value: string;
+  buttonClass?: string;
+  onClick(): void;
+}) {
+  return (
+    <Button
+      name="name"
+      variant="contained"
+      className={classes.button + ' ' + (buttonClass || '')}
+      onClick={onClick}
+    >
+      <div className={classes.buttonContent}>
+        <span>{label}</span>
+        <span>
+          {value}
+          <ArrowFwd className={classes.arrow} />
+        </span>
+      </div>
+    </Button>
+  );
 }
 
 export default stylesDecorator(AccountSettings);
