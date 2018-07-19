@@ -18,7 +18,7 @@ startRouter(routes, store);
 
 const stores = {
   store,
-  userStore: new UserStore(store)
+  userStore
 };
 
 const root = (
