@@ -1,5 +1,6 @@
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
+import { ReactElement } from 'react';
 import * as React from 'react';
 import * as classNames from 'classnames';
 import {
@@ -14,6 +15,8 @@ import UserStore from '../../stores/user';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import SettingsDialog from './SettingsDialog';
+import NameForm from '../../components/forms/SettingsName';
+import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -54,7 +57,7 @@ const styles = (theme: Theme) =>
     },
     arrow: {
       verticalAlign: 'middle',
-      marginLeft: theme.spacing.unit * 2,
+      marginLeft: theme.spacing.unit * 2
     }
   });
 
@@ -97,11 +100,35 @@ class AccountSettings extends React.Component<Props, State> {
     } else {
       this.setState({ dialogOpen: true, dialogField: field });
     }
+  };
+
+  onSubmit = () => {};
+
+  getDialog(): { title: string; form: ReactElement<HTMLFormElement> } {
+    switch (this.state.dialogField) {
+      case 'name':
+        return {
+          title: 'Update account name',
+          form: <NameForm onSubmit={this.onSubmit} />
+        };
+      case 'removeAccount':
+        return {
+          title: 'Remove account?',
+          form: <RemoveAccountForm onSubmit={this.onSubmit} />
+        };
+      default:
+        return {
+          title: null,
+          form: null
+        };
+    }
   }
 
   render() {
     const { classes, userStore } = this.props;
     const account = userStore!.selectedAccount!;
+
+    const dialog = this.getDialog();
 
     if (!account) {
       // TODO loading indicator
@@ -110,12 +137,13 @@ class AccountSettings extends React.Component<Props, State> {
 
     return (
       <React.Fragment>
-        {this.state.dialogOpen && (
-          <SettingsDialog
-            field={this.state.dialogField!}
-            onClose={() => this.setState({ dialogOpen: false })}
-          />
-        )}
+        <SettingsDialog
+          title={dialog.title}
+          open={this.state.dialogOpen}
+          onClose={() => this.setState({ dialogOpen: false })}
+        >
+          {dialog.form}
+        </SettingsDialog>
         <div className={classes.content}>
           <SettingRow
             classes={classes}
@@ -163,7 +191,7 @@ class AccountSettings extends React.Component<Props, State> {
           <SettingRow
             classes={classes}
             onClick={() => this.handleFieldClick('removeAccount')}
-            label="Account name"
+            label="Remove account from wallet"
             value=""
             buttonClass={classes.remove}
           />
@@ -193,10 +221,7 @@ function SettingRow({
     <Button
       name="name"
       variant="contained"
-      className={classNames(
-        classes.button,
-        buttonClass,
-      )}
+      className={classNames(classes.button, buttonClass)}
       onClick={onClick}
     >
       <div className={classes.buttonContent}>
