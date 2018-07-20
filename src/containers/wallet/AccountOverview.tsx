@@ -18,7 +18,7 @@ const styles = (theme: Theme) =>
     content: {
       padding: theme.spacing.unit * 2
     },
-    date_group_title: {
+    dateGroupTitle: {
       marginTop: theme.spacing.unit * 2,
       marginBottom: theme.spacing.unit,
       ['&:first-child']: {
@@ -57,7 +57,7 @@ class AccountOverview extends React.Component<Props> {
             ([group, transactions]) => (
               <React.Fragment key={group}>
                 <Typography
-                  className={classes.date_group_title}
+                  className={classes.dateGroupTitle}
                   variant="body2"
                   color="textSecondary"
                 >
