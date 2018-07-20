@@ -1,6 +1,7 @@
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
+import * as classNames from 'classnames';
 import {
   Theme,
   createStyles,
@@ -10,6 +11,7 @@ import {
 import ArrowFwd from '@material-ui/icons/NavigateNext';
 import Store from '../../stores/store';
 import UserStore from '../../stores/user';
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import SettingsDialog from './SettingsDialog';
 
@@ -31,6 +33,13 @@ const styles = (theme: Theme) =>
       textTransform: 'none',
       height: '3.5em'
     },
+    subsectionTitle: {
+      marginTop: theme.spacing.unit * 2,
+      marginBottom: theme.spacing.unit,
+      ['&:first-child']: {
+        marginTop: 0
+      }
+    },
     remove: {
       color: 'red'
     },
@@ -45,7 +54,7 @@ const styles = (theme: Theme) =>
     },
     arrow: {
       verticalAlign: 'middle',
-      marginLeft: '1em'
+      marginLeft: theme.spacing.unit * 2,
     }
   });
 
@@ -132,7 +141,13 @@ class AccountSettings extends React.Component<Props, State> {
             label="Displayed FIAT currency"
             value={account.fiatCurrency}
           />
-          <p>Advanced settings</p>
+          <Typography
+            className={classes.subsectionTitle}
+            variant="body2"
+            color="textSecondary"
+          >
+            Advanced settings
+          </Typography>
           <SettingRow
             classes={classes}
             onClick={() => this.handleFieldClick('mnemonic2')}
@@ -178,15 +193,18 @@ function SettingRow({
     <Button
       name="name"
       variant="contained"
-      className={classes.button + ' ' + (buttonClass || '')}
+      className={classNames(
+        classes.button,
+        buttonClass,
+      )}
       onClick={onClick}
     >
       <div className={classes.buttonContent}>
-        <span>{label}</span>
-        <span>
+        <Typography component="span">{label}</Typography>
+        <Typography component="span">
           {value}
           <ArrowFwd className={classes.arrow} />
-        </span>
+        </Typography>
       </div>
     </Button>
   );
