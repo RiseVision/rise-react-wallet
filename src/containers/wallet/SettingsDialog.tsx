@@ -1,6 +1,7 @@
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Typography from "@material-ui/core/Typography";
 import { inject, observer } from 'mobx-react';
 import { ChangeEvent } from 'react';
 import * as React from 'react';
@@ -150,10 +151,10 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>
+              <Typography>
                 Assign a new name to account {userStore!.selectedAccount!.id}.
                 This name will only be visible to you and nobody else.
-              </p>
+              </Typography>
               <div>
                 <TextField
                   className={classes.input}
@@ -194,7 +195,7 @@ class SettingsDialog extends React.Component<Props, State> {
               </div>
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>TODO CONTENT</p>
+              <Typography>TODO CONTENT</Typography>
               <div className={classes.footer}>
                 <Button onClick={this.updateName}>BUTTON</Button>
               </div>
@@ -214,10 +215,10 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>
+              <Typography>
                 Select which FIAT currency you prefer to see your RISE account
                 value in.
-              </p>
+              </Typography>
               <p>
                 {/* TODO autoFocus={true} */}
                 <select
@@ -275,20 +276,20 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>
+              <Typography>
                 The second passphrase offers an extra layer of protection for
                 forgers whose primary mnemonic is stored on servers which can
                 potentially get hacked and compromised the primary mnemonic.
-              </p>
-              <p>
+              </Typography>
+              <Typography>
                 Once the 2nd passphrase has been set it cannot be changed nor
                 removed.
-              </p>
+              </Typography>
               {userStore!.selectedAccount!.balance < 5 && (
-                <p className={classes.remove}>
+                <Typography className={classes.remove}>
                   You don't have enough funds on your account to pay the network
                   fee of 5 RISE to setup a 2nd passphrase!
-                </p>
+                </Typography>
               )}
               <TextField
                 className={classes.input}
@@ -323,13 +324,13 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>
+              <Typography>
                 Are you sure you want to remove{' '}
                 {userStore!.selectedAccount!.name} account ({
                   userStore!.selectedAccount!.id
-                }) from the wallet? To confirm, enterthe account address in the
+                }) from the wallet? To confirm, enter the account address in the
                 field below.
-              </p>
+              </Typography>
               <div>
                 <TextField
                   className={classes.input}
