@@ -1,22 +1,21 @@
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles, Theme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Typography from "@material-ui/core/Typography";
+import Backdrop from '@material-ui/core/Backdrop';
 import { inject, observer } from 'mobx-react';
 import { ChangeEvent } from 'react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import BlackBackdrop from '../../components/ModalBackdropBlack';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
 import UserStore from '../../stores/user';
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
   content: {
-    padding: '1em',
-    paddingTop: 0,
+    padding: theme.spacing.unit * 2,
     textAlign: 'center',
     '& p': {
       marginBottom: 0
@@ -137,7 +136,7 @@ class SettingsDialog extends React.Component<Props, State> {
     const { userStore, store, classes } = this.props;
 
     return (
-      <ModalPaper open={true} backdrop={BlackBackdrop}>
+      <ModalPaper open={true} backdrop={Backdrop}>
         {this.props.field === 'name' && (
           <React.Fragment>
             <ModalPaperHeader
@@ -175,7 +174,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 />
               </div>
               <div className={classes.footer}>
-                <Button onClick={this.updateName}>UPDATE NAME</Button>
+                <Button onClick={this.updateName} fullWidth={true}>UPDATE NAME</Button>
               </div>
             </div>
           </React.Fragment>
@@ -186,18 +185,16 @@ class SettingsDialog extends React.Component<Props, State> {
               closeButton={true}
               onCloseClick={this.handleBackClick}
             >
-              <div>
-                <FormattedMessage
-                  id="account-settings.vote"
-                  description="New account screen title"
-                  defaultMessage="Voted delegate"
-                />
-              </div>
+              <FormattedMessage
+                id="account-settings.vote"
+                description="New account screen title"
+                defaultMessage="Voted delegate"
+              />
             </ModalPaperHeader>
             <div className={classes.content}>
               <Typography>TODO CONTENT</Typography>
               <div className={classes.footer}>
-                <Button onClick={this.updateName}>BUTTON</Button>
+                <Button onClick={this.updateName} fullWidth={true}>BUTTON</Button>
               </div>
             </div>
           </React.Fragment>
@@ -219,7 +216,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 Select which FIAT currency you prefer to see your RISE account
                 value in.
               </Typography>
-              <p>
+              <Typography>
                 {/* TODO autoFocus={true} */}
                 <select
                   name="fiat"
@@ -232,7 +229,7 @@ class SettingsDialog extends React.Component<Props, State> {
                     </option>
                   ))}
                 </select>
-              </p>
+              </Typography>
               <div className={classes.footer}>
                 <Button onClick={this.updateFiat(false)}>
                   SET FOR THIS ACCOUNT
@@ -257,9 +254,9 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>TODO CONTENT</p>
+              <Typography>TODO CONTENT</Typography>
               <div className={classes.footer}>
-                <Button onClick={this.updateFiat(false)}>BUTTON</Button>
+                <Button onClick={this.updateFiat(false)} fullWidth={true}>BUTTON</Button>
               </div>
             </div>
           </React.Fragment>
@@ -307,7 +304,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 }}
               />
               <div className={classes.footer}>
-                <Button onClick={this.updateMnemonic2}>CONTINUE</Button>
+                <Button onClick={this.updateMnemonic2} fullWidth={true}>CONTINUE</Button>
               </div>
             </div>
           </React.Fragment>
@@ -328,7 +325,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 Are you sure you want to remove{' '}
                 {userStore!.selectedAccount!.name} account ({
                   userStore!.selectedAccount!.id
-                }) from the wallet? To confirm, enter the account address in the
+                }) from the wallet? To confirm, enterthe account address in the
                 field below.
               </Typography>
               <div>
@@ -341,7 +338,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 />
               </div>
               <div className={classes.footer}>
-                <Button onClick={this.removeAccount}>REMOVE ACCOUNT</Button>
+                <Button onClick={this.removeAccount} fullWidth={true}>REMOVE ACCOUNT</Button>
               </div>
             </div>
           </React.Fragment>
