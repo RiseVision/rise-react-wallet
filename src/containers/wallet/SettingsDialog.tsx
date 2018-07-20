@@ -1,11 +1,11 @@
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Backdrop from '@material-ui/core/Backdrop';
 import { inject, observer } from 'mobx-react';
 import { ChangeEvent } from 'react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import BlackBackdrop from '../../components/ModalBackdropBlack';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute } from '../../routes';
@@ -136,7 +136,7 @@ class SettingsDialog extends React.Component<Props, State> {
     const { userStore, store, classes } = this.props;
 
     return (
-      <ModalPaper open={true} backdrop={BlackBackdrop}>
+      <ModalPaper open={true} backdrop={Backdrop}>
         {this.props.field === 'name' && (
           <React.Fragment>
             <ModalPaperHeader
