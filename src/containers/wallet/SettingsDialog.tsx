@@ -1,4 +1,5 @@
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles, Theme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -12,10 +13,9 @@ import { onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
 import UserStore from '../../stores/user';
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
   content: {
-    padding: '1em',
-    paddingTop: 0,
+    padding: theme.spacing.unit * 2,
     textAlign: 'center',
     '& p': {
       marginBottom: 0
@@ -150,10 +150,10 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>
+              <Typography>
                 Assign a new name to account {userStore!.selectedAccount!.id}.
                 This name will only be visible to you and nobody else.
-              </p>
+              </Typography>
               <div>
                 <TextField
                   className={classes.input}
@@ -174,7 +174,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 />
               </div>
               <div className={classes.footer}>
-                <Button onClick={this.updateName}>UPDATE NAME</Button>
+                <Button onClick={this.updateName} fullWidth={true}>UPDATE NAME</Button>
               </div>
             </div>
           </React.Fragment>
@@ -185,18 +185,16 @@ class SettingsDialog extends React.Component<Props, State> {
               closeButton={true}
               onCloseClick={this.handleBackClick}
             >
-              <div>
-                <FormattedMessage
-                  id="account-settings.vote"
-                  description="New account screen title"
-                  defaultMessage="Voted delegate"
-                />
-              </div>
+              <FormattedMessage
+                id="account-settings.vote"
+                description="New account screen title"
+                defaultMessage="Voted delegate"
+              />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>TODO CONTENT</p>
+              <Typography>TODO CONTENT</Typography>
               <div className={classes.footer}>
-                <Button onClick={this.updateName}>BUTTON</Button>
+                <Button onClick={this.updateName} fullWidth={true}>BUTTON</Button>
               </div>
             </div>
           </React.Fragment>
@@ -214,11 +212,11 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>
+              <Typography>
                 Select which FIAT currency you prefer to see your RISE account
                 value in.
-              </p>
-              <p>
+              </Typography>
+              <Typography>
                 {/* TODO autoFocus={true} */}
                 <select
                   name="fiat"
@@ -231,7 +229,7 @@ class SettingsDialog extends React.Component<Props, State> {
                     </option>
                   ))}
                 </select>
-              </p>
+              </Typography>
               <div className={classes.footer}>
                 <Button onClick={this.updateFiat(false)}>
                   SET FOR THIS ACCOUNT
@@ -256,9 +254,9 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>TODO CONTENT</p>
+              <Typography>TODO CONTENT</Typography>
               <div className={classes.footer}>
-                <Button onClick={this.updateFiat(false)}>BUTTON</Button>
+                <Button onClick={this.updateFiat(false)} fullWidth={true}>BUTTON</Button>
               </div>
             </div>
           </React.Fragment>
@@ -275,20 +273,20 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>
+              <Typography>
                 The second passphrase offers an extra layer of protection for
                 forgers whose primary mnemonic is stored on servers which can
                 potentially get hacked and compromised the primary mnemonic.
-              </p>
-              <p>
+              </Typography>
+              <Typography>
                 Once the 2nd passphrase has been set it cannot be changed nor
                 removed.
-              </p>
+              </Typography>
               {userStore!.selectedAccount!.balance < 5 && (
-                <p className={classes.remove}>
+                <Typography className={classes.remove}>
                   You don't have enough funds on your account to pay the network
                   fee of 5 RISE to setup a 2nd passphrase!
-                </p>
+                </Typography>
               )}
               <TextField
                 className={classes.input}
@@ -306,7 +304,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 }}
               />
               <div className={classes.footer}>
-                <Button onClick={this.updateMnemonic2}>CONTINUE</Button>
+                <Button onClick={this.updateMnemonic2} fullWidth={true}>CONTINUE</Button>
               </div>
             </div>
           </React.Fragment>
@@ -323,13 +321,13 @@ class SettingsDialog extends React.Component<Props, State> {
               />
             </ModalPaperHeader>
             <div className={classes.content}>
-              <p>
+              <Typography>
                 Are you sure you want to remove{' '}
                 {userStore!.selectedAccount!.name} account ({
                   userStore!.selectedAccount!.id
                 }) from the wallet? To confirm, enterthe account address in the
                 field below.
-              </p>
+              </Typography>
               <div>
                 <TextField
                   className={classes.input}
@@ -340,7 +338,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 />
               </div>
               <div className={classes.footer}>
-                <Button onClick={this.removeAccount}>REMOVE ACCOUNT</Button>
+                <Button onClick={this.removeAccount} fullWidth={true}>REMOVE ACCOUNT</Button>
               </div>
             </div>
           </React.Fragment>
