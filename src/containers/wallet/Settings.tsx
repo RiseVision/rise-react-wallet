@@ -10,13 +10,18 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import ArrowFwd from '@material-ui/icons/NavigateNext';
+import { onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
 import UserStore from '../../stores/user';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import SettingsDialog from './SettingsDialog';
-import NameForm from '../../components/forms/SettingsName';
-import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
+import NameForm, {
+  State as NameState
+} from '../../components/forms/SettingsName';
+import RemoveAccountForm, {
+  State as RemoveAccountState
+} from '../../components/forms/SettingsRemoveAccount';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -44,7 +49,10 @@ const styles = (theme: Theme) =>
       }
     },
     remove: {
-      color: 'red'
+      '& span': {
+        /* TODO take from the theme */
+        color: 'red'
+      }
     },
     buttonContent: {
       flexDirection: 'row',
@@ -102,19 +110,48 @@ class AccountSettings extends React.Component<Props, State> {
     }
   };
 
-  onSubmit = () => {};
+  onSubmitName = (state: NameState) => {
+    this.props.userStore!.updateAccountName(state.name!);
+    this.onDialogClose();
+  };
 
-  getDialog(): { title: string; form: ReactElement<HTMLFormElement> } {
+  onSubmitRemoveAccount = (state: RemoveAccountState) => {
+    this.props.userStore!.removeAccount(
+      this.props.userStore!.selectedAccount!.id
+    );
+    if (!this.props.userStore!.selectedAccount) {
+      this.props.store!.router.goTo(onboardingAddAccountRoute);
+    }
+    this.onDialogClose();
+  };
+
+  getDialog: () => {
+    title: string;
+    form: ReactElement<HTMLFormElement>;
+  } = () => {
+    const account = this.props.userStore!.selectedAccount!;
     switch (this.state.dialogField) {
       case 'name':
         return {
           title: 'Update account name',
-          form: <NameForm onSubmit={this.onSubmit} />
+          form: (
+            <NameForm
+              name={account.name}
+              id={account.id}
+              onSubmit={this.onSubmitName}
+            />
+          )
         };
       case 'removeAccount':
         return {
           title: 'Remove account?',
-          form: <RemoveAccountForm onSubmit={this.onSubmit} />
+          form: (
+            <RemoveAccountForm
+              name={account.name}
+              id={account.id}
+              onSubmit={this.onSubmitRemoveAccount}
+            />
+          )
         };
       default:
         return {
@@ -122,7 +159,11 @@ class AccountSettings extends React.Component<Props, State> {
           form: null
         };
     }
-  }
+  };
+
+  onDialogClose = () => {
+    this.setState({ dialogOpen: false });
+  };
 
   render() {
     const { classes, userStore } = this.props;
@@ -140,7 +181,7 @@ class AccountSettings extends React.Component<Props, State> {
         <SettingsDialog
           title={dialog.title}
           open={this.state.dialogOpen}
-          onClose={() => this.setState({ dialogOpen: false })}
+          onClose={this.onDialogClose}
         >
           {dialog.form}
         </SettingsDialog>

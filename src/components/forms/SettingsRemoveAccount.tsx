@@ -17,11 +17,11 @@ import UserStore from '../../stores/user';
 const styles = (theme: Theme) =>
   createStyles({
     input: {
-      color: theme.palette.grey['100']
+      color: theme.palette.grey['600']
     },
     footer: {
       '& button': {
-        color: theme.palette.grey['100']
+        color: theme.palette.grey['600']
       }
     },
     remove: {
@@ -30,26 +30,24 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
-  userStore?: UserStore;
-  onSubmit?: () => void;
+  onSubmit: (state: State) => void;
+  id: string;
+  name: string | null;
 }
 
-interface State {
+export interface State {
   id?: string;
 }
 
 const stylesDecorator = withStyles(styles);
 
-@inject('store')
-@inject('userStore')
 @observer
 class SettingsRemoveAccountForm extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.setState({ id: '' });
-  }
+  state = {
+    id: ''
+  };
 
+  // TODO extract to Form
   handleChange = (field: string) => (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -59,48 +57,37 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
     });
   };
 
-  onSubmit = () => {
-    if (this.state.id !== this.props.userStore!.selectedAccount!.id) {
+  onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (this.state.id !== this.props.id) {
       // TODO error mark the ID field
-      return;
+      return false;
     }
-    this.props.userStore!.removeAccount(
-      this.props.userStore!.selectedAccount!.id
-    );
-    this.props.onSubmit();
-    if (!this.props.userStore!.selectedAccount) {
-      this.props.store!.router.goTo(onboardingAddAccountRoute);
-    }
+    this.props.onSubmit({ ...this.state });
   };
 
   render() {
-    const { userStore, classes } = this.props;
+    const { name, id, classes } = this.props;
 
     return (
       <form onSubmit={this.onSubmit}>
         <Typography>
-          The second passphrase offers an extra layer of protection for forgers
-          whose primary mnemonic is stored on servers which can potentially get
-          hacked and compromised the primary mnemonic.
+          Are you sure you want to remove {name} account ({id}) from the wallet?
+          To confirm, enter the account address in the field below.
         </Typography>
-        <Typography>
-          Once the 2nd passphrase has been set it cannot be changed nor removed.
-        </Typography>
-        {userStore!.selectedAccount!.balance < 5 && (
-          <Typography className={classes.remove}>
-            You don't have enough funds on your account to pay the network fee
-            of 5 RISE to setup a 2nd passphrase!
-          </Typography>
-        )}
-        <TextField
-          className={classes.input}
-          label="Account address"
-          onChange={this.handleChange('id')}
-          margin="normal"
-          autoFocus={true}
-        />
+        <div>
+          <TextField
+            className={classes.input}
+            label="Account address"
+            value={this.state.id || ''}
+            onChange={this.handleChange('id')}
+            margin="normal"
+            autoFocus={true}
+            fullWidth={true}
+          />
+        </div>
         <div className={classes.footer}>
-          <Button fullWidth={true}>
+          <Button type="submit" fullWidth={true}>
             CONTINUE
           </Button>
         </div>

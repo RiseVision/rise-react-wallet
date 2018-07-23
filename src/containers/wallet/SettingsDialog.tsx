@@ -50,15 +50,29 @@ class SettingsDialog extends React.Component<Props, State> {
     const account = props.userStore!.selectedAccount!;
   }
 
+  componentDidMount() {
+    document.addEventListener('keyup', this.handleESCKey);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keyup', this.handleESCKey);
+  }
+
+  handleESCKey = (event: KeyboardEvent) => {
+    if (event.keyCode === 27) {
+      this.props.onClose();
+    }
+  }
+
   handleBackClick = () => {
     this.setState({ open: false });
-    if (this.onClose) {
-      this.onClose();
+    if (this.props.onClose) {
+      this.props.onClose();
     }
   };
 
   render() {
-    const { open, title } = this.props;
+    const { open, title, classes } = this.props;
 
     return (
       <ModalPaper open={open} backdrop={Backdrop}>
@@ -66,9 +80,9 @@ class SettingsDialog extends React.Component<Props, State> {
           closeButton={true}
           onCloseClick={this.handleBackClick}
         >
-          <FormattedMessage defaultMessage={title} />
+          <FormattedMessage id="settings-dialog-title" defaultMessage={title} />
         </ModalPaperHeader>
-        {this.props.children}
+        <div className={classes.content}>{this.props.children}</div>
       </ModalPaper>
     );
   }
