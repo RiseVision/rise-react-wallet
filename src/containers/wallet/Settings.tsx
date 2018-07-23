@@ -10,7 +10,7 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import ArrowFwd from '@material-ui/icons/NavigateNext';
-import { onboardingAddAccountRoute } from '../../routes';
+import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
 import UserStore from '../../stores/user';
 import Typography from '@material-ui/core/Typography';
@@ -19,9 +19,13 @@ import SettingsDialog from './SettingsDialog';
 import NameForm, {
   State as NameState
 } from '../../components/forms/SettingsName';
-import RemoveAccountForm, {
-  State as RemoveAccountState
-} from '../../components/forms/SettingsRemoveAccount';
+import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
+import PassphraseForm, {
+  State as PassphraseState
+} from '../../components/forms/SettingsPassphrase';
+import FiatForm, {
+  State as FiatState
+} from '../../components/forms/SettingsFiat';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -115,13 +119,27 @@ class AccountSettings extends React.Component<Props, State> {
     this.onDialogClose();
   };
 
-  onSubmitRemoveAccount = (state: RemoveAccountState) => {
-    this.props.userStore!.removeAccount(
-      this.props.userStore!.selectedAccount!.id
-    );
-    if (!this.props.userStore!.selectedAccount) {
-      this.props.store!.router.goTo(onboardingAddAccountRoute);
+  onSubmitPassphrase = (state: PassphraseState) => {
+    // TODO
+    alert('TODO set ' + state.passphrase);
+    this.onDialogClose();
+  };
+
+  onSubmitRemoveAccount = () => {
+    let { store, userStore } = this.props;
+
+    userStore!.removeAccount(userStore!.selectedAccount!.id);
+    this.onDialogClose();
+
+    if (!userStore.selectedAccount) {
+      store!.router.goTo(onboardingAddAccountRoute);
+    } else {
+      store!.router.goTo(accountOverviewRoute);
     }
+  };
+
+  onSubmitFiat = (state: FiatState) => {
+    this.props.userStore!.updateFiat(state.fiat, state.global);
     this.onDialogClose();
   };
 
@@ -130,6 +148,7 @@ class AccountSettings extends React.Component<Props, State> {
     form: ReactElement<HTMLFormElement>;
   } = () => {
     const account = this.props.userStore!.selectedAccount!;
+
     switch (this.state.dialogField) {
       case 'name':
         return {
@@ -150,6 +169,27 @@ class AccountSettings extends React.Component<Props, State> {
               name={account.name}
               id={account.id}
               onSubmit={this.onSubmitRemoveAccount}
+            />
+          )
+        };
+      case 'passphrase':
+        return {
+          title: 'Setup 2nd passphrase',
+          form: (
+            <PassphraseForm
+              balance={account.balance}
+              onSubmit={this.onSubmitPassphrase}
+            />
+          )
+        };
+      case 'fiat':
+        return {
+          title: 'Displayed FIAT currency',
+          form: (
+            <FiatForm
+              fiat={account.fiatCurrency}
+              options={this.props.store!.config.fiat_currencies}
+              onSubmit={this.onSubmitFiat}
             />
           )
         };
@@ -219,13 +259,13 @@ class AccountSettings extends React.Component<Props, State> {
           </Typography>
           <SettingRow
             classes={classes}
-            onClick={() => this.handleFieldClick('mnemonic2')}
+            onClick={() => this.handleFieldClick('passphrase')}
             label="2nd passphrase"
             value={account.mnemonic2 ? 'Set' : 'Not set'}
           />
           <SettingRow
             classes={classes}
-            onClick={() => this.handleFieldClick('deletageRegistration')}
+            onClick={() => this.handleFieldClick('delegateRegistration')}
             label="Delegate registration"
             value="TODO Not registered"
           />

@@ -10,9 +10,6 @@ import Button from '@material-ui/core/Button';
 import { inject, observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
-import { onboardingAddAccountRoute } from '../../routes';
-import Store from '../../stores/store';
-import UserStore from '../../stores/user';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -25,27 +22,32 @@ const styles = (theme: Theme) =>
         color: theme.palette.grey['600']
       }
     },
-    remove: {
+    error: {
+      /* TODO from the theme */
       color: 'red'
+    },
+    form: {
+      '& > p + p': {
+        marginTop: theme.spacing.unit
+      }
     }
   });
 
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (state: State) => void;
-  id: string;
-  name: string | null;
+  balance: number;
 }
 
 export interface State {
-  id?: string;
+  passphrase: string | null;
 }
 
 const stylesDecorator = withStyles(styles);
 
 @observer
-class SettingsRemoveAccountForm extends React.Component<Props, State> {
+class SettingsPassphraseForm extends React.Component<Props, State> {
   state = {
-    id: ''
+    passphrase: ''
   };
 
   // TODO extract to Form
@@ -53,40 +55,47 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const value = event.target.value;
-    this.setState({
-      [field]: value
-    });
+    if (field === 'passphrase') {
+      this.setState({
+        [field]: value
+      });
+    }
   };
 
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (this.state.id !== this.props.id) {
-      // TODO error mark the ID field
-      return false;
-    }
     this.props.onSubmit({ ...this.state });
   };
 
   render() {
-    const { name, id, classes } = this.props;
+    const { classes } = this.props;
 
     return (
-      <form onSubmit={this.onSubmit}>
+      <form onSubmit={this.onSubmit} className={classes.form}>
         <Typography>
-          Are you sure you want to remove {name} account ({id}) from the wallet?
-          To confirm, enter the account address in the field below.
+          The second passphrase offers an extra layer of protection for forgers
+          whose primary mnemonic is stored on servers which can potentially get
+          hacked and compromised the primary mnemonic.
         </Typography>
-        <div>
+        <Typography>
+          Once the 2nd passphrase has been set it cannot be changed nor removed.
+        </Typography>
+        {this.props.balance < 5 && (
+          <Typography className={classes.error}>
+            You don't have enough funds on your account to pay the network fee
+            of 5 RISE to setup a 2nd passphrase!
+          </Typography>
+        )}
+        {this.props.balance >= 5 && (
           <TextField
             className={classes.input}
-            label="Account address"
-            value={this.state.id || ''}
-            onChange={this.handleChange('id')}
+            label="2nd passphrase"
+            onChange={this.handleChange('passphrase')}
             margin="normal"
             autoFocus={true}
             fullWidth={true}
           />
-        </div>
+        )}
         <div className={classes.footer}>
           <Button type="submit" fullWidth={true}>
             CONTINUE
@@ -97,4 +106,4 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
   }
 }
 
-export default stylesDecorator(SettingsRemoveAccountForm);
+export default stylesDecorator(SettingsPassphraseForm);
