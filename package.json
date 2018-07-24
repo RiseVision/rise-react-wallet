@@ -36,6 +36,8 @@
     "precommit": "npm run tsc && npm run tslint"
   },
   "pre-commit": [
+    "tsc",
+    "tslint"
   ],
   "riw": {
     "defaultLocale": "en",

@@ -112,18 +112,18 @@ class AccountSettings extends React.Component<Props, State> {
     } else {
       this.setState({ dialogOpen: true, dialogField: field });
     }
-  };
+  }
 
   onSubmitName = (state: NameState) => {
     this.props.userStore!.updateAccountName(state.name!);
     this.onDialogClose();
-  };
+  }
 
   onSubmitPassphrase = (state: PassphraseState) => {
     // TODO
     alert('TODO set ' + state.passphrase);
     this.onDialogClose();
-  };
+  }
 
   onSubmitRemoveAccount = () => {
     let { store, userStore } = this.props;
@@ -131,31 +131,31 @@ class AccountSettings extends React.Component<Props, State> {
     userStore!.removeAccount(userStore!.selectedAccount!.id);
     this.onDialogClose();
 
-    if (!userStore.selectedAccount) {
+    if (!userStore!.selectedAccount) {
       store!.router.goTo(onboardingAddAccountRoute);
     } else {
       store!.router.goTo(accountOverviewRoute);
     }
-  };
+  }
 
   onSubmitFiat = (state: FiatState) => {
-    this.props.userStore!.updateFiat(state.fiat, state.global);
+    this.props.userStore!.updateFiat(state.fiat!, state.global);
     this.onDialogClose();
-  };
+  }
 
   getDialog: () => {
-    title: string;
-    form: ReactElement<HTMLFormElement>;
+    title: string | null;
+    form: ReactElement<HTMLFormElement> | null;
   } = () => {
     const account = this.props.userStore!.selectedAccount!;
 
-    switch (this.state.dialogField) {
+    switch (this.state.dialogField!) {
       case 'name':
         return {
           title: 'Update account name',
           form: (
             <NameForm
-              name={account.name}
+              name={account.name!}
               id={account.id}
               onSubmit={this.onSubmitName}
             />
@@ -199,11 +199,11 @@ class AccountSettings extends React.Component<Props, State> {
           form: null
         };
     }
-  };
+  }
 
   onDialogClose = () => {
     this.setState({ dialogOpen: false });
-  };
+  }
 
   render() {
     const { classes, userStore } = this.props;
@@ -219,7 +219,7 @@ class AccountSettings extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <SettingsDialog
-          title={dialog.title}
+          title={dialog.title || ''}
           open={this.state.dialogOpen}
           onClose={this.onDialogClose}
         >

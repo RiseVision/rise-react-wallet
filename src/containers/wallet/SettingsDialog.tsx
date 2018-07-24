@@ -45,10 +45,6 @@ const stylesDecorator = withStyles(styles);
 @inject('userStore')
 @observer
 class SettingsDialog extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    const account = props.userStore!.selectedAccount!;
-  }
 
   componentDidMount() {
     document.addEventListener('keyup', this.handleESCKey);
@@ -59,7 +55,7 @@ class SettingsDialog extends React.Component<Props, State> {
   }
 
   handleESCKey = (event: KeyboardEvent) => {
-    if (event.keyCode === 27) {
+    if (event.keyCode === 27 && this.props.onClose) {
       this.props.onClose();
     }
   }
@@ -69,7 +65,7 @@ class SettingsDialog extends React.Component<Props, State> {
     if (this.props.onClose) {
       this.props.onClose();
     }
-  };
+  }
 
   render() {
     const { open, title, classes } = this.props;

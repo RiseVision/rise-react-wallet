@@ -7,7 +7,7 @@ import {
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
 
@@ -60,12 +60,12 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
         [field]: value
       });
     }
-  };
+  }
 
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     this.props.onSubmit({ ...this.state });
-  };
+  }
 
   render() {
     const { classes } = this.props;

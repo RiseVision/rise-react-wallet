@@ -7,12 +7,9 @@ import {
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
-import { onboardingAddAccountRoute } from '../../routes';
-import Store from '../../stores/store';
-import UserStore from '../../stores/user';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -56,7 +53,7 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
     this.setState({
       [field]: value
     });
-  };
+  }
 
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,7 +62,8 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
       return false;
     }
     this.props.onSubmit({ ...this.state });
-  };
+    return true;
+  }
 
   render() {
     const { name, id, classes } = this.props;
