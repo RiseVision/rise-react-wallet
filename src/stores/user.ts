@@ -1,8 +1,13 @@
 import * as assert from 'assert';
-import { LiskWallet } from 'dpos-offline';
+import { dposAPI } from 'dpos-api-wrapper';
+import { CreateSignatureTx, LiskWallet } from 'dpos-offline';
 import { action, observable, configure, runInAction, computed } from 'mobx';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
-import Store, { correctTimestamp, normalizeAddress } from './store';
+import Store, {
+  unixToTimestamp,
+  timestampToUnix,
+  normalizeAddress
+} from './store';
 import * as moment from 'moment-timezone';
 import { groupBy, pick } from 'lodash';
 import * as lstore from 'store';
@@ -12,6 +17,16 @@ configure({ enforceActions: true });
 
 export default class UserStore {
   api: string;
+  dopsApi: typeof dposAPI;
+  // TODO getFeeSchedule
+  // TODO observable
+  fees: {
+    send: 10000000;
+    vote: 100000000;
+    secondsignature: 500000000;
+    delegate: 2500000000;
+    multisignature: 500000000;
+  };
 
   @observable accounts = observable.array<TAccount>();
   @observable selectedAccount: TAccount | null;
@@ -20,11 +35,13 @@ export default class UserStore {
   @computed
   get groupedTransactions(): TGroupedTransactions {
     // @ts-ignore
-    return this.groupTransitionsByDay(this.recentTransactions);
+    return this.groupTransactionsByDay(this.recentTransactions);
   }
 
   constructor(public app: Store) {
+    dposAPI.nodeAddress = app.config.api_url;
     this.api = app.config.api_url;
+    this.dopsApi = dposAPI;
     const accounts = this.storedAccounts();
     let isSelected = false;
     const lastSelected = lstore.get('lastSelectedAccount');
@@ -66,6 +83,7 @@ export default class UserStore {
     lstore.set('accounts', stored);
   }
 
+  // TODO switch to dposAPI
   async loadAccount(id: string): Promise<TAccountResponse> {
     const res = await fetch(`${this.api}/api/accounts?address=${id}`);
     const json: TAccountResponse | TErrorResponse = await res.json();
@@ -85,6 +103,24 @@ export default class UserStore {
     return json as TAccountResponse;
   }
 
+  async addPassphrase(mnemonic: string, passphrase: string) {
+    const wallet = new LiskWallet(mnemonic, 'R');
+    const wallet2 = new LiskWallet(passphrase, 'R');
+    let timestamp = unixToTimestamp(
+      moment()
+        .utc()
+        .unix()
+    );
+    let unsigned = new CreateSignatureTx({
+      signature: { publicKey: wallet2.publicKey }
+    })
+      .set('timestamp', timestamp)
+      .set('fee', this.fees.secondsignature);
+    const tx = wallet.signTransaction(unsigned);
+    const transport = await dposAPI.buildTransport();
+    await transport.postTransaction(tx);
+  }
+
   @action
   async login(
     id: string,
@@ -99,8 +135,6 @@ export default class UserStore {
     }
     const res = await this.loadAccount(id);
     const account = parseAccountReponse(res, local);
-    // TODO load the remembered
-    // add the acount to the store and mark as selected
     runInAction(() => {
       this.accounts.push(account);
       if (select) {
@@ -226,6 +260,7 @@ export default class UserStore {
     }
   }
 
+  // TODO switch to dposAPI
   async loadTransactions(
     params: TTransactionsRequest,
     confirmed: boolean = true
@@ -243,7 +278,7 @@ export default class UserStore {
     return json;
   }
 
-  groupTransitionsByDay(transactions: TTransaction[]): TGroupedTransactions {
+  groupTransactionsByDay(transactions: TTransaction[]): TGroupedTransactions {
     // @ts-ignore wrong lodash typing for groupBy
     return groupBy(transactions, (transaction: TTransaction) => {
       return moment(transaction.timestamp)
@@ -264,7 +299,7 @@ export default class UserStore {
 
   parseTransactionsReponse(res: TTransactionsResponse): TTransaction[] {
     return res.transactions.map(t => {
-      t.timestamp = correctTimestamp(t.timestamp);
+      t.timestamp = timestampToUnix(t.timestamp);
       t.info =
         t.senderId === this.selectedAccount!.id
           ? {

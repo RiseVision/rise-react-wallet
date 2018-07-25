@@ -62,8 +62,11 @@ export default class Store {
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
-export function correctTimestamp(timestamp: number) {
+export function timestampToUnix(timestamp: number) {
   return new Date((timestamp + epoch) * 1000).getTime();
+}
+export function unixToTimestamp(timestamp: number) {
+  return new Date((timestamp - epoch) * 1000).getTime() / 1000;
 }
 
 export function normalizeAddress(address: string): string {
