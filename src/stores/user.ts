@@ -3,11 +3,13 @@ import { dposAPI } from 'dpos-api-wrapper';
 import { CreateSignatureTx, LiskWallet } from 'dpos-offline';
 import { action, observable, configure, runInAction, computed } from 'mobx';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
-import Store, {
-  unixToTimestamp,
+import {
+  correctAmount,
+  normalizeAddress,
   timestampToUnix,
-  normalizeAddress
-} from './store';
+  unixToTimestamp
+} from '../utils/utils';
+import Store from './store';
 import * as moment from 'moment-timezone';
 import { groupBy, pick } from 'lodash';
 import * as lstore from 'store';

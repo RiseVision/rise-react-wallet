@@ -1,7 +1,7 @@
-import { action, observable, configure, runInAction } from 'mobx';
-import { getUserLocales, Locale } from '../utils/i18n';
+import { action, configure, observable, runInAction } from 'mobx';
 import { RouterStore } from 'mobx-router';
 import { importTranslation, Messages } from '../translations';
+import { getUserLocales, Locale } from '../utils/i18n';
 import UserStore from './user';
 
 // make sure only actions modify the store
@@ -57,23 +57,5 @@ export default class Store {
     runInAction(() => {
       this.locale = locale;
     });
-  }
-}
-
-// magic...
-const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
-export function timestampToUnix(timestamp: number) {
-  return new Date((timestamp + epoch) * 1000).getTime();
-}
-export function unixToTimestamp(timestamp: number) {
-  return new Date((timestamp - epoch) * 1000).getTime() / 1000;
-}
-
-export function normalizeAddress(address: string): string {
-  const normalizedAddress = address.toUpperCase();
-  if (!normalizedAddress.match(/^\d{1,20}R$/)) {
-    return '';
-  } else {
-    return normalizedAddress;
   }
 }
