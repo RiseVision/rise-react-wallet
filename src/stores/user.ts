@@ -22,12 +22,12 @@ export default class UserStore {
   dopsApi: typeof dposAPI;
   // TODO getFeeSchedule
   // TODO observable
-  fees: {
-    send: 10000000;
-    vote: 100000000;
-    secondsignature: 500000000;
-    delegate: 2500000000;
-    multisignature: 500000000;
+  fees = {
+    send: 10000000,
+    vote: 100000000,
+    secondsignature: 500000000,
+    delegate: 2500000000,
+    multisignature: 500000000
   };
 
   @observable accounts = observable.array<TAccount>();
@@ -343,16 +343,14 @@ export function parseAccountReponse(
     id: res.account.address,
     publicKey: res.account.publicKey,
     name: null,
-    // TODO
-    mnemonic: '',
-    // TODO
-    mnemonic2: '',
     fiatCurrency: 'USD',
     readOnly: false,
     pinned: false,
-    balance: parseInt(res.account.balance, 10) / 100000000,
-    unconfirmedBalance:
-      parseInt(res.account.unconfirmedBalance, 10) / 100000000,
+    secondSignature: Boolean(res.account.secondSignature),
+    secondPublicKey: res.account.secondPublicKey,
+    balance: correctAmount(res.account.balance),
+    unconfirmedBalance: correctAmount(res.account.unconfirmedBalance),
+    // original data
     _balance: parseInt(res.account.balance, 10),
     _unconfirmedBalance: parseInt(res.account.unconfirmedBalance, 10)
   };
@@ -412,13 +410,13 @@ export type TAccount = {
   id: string;
   publicKey: string;
   name: string | null;
-  mnemonic: string;
-  mnemonic2: string;
   fiatCurrency: string;
   pinned: boolean;
   balance: number;
   unconfirmedBalance: number;
   readOnly: boolean;
+  secondPublicKey: string | null;
+  secondSignature: boolean;
   _balance: number;
   _unconfirmedBalance: number;
   // voted_delegate: string,
