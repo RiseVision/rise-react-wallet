@@ -13,7 +13,8 @@ import {
   onboardingAddAccountRoute,
   onboardingExistingAccountTypeRoute
 } from '../../routes';
-import Store, { normalizeAddress } from '../../stores/store';
+import Store from '../../stores/store';
+import { normalizeAddress } from '../../utils/utils';
 
 const styles = createStyles({
   content: {

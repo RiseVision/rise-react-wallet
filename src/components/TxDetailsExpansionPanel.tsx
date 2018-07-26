@@ -8,6 +8,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import green from '@material-ui/core/colors/green';
+import { correctAmount } from '../utils/utils';
 
 const styles = (theme: Theme) => {
   return createStyles({
@@ -198,9 +199,12 @@ const TxDetailsExpansionPanel = stylesDecorator(injectIntl(
       if (amount > 0) {
         amountSign = '+';
       }
-      let amountShort = `${amountSign}${intl.formatNumber(amount, {
-        style: 'decimal',
-      })}`;
+      let amountShort = `${amountSign}${intl.formatNumber(
+        correctAmount(amount),
+        {
+          style: 'decimal'
+        }
+      )}`;
       let amountLong = `${amountShort} RISE`;
 
       return (

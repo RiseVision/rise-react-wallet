@@ -12,6 +12,8 @@ import { inject, observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
 import UserStore from '../../stores/user';
+import { correctAmount } from '../../utils/utils';
+import TransactionForm, { State as TransactionState } from './TransactionForm';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -37,12 +39,11 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   userStore?: UserStore;
-  publicKey: string;
-  onSubmit: (state: State) => void;
-  balance: number;
+  onSubmit: (result: boolean) => void;
 }
 
 export interface State {
+  step: number;
   passphrase: string | null;
   mnemonic: string | null;
 }
@@ -53,6 +54,7 @@ const stylesDecorator = withStyles(styles);
 @observer
 class SettingsPassphraseForm extends React.Component<Props, State> {
   state = {
+    step: 1,
     passphrase: null,
     mnemonic: null
   };
@@ -69,29 +71,42 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     }
   };
 
-  /**
-   * Prevents event's default behavior synchronously and calls an async
-   * function afterwards.
-   */
-  preventDefault = func => event => {
+  onSubmit1 = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    return func();
-  }
+    const account = this.props.userStore!.selectedAccount!;
+    const fee = this.props.userStore!.fees.secondsignature;
+    const isSet = account.secondSignature;
+    // cancel if already set or not enought balance
+    if (isSet || account.balance < fee) {
+      this.props.onSubmit(false);
+    } else {
+      this.setState({ step: 2 });
+    }
+  };
 
-  onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const mnemonic = this.state.mnemonic;
-    // TODO get from the TransactionForm
-    const passphrase = this.state.passphrase;
-
-    this.props.userStore!.addPassphrase(mnemonic, passphrase);
+  onSubmit2 = async (state: TransactionState) => {
+    const mnemonic = state.mnemonic;
+    const passphrase = state.passphrase;
+    // TODO implement a loader
+    // this.setState({
+    //   isLoading: true
+    // });
+    await this.props.userStore!.addPassphrase(mnemonic, passphrase);
+    this.props.onSubmit(true);
   };
 
   render() {
+    return this.state.step === 1 ? this.step1() : this.step2();
+  }
+
+  step1() {
     const { classes } = this.props;
+    const account = this.props.userStore!.selectedAccount!;
+    const fee = correctAmount(this.props.userStore!.fees.secondsignature);
+    const isSet = account.secondSignature;
 
     return (
-      <form onSubmit={this.preventDefault(this.onSubmit)} className={classes.form}>
+      <form onSubmit={this.onSubmit1} className={classes.form}>
         <Typography>
           The second passphrase offers an extra layer of protection for forgers
           whose primary mnemonic is stored on servers which can potentially get
@@ -100,30 +115,54 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
         <Typography>
           Once the 2nd passphrase has been set it cannot be changed nor removed.
         </Typography>
-        {/* TODO node API */}
-        {this.props.balance < 5 && (
+        {isSet && (
           <Typography className={classes.error}>
-            You don't have enough funds on your account to pay the network fee
-            of 5 RISE to setup a 2nd passphrase!
+            You've already set the 2nd passphrase, it can't be changed. Transfer
+            you funds to a new address to set a new 2nd passphrase.
           </Typography>
         )}
-        {/* TODO node API */}
-        {this.props.balance >= 5 && (
-          <TextField
-            className={classes.input}
-            label="2nd passphrase"
-            onChange={this.handleChange('passphrase')}
-            margin="normal"
-            autoFocus={true}
-            fullWidth={true}
-          />
-        )}
+        {!isSet &&
+          account.balance < fee && (
+            <Typography className={classes.error}>
+              You don't have enough funds on your account to pay the network fee
+              of {fee} RISE to setup a 2nd passphrase!
+            </Typography>
+          )}
+        {!isSet &&
+          account.balance >= fee && (
+            <TextField
+              className={classes.input}
+              label="2nd passphrase"
+              onChange={this.handleChange('passphrase')}
+              margin="normal"
+              autoFocus={true}
+              fullWidth={true}
+            />
+          )}
         <div className={classes.footer}>
           <Button type="submit" fullWidth={true}>
             CONTINUE
           </Button>
         </div>
       </form>
+    );
+  }
+
+  step2() {
+    const account = this.props.userStore!.selectedAccount!;
+    const userStore = this.props.userStore!;
+    // TODO translate
+    return (
+      <TransactionForm
+        onSubmit={this.onSubmit2}
+        fee={userStore.fees.secondsignature+userStore.fees.send}
+        amount={0}
+        isPassphraseSet={account.secondSignature}
+        sender={account.name}
+        senderId={account.id}
+        recipientId="transaction"
+        recipient="2nd passphrase"
+      />
     );
   }
 }

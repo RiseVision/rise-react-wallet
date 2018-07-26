@@ -108,6 +108,7 @@ export default class UserStore {
   async addPassphrase(mnemonic: string, passphrase: string) {
     const wallet = new LiskWallet(mnemonic, 'R');
     const wallet2 = new LiskWallet(passphrase, 'R');
+    const account = this.selectedAccount;
     let timestamp = unixToTimestamp(
       moment()
         .utc()
@@ -121,6 +122,16 @@ export default class UserStore {
     const tx = wallet.signTransaction(unsigned);
     const transport = await dposAPI.buildTransport();
     await transport.postTransaction(tx);
+    await this.refreshAccount(account);
+  }
+
+  @action
+  async refreshAccount(account: TAccount) {
+    const ret = parseAccountReponse(await this.loadAccount(account.id));
+    runInAction(() => {
+      this.accounts.remove(account);
+      this.accounts.push(ret);
+    });
   }
 
   @action
@@ -326,6 +337,11 @@ export default class UserStore {
    * TODO
    */
   idToName(id: string) {
+    for (const account of this.accounts) {
+      if (account.id === id && account.name) {
+        return account.name;
+      }
+    }
     return id;
   }
 }
@@ -348,11 +364,11 @@ export function parseAccountReponse(
     pinned: false,
     secondSignature: Boolean(res.account.secondSignature),
     secondPublicKey: res.account.secondPublicKey,
-    balance: correctAmount(res.account.balance),
-    unconfirmedBalance: correctAmount(res.account.unconfirmedBalance),
+    // balance: correctAmount(res.account.balance),
+    // unconfirmedBalance: correctAmount(res.account.unconfirmedBalance),
     // original data
-    _balance: parseInt(res.account.balance, 10),
-    _unconfirmedBalance: parseInt(res.account.unconfirmedBalance, 10)
+    balance: parseInt(res.account.balance, 10),
+    unconfirmedBalance: parseInt(res.account.unconfirmedBalance, 10)
   };
   return {
     ...parsed,
@@ -373,7 +389,7 @@ export type TStoredAccount = {
 
 export type TTransaction = {
   info: TxInfo;
-  amount: 1;
+  amount: number;
   asset: {};
   blockId: string;
   confirmations: number;
@@ -417,8 +433,8 @@ export type TAccount = {
   readOnly: boolean;
   secondPublicKey: string | null;
   secondSignature: boolean;
-  _balance: number;
-  _unconfirmedBalance: number;
+  // _balance: number;
+  // _unconfirmedBalance: number;
   // voted_delegate: string,
 };
 

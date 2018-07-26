@@ -119,12 +119,6 @@ class AccountSettings extends React.Component<Props, State> {
     this.onDialogClose();
   }
 
-  onSubmitPassphrase = (state: PassphraseState) => {
-    // TODO
-    alert('TODO set ' + state.passphrase);
-    this.onDialogClose();
-  }
-
   onSubmitRemoveAccount = () => {
     let { store, userStore } = this.props;
 
@@ -177,8 +171,7 @@ class AccountSettings extends React.Component<Props, State> {
           title: 'Setup 2nd passphrase',
           form: (
             <PassphraseForm
-              balance={account.balance}
-              onSubmit={this.onSubmitPassphrase}
+              onSubmit={this.onDialogClose}
             />
           )
         };
@@ -257,11 +250,12 @@ class AccountSettings extends React.Component<Props, State> {
           >
             Advanced settings
           </Typography>
+          {/* TODO check if already set */}
           <SettingRow
             classes={classes}
             onClick={() => this.handleFieldClick('passphrase')}
             label="2nd passphrase"
-            value={account.mnemonic2 ? 'Set' : 'Not set'}
+            value={account.secondSignature ? 'Set' : 'Not set'}
           />
           <SettingRow
             classes={classes}
