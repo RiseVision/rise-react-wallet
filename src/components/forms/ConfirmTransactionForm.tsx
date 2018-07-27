@@ -8,10 +8,10 @@ import {
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
-import { correctAmount } from '../../utils/utils';
+import { amountToUser } from '../../utils/utils';
 import AccountIcon from '../AccountIcon';
 
 const styles = (theme: Theme) =>
@@ -43,7 +43,7 @@ interface Props extends WithStyles<typeof styles> {
   onSubmit: (state: State) => void;
   amount: number;
   fee: number;
-  sender: string;
+  sender: string | null;
   senderId: string;
   recipient: string;
   // no recipientId means internal operation (eg second signature)
@@ -59,7 +59,7 @@ export interface State {
 const stylesDecorator = withStyles(styles);
 
 @observer
-class TransactionForm extends React.Component<Props, State> {
+class ConfirmTransactionForm extends React.Component<Props, State> {
   state = {
     passphrase: '',
     mnemonic: ''
@@ -77,12 +77,12 @@ class TransactionForm extends React.Component<Props, State> {
         [field]: value
       });
     }
-  };
+  }
 
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     this.props.onSubmit({ ...this.state });
-  };
+  }
 
   render() {
     const { classes } = this.props;
@@ -99,15 +99,17 @@ class TransactionForm extends React.Component<Props, State> {
         </div>
         <div>
           TO
-          <Avatar className={classes.accountAvatar}>
-            <AccountIcon size={24} address={this.props.recipientId} />
-          </Avatar>
+          {this.props.recipientId && (
+            <Avatar className={classes.accountAvatar}>
+              <AccountIcon size={24} address={this.props.recipientId} />
+            </Avatar>
+          )}
           <p>{this.props.recipient}</p>
           <p>{this.props.recipientId}</p>
         </div>
         <div>
-          <p>Network fee: {correctAmount(this.props.fee)} RISE</p>
-          <p>Total: {correctAmount(this.props.amount + this.props.fee)} RISE</p>
+          <p>Network fee: {amountToUser(this.props.fee)} RISE</p>
+          <p>Total: {amountToUser(this.props.amount + this.props.fee)} RISE</p>
         </div>
         <Typography>
           To confirm this transaction, enter your mnemonic secret
@@ -141,4 +143,4 @@ class TransactionForm extends React.Component<Props, State> {
   }
 }
 
-export default stylesDecorator(TransactionForm);
+export default stylesDecorator(ConfirmTransactionForm);

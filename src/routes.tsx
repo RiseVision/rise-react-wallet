@@ -190,6 +190,25 @@ export const accountSettingsRoute = new Route({
   )
 });
 
+// TODO should have a URL and also overlay when needed
+export const accountSendRoute = new Route({
+  path: '/wallet/send',
+  component: (
+    <AsyncComponent
+      name="./containers/wallet/send"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountOverview />
+          <components.SendTransaction />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
 export const homeRoute = new Route<Store>({
   path: '/',
   onEnter: (route: Route<Store>, params: {}, store: Store) => {

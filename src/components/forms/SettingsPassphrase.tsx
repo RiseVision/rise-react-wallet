@@ -7,13 +7,14 @@ import {
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { DposAPI } from 'dpos-api-wrapper';
 import { inject, observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
 import UserStore from '../../stores/user';
-import { correctAmount } from '../../utils/utils';
-import TransactionForm, { State as TransactionState } from './TransactionForm';
+import { amountToUser } from '../../utils/utils';
+import TransactionForm, {
+  State as TransactionState
+} from './ConfirmTransactionForm';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -69,7 +70,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
         [field]: value
       });
     }
-  };
+  }
 
   onSubmit1 = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -82,7 +83,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     } else {
       this.setState({ step: 2 });
     }
-  };
+  }
 
   onSubmit2 = async (state: TransactionState) => {
     const mnemonic = state.mnemonic;
@@ -93,16 +94,16 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     // });
     await this.props.userStore!.addPassphrase(mnemonic, passphrase);
     this.props.onSubmit(true);
-  };
-
-  render() {
-    return this.state.step === 1 ? this.step1() : this.step2();
   }
 
-  step1() {
-    const { classes } = this.props;
+  render() {
+    return this.state.step === 1 ? this.renderStep1() : this.renderStep2();
+  }
+
+  renderStep1() {
+    const { classes, userStore } = this.props;
     const account = this.props.userStore!.selectedAccount!;
-    const fee = correctAmount(this.props.userStore!.fees.secondsignature);
+    const fee = userStore!.fees.secondsignature + userStore!.fees.send;
     const isSet = account.secondSignature;
 
     return (
@@ -125,7 +126,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
           account.balance < fee && (
             <Typography className={classes.error}>
               You don't have enough funds on your account to pay the network fee
-              of {fee} RISE to setup a 2nd passphrase!
+              of {amountToUser(fee)} RISE to setup a 2nd passphrase!
             </Typography>
           )}
         {!isSet &&
@@ -148,14 +149,14 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     );
   }
 
-  step2() {
+  renderStep2() {
     const account = this.props.userStore!.selectedAccount!;
     const userStore = this.props.userStore!;
     // TODO translate
     return (
       <TransactionForm
         onSubmit={this.onSubmit2}
-        fee={userStore.fees.secondsignature+userStore.fees.send}
+        fee={userStore.fees.secondsignature + userStore.fees.send}
         amount={0}
         isPassphraseSet={account.secondSignature}
         sender={account.name}

@@ -1,6 +1,10 @@
 // corrects the int amount from the server to a user-readable float
-export function correctAmount(amount: number|string) {
-  return parseInt(amount.toString(), 10) / 100000000
+export function amountToUser(amount: number|string) {
+  return parseInt(amount.toString(), 10) / 100000000;
+}
+
+export function amountToServer(amount: number|string) {
+  return parseInt(amount.toString(), 10) * 100000000;
 }
 
 // magic...

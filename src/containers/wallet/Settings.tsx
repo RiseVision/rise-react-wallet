@@ -20,9 +20,7 @@ import NameForm, {
   State as NameState
 } from '../../components/forms/SettingsName';
 import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
-import PassphraseForm, {
-  State as PassphraseState
-} from '../../components/forms/SettingsPassphrase';
+import PassphraseForm from '../../components/forms/SettingsPassphrase';
 import FiatForm, {
   State as FiatState
 } from '../../components/forms/SettingsFiat';
@@ -169,11 +167,7 @@ class AccountSettings extends React.Component<Props, State> {
       case 'passphrase':
         return {
           title: 'Setup 2nd passphrase',
-          form: (
-            <PassphraseForm
-              onSubmit={this.onDialogClose}
-            />
-          )
+          form: <PassphraseForm onSubmit={this.onDialogClose} />
         };
       case 'fiat':
         return {

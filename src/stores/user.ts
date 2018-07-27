@@ -1,10 +1,9 @@
 import * as assert from 'assert';
 import { dposAPI } from 'dpos-api-wrapper';
-import { CreateSignatureTx, LiskWallet } from 'dpos-offline';
+import { SendTx, CreateSignatureTx, LiskWallet } from 'dpos-offline';
 import { action, observable, configure, runInAction, computed } from 'mobx';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
 import {
-  correctAmount,
   normalizeAddress,
   timestampToUnix,
   unixToTimestamp
@@ -64,6 +63,10 @@ export default class UserStore {
     return lstore.get('accounts') || [];
   }
 
+  storedAccount(id: string): TStoredAccount | null {
+    return this.storedAccounts().find(a => a.id === id) || null;
+  }
+
   /**
    * Remember the account in local storage.
    * @param account
@@ -108,7 +111,7 @@ export default class UserStore {
   async addPassphrase(mnemonic: string, passphrase: string) {
     const wallet = new LiskWallet(mnemonic, 'R');
     const wallet2 = new LiskWallet(passphrase, 'R');
-    const account = this.selectedAccount;
+    const account = this.selectedAccount!;
     let timestamp = unixToTimestamp(
       moment()
         .utc()
@@ -125,9 +128,52 @@ export default class UserStore {
     await this.refreshAccount(account);
   }
 
+  async sendTransaction(
+    recipientId: string,
+    amount: number,
+    mnemonic: string,
+    passphrase: string | null,
+    account?: TAccount
+  ): Promise<string> {
+    if (!account) {
+      account = this.selectedAccount!;
+    }
+    assert(account, 'Account required');
+    assert(!account.secondSignature || passphrase, 'Passphrase required');
+
+    const wallet = new LiskWallet(mnemonic, 'R');
+    const wallet2 = passphrase ? new LiskWallet(passphrase, 'R') : undefined;
+
+    let timestamp = unixToTimestamp(
+      moment()
+        .utc()
+        .unix()
+    );
+    const unsigned = new SendTx()
+      .set('timestamp', timestamp)
+      .set('fee', this.fees.send)
+      .set('amount', amount)
+      .set('recipientId', recipientId);
+
+    const tx = wallet.signTransaction(unsigned, wallet2);
+    const transport = await dposAPI.buildTransport();
+    const res = await transport.postTransaction(tx);
+    const wait = [this.refreshAccount(account)];
+    // refresh the target account if also added to the wallet
+    const recipient = this.accounts.find(a => a.id === recipientId);
+    if (recipient) {
+      wait.push(this.refreshAccount(recipient));
+    }
+    await Promise.all(wait);
+    return res.transactionId;
+  }
+
   @action
+  // TODO refresh recent transactions
+  // TODO doesnt seem to refresh
   async refreshAccount(account: TAccount) {
-    const ret = parseAccountReponse(await this.loadAccount(account.id));
+    const local = this.storedAccount(account.id);
+    const ret = parseAccountReponse(await this.loadAccount(account.id), local);
     runInAction(() => {
       this.accounts.remove(account);
       this.accounts.push(ret);
@@ -353,7 +399,7 @@ export default class UserStore {
  */
 export function parseAccountReponse(
   res: TAccountResponse,
-  local?: Partial<TStoredAccount>
+  local?: Partial<TStoredAccount> | null
 ): TAccount {
   const parsed = {
     id: res.account.address,

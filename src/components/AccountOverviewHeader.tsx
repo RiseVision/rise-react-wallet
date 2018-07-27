@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import AccountIcon from '../components/AccountIcon';
-import { correctAmount } from '../utils/utils';
+import { amountToUser } from '../utils/utils';
 
 const styles = (theme: Theme) => {
   const step = 5;
@@ -158,7 +158,7 @@ const AccountOverviewHeader = stylesDecorator(injectIntl(
               className={classes.primary_text}
               aria-label={intl.formatMessage(messages.balanceAriaLabel)}
             >
-              {correctAmount(balance)} RISE
+              {amountToUser(balance)} RISE
             </Typography>
             <Typography className={classes.secondary_text}>
               {balance_in_fiat}

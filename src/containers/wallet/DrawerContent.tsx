@@ -12,6 +12,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import LayersIcon from '@material-ui/icons/Layers';
 import PeopleIcon from '@material-ui/icons/People';
+import SendIcon from '@material-ui/icons/Send';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddIcon from '@material-ui/icons/Add';
 import AccountIcon from '../../components/AccountIcon';
@@ -21,7 +22,11 @@ import {
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
+import {
+  accountOverviewRoute,
+  accountSendRoute,
+  onboardingAddAccountRoute
+} from '../../routes';
 import Store from '../../stores/store';
 import { orderBy } from 'lodash';
 import UserStore from '../../stores/user';
@@ -99,27 +104,29 @@ class DrawerContent extends React.Component<Props> {
         </Typography>
         <Divider />
         <List>
-          {orderBy(userStore!.accounts, ['pinned', 'name'], ['desc', 'asc']).map(
-            account => (
-              <ListItem
-                button={true}
-                className={classNames(
-                  userStore!.selectedAccount === account &&
-                    classes.selectedListItem
-                )}
-                onClick={this.handleAccountClicked(account.id)}
-                key={account.id}
-              >
-                <ListItemAvatar>
-                  <Avatar className={classes.accountAvatar}>
-                    <AccountIcon size={24} address={account.id} />
-                  </Avatar>
-                </ListItemAvatar>
-                {/* TODO this doesnt observe */}
-                <ListItemText primary={account.name} secondary={account.id} />
-              </ListItem>
-            )
-          )}
+          {orderBy(
+            userStore!.accounts,
+            ['pinned', 'name'],
+            ['desc', 'asc']
+          ).map(account => (
+            <ListItem
+              button={true}
+              className={classNames(
+                userStore!.selectedAccount === account &&
+                  classes.selectedListItem
+              )}
+              onClick={this.handleAccountClicked(account.id)}
+              key={account.id}
+            >
+              <ListItemAvatar>
+                <Avatar className={classes.accountAvatar}>
+                  <AccountIcon size={24} address={account.id} />
+                </Avatar>
+              </ListItemAvatar>
+              {/* TODO this doesnt observe */}
+              <ListItemText primary={account.name} secondary={account.id} />
+            </ListItem>
+          ))}
           <ListItem
             button={true}
             key="add-account"
@@ -136,6 +143,20 @@ class DrawerContent extends React.Component<Props> {
         </List>
         <Divider />
         <List>
+          <ListItem
+            button={true}
+            onClick={() => store!.router.goTo(accountSendRoute)}
+          >
+            <ListItemIcon className={classes.listIcon}>
+              <SendIcon />
+            </ListItemIcon>
+            <ListItemText>
+              <FormattedMessage
+                id="drawer-content.send-transaction"
+                defaultMessage="Send funds"
+              />
+            </ListItemText>
+          </ListItem>
           <ListItem button={true}>
             <ListItemIcon className={classes.listIcon}>
               <PeopleIcon />
