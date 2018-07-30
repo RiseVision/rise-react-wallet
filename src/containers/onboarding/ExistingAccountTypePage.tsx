@@ -9,6 +9,7 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   accountOverviewRoute,
+  onboardingNoMnemonicNoticeRoute,
   onboardingExistingAccountRoute
 } from '../../routes';
 import Store from '../../stores/store';
@@ -33,7 +34,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
       { readOnly: false },
       true
     );
-    this.props.store!.router.goTo(accountOverviewRoute);
+    this.props.store!.router.goTo(onboardingNoMnemonicNoticeRoute);
   }
 
   handleReadOnlyClick = () => {

@@ -6,6 +6,7 @@ import ExistingAccountPage from './ExistingAccountPage';
 import ExistingAccountTypePage from './ExistingAccountTypePage';
 import NewAccountPage from './NewAccountPage';
 import NewMnemonicPage from './NewMnemonicPage';
+import NoMnemonicNoticePage from './NoMnemonicNoticePage';
 import SecurityNoticePage from './SecurityNoticePage';
 import VerifyMnemonicPage from './VerifyMnemonicPage';
 
@@ -13,6 +14,7 @@ export {
   Onboarding,
   VerifyMnemonicPage,
   NewMnemonicPage,
+  NoMnemonicNoticePage,
   ExistingAccountTypePage,
   SecurityNoticePage,
   NewAccountPage,

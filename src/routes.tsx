@@ -66,6 +66,21 @@ export const onboardingExistingAccountTypeRoute = new Route<Store>({
   )
 });
 
+export const onboardingNoMnemonicNoticeRoute = new Route<Store>({
+  path: '/onboarding/no-mnemonic-notice',
+  component: (
+    <AsyncComponent
+      name="./containers/onboarding"
+      resolve={() => import('./containers/onboarding')}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.NoMnemonicNoticePage />
+        </components.Onboarding>
+      )}
+    />
+  )
+});
+
 export const onboardingNewAccountRoute = new Route<Store>({
   path: '/onboarding/new-account',
   component: (
