@@ -104,7 +104,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     return (
       <SendTransactionForm
         amount={this.props.amount || 0}
-        fee={userStore.fees.send}
+        fee={userStore.fees.get('send')!}
         balance={balance}
         onSubmit={this.onSubmit1}
         recipientId={this.props.recipientId}
@@ -123,7 +123,7 @@ export default class SendTransaction extends React.Component<Props, State> {
         recipientId={this.state.recipientId!}
         recipient={userStore.idToName(this.state.recipientId!)}
         amount={this.state.amount!}
-        fee={userStore.fees.send}
+        fee={userStore.fees.get('send')!}
         onSubmit={this.onSubmit2}
       />
     );

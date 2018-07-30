@@ -17,20 +17,22 @@ import * as lstore from 'store';
 configure({ enforceActions: true });
 
 export default class UserStore {
+  // TODO refactor to use the dposAPI
   api: string;
-  dopsApi: typeof dposAPI;
-  // TODO getFeeSchedule
-  // TODO observable
-  fees = {
+  dposAPI: typeof dposAPI;
+
+  // TODO type key names and avoid using the bang! operator
+  @observable
+  fees = observable.map({
     send: 10000000,
     vote: 100000000,
     secondsignature: 500000000,
     delegate: 2500000000,
     multisignature: 500000000
-  };
-
+  });
   @observable accounts = observable.array<TAccount>();
   @observable selectedAccount: TAccount | null;
+  // TODO maybe keep it for all the accounts as observable.map ?
   @observable fiatAmount: string | null;
   @observable recentTransactions = observable.array<TTransaction>();
   @computed
@@ -42,7 +44,7 @@ export default class UserStore {
   constructor(public app: Store) {
     dposAPI.nodeAddress = app.config.api_url;
     this.api = app.config.api_url;
-    this.dopsApi = dposAPI;
+    this.dposAPI = dposAPI;
     const accounts = this.storedAccounts();
     let isSelected = false;
     const lastSelected = lstore.get('lastSelectedAccount');
@@ -54,6 +56,12 @@ export default class UserStore {
       this.login(account.id, account, select);
       isSelected = true;
     }
+    // refresh the fees from the server
+    this.dposAPI.blocks.getFeeSchedule().then((fees: TFeesResponse) => {
+      for (const [fee, value] of Object.entries(fees.fees)) {
+        this.fees.set(fee, value);
+      }
+    });
   }
 
   /**
@@ -121,7 +129,7 @@ export default class UserStore {
       signature: { publicKey: wallet2.publicKey }
     })
       .set('timestamp', timestamp)
-      .set('fee', this.fees.secondsignature);
+      .set('fee', this.fees.get('secondsignature')!);
     const tx = wallet.signTransaction(unsigned);
     const transport = await dposAPI.buildTransport();
     await transport.postTransaction(tx);
@@ -151,7 +159,7 @@ export default class UserStore {
     );
     const unsigned = new SendTx()
       .set('timestamp', timestamp)
-      .set('fee', this.fees.send)
+      .set('fee', this.fees.get('send')!)
       .set('amount', amount)
       .set('recipientId', recipientId);
 
@@ -512,3 +520,14 @@ export function mnemonicToAddress(mnemonic: string[]) {
   const wallet = new LiskWallet(mnemonic.join(' '), 'R');
   return wallet.address;
 }
+
+export type TFeesResponse = {
+  fees: {
+    send: number;
+    vote: number;
+    secondsignature: number;
+    delegate: number;
+    multisignature: number;
+    dapp: number;
+  };
+};

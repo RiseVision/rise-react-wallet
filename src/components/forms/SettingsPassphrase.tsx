@@ -75,7 +75,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
   onSubmit1 = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const account = this.props.userStore!.selectedAccount!;
-    const fee = this.props.userStore!.fees.secondsignature;
+    const fee = this.props.userStore!.fees.get('secondsignature')!;
     const isSet = account.secondSignature;
     // cancel if already set or not enought balance
     if (isSet || account.balance < fee) {
@@ -103,7 +103,8 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
   renderStep1() {
     const { classes, userStore } = this.props;
     const account = this.props.userStore!.selectedAccount!;
-    const fee = userStore!.fees.secondsignature + userStore!.fees.send;
+    const fee =
+      userStore!.fees.get('secondsignature')! + userStore!.fees.get('send')!;
     const isSet = account.secondSignature;
 
     return (
@@ -156,7 +157,9 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     return (
       <TransactionForm
         onSubmit={this.onSubmit2}
-        fee={userStore.fees.secondsignature + userStore.fees.send}
+        fee={
+          userStore.fees.get('secondsignature')! + userStore.fees.get('send')!
+        }
         amount={0}
         isPassphraseSet={account.secondSignature}
         sender={account.name}
