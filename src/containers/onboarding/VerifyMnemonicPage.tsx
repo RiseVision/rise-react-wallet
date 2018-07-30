@@ -97,8 +97,11 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingVerifyMnemonicPage
 @inject('userStore')
 @observer
 class VerifyMnemonicPage extends React.Component<Props, State> {
+  wordInputRef: React.RefObject<HTMLInputElement>;
+
   constructor(props: Props) {
     super(props);
+    this.wordInputRef = React.createRef();
 
     const mnemonic = props.mnemonic || props.store!.mnemonic;
     if (!mnemonic) {
@@ -119,6 +122,15 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
 
   handleCloseClick = () => {
     this.props.store!.router.goTo(onboardingNewAccountRoute);
+  }
+
+  handlePlaceholderClick = (ev: React.MouseEvent<HTMLElement>) => {
+    ev.preventDefault();
+
+    const wordInputEl = this.wordInputRef.current;
+    if (wordInputEl != null) {
+      wordInputEl.focus();
+    }
   }
 
   handleCurrentWordChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -221,7 +233,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
               >
                 {words.map((state, idx) => (
                   <React.Fragment key={idx}>
-                    <span className={classes.wordGroup}>
+                    <span className={classes.wordGroup} onClick={this.handlePlaceholderClick}>
                       <span className={classes.wordLabel}>#{idx + 1}</span>
                       <span
                         className={classNames(
@@ -272,6 +284,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
           </Grid>
           <Grid item={true} xs={12}>
             <TextField
+              inputRef={this.wordInputRef}
               label={
                 <FormattedMessage
                   id="onboarding-verify-mnemonic.input-label-which-word"
