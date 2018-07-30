@@ -1,6 +1,11 @@
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+  InjectedIntlProps,
+  injectIntl,
+  defineMessages,
+  FormattedMessage
+} from 'react-intl';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -34,7 +39,6 @@ const styles = createStyles({
 
 interface Props extends WithStyles<typeof styles> {
   store?: Store;
-  accountAddress?: string;
 }
 
 interface State {
@@ -43,21 +47,36 @@ interface State {
   normalizedAddress: string;
 }
 
+type DecoratedProps = Props & InjectedIntlProps;
+
 const stylesDecorator = withStyles(styles, {
   name: 'OnboardingExistingAccountPage'
 });
 
+const messages = defineMessages({
+  invalidAddressGeneric: {
+    id: 'onboarding-existing-account.invalid-address-generic',
+    description: 'Error label for invalid address text input',
+    defaultMessage: 'Invalid RISE address. A valid address is in the format of "1234567890R".'
+  },
+  invalidAddressMnemonic: {
+    id: 'onboarding-existing-account.invalid-address-mnemonic',
+    description: 'Error label for invalid address text input when it looks like a mnemonic',
+    defaultMessage: 'Looks like you\'re trying to enter your passphrase. Please enter your account address instead.'
+  }
+});
+
 @inject('store')
 @observer
-class ExistingAccountPage extends React.Component<Props, State> {
-  constructor(props: Props) {
+class ExistingAccountPage extends React.Component<DecoratedProps, State> {
+  constructor(props: DecoratedProps) {
     super(props);
 
-    const address = props.accountAddress || '';
+    const address = props.store!.address || '';
     this.state = {
       address,
       addressInvalid: false,
-      normalizedAddress: normalizeAddress(address)
+      normalizedAddress: normalizeAddress(address.trim())
     };
   }
 
@@ -81,7 +100,7 @@ class ExistingAccountPage extends React.Component<Props, State> {
 
   handleAddressChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const address = ev.target.value;
-    const normalizedAddress = normalizeAddress(address);
+    const normalizedAddress = normalizeAddress(address.trim());
 
     this.setState({
       address,
@@ -94,6 +113,20 @@ class ExistingAccountPage extends React.Component<Props, State> {
     const { address, normalizedAddress } = this.state;
     const addressInvalid = !!address && !normalizedAddress;
     this.setState({ addressInvalid });
+  }
+
+  addressError() {
+    const { intl } = this.props;
+    const { address, normalizedAddress } = this.state;
+    if (normalizedAddress !== '') {
+      return '';
+    }
+
+    if (address.trim().indexOf(' ') >= 0) {
+      return intl.formatMessage(messages.invalidAddressMnemonic);
+    } else {
+      return intl.formatMessage(messages.invalidAddressGeneric);
+    }
   }
 
   render() {
@@ -138,6 +171,10 @@ class ExistingAccountPage extends React.Component<Props, State> {
                 }
                 error={addressInvalid}
                 value={address}
+                FormHelperTextProps={{
+                  error: addressInvalid,
+                }}
+                helperText={addressInvalid ? this.addressError() : ''}
                 onChange={this.handleAddressChange}
                 onBlur={this.handleAddressBlur}
               />
@@ -173,4 +210,4 @@ class ExistingAccountPage extends React.Component<Props, State> {
 }
 
 // TODO make it a decorator
-export default stylesDecorator(ExistingAccountPage);
+export default stylesDecorator(injectIntl(ExistingAccountPage));
