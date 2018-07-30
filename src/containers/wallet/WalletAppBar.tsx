@@ -18,7 +18,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import MenuIcon from '@material-ui/icons/Menu';
-import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import { accountSettingsRoute } from '../../routes';
 import Store from '../../stores/store';
 
@@ -105,7 +105,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
                 color="inherit"
                 onClick={() => store!.router.goTo(accountSettingsRoute)}
               >
-                <SettingsIcon />
+                <SettingsOutlinedIcon />
               </IconButton>
             </Tooltip>
           )}
