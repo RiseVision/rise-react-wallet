@@ -150,13 +150,30 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
         currentWordInvalid: false
       });
     } else {
-      this.props.store!.address = this.props.userStore!.registerAccount(
-        mnemonic
-      );
-      // TODO clear the onboarding tmp data
-      // this.props.store!.registrationCompleted();
-      this.props.store!.router.goTo(onboardingAccountCreatedRoute);
+      this.finish();
     }
+  }
+
+  handleContinueClick = () => {
+    if (this.canFinish()) {
+      this.finish();
+    }
+  }
+
+  canFinish() {
+    const { mnemonic, uncheckedIndices } = this.state;
+    return uncheckedIndices.length <= mnemonic.length - 4;
+  }
+
+  finish() {
+    const { store, userStore } = this.props;
+    const { mnemonic } = this.state;
+    store!.address = userStore!.registerAccount(
+      mnemonic
+    );
+    // TODO clear the onboarding tmp data
+    // this.props.store!.registrationCompleted();
+    store!.router.goTo(onboardingAccountCreatedRoute);
   }
 
   render() {
@@ -195,7 +212,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
           component="form"
           onSubmit={this.handleFormSubmit}
         >
-          <Hidden xsDown={true}>
+          <Hidden xsDown={true} implementation="css">
             <Grid item={true} xs={12}>
               <Typography
                 component="p"
@@ -271,24 +288,35 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
               onChange={this.handleCurrentWordChange}
             />
           </Grid>
-          <Grid item={true} xs={12}>
-            {this.state.uncheckedIndices.length > 0 ? (
-              <Button type="submit" fullWidth={true}>
+          <Grid item={true} xs={12} sm={6}>
+            <Button type="submit" fullWidth={true}>
+              {uncheckedIndices.length > 0 ? (
                 <FormattedMessage
-                  id="onboarding-verify-mnemonic.verify"
-                  description="Verify button label"
-                  defaultMessage="Verify"
+                  id="onboarding-verify-mnemonic.check"
+                  description="Check button label"
+                  defaultMessage="Check"
                 />
-              </Button>
-            ) : (
-              <Button type="submit" fullWidth={true}>
+              ) : (
                 <FormattedMessage
-                  id="onboarding-verify-mnemonic.verify-and-continue"
-                  description="Verify button label"
-                  defaultMessage="Verify & continue"
+                  id="onboarding-verify-mnemonic.check-and-continue"
+                  description="Check button label"
+                  defaultMessage="Check & continue"
                 />
-              </Button>
-            )}
+              )}
+            </Button>
+          </Grid>
+          <Grid item={true} xs={12} sm={6}>
+            <Button
+              fullWidth={true}
+              disabled={!this.canFinish()}
+              onClick={this.handleContinueClick}
+            >
+              <FormattedMessage
+                id="onboarding-verify-mnemonic.continue"
+                description="Continue button label"
+                defaultMessage="Continue"
+              />
+            </Button>
           </Grid>
         </Grid>
       </ModalPaper>
