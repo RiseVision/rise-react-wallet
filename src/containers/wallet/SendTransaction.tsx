@@ -64,8 +64,8 @@ export default class SendTransaction extends React.Component<Props, State> {
     let txId = await this.props.userStore!.sendTransaction(
       this.state.recipientId!,
       this.state.amount!,
-      state.passphrase,
       state.mnemonic,
+      state.passphrase,
       this.props.account
     );
     if (this.props.onSubmit) {
