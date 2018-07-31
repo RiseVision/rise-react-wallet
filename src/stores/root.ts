@@ -11,8 +11,11 @@ configure({ enforceActions: true });
 export default class RootStore {
   router = new RouterStore();
   app = new AppStore();
-  onboarding: OnboardingStore | null;
-  wallet: WalletStore | null;
+  onboarding: OnboardingStore;
+  wallet: WalletStore;
 
-  constructor(public config: TConfig) {}
+  constructor(public config: TConfig) {
+    this.onboarding = new OnboardingStore();
+    this.wallet = new WalletStore(config);
+  }
 }

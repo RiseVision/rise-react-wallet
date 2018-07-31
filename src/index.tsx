@@ -9,23 +9,16 @@ import { startRouter } from 'mobx-router';
 import { Provider } from 'mobx-react';
 import { TConfig } from './stores';
 import RootStore from './stores/root';
-import OnboardingStore from './stores/onboarding';
-import WalletStore from './stores/wallet';
 
 // tslint:disable-next-line:no-any
 const store = new RootStore((config as any) as TConfig);
-const appStore = store.app;
-const onboardingStore = new OnboardingStore();
-store.onboarding = onboardingStore;
-const walletStore = new WalletStore(store.config);
-store.wallet = walletStore;
 startRouter(routes, store);
 
 const stores = {
   store,
-  appStore,
-  onboardingStore,
-  walletStore
+  appStore: store.app,
+  onboardingStore: store.onboarding,
+  walletStore: store.wallet,
 };
 
 const root = (
