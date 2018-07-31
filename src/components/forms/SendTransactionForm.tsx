@@ -54,7 +54,7 @@ const stylesDecorator = withStyles(styles);
 
 // TODO address book
 @observer
-class ConfirmTransactionForm extends React.Component<Props, State> {
+class SendTransactionForm extends React.Component<Props, State> {
   state: State = {
     recipientId: null,
     amount: null
@@ -121,4 +121,4 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
   }
 }
 
-export default stylesDecorator(ConfirmTransactionForm);
+export default stylesDecorator(SendTransactionForm);
