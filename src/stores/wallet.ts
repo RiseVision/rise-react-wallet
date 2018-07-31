@@ -53,8 +53,14 @@ export default class WalletStore {
       this.login(account.id, account, select);
       isSelected = true;
     }
-    // refresh the fees from the server
-    this.dposAPI.blocks.getFeeSchedule().then((fees: TFeesResponse) => {
+    this.updateFees();
+  }
+
+  @action
+  // refreshes the fees from the server
+  async updateFees() {
+    const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule()
+    runInAction(() => {
       for (const [fee, value] of Object.entries(fees.fees)) {
         this.fees.set(fee, value);
       }
