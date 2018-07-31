@@ -81,7 +81,8 @@ class WalletAppBar extends React.Component<DecoratedProps> {
             color="inherit"
             noWrap={true}
           >
-            {currentView.path === '/wallet' && (
+            {(currentView.path === '/wallet'
+              || currentView.path.startsWith('/wallet/send')) && (
               <FormattedMessage
                 id="wallet-appbar.account-overview-title"
                 description="Account overview title"
