@@ -375,14 +375,18 @@ export default class WalletStore {
           ? {
               kind: 'send',
               recipient_alias: this.idToName(t.recipientId),
-              recipient_address: t.recipientId,
-              amount: t.amount
+              recipient_address:
+                // TODO translate
+                t.recipientId ||
+                (t.asset.signature && 'Second Passphrase') ||
+                '',
+              amount: t.amount + t.fee
             }
           : {
               kind: 'receive',
               sender_alias: this.idToName(t.senderId),
               sender_address: t.senderId,
-              amount: t.amount
+              amount: t.amount + t.fee
             };
       return t;
     });
@@ -449,7 +453,7 @@ export type TStoredAccount = {
 export type TTransaction = {
   info: TxInfo;
   amount: number;
-  asset: {};
+  asset: { signature?: {} };
   blockId: string;
   confirmations: number;
   fee: number;
