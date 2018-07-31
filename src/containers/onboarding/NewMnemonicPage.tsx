@@ -14,7 +14,7 @@ import {
   onboardingVerifyMnemonicsRoute
 } from '../../routes';
 import RootStore from '../../stores/root';
-import AppStore from '../../stores/app';
+import OnboardingStore from '../../stores/onboarding';
 
 const styles = (theme: Theme) => {
   const { pxToRem } = theme.typography;
@@ -79,7 +79,7 @@ function round(val: number) {
 
 interface Props extends WithStyles<typeof styles> {
   store?: RootStore;
-  appStore?: AppStore;
+  onboardingStore?: OnboardingStore;
   mnemonic?: string[];
 }
 
@@ -90,7 +90,7 @@ interface State {
 const stylesDecorator = withStyles(styles, { name: 'OnboardingNewMnemonicPage' });
 
 @inject('store')
-@inject('appStore')
+@inject('onboardingStore')
 @observer
 class NewMnemonicPage extends React.Component<Props, State> {
 
@@ -107,8 +107,8 @@ class NewMnemonicPage extends React.Component<Props, State> {
   }
 
   handleContinueClick = () => {
-    const { store, appStore } = this.props;
-    appStore!.mnemonic = this.state.mnemonic;
+    const { store, onboardingStore } = this.props;
+    onboardingStore!.mnemonic = this.state.mnemonic;
     store!.router.goTo(onboardingVerifyMnemonicsRoute);
   }
 

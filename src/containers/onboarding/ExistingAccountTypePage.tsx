@@ -13,17 +13,17 @@ import {
   onboardingExistingAccountRoute
 } from '../../routes';
 import RootStore from '../../stores/root';
-import AppStore from '../../stores/app';
+import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
   store?: RootStore;
-  appStore?: AppStore;
+  onboardingStore?: OnboardingStore;
   walletStore?: WalletStore;
 }
 
 @inject('store')
-@inject('appStore')
+@inject('onboardingStore')
 @inject('walletStore')
 @observer
 class ExistingAccountTypePage extends React.Component<Props> {
@@ -33,8 +33,8 @@ class ExistingAccountTypePage extends React.Component<Props> {
   }
 
   handleFullAccessClick = async () => {
-    const { store, appStore, walletStore } = this.props;
-    const address = appStore!.address;
+    const { store, onboardingStore, walletStore } = this.props;
+    const address = onboardingStore!.address;
     if (address) {
       walletStore!.login(
         address,
@@ -46,8 +46,8 @@ class ExistingAccountTypePage extends React.Component<Props> {
   }
 
   handleReadOnlyClick = () => {
-    const { store, appStore, walletStore } = this.props;
-    const address = appStore!.address;
+    const { store, onboardingStore, walletStore } = this.props;
+    const address = onboardingStore!.address;
     if (address) {
       walletStore!.login(
         address,

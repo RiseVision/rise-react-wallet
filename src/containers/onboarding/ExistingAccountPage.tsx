@@ -19,7 +19,7 @@ import {
   onboardingExistingAccountTypeRoute
 } from '../../routes';
 import RootStore from '../../stores/root';
-import AppStore from '../../stores/app';
+import OnboardingStore from '../../stores/onboarding';
 import { normalizeAddress } from '../../utils/utils';
 
 const styles = createStyles({
@@ -40,7 +40,7 @@ const styles = createStyles({
 
 interface Props extends WithStyles<typeof styles> {
   store?: RootStore;
-  appStore?: AppStore;
+  onboardingStore?: OnboardingStore;
 }
 
 interface State {
@@ -69,14 +69,14 @@ const messages = defineMessages({
 });
 
 @inject('store')
-@inject('appStore')
+@inject('onboardingStore')
 @observer
 class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   constructor(props: DecoratedProps) {
     super(props);
 
-    const { appStore } = props;
-    const address = appStore!.address || '';
+    const { onboardingStore } = props;
+    const address = onboardingStore!.address || '';
     this.state = {
       address,
       addressInvalid: false,
@@ -92,7 +92,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    const { store, appStore } = this.props;
+    const { store, onboardingStore } = this.props;
     const { normalizedAddress } = this.state;
     const addressInvalid = !normalizedAddress;
     if (addressInvalid) {
@@ -100,7 +100,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
       return;
     }
 
-    appStore!.address = normalizedAddress;
+    onboardingStore!.address = normalizedAddress;
     store!.router.goTo(onboardingExistingAccountTypeRoute);
   }
 

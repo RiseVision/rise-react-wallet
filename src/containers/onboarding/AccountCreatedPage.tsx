@@ -10,7 +10,7 @@ import ModalPaperHeader from '../../components/ModalPaperHeader';
 import AccountIcon from '../../components/AccountIcon';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import RootStore from '../../stores/root';
-import AppStore from '../../stores/app';
+import OnboardingStore from '../../stores/onboarding';
 
 const styles = createStyles({
   content: {
@@ -20,7 +20,7 @@ const styles = createStyles({
 
 interface Props extends WithStyles<typeof styles> {
   store?: RootStore;
-  appStore?: AppStore;
+  onboardingStore?: OnboardingStore;
 }
 
 interface State {
@@ -32,13 +32,13 @@ const stylesDecorator = withStyles(styles, {
 });
 
 @inject('store')
-@inject('appStore')
+@inject('onboardingStore')
 @observer
 class AccountCreatedPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const { store, appStore } = props;
-    const accountAddress = appStore!.address || '';
+    const { store, onboardingStore } = props;
+    const accountAddress = onboardingStore!.address || '';
     this.state = {
       accountAddress,
     };

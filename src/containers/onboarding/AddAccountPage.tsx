@@ -8,6 +8,7 @@ import {
 } from '../../routes';
 import RootStore from '../../stores/root';
 import AppStore from '../../stores/app';
+import OnboardingStore from '../../stores/onboarding';
 import { getMainCountryForLocale } from '../../utils/i18n';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -29,26 +30,31 @@ const styles = createStyles({
 interface Props extends WithStyles<typeof styles> {
   store?: RootStore;
   appStore?: AppStore;
+  onboardingStore?: OnboardingStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
 
 @inject('store')
 @inject('appStore')
+@inject('onboardingStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
   handleNewAccountClicked = () => {
-    const { store } = this.props;
+    const { store, onboardingStore } = this.props;
+    onboardingStore!.reset();
     store!.router.goTo(onboardingNewAccountRoute);
   }
 
   handleExistingAccountClicked = () => {
-    const { store } = this.props;
+    const { store, onboardingStore } = this.props;
+    onboardingStore!.reset();
     store!.router.goTo(onboardingExistingAccountRoute);
   }
 
   handleChooseLanguageClicked = () => {
-    const { store } = this.props;
+    const { store, onboardingStore } = this.props;
+    onboardingStore!.reset();
     store!.router.goTo(onboardingChooseLanguageRoute);
   }
 

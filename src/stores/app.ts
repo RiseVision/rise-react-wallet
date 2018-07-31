@@ -5,9 +5,6 @@ import { getUserLocales, Locale } from '../utils/i18n';
 export default class AppStore {
   translations: { [L in Locale]?: Messages } = {};
   @observable translationError: Error | null = null;
-  // address used during onboarding
-  @observable address: string | null = null;
-  @observable mnemonic: string[] | null = null;
 
   // TODO: Attempt to restore locale from a cookie/local storage.
   @observable locale = getUserLocales()[0] || 'en';

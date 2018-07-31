@@ -20,7 +20,7 @@ import {
   onboardingNewAccountRoute
 } from '../../routes';
 import RootStore from '../../stores/root';
-import AppStore from '../../stores/app';
+import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) => {
@@ -80,7 +80,7 @@ function round(val: number) {
 
 interface Props extends WithStyles<typeof styles> {
   store?: RootStore;
-  appStore?: AppStore;
+  onboardingStore?: OnboardingStore;
   walletStore?: WalletStore;
   mnemonic?: string[];
 }
@@ -96,7 +96,7 @@ interface State {
 const stylesDecorator = withStyles(styles, { name: 'OnboardingVerifyMnemonicPage' });
 
 @inject('store')
-@inject('appStore')
+@inject('onboardingStore')
 @inject('walletStore')
 @observer
 class VerifyMnemonicPage extends React.Component<Props, State> {
@@ -106,8 +106,8 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     super(props);
     this.wordInputRef = React.createRef();
 
-    const { store, appStore } = props;
-    const mnemonic = props.mnemonic || appStore!.mnemonic;
+    const { store, onboardingStore } = props;
+    const mnemonic = props.mnemonic || onboardingStore!.mnemonic;
     if (!mnemonic) {
       store!.router.goTo(onboardingNewAccountRoute);
     }
@@ -183,13 +183,14 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
   }
 
   finish() {
-    const { store, appStore, walletStore } = this.props;
+    const { store, onboardingStore, walletStore } = this.props;
     const { mnemonic } = this.state;
-    appStore!.address = walletStore!.registerAccount(
+    onboardingStore!.address = walletStore!.registerAccount(
       mnemonic
     );
-    // TODO clear the onboarding tmp data
-    // appStore!.registrationCompleted();
+    // Clear the mnemonic from memory as it has been securely written
+    // down by the user (hopefully)
+    onboardingStore!.mnemonic = null;
     store!.router.goTo(onboardingAccountCreatedRoute);
   }
 
