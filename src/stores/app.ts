@@ -4,9 +4,8 @@ import { getUserLocales, Locale } from '../utils/i18n';
 import * as lstore from 'store';
 
 export default class AppStore {
-  translations: { [L in Locale]?: Messages } = {};
+  @observable translations = observable.map<Locale, Messages>();
   @observable translationError: Error | null = null;
-
   @observable locale: Locale;
 
   // TODO store async components here
@@ -18,6 +17,8 @@ export default class AppStore {
     let locale = lstore.get('locale');
     if (!locale) {
       locale = getUserLocales()[0] || fallbackLocale;
+    } else {
+      this.loadTranslation(locale);
     }
     this.locale = locale;
     autorun(() => lstore.set('locale', this.locale));
@@ -26,13 +27,15 @@ export default class AppStore {
   @action
   async loadTranslation(locale: Locale) {
     this.translationError = null;
-    if (this.translations[locale]) {
+    if (this.translations.get(locale)) {
       return;
     }
 
     try {
       const ret = await importTranslation(locale);
-      this.translations[locale] = ret;
+      runInAction(() => {
+        this.translations.set(locale, ret);
+      });
     } catch (err) {
       // alter the store
       runInAction(() => {

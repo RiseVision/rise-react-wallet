@@ -29,7 +29,7 @@ class App extends React.Component<Props, State> {
     const appStore = this.props.appStore!;
     let locale = appStore.locale;
 
-    let translations = appStore.translations[locale];
+    let translations = appStore.translations.get(locale);
     if (!translations && locale !== 'en') {
       if (appStore.translationError) {
         currentError = appStore.translationError;
