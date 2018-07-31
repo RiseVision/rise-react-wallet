@@ -1,6 +1,9 @@
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
+import AppStore from '../stores/app';
 
 type Props = {
+  appStore?: AppStore;
   name: string;
   // tslint:disable-next-line:no-any
   loading?: React.ReactElement<any>;
@@ -14,13 +17,20 @@ type State = {
   components?: {};
 };
 
+@observer
+@inject('appStore')
 export default class AsyncComponent extends React.Component<Props, State> {
   components: {};
+  componentMounted = false;
 
   constructor(props: Props) {
     super(props);
     this.state = { name: props.name };
-    props.resolve().then(components => this.onLoaded(components));
+    props.resolve().then(components => {
+      if (this.componentMounted) {
+        this.onLoaded(components);
+      }
+    });
   }
 
   // TODO perform this check in render
@@ -32,12 +42,22 @@ export default class AsyncComponent extends React.Component<Props, State> {
     }
   }
 
+  componentDidMount() {
+    this.componentMounted = true;
+  }
+
+  componentWillUnmount() {
+    this.componentMounted = false;
+  }
+
   onLoaded(components: {}) {
     this.setState({ components });
   }
 
   render() {
-    if (this.state && this.state.components) {
+    const appStore = this.props.appStore!;
+    const translationsLoaded = appStore.translations.get(appStore.locale);
+    if (translationsLoaded && this.state && this.state.components) {
       return this.props.render(this.state.components);
     } else if (this.props.loading) {
       return this.props.loading;
