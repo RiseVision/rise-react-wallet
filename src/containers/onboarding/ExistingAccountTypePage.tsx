@@ -12,38 +12,50 @@ import {
   onboardingNoMnemonicNoticeRoute,
   onboardingExistingAccountRoute
 } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
+import AppStore from '../../stores/app';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
-  store?: Store;
+  store?: RootStore;
+  appStore?: AppStore;
   walletStore?: WalletStore;
 }
 
 @inject('store')
+@inject('appStore')
 @inject('walletStore')
 @observer
 class ExistingAccountTypePage extends React.Component<Props> {
   handleBackClick = () => {
-    this.props.store!.router.goTo(onboardingExistingAccountRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingExistingAccountRoute);
   }
 
   handleFullAccessClick = async () => {
-    this.props.walletStore!.login(
-      this.props.store!.address!,
-      { readOnly: false },
-      true
-    );
-    this.props.store!.router.goTo(onboardingNoMnemonicNoticeRoute);
+    const { store, appStore, walletStore } = this.props;
+    const address = appStore!.address;
+    if (address) {
+      walletStore!.login(
+        address,
+        { readOnly: false },
+        true
+      );
+    }
+    store!.router.goTo(onboardingNoMnemonicNoticeRoute);
   }
 
   handleReadOnlyClick = () => {
-    this.props.walletStore!.login(
-      this.props.store!.address!,
-      { readOnly: true },
-      true
-    );
-    this.props.store!.router.goTo(accountOverviewRoute);
+    const { store, appStore, walletStore } = this.props;
+    const address = appStore!.address;
+    if (address) {
+      walletStore!.login(
+        address,
+        { readOnly: true },
+        true
+      );
+    }
+    store!.router.goTo(accountOverviewRoute);
   }
 
   render() {

@@ -10,7 +10,7 @@ import {
   withTheme,
   WithTheme
 } from '@material-ui/core/styles';
-import Store from '../../stores/store';
+import AppStore from '../../stores/app';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';
 
@@ -47,7 +47,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  appStore?: AppStore;
 }
 
 interface State {
@@ -59,7 +59,7 @@ type DecoratedProps = Props & WithTheme;
 const stylesDecorator = withStyles(styles, { name: 'Wallet' });
 const themeDecorator = withTheme();
 
-@inject('store')
+@inject('appStore')
 @observer
 class Wallet extends React.Component<DecoratedProps, State> {
   constructor(props: DecoratedProps) {

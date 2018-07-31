@@ -20,7 +20,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import { accountSettingsRoute } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -35,7 +35,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
   className?: string;
   onToggleDrawer: () => void;
 }
@@ -62,7 +62,7 @@ const messages = defineMessages({
 class WalletAppBar extends React.Component<DecoratedProps> {
   render() {
     const { intl, classes, store } = this.props;
-    const currentView = this.props.store!.router.currentView;
+    const currentView = store!.router.currentView;
 
     return (
       <AppBar className={this.props.className}>

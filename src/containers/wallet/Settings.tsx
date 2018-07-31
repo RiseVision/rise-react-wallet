@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core/styles';
 import ArrowFwd from '@material-ui/icons/NavigateNext';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -72,7 +72,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
   walletStore?: WalletStore;
 }
 
@@ -139,7 +139,8 @@ class AccountSettings extends React.Component<Props, State> {
     title: string | null;
     form: ReactElement<HTMLFormElement> | null;
   } = () => {
-    const account = this.props.walletStore!.selectedAccount!;
+    const { store, walletStore } = this.props;
+    const account = walletStore!.selectedAccount!;
 
     switch (this.state.dialogField!) {
       case 'name':
@@ -175,7 +176,7 @@ class AccountSettings extends React.Component<Props, State> {
           form: (
             <FiatForm
               fiat={account.fiatCurrency}
-              options={this.props.store!.config.fiat_currencies}
+              options={store!.config.fiat_currencies}
               onSubmit={this.onSubmitFiat}
             />
           )

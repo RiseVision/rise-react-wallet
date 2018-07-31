@@ -13,7 +13,8 @@ import {
   onboardingNewAccountRoute,
   onboardingVerifyMnemonicsRoute
 } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
+import AppStore from '../../stores/app';
 
 const styles = (theme: Theme) => {
   const { pxToRem } = theme.typography;
@@ -77,7 +78,8 @@ function round(val: number) {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
+  appStore?: AppStore;
   mnemonic?: string[];
 }
 
@@ -88,6 +90,7 @@ interface State {
 const stylesDecorator = withStyles(styles, { name: 'OnboardingNewMnemonicPage' });
 
 @inject('store')
+@inject('appStore')
 @observer
 class NewMnemonicPage extends React.Component<Props, State> {
 
@@ -99,12 +102,14 @@ class NewMnemonicPage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    this.props.store!.router.goTo(onboardingNewAccountRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingNewAccountRoute);
   }
 
   handleContinueClick = () => {
-    this.props.store!.mnemonic = this.state.mnemonic;
-    this.props.store!.router.goTo(onboardingVerifyMnemonicsRoute);
+    const { store, appStore } = this.props;
+    appStore!.mnemonic = this.state.mnemonic;
+    store!.router.goTo(onboardingVerifyMnemonicsRoute);
   }
 
   render() {

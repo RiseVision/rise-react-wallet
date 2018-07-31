@@ -19,7 +19,8 @@ import {
   onboardingAccountCreatedRoute,
   onboardingNewAccountRoute
 } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
+import AppStore from '../../stores/app';
 import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) => {
@@ -78,7 +79,8 @@ function round(val: number) {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
+  appStore?: AppStore;
   walletStore?: WalletStore;
   mnemonic?: string[];
 }
@@ -94,6 +96,7 @@ interface State {
 const stylesDecorator = withStyles(styles, { name: 'OnboardingVerifyMnemonicPage' });
 
 @inject('store')
+@inject('appStore')
 @inject('walletStore')
 @observer
 class VerifyMnemonicPage extends React.Component<Props, State> {
@@ -103,9 +106,10 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     super(props);
     this.wordInputRef = React.createRef();
 
-    const mnemonic = props.mnemonic || props.store!.mnemonic;
+    const { store, appStore } = props;
+    const mnemonic = props.mnemonic || appStore!.mnemonic;
     if (!mnemonic) {
-      this.props.store!.router.goTo(onboardingNewAccountRoute);
+      store!.router.goTo(onboardingNewAccountRoute);
     }
 
     const uncheckedIndices = mnemonic!.map((_, i) => i);
@@ -121,7 +125,8 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    this.props.store!.router.goTo(onboardingNewAccountRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingNewAccountRoute);
   }
 
   handlePlaceholderClick = (ev: React.MouseEvent<HTMLElement>) => {
@@ -178,13 +183,13 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
   }
 
   finish() {
-    const { store, walletStore } = this.props;
+    const { store, appStore, walletStore } = this.props;
     const { mnemonic } = this.state;
-    store!.address = walletStore!.registerAccount(
+    appStore!.address = walletStore!.registerAccount(
       mnemonic
     );
     // TODO clear the onboarding tmp data
-    // this.props.store!.registrationCompleted();
+    // appStore!.registrationCompleted();
     store!.router.goTo(onboardingAccountCreatedRoute);
   }
 

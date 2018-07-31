@@ -6,7 +6,8 @@ import {
   onboardingExistingAccountRoute,
   onboardingNewAccountRoute
 } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
+import AppStore from '../../stores/app';
 import { getMainCountryForLocale } from '../../utils/i18n';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -26,28 +27,33 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
+  appStore?: AppStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
 
 @inject('store')
+@inject('appStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
   handleNewAccountClicked = () => {
-    this.props.store!.router.goTo(onboardingNewAccountRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingNewAccountRoute);
   }
 
   handleExistingAccountClicked = () => {
-    this.props.store!.router.goTo(onboardingExistingAccountRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingExistingAccountRoute);
   }
 
   handleChooseLanguageClicked = () => {
-    this.props.store!.router.goTo(onboardingChooseLanguageRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingChooseLanguageRoute);
   }
 
   render() {
-    const { classes, store } = this.props;
+    const { classes, appStore } = this.props;
 
     return (
       <ModalPaper open={true}>
@@ -108,7 +114,7 @@ class AddAccountPage extends React.Component<Props> {
             <ChevronRight />
           </ListItem>
           <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
-            <FlagIcon countryCode={getMainCountryForLocale(store!.locale)} />
+            <FlagIcon countryCode={getMainCountryForLocale(appStore!.locale)} />
             <ListItemText>
               <FormattedMessage
                 id="onboarding-add-account.change-language"

@@ -17,7 +17,7 @@ import {
   onboardingNewAccountRoute,
   onboardingNewMnemonicRoute
 } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
 
 const styles = (theme: Theme) => createStyles({
   content: {
@@ -45,7 +45,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
 }
 
 interface State {
@@ -66,7 +66,8 @@ class SecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    this.props.store!.router.goTo(onboardingNewAccountRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingNewAccountRoute);
   }
 
   handleNextTipClick = () => {
@@ -76,7 +77,8 @@ class SecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleContinueClick = () => {
-    this.props.store!.router.goTo(onboardingNewMnemonicRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingNewMnemonicRoute);
   }
 
   render() {

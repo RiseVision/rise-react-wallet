@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Route } from 'mobx-router';
 import AsyncComponent from './components/AsyncComponent';
-import Store from './stores/store';
+import RootStore from './stores/root';
 
 type TOnboardingComponents = typeof import ('./containers/onboarding');
 type TWalletComponents = typeof import ('./containers/wallet');
 
-export const onboardingAddAccountRoute = new Route<Store>({
+export const onboardingAddAccountRoute = new Route<RootStore>({
   path: '/onboarding/add-account',
   component: (
     <AsyncComponent
@@ -21,7 +21,7 @@ export const onboardingAddAccountRoute = new Route<Store>({
   )
 });
 
-export const onboardingChooseLanguageRoute = new Route<Store>({
+export const onboardingChooseLanguageRoute = new Route<RootStore>({
   path: '/onboarding/choose-language',
   component: (
     <AsyncComponent
@@ -36,7 +36,7 @@ export const onboardingChooseLanguageRoute = new Route<Store>({
   )
 });
 
-export const onboardingExistingAccountRoute = new Route<Store>({
+export const onboardingExistingAccountRoute = new Route<RootStore>({
   path: '/onboarding/existing-account',
   component: (
     <AsyncComponent
@@ -51,7 +51,7 @@ export const onboardingExistingAccountRoute = new Route<Store>({
   )
 });
 
-export const onboardingExistingAccountTypeRoute = new Route<Store>({
+export const onboardingExistingAccountTypeRoute = new Route<RootStore>({
   path: '/onboarding/existing-account-type',
   component: (
     <AsyncComponent
@@ -66,7 +66,7 @@ export const onboardingExistingAccountTypeRoute = new Route<Store>({
   )
 });
 
-export const onboardingNoMnemonicNoticeRoute = new Route<Store>({
+export const onboardingNoMnemonicNoticeRoute = new Route<RootStore>({
   path: '/onboarding/no-mnemonic-notice',
   component: (
     <AsyncComponent
@@ -81,7 +81,7 @@ export const onboardingNoMnemonicNoticeRoute = new Route<Store>({
   )
 });
 
-export const onboardingNewAccountRoute = new Route<Store>({
+export const onboardingNewAccountRoute = new Route<RootStore>({
   path: '/onboarding/new-account',
   component: (
     <AsyncComponent
@@ -96,7 +96,7 @@ export const onboardingNewAccountRoute = new Route<Store>({
   )
 });
 
-export const onboardingNewMnemonicsRoute = new Route<Store>({
+export const onboardingNewMnemonicsRoute = new Route<RootStore>({
   path: '/onboarding/new-mnemonic',
   component: (
     <AsyncComponent
@@ -111,7 +111,7 @@ export const onboardingNewMnemonicsRoute = new Route<Store>({
   )
 });
 
-export const onboardingVerifyMnemonicsRoute = new Route<Store>({
+export const onboardingVerifyMnemonicsRoute = new Route<RootStore>({
   path: '/onboarding/verify-mnemonic',
   component: (
     <AsyncComponent
@@ -126,7 +126,7 @@ export const onboardingVerifyMnemonicsRoute = new Route<Store>({
   )
 });
 
-export const onboardingAccountCreatedRoute = new Route<Store>({
+export const onboardingAccountCreatedRoute = new Route<RootStore>({
   path: '/onboarding/account-created',
   component: (
     <AsyncComponent
@@ -141,7 +141,7 @@ export const onboardingAccountCreatedRoute = new Route<Store>({
   )
 });
 
-export const onboardingSecurityNoticeRoute = new Route<Store>({
+export const onboardingSecurityNoticeRoute = new Route<RootStore>({
   path: '/onboarding/security-notice',
   component: (
     <AsyncComponent
@@ -156,7 +156,7 @@ export const onboardingSecurityNoticeRoute = new Route<Store>({
   )
 });
 
-export const onboardingNewMnemonicRoute = new Route<Store>({
+export const onboardingNewMnemonicRoute = new Route<RootStore>({
   path: '/onboarding/new-mnemonic',
   component: (
     <AsyncComponent
@@ -224,10 +224,11 @@ export const accountSendRoute = new Route({
   )
 });
 
-export const homeRoute = new Route<Store>({
+export const homeRoute = new Route<RootStore>({
   path: '/',
-  onEnter: (route: Route<Store>, params: {}, store: Store) => {
-    if (!store.walletStore!.storedAccounts()) {
+  onEnter: (route: Route<RootStore>, params: {}, store: RootStore) => {
+    const walletStore = store.wallet;
+    if (walletStore && !walletStore.storedAccounts()) {
       store.router.goTo(onboardingAddAccountRoute);
     } else {
       store.router.goTo(accountOverviewRoute);

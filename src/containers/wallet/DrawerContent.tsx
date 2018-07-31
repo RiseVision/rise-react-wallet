@@ -27,8 +27,8 @@ import {
   accountSendRoute,
   onboardingAddAccountRoute
 } from '../../routes';
-import Store from '../../stores/store';
 import { orderBy } from 'lodash';
+import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -60,7 +60,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
   walletStore?: WalletStore;
 }
 
@@ -71,12 +71,13 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 @observer
 class DrawerContent extends React.Component<Props> {
   handleAccountClicked = (id: string) => () => {
-    this.props.walletStore!.selectAccount(id);
-    this.props.store!.router.goTo(accountOverviewRoute);
+    const { store, walletStore } = this.props;
+    walletStore!.selectAccount(id);
+    store!.router.goTo(accountOverviewRoute);
   }
 
   render() {
-    const { classes, walletStore, store } = this.props;
+    const { classes, store, walletStore } = this.props;
 
     return (
       <React.Fragment>

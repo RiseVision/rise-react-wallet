@@ -8,7 +8,8 @@ import ChevronRight from '@material-ui/icons/ChevronRight';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import FlagIcon from '../../components/FlagIcon';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
+import AppStore from '../../stores/app';
 import {
   Locale,
   Locales,
@@ -47,17 +48,20 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
+  appStore?: AppStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage' });
 
 @inject('store')
+@inject('appStore')
 @observer
 class ChooseLanguagePage extends React.Component<Props> {
   handleLanguageClicked = async (locale: Locale) => {
-    await this.props.store!.changeLanguage(locale);
-    this.props.store!.router.goTo(onboardingAddAccountRoute);
+    const { store, appStore } = this.props;
+    await appStore!.changeLanguage(locale);
+    store!.router.goTo(onboardingAddAccountRoute);
   }
 
   render() {

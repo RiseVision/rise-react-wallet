@@ -18,7 +18,8 @@ import {
   onboardingAddAccountRoute,
   onboardingExistingAccountTypeRoute
 } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
+import AppStore from '../../stores/app';
 import { normalizeAddress } from '../../utils/utils';
 
 const styles = createStyles({
@@ -38,7 +39,8 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
+  appStore?: AppStore;
 }
 
 interface State {
@@ -67,12 +69,14 @@ const messages = defineMessages({
 });
 
 @inject('store')
+@inject('appStore')
 @observer
 class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   constructor(props: DecoratedProps) {
     super(props);
 
-    const address = props.store!.address || '';
+    const { appStore } = props;
+    const address = appStore!.address || '';
     this.state = {
       address,
       addressInvalid: false,
@@ -81,12 +85,14 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   }
 
   handleBackClick = () => {
-    this.props.store!.router.goTo(onboardingAddAccountRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingAddAccountRoute);
   }
 
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
+    const { store, appStore } = this.props;
     const { normalizedAddress } = this.state;
     const addressInvalid = !normalizedAddress;
     if (addressInvalid) {
@@ -94,8 +100,8 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
       return;
     }
 
-    this.props.store!.address = normalizedAddress;
-    this.props.store!.router.goTo(onboardingExistingAccountTypeRoute);
+    appStore!.address = normalizedAddress;
+    store!.router.goTo(onboardingExistingAccountTypeRoute);
   }
 
   handleAddressChange = (ev: React.ChangeEvent<HTMLInputElement>) => {

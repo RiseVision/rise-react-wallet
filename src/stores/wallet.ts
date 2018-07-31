@@ -1,20 +1,17 @@
 import * as assert from 'assert';
 import { dposAPI } from 'dpos-api-wrapper';
 import { SendTx, CreateSignatureTx, LiskWallet } from 'dpos-offline';
-import { action, observable, configure, runInAction, computed } from 'mobx';
+import { action, observable, runInAction, computed } from 'mobx';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
 import {
   normalizeAddress,
   timestampToUnix,
   unixToTimestamp
 } from '../utils/utils';
-import Store from './store';
+import { TConfig } from './index';
 import * as moment from 'moment-timezone';
 import { groupBy, pick } from 'lodash';
 import * as lstore from 'store';
-
-// make sure only actions modify the store
-configure({ enforceActions: true });
 
 export default class WalletStore {
   // TODO refactor to use the dposAPI
@@ -41,9 +38,9 @@ export default class WalletStore {
     return this.groupTransactionsByDay(this.recentTransactions);
   }
 
-  constructor(public app: Store) {
-    dposAPI.nodeAddress = app.config.api_url;
-    this.api = app.config.api_url;
+  constructor(public config: TConfig) {
+    dposAPI.nodeAddress = config.api_url;
+    this.api = config.api_url;
     this.dposAPI = dposAPI;
     const accounts = this.storedAccounts();
     let isSelected = false;
@@ -358,7 +355,7 @@ export default class WalletStore {
           nextDay: '[Tomorrow]',
           nextWeek: 'dddd',
           sameElse: () => {
-            return this.app.config.date_format;
+            return this.config.date_format;
           }
         });
     });

@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
-import Store from '../stores/store';
+import AppStore from '../stores/app';
 import ThemeProvider from './ThemeProvider';
 import { observer, inject } from 'mobx-react';
 import { MobxRouter } from 'mobx-router';
 
 interface Props {
-  store?: Store;
+  appStore?: AppStore;
 }
 
 interface State {
 }
 
-@inject('store')
+@inject('appStore')
 @observer
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -26,13 +26,13 @@ class App extends React.Component<Props, State> {
     let currentError = null;
     let isLoading = false;
 
-    const store = this.props.store!;
-    let locale = store.locale;
+    const appStore = this.props.appStore!;
+    let locale = appStore.locale;
 
-    let translations = store.translations[locale];
+    let translations = appStore.translations[locale];
     if (!translations && locale !== 'en') {
-      if (store.translationError) {
-        currentError = store.translationError;
+      if (appStore.translationError) {
+        currentError = appStore.translationError;
       } else {
         isLoading = true;
       }

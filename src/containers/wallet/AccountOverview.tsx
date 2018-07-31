@@ -9,7 +9,7 @@ import {
 import Typography from '@material-ui/core/Typography';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
-import Store from '../../stores/store';
+import AppStore from '../../stores/app';
 import WalletStore from '../../stores/wallet';
 import { toPairs } from 'lodash';
 
@@ -28,13 +28,13 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  appStore?: AppStore;
   walletStore?: WalletStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 
-@inject('store')
+@inject('appStore')
 @inject('walletStore')
 @observer
 class AccountOverview extends React.Component<Props> {

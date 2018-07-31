@@ -11,21 +11,23 @@ import {
   onboardingAddAccountRoute,
   onboardingSecurityNoticeRoute
 } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
 
 interface Props {
-  store?: Store;
+  store?: RootStore;
 }
 
 @inject('store')
 @observer
 class NewAccountPage extends React.Component<Props> {
   handleBackClick = () => {
-    this.props.store!.router.goTo(onboardingAddAccountRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingAddAccountRoute);
   }
 
   handleMnemonicClick = () => {
-    this.props.store!.router.goTo(onboardingSecurityNoticeRoute);
+    const { store } = this.props;
+    store!.router.goTo(onboardingSecurityNoticeRoute);
   }
 
   render() {

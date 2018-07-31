@@ -12,7 +12,7 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import { accountOverviewRoute } from '../../routes';
-import Store from '../../stores/store';
+import RootStore from '../../stores/root';
 
 const styles = (theme: Theme) => createStyles({
   content: {
@@ -30,7 +30,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: Store;
+  store?: RootStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage' });
@@ -44,11 +44,13 @@ class NoMnemonicNoticePage extends React.Component<Props> {
   }
 
   handleCloseClick = () => {
-    this.props.store!.router.goTo(accountOverviewRoute);
+    const { store } = this.props;
+    store!.router.goTo(accountOverviewRoute);
   }
 
   handleContinueClick = () => {
-    this.props.store!.router.goTo(accountOverviewRoute);
+    const { store } = this.props;
+    store!.router.goTo(accountOverviewRoute);
   }
 
   render() {
