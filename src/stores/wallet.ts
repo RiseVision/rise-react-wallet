@@ -59,7 +59,7 @@ export default class WalletStore {
   @action
   // refreshes the fees from the server
   async updateFees() {
-    const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule()
+    const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule();
     runInAction(() => {
       for (const [fee, value] of Object.entries(fees.fees)) {
         this.fees.set(fee, value);
