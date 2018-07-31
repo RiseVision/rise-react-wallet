@@ -429,7 +429,9 @@ export function parseAccountReponse(
   };
   return {
     ...parsed,
-    ...local
+    ...local,
+    // always take the public key from the server (ex virgin accounts)
+    ...{ publicKey: parsed.publicKey }
   };
 }
 
