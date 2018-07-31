@@ -1,16 +1,27 @@
-import { action, observable, runInAction } from 'mobx';
+import { action, autorun, observable, runInAction } from 'mobx';
 import { importTranslation, Messages } from '../translations';
 import { getUserLocales, Locale } from '../utils/i18n';
+import * as lstore from 'store';
 
 export default class AppStore {
   translations: { [L in Locale]?: Messages } = {};
   @observable translationError: Error | null = null;
 
-  // TODO: Attempt to restore locale from a cookie/local storage.
-  @observable locale = getUserLocales()[0] || 'en';
+  @observable locale: Locale;
 
   // TODO store async components here
   components = {};
+
+  constructor() {
+    // Load locale from local storage, trying to autodetect one if unset
+    const fallbackLocale = 'en';
+    let locale = lstore.get('locale');
+    if (!locale) {
+      locale = getUserLocales()[0] || fallbackLocale;
+    }
+    this.locale = locale;
+    autorun(() => lstore.set('locale', this.locale));
+  }
 
   @action
   async loadTranslation(locale: Locale) {
