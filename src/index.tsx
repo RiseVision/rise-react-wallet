@@ -8,17 +8,17 @@ import Store, { TConfig } from './stores/store';
 import registerServiceWorker from './registerServiceWorker';
 import { startRouter } from 'mobx-router';
 import { Provider } from 'mobx-react';
-import UserStore from './stores/user';
+import WalletStore from './stores/wallet';
 
 // tslint:disable-next-line:no-any
 const store = new Store((config as any) as TConfig);
-const userStore = new UserStore(store);
-store.userStore = userStore;
+const walletStore = new WalletStore(store);
+store.walletStore = walletStore;
 startRouter(routes, store);
 
 const stores = {
   store,
-  userStore
+  walletStore
 };
 
 const root = (

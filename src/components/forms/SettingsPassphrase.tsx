@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import { inject, observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
-import UserStore from '../../stores/user';
+import WalletStore from '../../stores/wallet';
 import { amountToUser } from '../../utils/utils';
 import TransactionForm, {
   State as TransactionState
@@ -39,7 +39,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  userStore?: UserStore;
+  walletStore?: WalletStore;
   onSubmit: (result: boolean) => void;
 }
 
@@ -51,7 +51,7 @@ export interface State {
 
 const stylesDecorator = withStyles(styles);
 
-@inject('userStore')
+@inject('walletStore')
 @observer
 class SettingsPassphraseForm extends React.Component<Props, State> {
   state = {
@@ -74,8 +74,9 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
 
   onSubmit1 = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const account = this.props.userStore!.selectedAccount!;
-    const fee = this.props.userStore!.fees.get('secondsignature')!;
+    const walletStore = this.props.walletStore!;
+    const account = walletStore.selectedAccount!;
+    const fee = walletStore.fees.get('secondsignature')!;
     const isSet = account.secondSignature;
     // cancel if already set or not enought balance
     if (isSet || account.balance < fee) {
@@ -92,7 +93,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     // this.setState({
     //   isLoading: true
     // });
-    await this.props.userStore!.addPassphrase(mnemonic, passphrase);
+    await this.props.walletStore!.addPassphrase(mnemonic, passphrase);
     this.props.onSubmit(true);
   }
 
@@ -101,10 +102,10 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
   }
 
   renderStep1() {
-    const { classes, userStore } = this.props;
-    const account = this.props.userStore!.selectedAccount!;
+    const { classes, walletStore } = this.props;
+    const account = walletStore!.selectedAccount!;
     const fee =
-      userStore!.fees.get('secondsignature')! + userStore!.fees.get('send')!;
+      walletStore!.fees.get('secondsignature')! + walletStore!.fees.get('send')!;
     const isSet = account.secondSignature;
 
     return (
@@ -151,14 +152,14 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
   }
 
   renderStep2() {
-    const account = this.props.userStore!.selectedAccount!;
-    const userStore = this.props.userStore!;
+    const walletStore = this.props.walletStore!;
+    const account = walletStore.selectedAccount!;
     // TODO translate
     return (
       <TransactionForm
         onSubmit={this.onSubmit2}
         fee={
-          userStore.fees.get('secondsignature')! + userStore.fees.get('send')!
+          walletStore.fees.get('secondsignature')! + walletStore.fees.get('send')!
         }
         amount={0}
         isPassphraseSet={account.secondSignature}

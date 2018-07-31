@@ -16,7 +16,7 @@ import * as lstore from 'store';
 // make sure only actions modify the store
 configure({ enforceActions: true });
 
-export default class UserStore {
+export default class WalletStore {
   // TODO refactor to use the dposAPI
   api: string;
   dposAPI: typeof dposAPI;

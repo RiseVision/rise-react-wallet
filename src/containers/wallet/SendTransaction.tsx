@@ -5,7 +5,7 @@ import ConfirmTransactionForm, {
 } from '../../components/forms/ConfirmTransactionForm';
 import { accountOverviewRoute } from '../../routes';
 import Store from '../../stores/store';
-import UserStore, { TAccount } from '../../stores/user';
+import WalletStore, { TAccount } from '../../stores/wallet';
 import SendTransactionForm, {
   State as SendFormState
 } from '../../components/forms/SendTransactionForm';
@@ -14,7 +14,7 @@ import SettingsDialog from './SettingsDialog';
 
 interface Props {
   store?: Store;
-  userStore?: UserStore;
+  walletStore?: WalletStore;
   onSubmit?: (txId: string) => void;
   amount?: number;
   recipientId?: string;
@@ -29,7 +29,7 @@ export interface State {
 }
 
 @inject('store')
-@inject('userStore')
+@inject('walletStore')
 @observer
 // TODO should have a URL and also overlay when needed
 export default class SendTransaction extends React.Component<Props, State> {
@@ -61,7 +61,7 @@ export default class SendTransaction extends React.Component<Props, State> {
   onSubmit2 = async (state: ConfirmFormState) => {
     // TODO loading state
     // TODO validation
-    let txId = await this.props.userStore!.sendTransaction(
+    let txId = await this.props.walletStore!.sendTransaction(
       this.state.recipientId!,
       this.state.amount!,
       state.mnemonic,
@@ -95,16 +95,16 @@ export default class SendTransaction extends React.Component<Props, State> {
   }
 
   renderStep1() {
-    const userStore = this.props.userStore!;
+    const walletStore = this.props.walletStore!;
     const balance =
       (this.props.account! && this.props.account!.balance) ||
-      (userStore.selectedAccount! && userStore.selectedAccount!.balance) ||
+      (walletStore.selectedAccount! && walletStore.selectedAccount!.balance) ||
       0;
     // TODO validate the recipient
     return (
       <SendTransactionForm
         amount={this.props.amount || 0}
-        fee={userStore.fees.get('send')!}
+        fee={walletStore.fees.get('send')!}
         balance={balance}
         onSubmit={this.onSubmit1}
         recipientId={this.props.recipientId}
@@ -113,17 +113,17 @@ export default class SendTransaction extends React.Component<Props, State> {
   }
 
   renderStep2() {
-    const userStore = this.props.userStore!;
-    const account = this.props.account! || userStore.selectedAccount!;
+    const walletStore = this.props.walletStore!;
+    const account = this.props.account! || walletStore.selectedAccount!;
     return (
       <ConfirmTransactionForm
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
         recipientId={this.state.recipientId!}
-        recipient={userStore.idToName(this.state.recipientId!)}
+        recipient={walletStore.idToName(this.state.recipientId!)}
         amount={this.state.amount!}
-        fee={userStore.fees.get('send')!}
+        fee={walletStore.fees.get('send')!}
         onSubmit={this.onSubmit2}
       />
     );

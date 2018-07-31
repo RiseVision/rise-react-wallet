@@ -12,7 +12,7 @@ import {
 import ArrowFwd from '@material-ui/icons/NavigateNext';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import Store from '../../stores/store';
-import UserStore from '../../stores/user';
+import WalletStore from '../../stores/wallet';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import SettingsDialog from './SettingsDialog';
@@ -73,7 +73,7 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   store?: Store;
-  userStore?: UserStore;
+  walletStore?: WalletStore;
 }
 
 interface State {
@@ -84,7 +84,7 @@ interface State {
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 
 @inject('store')
-@inject('userStore')
+@inject('walletStore')
 @observer
 /**
  * TODO Translate
@@ -102,10 +102,10 @@ class AccountSettings extends React.Component<Props, State> {
   handleFieldClick = (field: string) => {
     if (field === 'pinned') {
       runInAction(() => {
-        const userStore = this.props.userStore!;
-        const selectedAccount = userStore.selectedAccount!;
+        const walletStore = this.props.walletStore!;
+        const selectedAccount = walletStore.selectedAccount!;
         selectedAccount.pinned = !selectedAccount.pinned;
-        userStore.saveAccount(selectedAccount);
+        walletStore.saveAccount(selectedAccount);
       });
     } else {
       this.setState({ dialogOpen: true, dialogField: field });
@@ -113,17 +113,17 @@ class AccountSettings extends React.Component<Props, State> {
   }
 
   onSubmitName = (state: NameState) => {
-    this.props.userStore!.updateAccountName(state.name!);
+    this.props.walletStore!.updateAccountName(state.name!);
     this.onDialogClose();
   }
 
   onSubmitRemoveAccount = () => {
-    let { store, userStore } = this.props;
+    let { store, walletStore } = this.props;
 
-    userStore!.removeAccount(userStore!.selectedAccount!.id);
+    walletStore!.removeAccount(walletStore!.selectedAccount!.id);
     this.onDialogClose();
 
-    if (!userStore!.selectedAccount) {
+    if (!walletStore!.selectedAccount) {
       store!.router.goTo(onboardingAddAccountRoute);
     } else {
       store!.router.goTo(accountOverviewRoute);
@@ -131,7 +131,7 @@ class AccountSettings extends React.Component<Props, State> {
   }
 
   onSubmitFiat = (state: FiatState) => {
-    this.props.userStore!.updateFiat(state.fiat!, state.global);
+    this.props.walletStore!.updateFiat(state.fiat!, state.global);
     this.onDialogClose();
   }
 
@@ -139,7 +139,7 @@ class AccountSettings extends React.Component<Props, State> {
     title: string | null;
     form: ReactElement<HTMLFormElement> | null;
   } = () => {
-    const account = this.props.userStore!.selectedAccount!;
+    const account = this.props.walletStore!.selectedAccount!;
 
     switch (this.state.dialogField!) {
       case 'name':
@@ -193,8 +193,8 @@ class AccountSettings extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, userStore } = this.props;
-    const account = userStore!.selectedAccount!;
+    const { classes, walletStore } = this.props;
+    const account = walletStore!.selectedAccount!;
 
     const dialog = this.getDialog();
 

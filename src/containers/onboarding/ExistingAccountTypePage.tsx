@@ -13,15 +13,15 @@ import {
   onboardingExistingAccountRoute
 } from '../../routes';
 import Store from '../../stores/store';
-import UserStore from '../../stores/user';
+import WalletStore from '../../stores/wallet';
 
 interface Props {
   store?: Store;
-  userStore?: UserStore;
+  walletStore?: WalletStore;
 }
 
 @inject('store')
-@inject('userStore')
+@inject('walletStore')
 @observer
 class ExistingAccountTypePage extends React.Component<Props> {
   handleBackClick = () => {
@@ -29,7 +29,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
   }
 
   handleFullAccessClick = async () => {
-    this.props.userStore!.login(
+    this.props.walletStore!.login(
       this.props.store!.address!,
       { readOnly: false },
       true
@@ -38,7 +38,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
   }
 
   handleReadOnlyClick = () => {
-    this.props.userStore!.login(
+    this.props.walletStore!.login(
       this.props.store!.address!,
       { readOnly: true },
       true

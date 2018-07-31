@@ -227,7 +227,7 @@ export const accountSendRoute = new Route({
 export const homeRoute = new Route<Store>({
   path: '/',
   onEnter: (route: Route<Store>, params: {}, store: Store) => {
-    if (!store.userStore!.storedAccounts()) {
+    if (!store.walletStore!.storedAccounts()) {
       store.router.goTo(onboardingAddAccountRoute);
     } else {
       store.router.goTo(accountOverviewRoute);

@@ -29,7 +29,7 @@ import {
 } from '../../routes';
 import Store from '../../stores/store';
 import { orderBy } from 'lodash';
-import UserStore from '../../stores/user';
+import WalletStore from '../../stores/wallet';
 
 const riseIcon = require('../../images/rise_icon.svg');
 
@@ -61,22 +61,22 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   store?: Store;
-  userStore?: UserStore;
+  walletStore?: WalletStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 
 @inject('store')
-@inject('userStore')
+@inject('walletStore')
 @observer
 class DrawerContent extends React.Component<Props> {
   handleAccountClicked = (id: string) => () => {
-    this.props.userStore!.selectAccount(id);
+    this.props.walletStore!.selectAccount(id);
     this.props.store!.router.goTo(accountOverviewRoute);
   }
 
   render() {
-    const { classes, userStore, store } = this.props;
+    const { classes, walletStore, store } = this.props;
 
     return (
       <React.Fragment>
@@ -105,14 +105,14 @@ class DrawerContent extends React.Component<Props> {
         <Divider />
         <List>
           {orderBy(
-            userStore!.accounts,
+            walletStore!.accounts,
             ['pinned', 'name'],
             ['desc', 'asc']
           ).map(account => (
             <ListItem
               button={true}
               className={classNames(
-                userStore!.selectedAccount === account &&
+                walletStore!.selectedAccount === account &&
                   classes.selectedListItem
               )}
               onClick={this.handleAccountClicked(account.id)}

@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
 import Store from '../../stores/store';
-import UserStore from '../../stores/user';
+import WalletStore from '../../stores/wallet';
 import { toPairs } from 'lodash';
 
 const styles = (theme: Theme) =>
@@ -29,18 +29,18 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   store?: Store;
-  userStore?: UserStore;
+  walletStore?: WalletStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 
 @inject('store')
-@inject('userStore')
+@inject('walletStore')
 @observer
 class AccountOverview extends React.Component<Props> {
   render() {
-    const { classes, userStore } = this.props;
-    const account = userStore!.selectedAccount;
+    const { classes, walletStore } = this.props;
+    const account = walletStore!.selectedAccount;
 
     return (
       <React.Fragment>
@@ -49,11 +49,11 @@ class AccountOverview extends React.Component<Props> {
             address={account.id}
             alias={account.name}
             balance={account.balance + ' RISE'}
-            balance_in_fiat={userStore!.fiatAmount!}
+            balance_in_fiat={walletStore!.fiatAmount!}
           />
         ) : null}
         <div className={classes.content}>
-          {toPairs(userStore!.groupedTransactions).map(
+          {toPairs(walletStore!.groupedTransactions).map(
             ([group, transactions]) => (
               <React.Fragment key={group}>
                 <Typography

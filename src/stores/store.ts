@@ -2,7 +2,7 @@ import { action, configure, observable, runInAction } from 'mobx';
 import { RouterStore } from 'mobx-router';
 import { importTranslation, Messages } from '../translations';
 import { getUserLocales, Locale } from '../utils/i18n';
-import UserStore from './user';
+import WalletStore from './wallet';
 
 // make sure only actions modify the store
 configure({ enforceActions: true });
@@ -28,7 +28,7 @@ export default class Store {
   // TODO store async components here
   components = {};
 
-  userStore: UserStore | null;
+  walletStore: WalletStore | null;
 
   constructor(public config: TConfig) {}
 

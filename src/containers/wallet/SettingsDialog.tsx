@@ -11,7 +11,7 @@ import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import Store from '../../stores/store';
-import UserStore from '../../stores/user';
+import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -31,7 +31,7 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   store?: Store;
-  userStore?: UserStore;
+  walletStore?: WalletStore;
   open: boolean;
   title: string;
   onClose?: () => void;
@@ -42,7 +42,7 @@ interface State {}
 const stylesDecorator = withStyles(styles);
 
 @inject('store')
-@inject('userStore')
+@inject('walletStore')
 @observer
 class SettingsDialog extends React.Component<Props, State> {
 
