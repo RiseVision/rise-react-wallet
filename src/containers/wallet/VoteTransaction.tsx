@@ -6,10 +6,9 @@ import ConfirmTransactionForm, {
 import { accountOverviewRoute } from '../../routes';
 import RootStore from '../../stores/root';
 import WalletStore, { TAccount } from '../../stores/wallet';
-import SendTransactionForm, {
-  State as SendFormState
-} from '../../components/forms/SendTransactionForm';
-import { amountToServer } from '../../utils/utils';
+import VoteTransactionForm, {
+  State as VoteFormState
+} from '../../components/forms/VoteTransactionForm';
 import SettingsDialog from './SettingsDialog';
 
 interface Props {
@@ -23,36 +22,26 @@ interface Props {
 
 export interface State {
   step: number;
-  recipientId: string | null;
+  delegateId: string | null;
   txId?: number;
-  amount: number | null;
 }
 
 @inject('store')
 @inject('walletStore')
 @observer
-export default class SendTransaction extends React.Component<Props, State> {
+// TODO should have an URL
+export default class VoteTransaction extends React.Component<Props, State> {
   state: State = {
-    amount: 0,
-    recipientId: null,
+    delegateId: null,
     step: 1
   };
 
-  constructor(props: Props) {
-    super(props);
-    this.state.amount = props.amount || null;
-    if (props.recipientId) {
-      this.state.recipientId = props.recipientId;
-    }
-  }
-
-  onSubmit1 = (state: SendFormState) => {
-    if (!state.amount) {
-      throw new Error('Amount required');
+  onSubmit1 = (state: VoteFormState) => {
+    if (!state.selectedId) {
+      throw new Error('Delegate ID required');
     }
     this.setState({
-      recipientId: state.recipientId,
-      amount: amountToServer(state.amount),
+      delegateId: state.selectedId,
       step: 2
     });
   }
@@ -61,21 +50,17 @@ export default class SendTransaction extends React.Component<Props, State> {
     // TODO loading state
     // TODO validation
     const { store, walletStore } = this.props;
-    let txId = await walletStore!.sendTransaction(
-      this.state.recipientId!,
-      this.state.amount!,
+    let txId = await walletStore!.voteTransaction(
       state.mnemonic,
       state.passphrase,
-      this.props.account
+      this.props.account && this.props.account.id
     );
     if (this.props.onSubmit) {
       this.props.onSubmit(txId);
     } else {
       // TODO show the TransactionSend dialog
       this.setState({ step: this.state.step + 1 });
-      // TODO wait for the result, show either "in progress", declined
-      // or accepted
-      // TODO generic for all the consumers of the SendTransaction component
+      // TODO use the same as the SendComponent
       store!.router.goTo(accountOverviewRoute);
     }
   }
@@ -105,7 +90,7 @@ export default class SendTransaction extends React.Component<Props, State> {
       0;
     // TODO validate the recipient
     return (
-      <SendTransactionForm
+      <VoteTransactionForm
         amount={this.props.amount || 0}
         fee={walletStore!.fees.get('send')!}
         balance={balance}

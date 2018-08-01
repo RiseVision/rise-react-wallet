@@ -1,9 +1,11 @@
 // corrects the int amount from the server to a user-readable float
-export function amountToUser(amount: number|string) {
+import * as moment from 'moment-timezone';
+
+export function amountToUser(amount: number | string) {
   return parseInt(amount.toString(), 10) / 100000000;
 }
 
-export function amountToServer(amount: number|string) {
+export function amountToServer(amount: number | string) {
   return parseInt(amount.toString(), 10) * 100000000;
 }
 
@@ -25,4 +27,12 @@ export function normalizeAddress(address: string): string {
   } else {
     return normalizedAddress;
   }
+}
+
+export function getTimestamp() {
+  return unixToTimestamp(
+    moment()
+      .utc()
+      .unix()
+  );
 }

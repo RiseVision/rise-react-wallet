@@ -1,12 +1,19 @@
 import * as assert from 'assert';
 import { dposAPI } from 'dpos-api-wrapper';
-import { SendTx, CreateSignatureTx, LiskWallet } from 'dpos-offline';
+import {
+  SendTx,
+  CreateSignatureTx,
+  LiskWallet,
+  VoteTx,
+  IVoteAsset,
+  BaseTx
+} from 'dpos-offline';
 import { action, observable, runInAction, computed } from 'mobx';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
 import {
+  getTimestamp,
   normalizeAddress,
-  timestampToUnix,
-  unixToTimestamp
+  timestampToUnix
 } from '../utils/utils';
 import { TConfig } from './index';
 import * as moment from 'moment-timezone';
@@ -20,12 +27,13 @@ export default class WalletStore {
 
   // TODO type key names and avoid using the bang! operator
   @observable
-  fees = observable.map({
+  fees = observable.map<TTransactionTypes, number>({
     send: 10000000,
     vote: 100000000,
     secondsignature: 500000000,
     delegate: 2500000000,
     multisignature: 500000000
+    // TODO def for dapp
   });
   @observable accounts = observable.array<TAccount>();
   @observable selectedAccount: TAccount | null;
@@ -62,7 +70,7 @@ export default class WalletStore {
     const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule();
     runInAction(() => {
       for (const [fee, value] of Object.entries(fees.fees)) {
-        this.fees.set(fee, value);
+        this.fees.set(fee as TTransactionTypes, value);
       }
     });
   }
@@ -123,20 +131,15 @@ export default class WalletStore {
     const wallet = new LiskWallet(mnemonic, 'R');
     const wallet2 = new LiskWallet(passphrase, 'R');
     const account = this.selectedAccount!;
-    let timestamp = unixToTimestamp(
-      moment()
-        .utc()
-        .unix()
-    );
     let unsigned = new CreateSignatureTx({
       signature: { publicKey: wallet2.publicKey }
     })
-      .set('timestamp', timestamp)
+      .set('timestamp', getTimestamp())
       .set('fee', this.fees.get('secondsignature')!);
     const tx = wallet.signTransaction(unsigned);
     const transport = await dposAPI.buildTransport();
     await transport.postTransaction(tx);
-    await this.refreshAccount(account);
+    await this.refreshAccount(account.id);
   }
 
   async sendTransaction(
@@ -152,43 +155,87 @@ export default class WalletStore {
     assert(account, 'Account required');
     assert(!account.secondSignature || passphrase, 'Passphrase required');
 
-    const wallet = new LiskWallet(mnemonic, 'R');
-    const wallet2 = passphrase ? new LiskWallet(passphrase, 'R') : undefined;
-
-    let timestamp = unixToTimestamp(
-      moment()
-        .utc()
-        .unix()
-    );
     const unsigned = new SendTx()
-      .set('timestamp', timestamp)
+      .set('timestamp', getTimestamp())
       .set('fee', this.fees.get('send')!)
       .set('amount', amount)
       .set('recipientId', recipientId);
 
-    const tx = wallet.signTransaction(unsigned, wallet2);
-    const transport = await dposAPI.buildTransport();
-    const res = await transport.postTransaction(tx);
-    const wait = [this.refreshAccount(account)];
-    // refresh the target account if also added to the wallet
-    const recipient = this.accounts.find(a => a.id === recipientId);
-    if (recipient) {
-      wait.push(this.refreshAccount(recipient));
-    }
-    await Promise.all(wait);
+    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    await this.refreshAccount(account.id, recipientId);
     return res.transactionId;
   }
 
+  /**
+   *
+   * @param delegateId Delegate you want to vote for.
+   * @param mnemonic
+   * @param passphrase
+   * @param account Optional - the voter account. Defaults to the currently
+   *   selected one.
+   */
+  async voteTransaction(
+    delegateId: string,
+    mnemonic: string,
+    passphrase: string | null,
+    account?: TAccount
+  ): Promise<string> {
+    if (!account) {
+      account = this.selectedAccount!;
+    }
+    assert(account, 'Account required');
+    assert(!account.secondSignature || passphrase, 'Passphrase required');
+
+    // TODO discard the prev delegate first?
+    const assets: IVoteAsset = {
+      votes: ['+' + delegateId]
+    };
+    const unsigned = new VoteTx(assets)
+      .set('timestamp', getTimestamp())
+      .set('recipientId', account.id);
+
+    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    await this.refreshAccount(account.id, delegateId);
+    return res.transactionId;
+  }
+
+  async singAndSend(
+    unsigned: BaseTx,
+    mnemonic: string,
+    passphrase: string | null
+  ): Promise<{ transactionId: string }> {
+    const wallet = new LiskWallet(mnemonic, 'R');
+    const tx = wallet.signTransaction(unsigned, this.secondWallet(passphrase));
+    const transport = await dposAPI.buildTransport();
+    return await transport.postTransaction(tx);
+  }
+
+  /**
+   * Second wallet for signing with the second passphrase.
+   * @param passphrase
+   */
+  secondWallet(passphrase: string | null): LiskWallet | undefined {
+    return passphrase ? new LiskWallet(passphrase, 'R') : undefined;
+  }
+
   @action
-  // TODO refresh recent transactions
-  // TODO doesnt seem to refresh
-  async refreshAccount(account: TAccount) {
-    const local = this.storedAccount(account.id);
-    const ret = parseAccountReponse(await this.loadAccount(account.id), local);
-    runInAction(() => {
-      this.accounts.remove(account);
-      this.accounts.push(ret);
-    });
+  /**
+   * Refreshed the accounts by IDs, but only if added locally.
+   * TODO refresh also the recent transactions
+   */
+  async refreshAccount(...ids: string[]) {
+    for (const id of ids) {
+      const local = this.storedAccount(id);
+      if (!local) {
+        continue;
+      }
+      const ret = parseAccountReponse(await this.loadAccount(id), local);
+      const account = this.accounts.find(a => a.id === id);
+      runInAction(() => {
+        this.accounts.remove(account!);
+        this.accounts.push(ret);
+      });
+    }
   }
 
   @action
@@ -540,3 +587,11 @@ export type TFeesResponse = {
     dapp: number;
   };
 };
+
+export type TTransactionTypes =
+  | 'send'
+  | 'vote'
+  | 'secondsignature'
+  | 'delegate'
+  | 'multisignature'
+  | 'dapp';
