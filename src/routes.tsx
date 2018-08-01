@@ -205,7 +205,8 @@ export const accountSettingsRoute = new Route({
   )
 });
 
-// TODO should have a URL and also overlay when needed
+// TODO support From and To as query params
+//   ?from=123R&to=456R
 export const accountSendRoute = new Route({
   path: '/wallet/send',
   component: (
