@@ -17,8 +17,8 @@ type State = {
   components?: {};
 };
 
-@observer
 @inject('appStore')
+@observer
 export default class AsyncComponent extends React.Component<Props, State> {
   components: {};
   componentMounted = false;
