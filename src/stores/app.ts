@@ -17,9 +17,8 @@ export default class AppStore {
     let locale = lstore.get('locale');
     if (!locale) {
       locale = getUserLocales()[0] || fallbackLocale;
-    } else {
-      this.loadTranslation(locale);
     }
+    this.loadTranslation(locale);
     this.locale = locale;
     autorun(() => lstore.set('locale', this.locale));
   }
