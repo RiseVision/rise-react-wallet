@@ -38,19 +38,13 @@ import FiatForm, {
 const styles = (theme: Theme) =>
   createStyles({
     content: {
-      flexGrow: 1,
       backgroundColor: theme.palette.background.paper,
-      padding: theme.spacing.unit * 2,
       '& > button': {
         borderRadius: 0
       }
     },
     groupTitle: {
-      marginTop: theme.spacing.unit * 2,
-      marginBottom: theme.spacing.unit,
-      ['&:first-child']: {
-        marginTop: 0
-      }
+      backgroundColor: theme.palette.background.paper,
     },
     removeAccount: {
       color: red[500],
@@ -325,7 +319,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           <Divider />
           <List
             subheader={(
-              <ListSubheader>
+              <ListSubheader className={classes.groupTitle}>
                 {intl.formatMessage(messages.advancedSettings)}
               </ListSubheader>
             )}

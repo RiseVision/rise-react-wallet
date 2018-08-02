@@ -45,7 +45,13 @@ const styles = (theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
       flexGrow: 1,
-      backgroundColor: theme.palette.background.default
+      maxHeight: '100vh',
+      overflow: 'hidden',
+      backgroundColor: theme.palette.background.default,
+      '& > :last-child': {
+        flex: 1,
+        overflow: 'auto',
+      },
     }
   });
 
