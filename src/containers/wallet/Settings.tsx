@@ -34,6 +34,7 @@ import PassphraseForm from '../../components/forms/SettingsPassphrase';
 import FiatForm, {
   State as FiatState
 } from '../../components/forms/SettingsFiat';
+import VoteTransaction from './VoteTransaction';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -182,7 +183,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   onSubmitName = (state: NameState) => {
     this.props.walletStore!.updateAccountName(state.name!);
     this.onDialogClose();
-  }
+  };
 
   onSubmitRemoveAccount = () => {
     let { store, walletStore } = this.props;
@@ -195,12 +196,16 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     } else {
       store!.router.goTo(accountOverviewRoute);
     }
-  }
+  };
 
   onSubmitFiat = (state: FiatState) => {
     this.props.walletStore!.updateFiat(state.fiat!, state.global);
     this.onDialogClose();
-  }
+  };
+
+  onSubmitVote = (txId: string) => {
+    this.onDialogClose();
+  };
 
   getDialog: () => {
     title: string | null;
@@ -248,17 +253,22 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             />
           )
         };
+      case 'delegate':
+        return {
+          title: 'Vote for Delegate',
+          form: <VoteTransaction onSubmit={this.onSubmitVote} />
+        };
       default:
         return {
           title: null,
           form: null
         };
     }
-  }
+  };
 
   onDialogClose = () => {
     this.setState({ dialogOpen: false });
-  }
+  };
 
   render() {
     const { intl, classes, walletStore } = this.props;

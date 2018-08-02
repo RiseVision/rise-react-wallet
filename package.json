@@ -22,7 +22,8 @@
     "react-intl": "^2.4.0",
     "react-scripts-ts": "2.16.0",
     "store": "^2.0.12",
-    "svg-country-flags": "^1.2.1"
+    "svg-country-flags": "^1.2.1",
+    "unique-random": "^2.0.0"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -36,8 +37,7 @@
     "tslint": "npx tslint --fix --project tslint.prod.json 'src/**/*.{ts,tsx}'",
     "precommit": "npm run tsc && npm run tslint"
   },
-  "pre-commit": [
-  ],
+  "pre-commit": [],
   "riw": {
     "defaultLocale": "en",
     "targetLocales": [

@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { dposAPI } from 'dpos-api-wrapper';
+import { Delegate, dposAPI } from 'dpos-api-wrapper';
 import {
   SendTx,
   CreateSignatureTx,
@@ -187,6 +187,8 @@ export default class WalletStore {
     assert(!account.secondSignature || passphrase, 'Passphrase required');
 
     // TODO discard the prev delegate first?
+    // account.putDelegates
+    // account.getDelegates
     const assets: IVoteAsset = {
       votes: ['+' + delegateId]
     };
@@ -208,6 +210,19 @@ export default class WalletStore {
     const tx = wallet.signTransaction(unsigned, this.secondWallet(passphrase));
     const transport = await dposAPI.buildTransport();
     return await transport.postTransaction(tx);
+  }
+
+  // TODO missing in dposAPI
+  async searchDelegates(query: string): Promise<Delegate[]> {
+    const params = {
+      q: query
+    };
+    const url = new URL(`${this.api}/api/delegates/search`);
+    // @ts-ignore
+    url.search = new URLSearchParams(params);
+    // @ts-ignore
+    const res = await fetch(url);
+    return res.delegates || [];
   }
 
   /**

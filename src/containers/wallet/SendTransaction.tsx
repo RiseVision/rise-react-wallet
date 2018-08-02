@@ -19,6 +19,8 @@ interface Props {
   amount?: number;
   recipientId?: string;
   account?: TAccount;
+  // TODO switch to get a dialog the form wrapped in a dialog
+  // wrapInDialog?: boolean
 }
 
 export interface State {
@@ -90,6 +92,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     const content =
       this.state.step === 1 ? this.renderStep1() : this.renderStep2();
 
+    // TODO honor the props.wrapInDialog switch
     return (
       <SettingsDialog title={title} open={true} onClose={this.onDialogClose}>
         {content}

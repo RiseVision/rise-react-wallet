@@ -1,3 +1,4 @@
+import { Delegate } from 'dpos-api-wrapper';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import ConfirmTransactionForm, {
@@ -9,31 +10,68 @@ import WalletStore, { TAccount } from '../../stores/wallet';
 import VoteTransactionForm, {
   State as VoteFormState
 } from '../../components/forms/VoteTransactionForm';
-import SettingsDialog from './SettingsDialog';
+import { uniqueRandom } from '../../utils/utils';
 
 interface Props {
   store?: RootStore;
   walletStore?: WalletStore;
   onSubmit?: (txId: string) => void;
-  amount?: number;
-  recipientId?: string;
   account?: TAccount;
 }
 
 export interface State {
   step: number;
+  activeDelegates: Delegate[];
+  suggestedDelegates: Delegate[];
   delegateId: string | null;
+  query: string;
   txId?: number;
 }
 
-@inject('store')
 @inject('walletStore')
 @observer
 // TODO should have an URL
 export default class VoteTransaction extends React.Component<Props, State> {
   state: State = {
+    suggestedDelegates: [],
+    activeDelegates: [],
     delegateId: null,
-    step: 1
+    step: 1,
+    query: ''
+  };
+
+  componentWillMount() {
+    // query for the recommended delegates
+    this.loadActiveDelegates();
+  }
+
+  async loadActiveDelegates() {
+    const api = this.props.walletStore!.dposAPI;
+    const res = await api.delegates.getList();
+    this.setState({ activeDelegates: res.delegates });
+    // recommend random from active in the beginning
+    if (!this.state.query) {
+      this.onSearch('');
+    }
+  }
+
+  // TODO throttle
+  onSearch = async (query: string) => {
+    if (!query || !query.trim()) {
+      if (!this.state.activeDelegates.length) {
+        return;
+      }
+      const active = this.state.activeDelegates;
+      const rand = uniqueRandom(0, active.length - 1);
+      this.setState({
+        suggestedDelegates: [active[rand()], active[rand()], active[rand()]]
+      });
+      return
+    }
+    const result = await this.props.walletStore!.searchDelegates(query);
+    this.setState({
+      suggestedDelegates: result.slice(0, 3)
+    });
   };
 
   onSubmit1 = (state: VoteFormState) => {
@@ -44,7 +82,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
       delegateId: state.selectedId,
       step: 2
     });
-  }
+  };
 
   onSubmit2 = async (state: ConfirmFormState) => {
     // TODO loading state
@@ -63,39 +101,25 @@ export default class VoteTransaction extends React.Component<Props, State> {
       // TODO use the same as the SendComponent
       store!.router.goTo(accountOverviewRoute);
     }
-  }
-
-  onDialogClose = () => {
-    const { store } = this.props;
-    store!.router.goTo(accountOverviewRoute);
-  }
+  };
 
   render() {
-    const title = this.state.step === 1 ? 'Send RISE' : 'Confirm transaction';
-    const content =
-      this.state.step === 1 ? this.renderStep1() : this.renderStep2();
-
-    return (
-      <SettingsDialog title={title} open={true} onClose={this.onDialogClose}>
-        {content}
-      </SettingsDialog>
-    );
+    return this.state.step === 1 ? this.renderStep1() : this.renderStep2();
   }
 
   renderStep1() {
     const { walletStore } = this.props;
     const balance =
       (this.props.account! && this.props.account!.balance) ||
-      (walletStore!.selectedAccount! && walletStore!.selectedAccount!.balance) ||
+      (walletStore!.selectedAccount! &&
+        walletStore!.selectedAccount!.balance) ||
       0;
     // TODO validate the recipient
     return (
       <VoteTransactionForm
-        amount={this.props.amount || 0}
-        fee={walletStore!.fees.get('send')!}
-        balance={balance}
         onSubmit={this.onSubmit1}
-        recipientId={this.props.recipientId}
+        onSearch={this.onSearch}
+        delegates={this.state.suggestedDelegates}
       />
     );
   }
@@ -103,15 +127,15 @@ export default class VoteTransaction extends React.Component<Props, State> {
   renderStep2() {
     const { walletStore } = this.props;
     const account = this.props.account! || walletStore!.selectedAccount!;
+    // TODO translate 'recipient'
     return (
       <ConfirmTransactionForm
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipientId={this.state.recipientId!}
-        recipient={walletStore!.idToName(this.state.recipientId!)}
-        amount={this.state.amount!}
-        fee={walletStore!.fees.get('send')!}
+        recipient={'Vote Delegate'}
+        amount={0}
+        fee={walletStore!.fees.get('vote')!}
         onSubmit={this.onSubmit2}
       />
     );
