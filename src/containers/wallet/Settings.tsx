@@ -76,14 +76,71 @@ const messages = defineMessages({
     description: 'Label for accounts that user hasn\'t named yet',
     defaultMessage: 'Unnamed account'
   },
+  accountName: {
+    id: 'account-settings.account-name',
+    description: 'Label for account name setting',
+    defaultMessage: 'Account name'
+  },
+  pinnedAccount: {
+    id: 'account-settings.pinned-account',
+    description: 'Label for pinned account setting',
+    defaultMessage: 'Pinned account'
+  },
+  votedDelegate: {
+    id: 'account-settings.voted-delegate',
+    description: 'Label for voted delegate setting',
+    defaultMessage: 'Voted delegate'
+  },
+  votedDelegateUnsetLabel: {
+    id: 'account-settings.voted-delegate-unset-label',
+    description: 'Label for voted delegate unset',
+    defaultMessage: 'None'
+  },
+  fiatCurrency: {
+    id: 'account-settings.fiat-currency',
+    description: 'Label for FIAT currency setting',
+    defaultMessage: 'Displayed FIAT currency'
+  },
+  advancedSettings: {
+    id: 'account-settings.advanced-settings',
+    description: 'Title for advanced settings group',
+    defaultMessage: 'Advanced settings'
+  },
+  passphrase: {
+    id: 'account-settings.2nd-passphrase',
+    description: 'Label for 2nd passphrase setting',
+    defaultMessage: '2nd passphrase'
+  },
+  passphraseSetLabel: {
+    id: 'account-settings.2nd-passphrase-set-label',
+    description: 'Label for 2nd passphrase set',
+    defaultMessage: 'Set'
+  },
+  passphraseUnsetLabel: {
+    id: 'account-settings.2nd-passphrase-unset-label',
+    description: 'Label for 2nd passphrase unset',
+    defaultMessage: 'Not set'
+  },
+  delegateRegistration: {
+    id: 'account-settings.delegate-registration',
+    description: 'Label for delegate registration setting',
+    defaultMessage: 'Delegate registration'
+  },
+  delegateRegistrationUnsetLabel: {
+    id: 'account-settings.delegate-registration-unset-label',
+    description: 'Label for delegate registration unset',
+    defaultMessage: 'Not registered'
+  },
+  removeAccount: {
+    id: 'account-settings.remove-account',
+    description: 'Label for remove account setting',
+    defaultMessage: 'Remove account from wallet'
+  },
 });
 
 @inject('store')
 @inject('walletStore')
 @observer
-/**
- * TODO Translate
- */
 class AccountSettings extends React.Component<DecoratedProps, State> {
   state = {
     dialogOpen: false,
@@ -211,7 +268,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   render() {
     const { intl, classes, walletStore } = this.props;
     const account = walletStore!.selectedAccount!;
-    const unnamedAccountLabel = intl.formatMessage(messages.unnamedAccountLabel);
 
     const dialog = this.getDialog();
 
@@ -238,10 +294,13 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         <div className={classes.content}>
           <List>
             <ListItem button={true} onClick={this.handleNameClicked}>
-              <ListItemText primary="Account name" secondary={account.name || unnamedAccountLabel} />
+              <ListItemText
+                primary={intl.formatMessage(messages.accountName)}
+                secondary={account.name || intl.formatMessage(messages.unnamedAccountLabel)}
+              />
             </ListItem>
             <ListItem button={true} onClick={this.handlePinnedClicked}>
-              <ListItemText primary="Pinned account" />
+              <ListItemText primary={intl.formatMessage(messages.pinnedAccount)} />
               <ListItemSecondaryAction>
                 <Switch
                   onClick={this.handlePinnedClicked}
@@ -250,32 +309,45 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               </ListItemSecondaryAction>
             </ListItem>
             <ListItem button={true} onClick={this.handleVoteClicked}>
-              <ListItemText primary="Voted delegate" secondary="TODO" />
+              <ListItemText
+                primary={intl.formatMessage(messages.votedDelegate)}
+                secondary={'TODO / ' + intl.formatMessage(messages.votedDelegateUnsetLabel)}
+              />
             </ListItem>
             <ListItem button={true} onClick={this.handleFiatClicked}>
-              <ListItemText primary="Displayed FIAT currency" secondary={account.fiatCurrency} />
+              <ListItemText
+                primary={intl.formatMessage(messages.fiatCurrency)}
+                secondary={account.fiatCurrency}
+              />
             </ListItem>
           </List>
           <List
             subheader={(
-              <ListSubheader>Advanced settings</ListSubheader>
+              <ListSubheader>
+                {intl.formatMessage(messages.advancedSettings)}
+              </ListSubheader>
             )}
           >
           <ListItem button={true} onClick={this.handlePassphraseClicked}>
               <ListItemText
-                primary="2nd passphrase"
-                secondary={account.secondSignature ? 'Set' : 'Not set'}
+                primary={intl.formatMessage(messages.passphrase)}
+                secondary={account.secondSignature
+                  ? intl.formatMessage(messages.passphraseSetLabel)
+                  : intl.formatMessage(messages.passphraseUnsetLabel)}
               />
             </ListItem>
             <ListItem button={true} onClick={this.handleDelegateClicked}>
-              <ListItemText primary="Delegate registration" secondary="TODO" />
+              <ListItemText
+                primary={intl.formatMessage(messages.delegateRegistration)}
+                secondary={'TODO / ' + intl.formatMessage(messages.delegateRegistrationUnsetLabel)}
+              />
             </ListItem>
             <ListItem button={true} onClick={this.handleRemoveClicked}>
               <ListItemText
                 classes={{
                   primary: classes.removeAccount,
                 }}
-                primary="Remove account from wallet"
+                primary={intl.formatMessage(messages.removeAccount)}
               />
             </ListItem>
           </List>
