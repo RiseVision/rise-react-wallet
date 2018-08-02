@@ -4,6 +4,11 @@ import { ReactElement } from 'react';
 import * as React from 'react';
 import * as classNames from 'classnames';
 import {
+  InjectedIntlProps,
+  injectIntl,
+  defineMessages,
+} from 'react-intl';
+import {
   Theme,
   createStyles,
   withStyles,
@@ -76,6 +81,8 @@ interface Props extends WithStyles<typeof styles> {
   walletStore?: WalletStore;
 }
 
+type DecoratedProps = Props & InjectedIntlProps;
+
 interface State {
   dialogOpen: boolean;
   dialogField: string | null;
@@ -83,19 +90,27 @@ interface State {
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 
+const messages = defineMessages({
+  unnamedAccountLabel: {
+    id: 'account-settings.unnamed-account-label',
+    description: 'Label for accounts that user hasn\'t named yet',
+    defaultMessage: 'Unnamed account'
+  },
+});
+
 @inject('store')
 @inject('walletStore')
 @observer
 /**
  * TODO Translate
  */
-class AccountSettings extends React.Component<Props, State> {
+class AccountSettings extends React.Component<DecoratedProps, State> {
   state = {
     dialogOpen: false,
     dialogField: null
   };
 
-  constructor(props: Props) {
+  constructor(props: DecoratedProps) {
     super(props);
   }
 
@@ -194,8 +209,9 @@ class AccountSettings extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, walletStore } = this.props;
+    const { intl, classes, walletStore } = this.props;
     const account = walletStore!.selectedAccount!;
+    const unnamedAccountLabel = intl.formatMessage(messages.unnamedAccountLabel);
 
     const dialog = this.getDialog();
 
@@ -218,7 +234,7 @@ class AccountSettings extends React.Component<Props, State> {
             classes={classes}
             onClick={() => this.handleFieldClick('name')}
             label="Account name"
-            value={account.name || ''}
+            value={account.name || unnamedAccountLabel}
           />
           <SettingRow
             classes={classes}
@@ -305,4 +321,4 @@ function SettingRow({
   );
 }
 
-export default stylesDecorator(AccountSettings);
+export default stylesDecorator(injectIntl(AccountSettings));

@@ -53,6 +53,11 @@ type DecoratedProps = Props & InjectedIntlProps;
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 
 const messages = defineMessages({
+  unnamedAccountLabel: {
+    id: 'wallet-account-overview.unnamed-account-label',
+    description: 'Label for accounts that user hasn\'t named yet',
+    defaultMessage: 'Unnamed account'
+  },
   sendFabTooltip: {
     id: 'wallet-account-overview.send-funds-fab-tooltip',
     description: 'Tooltip for send floating action button',
@@ -73,13 +78,14 @@ class AccountOverview extends React.Component<DecoratedProps> {
   render() {
     const { intl, classes, walletStore } = this.props;
     const account = walletStore!.selectedAccount;
+    const unnamedAccountLabel = intl.formatMessage(messages.unnamedAccountLabel);
 
     return (
       <React.Fragment>
         {account ? (
           <AccountOverviewHeader
             address={account.id}
-            alias={account.name}
+            alias={account.name || unnamedAccountLabel}
             balance={account.balance + ' RISE'}
             balance_in_fiat={walletStore!.fiatAmount!}
           />

@@ -1,7 +1,12 @@
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import * as classNames from 'classnames';
-import { FormattedMessage } from 'react-intl';
+import {
+  InjectedIntlProps,
+  injectIntl,
+  defineMessages,
+  FormattedMessage
+} from 'react-intl';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
@@ -62,12 +67,22 @@ interface Props extends WithStyles<typeof styles> {
   walletStore?: WalletStore;
 }
 
+type DecoratedProps = Props & InjectedIntlProps;
+
 const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
+
+const messages = defineMessages({
+  unnamedAccountLabel: {
+    id: 'drawer-content.unnamed-account-label',
+    description: 'Label for accounts that user hasn\'t named yet',
+    defaultMessage: 'Unnamed account'
+  },
+});
 
 @inject('store')
 @inject('walletStore')
 @observer
-class DrawerContent extends React.Component<Props> {
+class DrawerContent extends React.Component<DecoratedProps> {
   handleAccountClicked = (id: string) => () => {
     const { store, walletStore } = this.props;
     walletStore!.selectAccount(id);
@@ -75,7 +90,8 @@ class DrawerContent extends React.Component<Props> {
   }
 
   render() {
-    const { classes, store, walletStore } = this.props;
+    const { intl, classes, store, walletStore } = this.props;
+    const unnamedAccountLabel = intl.formatMessage(messages.unnamedAccountLabel);
 
     return (
       <React.Fragment>
@@ -123,7 +139,7 @@ class DrawerContent extends React.Component<Props> {
                 </Avatar>
               </ListItemAvatar>
               {/* TODO this doesnt observe */}
-              <ListItemText primary={account.name} secondary={account.id} />
+              <ListItemText primary={account.name || unnamedAccountLabel} secondary={account.id} />
             </ListItem>
           ))}
           <ListItem
@@ -185,4 +201,4 @@ class DrawerContent extends React.Component<Props> {
 }
 
 // TODO convert to a TS decorator
-export default stylesDecorator(DrawerContent);
+export default stylesDecorator(injectIntl(DrawerContent));
