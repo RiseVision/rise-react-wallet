@@ -15,7 +15,7 @@ import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import SettingsDialog from './SettingsDialog';
+import SettingsDialog from '../../components/Dialog';
 import NameForm, {
   State as NameState
 } from '../../components/forms/SettingsName';
