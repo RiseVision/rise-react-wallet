@@ -94,17 +94,37 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     super(props);
   }
 
-  handleFieldClick = (field: string) => {
-    if (field === 'pinned') {
-      runInAction(() => {
-        const walletStore = this.props.walletStore!;
-        const selectedAccount = walletStore.selectedAccount!;
-        selectedAccount.pinned = !selectedAccount.pinned;
-        walletStore.saveAccount(selectedAccount);
-      });
-    } else {
-      this.setState({ dialogOpen: true, dialogField: field });
-    }
+  handleNameClicked = () => {
+    this.setState({ dialogOpen: true, dialogField: 'name' });
+  }
+
+  handlePinnedClicked = () => {
+    runInAction(() => {
+      const walletStore = this.props.walletStore!;
+      const selectedAccount = walletStore.selectedAccount!;
+      selectedAccount.pinned = !selectedAccount.pinned;
+      walletStore.saveAccount(selectedAccount);
+    });
+  }
+
+  handleVoteClicked = () => {
+    this.setState({ dialogOpen: true, dialogField: 'delegate' });
+  }
+
+  handleFiatClicked = () => {
+    this.setState({ dialogOpen: true, dialogField: 'fiat' });
+  }
+
+  handlePassphraseClicked = () => {
+    this.setState({ dialogOpen: true, dialogField: 'passphrase' });
+  }
+
+  handleDelegateClicked = () => {
+    this.setState({ dialogOpen: true, dialogField: 'delegateRegistration' });
+  }
+
+  handleRemoveClicked = () => {
+    this.setState({ dialogOpen: true, dialogField: 'removeAccount' });
   }
 
   onSubmitName = (state: NameState) => {
@@ -217,22 +237,22 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         </SettingsDialog>
         <div className={classes.content}>
           <List>
-            <ListItem button={true} onClick={() => this.handleFieldClick('name')}>
+            <ListItem button={true} onClick={this.handleNameClicked}>
               <ListItemText primary="Account name" secondary={account.name || unnamedAccountLabel} />
             </ListItem>
-            <ListItem button={true} onClick={() => this.handleFieldClick('pinned')}>
+            <ListItem button={true} onClick={this.handlePinnedClicked}>
               <ListItemText primary="Pinned account" />
               <ListItemSecondaryAction>
                 <Switch
-                  onClick={() => this.handleFieldClick('pinned')}
+                  onClick={this.handlePinnedClicked}
                   checked={account.pinned}
                 />
               </ListItemSecondaryAction>
             </ListItem>
-            <ListItem button={true} onClick={() => this.handleFieldClick('delegate')}>
+            <ListItem button={true} onClick={this.handleVoteClicked}>
               <ListItemText primary="Voted delegate" secondary="TODO" />
             </ListItem>
-            <ListItem button={true} onClick={() => this.handleFieldClick('fiat')}>
+            <ListItem button={true} onClick={this.handleFiatClicked}>
               <ListItemText primary="Displayed FIAT currency" secondary={account.fiatCurrency} />
             </ListItem>
           </List>
@@ -241,16 +261,16 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               <ListSubheader>Advanced settings</ListSubheader>
             )}
           >
-          <ListItem button={true} onClick={() => this.handleFieldClick('passphrase')}>
+          <ListItem button={true} onClick={this.handlePassphraseClicked}>
               <ListItemText
                 primary="2nd passphrase"
                 secondary={account.secondSignature ? 'Set' : 'Not set'}
               />
             </ListItem>
-            <ListItem button={true} onClick={() => this.handleFieldClick('delegateRegistration')}>
+            <ListItem button={true} onClick={this.handleDelegateClicked}>
               <ListItemText primary="Delegate registration" secondary="TODO" />
             </ListItem>
-            <ListItem button={true} onClick={() => this.handleFieldClick('removeAccount')}>
+            <ListItem button={true} onClick={this.handleRemoveClicked}>
               <ListItemText
                 classes={{
                   primary: classes.removeAccount,
