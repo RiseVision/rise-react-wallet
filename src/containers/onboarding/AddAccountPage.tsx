@@ -2,6 +2,7 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
+  accountOverviewRoute,
   onboardingChooseLanguageRoute,
   onboardingExistingAccountRoute,
   onboardingNewAccountRoute
@@ -9,6 +10,7 @@ import {
 import RootStore from '../../stores/root';
 import AppStore from '../../stores/app';
 import OnboardingStore from '../../stores/onboarding';
+import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -31,6 +33,7 @@ interface Props extends WithStyles<typeof styles> {
   store?: RootStore;
   appStore?: AppStore;
   onboardingStore?: OnboardingStore;
+  walletStore?: WalletStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
@@ -38,8 +41,15 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' })
 @inject('store')
 @inject('appStore')
 @inject('onboardingStore')
+@inject('walletStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
+  handleCloseClicked = () => {
+    const { store, onboardingStore } = this.props;
+    onboardingStore!.reset();
+    store!.router.goTo(accountOverviewRoute);
+  }
+
   handleNewAccountClicked = () => {
     const { store, onboardingStore } = this.props;
     onboardingStore!.reset();
@@ -59,11 +69,14 @@ class AddAccountPage extends React.Component<Props> {
   }
 
   render() {
-    const { classes, appStore } = this.props;
+    const { classes, appStore, walletStore } = this.props;
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader>
+        <ModalPaperHeader
+          closeButton={walletStore!.accounts.length > 0}
+          onCloseClick={this.handleCloseClicked}
+        >
           <FormattedMessage
             id="onboarding-add-account.title"
             description="Add account screen title"
