@@ -10,7 +10,7 @@ import SendTransactionForm, {
   State as SendFormState
 } from '../../components/forms/SendTransactionForm';
 import { amountToServer } from '../../utils/utils';
-import SettingsDialog from './SettingsDialog';
+import SettingsDialog from '../../components/Dialog';
 
 interface Props {
   store?: RootStore;
