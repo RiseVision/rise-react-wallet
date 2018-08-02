@@ -49,13 +49,13 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  onSubmit: (state: State) => void;
+  onSubmit: (id: string) => void;
   onSearch: (query: string) => void;
   delegates: Delegate[];
 }
 
 export interface State {
-  selectedId: string | null;
+  search: string | null;
 }
 
 const stylesDecorator = withStyles(styles);
@@ -64,28 +64,24 @@ const stylesDecorator = withStyles(styles);
 @observer
 class SendTransactionForm extends React.Component<Props, State> {
   state: State = {
-    selectedId: null
+    search: ''
   };
 
-  // TODO extract to Form
-  handleChange = (field: string) => (
+  handleType = (field: string) => (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const value = event.target.value;
-    const fields = ['recipientId', 'amount'];
-    if (fields.includes(field)) {
-      // @ts-ignore TODO make it generic
-      this.setState({
-        [field]: value
-      });
-    }
+    this.setState({
+      search: value
+    });
+    this.props.onSearch(value);
   };
 
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     // TODO validate the destination ID
     // TODO validate the amount (number, balance)
     event.preventDefault();
-    this.props.onSubmit({ ...this.state });
+    this.props.onSubmit(this.state.search);
   };
 
   render() {
@@ -100,7 +96,7 @@ class SendTransactionForm extends React.Component<Props, State> {
         <TextField
           className={classes.input}
           label="Find delegates by username or address"
-          onChange={this.handleChange('recipientId')}
+          onChange={this.handleType('search')}
           margin="normal"
           fullWidth={true}
         />
@@ -124,7 +120,11 @@ class SendTransactionForm extends React.Component<Props, State> {
               <li>U: {delegate.rate}%</li>
               <li>A: {delegate.approval}%</li>
             </ul>
-            <Button type="submit" fullWidth={true}>
+            <Button
+              type="submit"
+              fullWidth={true}
+              onClick={() => this.props.onSubmit(delegate.address)}
+            >
               CAST VOTE
             </Button>
           </React.Fragment>

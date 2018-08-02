@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
@@ -11,6 +12,7 @@ import VoteTransactionForm, {
   State as VoteFormState
 } from '../../components/forms/VoteTransactionForm';
 import { uniqueRandom } from '../../utils/utils';
+import { throttle } from 'lodash';
 
 interface Props {
   store?: RootStore;
@@ -39,6 +41,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
     step: 1,
     query: ''
   };
+  lastSearch = 0;
 
   componentWillMount() {
     // query for the recommended delegates
@@ -55,31 +58,37 @@ export default class VoteTransaction extends React.Component<Props, State> {
     }
   }
 
-  // TODO throttle
-  onSearch = async (query: string) => {
-    if (!query || !query.trim()) {
-      if (!this.state.activeDelegates.length) {
+  onSearch = throttle(
+    async (query: string) => {
+      const clock = ++this.lastSearch;
+      if (!query || !query.trim()) {
+        if (!this.state.activeDelegates.length) {
+          return;
+        }
+        const active = this.state.activeDelegates;
+        const rand = uniqueRandom(0, active.length - 1);
+        this.setState({
+          suggestedDelegates: [active[rand()], active[rand()], active[rand()]]
+        });
         return;
       }
-      const active = this.state.activeDelegates;
-      const rand = uniqueRandom(0, active.length - 1);
+      const result = await this.props.walletStore!.searchDelegates(query);
+      // check if there was a newer search
+      if (this.lastSearch !== clock) {
+        return;
+      }
       this.setState({
-        suggestedDelegates: [active[rand()], active[rand()], active[rand()]]
+        suggestedDelegates: result.slice(0, 3)
       });
-      return
-    }
-    const result = await this.props.walletStore!.searchDelegates(query);
-    this.setState({
-      suggestedDelegates: result.slice(0, 3)
-    });
-  };
+    },
+    500,
+    { leading: false, trailing: true }
+  );
 
-  onSubmit1 = (state: VoteFormState) => {
-    if (!state.selectedId) {
-      throw new Error('Delegate ID required');
-    }
+  onSubmit1 = (id: string) => {
+    assert(id, 'Delegate ID required');
     this.setState({
-      delegateId: state.selectedId,
+      delegateId: id,
       step: 2
     });
   };

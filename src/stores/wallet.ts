@@ -222,7 +222,8 @@ export default class WalletStore {
     url.search = new URLSearchParams(params);
     // @ts-ignore
     const res = await fetch(url);
-    return res.delegates || [];
+    const json = await res.json()
+    return json.delegates || [];
   }
 
   /**
