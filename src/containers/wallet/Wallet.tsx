@@ -24,6 +24,7 @@ const styles = (theme: Theme) =>
       overflow: 'hidden',
       position: 'relative',
       display: 'flex',
+      minHeight: '100vh',
       width: '100%'
     },
     appBar: {
@@ -41,6 +42,8 @@ const styles = (theme: Theme) =>
     },
     toolbar: theme.mixins.toolbar,
     content: {
+      display: 'flex',
+      flexDirection: 'column',
       flexGrow: 1,
       backgroundColor: theme.palette.background.default
     }

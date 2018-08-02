@@ -2,7 +2,6 @@ import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { ReactElement } from 'react';
 import * as React from 'react';
-import * as classNames from 'classnames';
 import {
   InjectedIntlProps,
   injectIntl,
@@ -14,12 +13,17 @@ import {
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import ArrowFwd from '@material-ui/icons/NavigateNext';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Switch from '@material-ui/core/Switch';
+import red from '@material-ui/core/colors/red';
 import SettingsDialog from './SettingsDialog';
 import NameForm, {
   State as NameState
@@ -33,47 +37,23 @@ import FiatForm, {
 const styles = (theme: Theme) =>
   createStyles({
     content: {
+      flexGrow: 1,
+      backgroundColor: theme.palette.background.paper,
       padding: theme.spacing.unit * 2,
       '& > button': {
         borderRadius: 0
       }
     },
-    button: {
-      width: '100%',
-      textAlign: 'left',
-      justifyContent: 'start',
-      background: 'white',
-      marginBottom: '1px',
-      fontWeight: 'normal',
-      textTransform: 'none',
-      height: '3.5em'
-    },
-    subsectionTitle: {
+    groupTitle: {
       marginTop: theme.spacing.unit * 2,
       marginBottom: theme.spacing.unit,
       ['&:first-child']: {
         marginTop: 0
       }
     },
-    remove: {
-      '& span': {
-        /* TODO take from the theme */
-        color: 'red'
-      }
+    removeAccount: {
+      color: red[500],
     },
-    buttonContent: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      display: 'flex',
-      width: '100%',
-      '& > span:nth-child(2)': {
-        color: 'gray'
-      }
-    },
-    arrow: {
-      verticalAlign: 'middle',
-      marginLeft: theme.spacing.unit * 2
-    }
   });
 
 interface Props extends WithStyles<typeof styles> {
@@ -217,7 +197,13 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
     if (!account) {
       // TODO loading indicator
-      return <div>Loading</div>;
+      return (
+        <div className={classes.content}>
+          <Typography>
+            Loading
+          </Typography>
+        </div>
+      );
     }
 
     return (
@@ -230,95 +216,53 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           {dialog.form}
         </SettingsDialog>
         <div className={classes.content}>
-          <SettingRow
-            classes={classes}
-            onClick={() => this.handleFieldClick('name')}
-            label="Account name"
-            value={account.name || unnamedAccountLabel}
-          />
-          <SettingRow
-            classes={classes}
-            onClick={() => this.handleFieldClick('pinned')}
-            label="Pinned account"
-            value={account.pinned ? 'Yes' : 'No'}
-          />
-          <SettingRow
-            classes={classes}
-            onClick={() => this.handleFieldClick('delegate')}
-            label="Voted delegate"
-            value="TODO"
-          />
-          <SettingRow
-            classes={classes}
-            onClick={() => this.handleFieldClick('fiat')}
-            label="Displayed FIAT currency"
-            value={account.fiatCurrency}
-          />
-          <Typography
-            className={classes.subsectionTitle}
-            variant="body2"
-            color="textSecondary"
+          <List>
+            <ListItem button={true} onClick={() => this.handleFieldClick('name')}>
+              <ListItemText primary="Account name" secondary={account.name || unnamedAccountLabel} />
+            </ListItem>
+            <ListItem button={true} onClick={() => this.handleFieldClick('pinned')}>
+              <ListItemText primary="Pinned account" />
+              <ListItemSecondaryAction>
+                <Switch
+                  onClick={() => this.handleFieldClick('pinned')}
+                  checked={account.pinned}
+                />
+              </ListItemSecondaryAction>
+            </ListItem>
+            <ListItem button={true} onClick={() => this.handleFieldClick('delegate')}>
+              <ListItemText primary="Voted delegate" secondary="TODO" />
+            </ListItem>
+            <ListItem button={true} onClick={() => this.handleFieldClick('fiat')}>
+              <ListItemText primary="Displayed FIAT currency" secondary={account.fiatCurrency} />
+            </ListItem>
+          </List>
+          <List
+            subheader={(
+              <ListSubheader>Advanced settings</ListSubheader>
+            )}
           >
-            Advanced settings
-          </Typography>
-          {/* TODO check if already set */}
-          <SettingRow
-            classes={classes}
-            onClick={() => this.handleFieldClick('passphrase')}
-            label="2nd passphrase"
-            value={account.secondSignature ? 'Set' : 'Not set'}
-          />
-          <SettingRow
-            classes={classes}
-            onClick={() => this.handleFieldClick('delegateRegistration')}
-            label="Delegate registration"
-            value="TODO Not registered"
-          />
-          <SettingRow
-            classes={classes}
-            onClick={() => this.handleFieldClick('removeAccount')}
-            label="Remove account from wallet"
-            value=""
-            buttonClass={classes.remove}
-          />
+          <ListItem button={true} onClick={() => this.handleFieldClick('passphrase')}>
+              <ListItemText
+                primary="2nd passphrase"
+                secondary={account.secondSignature ? 'Set' : 'Not set'}
+              />
+            </ListItem>
+            <ListItem button={true} onClick={() => this.handleFieldClick('delegateRegistration')}>
+              <ListItemText primary="Delegate registration" secondary="TODO" />
+            </ListItem>
+            <ListItem button={true} onClick={() => this.handleFieldClick('removeAccount')}>
+              <ListItemText
+                classes={{
+                  primary: classes.removeAccount,
+                }}
+                primary="Remove account from wallet"
+              />
+            </ListItem>
+          </List>
         </div>
       </React.Fragment>
     );
   }
-}
-
-function SettingRow({
-  classes,
-  label,
-  value,
-  buttonClass,
-  onClick
-}: {
-  classes: Record<
-    'button' | 'content' | 'remove' | 'buttonContent' | 'arrow',
-    string
-  >;
-  label: string;
-  value: string;
-  buttonClass?: string;
-  onClick(): void;
-}) {
-  return (
-    <Button
-      name="name"
-      variant="contained"
-      className={classNames(classes.button, buttonClass)}
-      onClick={onClick}
-    >
-      <div className={classes.buttonContent}>
-        <Typography component="span">{label}</Typography>
-        <Typography component="span">
-          {value}
-          <ArrowFwd className={classes.arrow} />
-        </Typography>
-      </div>
-    </Button>
-  );
 }
 
 export default stylesDecorator(injectIntl(AccountSettings));
