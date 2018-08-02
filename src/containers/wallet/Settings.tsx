@@ -17,6 +17,7 @@ import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItem from '@material-ui/core/ListItem';
@@ -321,6 +322,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               />
             </ListItem>
           </List>
+          <Divider />
           <List
             subheader={(
               <ListSubheader>
