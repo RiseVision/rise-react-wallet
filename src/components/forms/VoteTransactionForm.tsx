@@ -9,10 +9,10 @@ import {
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { Delegate } from 'dpos-api-wrapper';
 import { observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
-import { amountToUser } from '../../utils/utils';
 import AccountIcon from '../AccountIcon';
 
 const styles = (theme: Theme) =>
@@ -37,19 +37,21 @@ const styles = (theme: Theme) =>
       '& > p + p': {
         marginTop: theme.spacing.unit
       }
+    },
+    // TODO import from settings.ts
+    subsectionTitle: {
+      marginTop: theme.spacing.unit * 2,
+      marginBottom: theme.spacing.unit,
+      ['&:first-child']: {
+        marginTop: 0
+      }
     }
   });
 
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (state: State) => void;
   onSearch: (query: string) => void;
-  delegates: {
-    id: string;
-    name: string;
-    rank: number;
-    uptime: number;
-    approval: number;
-  }[];
+  delegates: Delegate[];
 }
 
 export interface State {
@@ -103,17 +105,23 @@ class SendTransactionForm extends React.Component<Props, State> {
           fullWidth={true}
         />
         {/* TODO 'Suggested' only when no search query? */}
-        <Typography>Suggested delegates</Typography>
+        <Typography
+          className={classes.subsectionTitle}
+          variant="body2"
+          color="textSecondary"
+        >
+          Suggested delegates
+        </Typography>
         {delegates.map(delegate => (
-          <React.Fragment>
+          <React.Fragment key={delegate.address}>
             <Avatar className={classes.accountAvatar}>
-              <AccountIcon size={24} address={delegate.id} />
+              <AccountIcon size={24} address={delegate.address} />
             </Avatar>
-            <Typography>{delegate.name}</Typography>
-            <Typography>{delegate.id}</Typography>
+            <Typography>{delegate.username}</Typography>
+            <Typography>{delegate.address}</Typography>
             <ul>
               <li>R: {delegate.rank}</li>
-              <li>U: {delegate.uptime}%</li>
+              <li>U: {delegate.rate}%</li>
               <li>A: {delegate.approval}%</li>
             </ul>
             <Button type="submit" fullWidth={true}>

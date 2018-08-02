@@ -44,3 +44,8 @@ declare module 'store' {
   const value: any;
   export = value;
 }
+
+declare module 'uniqueRandom' {
+  const value: any;
+  export = value;
+}
