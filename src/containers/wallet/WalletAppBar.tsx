@@ -18,8 +18,12 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
-import { accountSettingsRoute } from '../../routes';
+import {
+  accountOverviewRoute,
+  accountSettingsRoute,
+} from '../../routes';
 import RootStore from '../../stores/root';
 
 const styles = (theme: Theme) =>
@@ -50,6 +54,11 @@ const messages = defineMessages({
     description: 'Accessibility label for open drawer icon',
     defaultMessage: 'Open drawer'
   },
+  navigateBackAriaLabel: {
+    id: 'wallet-appbar.navigate-back-aria-label',
+    description: 'Accessibility label for back navigation icon',
+    defaultMessage: 'Navigate back'
+  },
   accountSettingsTooltip: {
     id: 'wallet-appbar.account-settings-tooltip',
     description: 'Tooltip for account settings icon',
@@ -57,39 +66,75 @@ const messages = defineMessages({
   }
 });
 
+type AppBarState =
+  | null
+  | 'accountOverview'
+  | 'accountSettings';
+
 @inject('store')
 @observer
 class WalletAppBar extends React.Component<DecoratedProps> {
+  appBarState() {
+    const { store } = this.props;
+    const path = store!.router.currentView.path;
+
+    let state: AppBarState = null;
+    if (path === '/wallet' || path.startsWith('/wallet/send')) {
+      state = 'accountOverview';
+    } else if (path === '/wallet/settings') {
+      state = 'accountSettings';
+    }
+    return state;
+  }
+
+  handleNavigateBackClick = () => {
+    const { store } = this.props;
+    const state = this.appBarState();
+
+    if (state === 'accountSettings') {
+      store!.router.goTo(accountOverviewRoute);
+    }
+  }
+
   render() {
     const { intl, classes, store } = this.props;
-    const currentView = store!.router.currentView;
+    const state = this.appBarState();
 
     return (
       <AppBar className={this.props.className}>
         <Toolbar>
-          <IconButton
-            className={classes.drawerIcon}
-            aria-label={intl.formatMessage(messages.openDrawerAriaLabel)}
-            color="inherit"
-            onClick={this.props.onToggleDrawer}
-          >
-            <MenuIcon />
-          </IconButton>
+          {state === 'accountOverview' ? (
+            <IconButton
+              className={classes.drawerIcon}
+              aria-label={intl.formatMessage(messages.openDrawerAriaLabel)}
+              color="inherit"
+              onClick={this.props.onToggleDrawer}
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              aria-label={intl.formatMessage(messages.navigateBackAriaLabel)}
+              color="inherit"
+              onClick={this.handleNavigateBackClick}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+          )}
           <Typography
             className={classes.title}
             variant="title"
             color="inherit"
             noWrap={true}
           >
-            {(currentView.path === '/wallet'
-              || currentView.path.startsWith('/wallet/send')) && (
+            {state === 'accountOverview' && (
               <FormattedMessage
                 id="wallet-appbar.account-overview-title"
                 description="Account overview title"
                 defaultMessage="Account overview"
               />
             )}
-            {currentView.path === '/wallet/settings' && (
+            {state === 'accountSettings' && (
               <FormattedMessage
                 id="wallet-appbar.account-settings-title"
                 description="Account settings title"
@@ -97,7 +142,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               />
             )}
           </Typography>
-          {currentView.path === '/wallet' && (
+          {state === 'accountOverview' && (
             <Tooltip
               title={intl.formatMessage(messages.accountSettingsTooltip)}
             >
