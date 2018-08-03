@@ -80,6 +80,7 @@ interface Props extends WithStyles<typeof styles> {
 interface State {
   dialogOpen: boolean;
   dialogField: string | null;
+  delegateLoaded: boolean;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
@@ -93,11 +94,32 @@ const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 class AccountSettings extends React.Component<Props, State> {
   state = {
     dialogOpen: false,
-    dialogField: null
+    dialogField: null,
+    delegateLoaded: false
   };
 
   constructor(props: Props) {
     super(props);
+  }
+
+  componentWillMount() {
+    this.loadVote();
+  }
+
+  componentDidUpdate() {
+    this.loadVote();
+  }
+
+  loadVote() {
+    const store = this.props.walletStore!;
+    // load the delegate data only if the account has been selected
+    // and only once
+    if (!this.props.walletStore!.selectedAccount!) {
+      return;
+    }
+    if (this.state.delegateLoaded) return;
+    this.setState({ delegateLoaded: true });
+    store.loadVotedDelegate();
   }
 
   handleFieldClick = (field: string) => {
@@ -136,7 +158,10 @@ class AccountSettings extends React.Component<Props, State> {
     this.onDialogClose();
   };
 
-  onSubmitVote = (txId: string) => {
+  onSubmitVote = () => {
+    runInAction(() => {
+      this.props.walletStore!.votedDelegate = null;
+    });
     this.onDialogClose();
   };
 
@@ -240,7 +265,14 @@ class AccountSettings extends React.Component<Props, State> {
             classes={classes}
             onClick={() => this.handleFieldClick('delegate')}
             label="Voted delegate"
-            value="TODO"
+            value={
+              /* TODO translate 'Loading' and 'None' */
+              walletStore!.votedDelegate === undefined
+                ? 'Loading...'
+                : walletStore!.votedDelegate
+                  ? walletStore!.votedDelegate.username
+                  : 'None'
+            }
           />
           <SettingRow
             classes={classes}
