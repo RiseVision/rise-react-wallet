@@ -455,7 +455,7 @@ export default class WalletStore {
               kind: 'receive',
               sender_alias: this.idToName(t.senderId),
               sender_address: t.senderId,
-              amount: t.amount + t.fee
+              amount: t.amount
             };
       return t;
     });
