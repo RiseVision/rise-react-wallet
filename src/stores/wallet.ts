@@ -168,14 +168,14 @@ export default class WalletStore {
 
   /**
    *
-   * @param delegateId Delegate you want to vote for.
+   * @param delegatePublicKey Delegate you want to vote for.
    * @param mnemonic
    * @param passphrase
    * @param account Optional - the voter account. Defaults to the currently
    *   selected one.
    */
   async voteTransaction(
-    delegateId: string,
+    delegatePublicKey: string,
     mnemonic: string,
     passphrase: string | null,
     account?: TAccount
@@ -186,18 +186,20 @@ export default class WalletStore {
     assert(account, 'Account required');
     assert(!account.secondSignature || passphrase, 'Passphrase required');
 
-    // TODO discard the prev delegate first?
-    // account.putDelegates
-    // account.getDelegates
     const assets: IVoteAsset = {
-      votes: ['+' + delegateId]
+      votes: ['+' + delegatePublicKey]
     };
+    // take down the prev vote
+    if (this.votedDelegate) {
+      assets.votes.push('-' + this.votedDelegate.publicKey);
+    }
     const unsigned = new VoteTx(assets)
       .set('timestamp', getTimestamp())
+      .set('fee', this.fees.get('vote'))
       .set('recipientId', account.id);
 
     const res = await this.singAndSend(unsigned, mnemonic, passphrase);
-    await this.refreshAccount(account.id, delegateId);
+    await this.refreshAccount(account.id);
     return res.transactionId;
   }
 
@@ -222,7 +224,7 @@ export default class WalletStore {
     url.search = new URLSearchParams(params);
     // @ts-ignore
     const res = await fetch(url);
-    const json = await res.json()
+    const json = await res.json();
     return json.delegates || [];
   }
 
@@ -252,6 +254,28 @@ export default class WalletStore {
         this.accounts.push(ret);
       });
     }
+  }
+
+  @observable votedDelegate: Delegate | null = undefined;
+
+  /**
+   * Loaded the currently voted delegate for the currently selected account.
+   *
+   * TODO make it usefull when called directly
+   * TODO handle errors
+   */
+  @action
+  async loadVotedDelegate() {
+    runInAction(() => {
+      this.votedDelegate = undefined;
+    });
+    assert(this.selectedAccount, 'Selected account required');
+    const delegates = await this.dposAPI.accounts.getDelegates(
+      this.selectedAccount!.id
+    );
+    runInAction(() => {
+      this.votedDelegate = delegates.delegates ? delegates.delegates[0] : null;
+    });
   }
 
   @action
@@ -388,10 +412,10 @@ export default class WalletStore {
   // TODO handle the ID param
   removeAccount(id?: string) {
     if (!id) {
-      id = this.selectedAccount!.id
+      id = this.selectedAccount!.id;
     }
-    const wasSelected = id == this.selectedAccount!.id
-    const account = this.accounts.find(a => a.id !== id)
+    const wasSelected = id == this.selectedAccount!.id;
+    const account = this.accounts.find(a => a.id !== id);
     this.accounts.remove(account);
     lstore.set('accounts', this.storedAccounts().filter(a => a.id !== id));
     if (wasSelected && this.accounts.length) {

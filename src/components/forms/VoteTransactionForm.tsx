@@ -1,5 +1,4 @@
 import Avatar from '@material-ui/core/Avatar';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import {
   createStyles,
   withStyles,
@@ -49,9 +48,10 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  onSubmit: (id: string) => void;
+  onSubmit: (delegate: Delegate, addVote: boolean) => void;
   onSearch: (query: string) => void;
   delegates: Delegate[];
+  votedDelegate: string;
 }
 
 export interface State {
@@ -67,7 +67,7 @@ class SendTransactionForm extends React.Component<Props, State> {
     search: ''
   };
 
-  handleType = (field: string) => (
+  handleType = () => (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const value = event.target.value;
@@ -77,18 +77,11 @@ class SendTransactionForm extends React.Component<Props, State> {
     this.props.onSearch(value);
   };
 
-  onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    // TODO validate the destination ID
-    // TODO validate the amount (number, balance)
-    event.preventDefault();
-    this.props.onSubmit(this.state.search);
-  };
-
   render() {
-    const { classes, delegates } = this.props;
+    const { classes, delegates, votedDelegate } = this.props;
 
     return (
-      <form onSubmit={this.onSubmit} className={classes.form}>
+      <React.Fragment>
         <Typography>
           New blocks on the RISE blockchain are forged by the top 101 delegates.
           You as the user determine who those delegates are by casting a vote.
@@ -96,9 +89,10 @@ class SendTransactionForm extends React.Component<Props, State> {
         <TextField
           className={classes.input}
           label="Find delegates by username or address"
-          onChange={this.handleType('search')}
+          onChange={this.handleType()}
           margin="normal"
           fullWidth={true}
+          autoFocus={true}
         />
         {/* TODO 'Suggested' only when no search query? */}
         <Typography
@@ -121,15 +115,21 @@ class SendTransactionForm extends React.Component<Props, State> {
               <li>A: {delegate.approval}%</li>
             </ul>
             <Button
-              type="submit"
               fullWidth={true}
-              onClick={() => this.props.onSubmit(delegate.address)}
+              onClick={() =>
+                this.props.onSubmit(
+                  delegate,
+                  votedDelegate === delegate.publicKey
+                )
+              }
             >
-              CAST VOTE
+              {votedDelegate === delegate.publicKey
+                ? 'REMOVE VOTE'
+                : 'CAST VOTE'}
             </Button>
           </React.Fragment>
         ))}
-      </form>
+      </React.Fragment>
     );
   }
 }

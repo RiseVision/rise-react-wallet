@@ -25,7 +25,8 @@ export interface State {
   step: number;
   activeDelegates: Delegate[];
   suggestedDelegates: Delegate[];
-  delegateId: string | null;
+  selectedDelegate?: Delegate;
+  addVote?: boolean;
   query: string;
   txId?: number;
 }
@@ -37,7 +38,6 @@ export default class VoteTransaction extends React.Component<Props, State> {
   state: State = {
     suggestedDelegates: [],
     activeDelegates: [],
-    delegateId: null,
     step: 1,
     query: ''
   };
@@ -46,6 +46,10 @@ export default class VoteTransaction extends React.Component<Props, State> {
   componentWillMount() {
     // query for the recommended delegates
     this.loadActiveDelegates();
+    // load the current vote (should come from settings)
+    if (!this.props.walletStore!.votedDelegate) {
+      this.props.walletStore!.loadVotedDelegate();
+    }
   }
 
   async loadActiveDelegates() {
@@ -85,11 +89,12 @@ export default class VoteTransaction extends React.Component<Props, State> {
     { leading: false, trailing: true }
   );
 
-  onSubmit1 = (id: string) => {
-    assert(id, 'Delegate ID required');
+  onSubmit1 = (delegate: Delegate, addVote: boolean) => {
+    assert(delegate.publicKey, 'Delegate ID required');
     this.setState({
-      delegateId: id,
-      step: 2
+      selectedDelegate: delegate,
+      step: 2,
+      addVote
     });
   };
 
@@ -97,10 +102,12 @@ export default class VoteTransaction extends React.Component<Props, State> {
     // TODO loading state
     // TODO validation
     const { store, walletStore } = this.props;
+    assert(this.state.selectedDelegate, 'Delegate required');
     let txId = await walletStore!.voteTransaction(
+      this.state.selectedDelegate.publicKey,
       state.mnemonic,
       state.passphrase,
-      this.props.account && this.props.account.id
+      this.props.account
     );
     if (this.props.onSubmit) {
       this.props.onSubmit(txId);
@@ -117,18 +124,14 @@ export default class VoteTransaction extends React.Component<Props, State> {
   }
 
   renderStep1() {
-    const { walletStore } = this.props;
-    const balance =
-      (this.props.account! && this.props.account!.balance) ||
-      (walletStore!.selectedAccount! &&
-        walletStore!.selectedAccount!.balance) ||
-      0;
-    // TODO validate the recipient
+    // TODO get the delegate(s) for the account
+    const { votedDelegate } = this.props.walletStore!;
     return (
       <VoteTransactionForm
         onSubmit={this.onSubmit1}
         onSearch={this.onSearch}
         delegates={this.state.suggestedDelegates}
+        votedDelegate={votedDelegate ? votedDelegate.publicKey : null}
       />
     );
   }
@@ -137,12 +140,13 @@ export default class VoteTransaction extends React.Component<Props, State> {
     const { walletStore } = this.props;
     const account = this.props.account! || walletStore!.selectedAccount!;
     // TODO translate 'recipient'
+    // TODO show the delegates name?
     return (
       <ConfirmTransactionForm
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipient={'Vote Delegate'}
+        recipient={'case vote'}
         amount={0}
         fee={walletStore!.fees.get('vote')!}
         onSubmit={this.onSubmit2}

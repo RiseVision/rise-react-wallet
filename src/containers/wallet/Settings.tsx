@@ -62,6 +62,7 @@ type DecoratedProps = Props & InjectedIntlProps;
 interface State {
   dialogOpen: boolean;
   dialogField: string | null;
+  delegateLoaded: boolean;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
@@ -140,7 +141,8 @@ const messages = defineMessages({
 class AccountSettings extends React.Component<DecoratedProps, State> {
   state = {
     dialogOpen: false,
-    dialogField: null
+    dialogField: null,
+    delegateLoaded: false
   };
 
   constructor(props: DecoratedProps) {
@@ -203,7 +205,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     this.onDialogClose();
   };
 
-  onSubmitVote = (txId: string) => {
+  onSubmitVote = () => {
+    runInAction(() => {
+      this.props.walletStore!.votedDelegate = null;
+    });
     this.onDialogClose();
   };
 
@@ -270,6 +275,26 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     this.setState({ dialogOpen: false });
   };
 
+  componentWillMount() {
+    this.loadVote();
+  }
+
+  componentDidUpdate() {
+    this.loadVote();
+  }
+
+  loadVote() {
+    const store = this.props.walletStore!;
+    // load the delegate data only if the account has been selected
+    // and only once
+    if (!this.props.walletStore!.selectedAccount!) {
+      return;
+    }
+    if (this.state.delegateLoaded) return;
+    this.setState({ delegateLoaded: true });
+    store.loadVotedDelegate();
+  }
+
   render() {
     const { intl, classes, walletStore } = this.props;
     const account = walletStore!.selectedAccount!;
@@ -316,7 +341,18 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             <ListItem button={true} onClick={this.handleVoteClicked}>
               <ListItemText
                 primary={intl.formatMessage(messages.votedDelegate)}
-                secondary={'TODO / ' + intl.formatMessage(messages.votedDelegateUnsetLabel)}
+                secondary={
+
+
+              /* TODO 'Loading' */
+              walletStore!.votedDelegate === undefined
+                ? 'Loading...'
+                : walletStore!.votedDelegate
+                  ? walletStore!.votedDelegate.username
+                  : intl.formatMessage(messages.votedDelegateUnsetLabel)
+
+
+                  }
               />
             </ListItem>
             <ListItem button={true} onClick={this.handleFiatClicked}>
