@@ -476,6 +476,24 @@ export default class WalletStore {
               sender_address: t.senderId,
               amount: t.amount
             };
+      switch (t.type) {
+        case TransactionType.SIGNATURE:
+          // TODO fix TxInfo to a unified format
+          // @ts-ignore TODO translate 'Second Passphrase'
+          t.info.recipient_alias = 'Second Passphrase';
+          break;
+        case TransactionType.VOTE:
+          // TODO fix TxInfo to a unified format
+          // @ts-ignore TODO translate 'Cast Vote'
+          t.info.recipient_alias = 'Cast Vote';
+          break;
+        case TransactionType.DELEGATE:
+          // TODO fix TxInfo to a unified format
+          // @ts-ignore TODO translate 'Register Delegate'
+          t.info.recipient_alias = 'Register Delegate';
+          break;
+        default:
+      }
       return t;
     });
   }
