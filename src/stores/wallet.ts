@@ -409,13 +409,12 @@ export default class WalletStore {
   }
 
   @action
-  // TODO handle the ID param
   removeAccount(id?: string) {
     if (!id) {
       id = this.selectedAccount!.id;
     }
-    const wasSelected = id == this.selectedAccount!.id;
-    const account = this.accounts.find(a => a.id !== id);
+    const wasSelected = id === this.selectedAccount!.id;
+    const account = this.accounts.find(a => a.id === id);
     this.accounts.remove(account);
     lstore.set('accounts', this.storedAccounts().filter(a => a.id !== id));
     if (wasSelected && this.accounts.length) {
