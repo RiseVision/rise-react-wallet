@@ -2,11 +2,7 @@ import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { ReactElement } from 'react';
 import * as React from 'react';
-import {
-  InjectedIntlProps,
-  injectIntl,
-  defineMessages,
-} from 'react-intl';
+import { InjectedIntlProps, injectIntl, defineMessages } from 'react-intl';
 import {
   Theme,
   createStyles,
@@ -25,7 +21,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Switch from '@material-ui/core/Switch';
 import red from '@material-ui/core/colors/red';
-import SettingsDialog from './SettingsDialog';
+import Dialog from '../../components/Dialog';
 import NameForm, {
   State as NameState
 } from '../../components/forms/SettingsName';
@@ -45,11 +41,11 @@ const styles = (theme: Theme) =>
       }
     },
     groupTitle: {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: theme.palette.background.paper
     },
     removeAccount: {
-      color: red[500],
-    },
+      color: red[500]
+    }
   });
 
 interface Props extends WithStyles<typeof styles> {
@@ -132,7 +128,7 @@ const messages = defineMessages({
     id: 'account-settings.remove-account',
     description: 'Label for remove account setting',
     defaultMessage: 'Remove account from wallet'
-  },
+  }
 });
 
 @inject('store')
@@ -151,20 +147,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   handleNameClicked = () => {
     this.setState({ dialogOpen: true, dialogField: 'name' });
-  }
-
-  loadVote() {
-    const store = this.props.walletStore!;
-    // load the delegate data only if the account has been selected
-    // and only once
-    if (!this.props.walletStore!.selectedAccount!) {
-      return;
-    }
-    if (this.state.delegateLoaded) {
-      return;
-    }
-    this.setState({ delegateLoaded: true });
-    store.loadVotedDelegate();
   }
 
   handlePinnedClicked = () => {
@@ -304,7 +286,9 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     if (!this.props.walletStore!.selectedAccount!) {
       return;
     }
-    if (this.state.delegateLoaded) return;
+    if (this.state.delegateLoaded) {
+      return;
+    }
     this.setState({ delegateLoaded: true });
     store.loadVotedDelegate();
   }
@@ -319,32 +303,35 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
       // TODO loading indicator
       return (
         <div className={classes.content}>
-          <Typography>
-            Loading
-          </Typography>
+          <Typography>Loading</Typography>
         </div>
       );
     }
 
     return (
       <React.Fragment>
-        <SettingsDialog
+        <Dialog
           title={dialog.title || ''}
           open={this.state.dialogOpen}
           onClose={this.onDialogClose}
         >
           {dialog.form}
-        </SettingsDialog>
+        </Dialog>
         <div className={classes.content}>
           <List>
             <ListItem button={true} onClick={this.handleNameClicked}>
               <ListItemText
                 primary={intl.formatMessage(messages.accountName)}
-                secondary={account.name || intl.formatMessage(messages.unnamedAccountLabel)}
+                secondary={
+                  account.name ||
+                  intl.formatMessage(messages.unnamedAccountLabel)
+                }
               />
             </ListItem>
             <ListItem button={true} onClick={this.handlePinnedClicked}>
-              <ListItemText primary={intl.formatMessage(messages.pinnedAccount)} />
+              <ListItemText
+                primary={intl.formatMessage(messages.pinnedAccount)}
+              />
               <ListItemSecondaryAction>
                 <Switch
                   onClick={this.handlePinnedClicked}
@@ -355,12 +342,14 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             <ListItem button={true} onClick={this.handleVoteClicked}>
               <ListItemText
                 primary={intl.formatMessage(messages.votedDelegate)}
-                secondary={/* TODO 'Loading' */
-              walletStore!.votedDelegate === undefined
-                ? 'Loading...'
-                : walletStore!.votedDelegate
-                  ? walletStore!.votedDelegate.username
-                  : intl.formatMessage(messages.votedDelegateUnsetLabel)}
+                secondary={
+                  /* TODO translate 'Loading' */
+                  walletStore!.votedDelegate === undefined
+                    ? 'Loading...'
+                    : walletStore!.votedDelegate
+                      ? walletStore!.votedDelegate!.username
+                      : intl.formatMessage(messages.votedDelegateUnsetLabel)
+                }
               />
             </ListItem>
             <ListItem button={true} onClick={this.handleFiatClicked}>
@@ -372,30 +361,34 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           </List>
           <Divider />
           <List
-            subheader={(
+            subheader={
               <ListSubheader className={classes.groupTitle}>
                 {intl.formatMessage(messages.advancedSettings)}
-              </ListSubheader>
-            )}
+              </ListSubheader>}
           >
-          <ListItem button={true} onClick={this.handlePassphraseClicked}>
+            <ListItem button={true} onClick={this.handlePassphraseClicked}>
               <ListItemText
                 primary={intl.formatMessage(messages.passphrase)}
-                secondary={account.secondSignature
-                  ? intl.formatMessage(messages.passphraseSetLabel)
-                  : intl.formatMessage(messages.passphraseUnsetLabel)}
+                secondary={
+                  account.secondSignature
+                    ? intl.formatMessage(messages.passphraseSetLabel)
+                    : intl.formatMessage(messages.passphraseUnsetLabel)
+                }
               />
             </ListItem>
             <ListItem button={true} onClick={this.handleDelegateClicked}>
               <ListItemText
                 primary={intl.formatMessage(messages.delegateRegistration)}
-                secondary={'TODO / ' + intl.formatMessage(messages.delegateRegistrationUnsetLabel)}
+                secondary={
+                  'TODO / ' +
+                  intl.formatMessage(messages.delegateRegistrationUnsetLabel)
+                }
               />
             </ListItem>
             <ListItem button={true} onClick={this.handleRemoveClicked}>
               <ListItemText
                 classes={{
-                  primary: classes.removeAccount,
+                  primary: classes.removeAccount
                 }}
                 primary={intl.formatMessage(messages.removeAccount)}
               />

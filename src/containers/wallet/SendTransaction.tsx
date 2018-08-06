@@ -10,7 +10,7 @@ import SendTransactionForm, {
   State as SendFormState
 } from '../../components/forms/SendTransactionForm';
 import { amountToServer } from '../../utils/utils';
-import SettingsDialog from '../../components/Dialog';
+import Dialog from '../../components/Dialog';
 
 interface Props {
   store?: RootStore;
@@ -95,9 +95,9 @@ export default class SendTransaction extends React.Component<Props, State> {
 
     // TODO honor the props.wrapInDialog switch
     return (
-      <SettingsDialog title={title} open={true} onClose={this.onDialogClose}>
+      <Dialog title={title} open={true} onClose={this.onDialogClose}>
         {content}
-      </SettingsDialog>
+      </Dialog>
     );
   }
 
