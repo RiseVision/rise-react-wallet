@@ -153,6 +153,20 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     this.setState({ dialogOpen: true, dialogField: 'name' });
   }
 
+  loadVote() {
+    const store = this.props.walletStore!;
+    // load the delegate data only if the account has been selected
+    // and only once
+    if (!this.props.walletStore!.selectedAccount!) {
+      return;
+    }
+    if (this.state.delegateLoaded) {
+      return;
+    }
+    this.setState({ delegateLoaded: true });
+    store.loadVotedDelegate();
+  }
+
   handlePinnedClicked = () => {
     runInAction(() => {
       const walletStore = this.props.walletStore!;
@@ -185,7 +199,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   onSubmitName = (state: NameState) => {
     this.props.walletStore!.updateAccountName(state.name!);
     this.onDialogClose();
-  };
+  }
 
   onSubmitRemoveAccount = () => {
     let { store, walletStore } = this.props;
@@ -198,19 +212,19 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     } else {
       store!.router.goTo(accountOverviewRoute);
     }
-  };
+  }
 
   onSubmitFiat = (state: FiatState) => {
     this.props.walletStore!.updateFiat(state.fiat!, state.global);
     this.onDialogClose();
-  };
+  }
 
   onSubmitVote = () => {
     runInAction(() => {
       this.props.walletStore!.votedDelegate = null;
     });
     this.onDialogClose();
-  };
+  }
 
   getDialog: () => {
     title: string | null;
@@ -269,11 +283,11 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           form: null
         };
     }
-  };
+  }
 
   onDialogClose = () => {
     this.setState({ dialogOpen: false });
-  };
+  }
 
   componentWillMount() {
     this.loadVote();
@@ -341,18 +355,12 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             <ListItem button={true} onClick={this.handleVoteClicked}>
               <ListItemText
                 primary={intl.formatMessage(messages.votedDelegate)}
-                secondary={
-
-
-              /* TODO 'Loading' */
+                secondary={/* TODO 'Loading' */
               walletStore!.votedDelegate === undefined
                 ? 'Loading...'
                 : walletStore!.votedDelegate
                   ? walletStore!.votedDelegate.username
-                  : intl.formatMessage(messages.votedDelegateUnsetLabel)
-
-
-                  }
+                  : intl.formatMessage(messages.votedDelegateUnsetLabel)}
               />
             </ListItem>
             <ListItem button={true} onClick={this.handleFiatClicked}>

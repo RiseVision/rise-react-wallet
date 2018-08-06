@@ -10,7 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { Delegate } from 'dpos-api-wrapper';
 import { observer } from 'mobx-react';
-import { ChangeEvent, FormEvent } from 'react';
+import { ChangeEvent } from 'react';
 import * as React from 'react';
 import AccountIcon from '../AccountIcon';
 
@@ -51,7 +51,7 @@ interface Props extends WithStyles<typeof styles> {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
   onSearch: (query: string) => void;
   delegates: Delegate[];
-  votedDelegate: string;
+  votedDelegate: string | null;
 }
 
 export interface State {
@@ -75,7 +75,7 @@ class SendTransactionForm extends React.Component<Props, State> {
       search: value
     });
     this.props.onSearch(value);
-  };
+  }
 
   render() {
     const { classes, delegates, votedDelegate } = this.props;

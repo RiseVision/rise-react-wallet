@@ -49,14 +49,14 @@ class Dialog extends React.Component<Props, State> {
     if (event.keyCode === 27 && this.props.onClose) {
       this.props.onClose();
     }
-  };
+  }
 
   handleBackClick = () => {
     this.setState({ open: false });
     if (this.props.onClose) {
       this.props.onClose();
     }
-  };
+  }
 
   render() {
     const { open, title, classes } = this.props;

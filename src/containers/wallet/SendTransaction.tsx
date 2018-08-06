@@ -52,6 +52,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     if (!state.amount) {
       throw new Error('Amount required');
     }
+    // TODO validate amount is a number
     this.setState({
       recipientId: state.recipientId,
       amount: amountToServer(state.amount),
@@ -104,7 +105,8 @@ export default class SendTransaction extends React.Component<Props, State> {
     const { walletStore } = this.props;
     const balance =
       (this.props.account! && this.props.account!.balance) ||
-      (walletStore!.selectedAccount! && walletStore!.selectedAccount!.balance) ||
+      (walletStore!.selectedAccount! &&
+        walletStore!.selectedAccount!.balance) ||
       0;
     // TODO validate the recipient
     return (

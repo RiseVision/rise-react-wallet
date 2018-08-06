@@ -8,9 +8,7 @@ import ConfirmTransactionForm, {
 import { accountOverviewRoute } from '../../routes';
 import RootStore from '../../stores/root';
 import WalletStore, { TAccount } from '../../stores/wallet';
-import VoteTransactionForm, {
-  State as VoteFormState
-} from '../../components/forms/VoteTransactionForm';
+import VoteTransactionForm from '../../components/forms/VoteTransactionForm';
 import { uniqueRandom } from '../../utils/utils';
 import { throttle } from 'lodash';
 
@@ -42,25 +40,6 @@ export default class VoteTransaction extends React.Component<Props, State> {
     query: ''
   };
   lastSearch = 0;
-
-  componentWillMount() {
-    // query for the recommended delegates
-    this.loadActiveDelegates();
-    // load the current vote (should come from settings)
-    if (!this.props.walletStore!.votedDelegate) {
-      this.props.walletStore!.loadVotedDelegate();
-    }
-  }
-
-  async loadActiveDelegates() {
-    const api = this.props.walletStore!.dposAPI;
-    const res = await api.delegates.getList();
-    this.setState({ activeDelegates: res.delegates });
-    // recommend random from active in the beginning
-    if (!this.state.query) {
-      this.onSearch('');
-    }
-  }
 
   onSearch = throttle(
     async (query: string) => {
@@ -96,7 +75,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
       step: 2,
       addVote
     });
-  };
+  }
 
   onSubmit2 = async (state: ConfirmFormState) => {
     // TODO loading state
@@ -104,7 +83,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
     const { store, walletStore } = this.props;
     assert(this.state.selectedDelegate, 'Delegate required');
     let txId = await walletStore!.voteTransaction(
-      this.state.selectedDelegate.publicKey,
+      this.state.selectedDelegate!.publicKey,
       state.mnemonic,
       state.passphrase,
       this.props.account
@@ -117,21 +96,39 @@ export default class VoteTransaction extends React.Component<Props, State> {
       // TODO use the same as the SendComponent
       store!.router.goTo(accountOverviewRoute);
     }
-  };
+  }
+
+  componentWillMount() {
+    // query for the recommended delegates
+    this.loadActiveDelegates();
+    // load the current vote (should come from settings)
+    if (!this.props.walletStore!.votedDelegate) {
+      this.props.walletStore!.loadVotedDelegate();
+    }
+  }
+
+  async loadActiveDelegates() {
+    const api = this.props.walletStore!.dposAPI;
+    const res = await api.delegates.getList();
+    this.setState({ activeDelegates: res.delegates });
+    // recommend random from active in the beginning
+    if (!this.state.query) {
+      this.onSearch('');
+    }
+  }
 
   render() {
     return this.state.step === 1 ? this.renderStep1() : this.renderStep2();
   }
 
   renderStep1() {
-    // TODO get the delegate(s) for the account
     const { votedDelegate } = this.props.walletStore!;
     return (
       <VoteTransactionForm
         onSubmit={this.onSubmit1}
         onSearch={this.onSearch}
         delegates={this.state.suggestedDelegates}
-        votedDelegate={votedDelegate ? votedDelegate.publicKey : null}
+        votedDelegate={votedDelegate ? votedDelegate!.publicKey : null}
       />
     );
   }

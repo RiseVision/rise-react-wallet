@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Delegate, dposAPI } from 'dpos-api-wrapper';
+import { Delegate, dposAPI, TransactionType } from 'dpos-api-wrapper';
 import {
   SendTx,
   CreateSignatureTx,
@@ -21,11 +21,10 @@ import { groupBy, pick } from 'lodash';
 import * as lstore from 'store';
 
 export default class WalletStore {
-  // TODO refactor to use the dposAPI
   api: string;
   dposAPI: typeof dposAPI;
 
-  // TODO type key names and avoid using the bang! operator
+  // TODO type as not null
   @observable
   fees = observable.map<TTransactionTypes, number>({
     send: 10000000,
@@ -45,6 +44,7 @@ export default class WalletStore {
     // @ts-ignore
     return this.groupTransactionsByDay(this.recentTransactions);
   }
+  @observable votedDelegate?: Delegate | null = undefined;
 
   constructor(public config: TConfig) {
     dposAPI.nodeAddress = config.api_url;
@@ -195,7 +195,7 @@ export default class WalletStore {
     }
     const unsigned = new VoteTx(assets)
       .set('timestamp', getTimestamp())
-      .set('fee', this.fees.get('vote'))
+      .withFees(this.fees.get('vote')!)
       .set('recipientId', account.id);
 
     const res = await this.singAndSend(unsigned, mnemonic, passphrase);
@@ -255,8 +255,6 @@ export default class WalletStore {
       });
     }
   }
-
-  @observable votedDelegate: Delegate | null = undefined;
 
   /**
    * Loaded the currently voted delegate for the currently selected account.
@@ -415,7 +413,8 @@ export default class WalletStore {
     }
     const wasSelected = id === this.selectedAccount!.id;
     const account = this.accounts.find(a => a.id === id);
-    this.accounts.remove(account);
+    assert(account, `Account ${id} not found`);
+    this.accounts.remove(account!);
     lstore.set('accounts', this.storedAccounts().filter(a => a.id !== id));
     if (wasSelected && this.accounts.length) {
       this.selectAccount(this.accounts[0].id);
@@ -459,6 +458,7 @@ export default class WalletStore {
     });
   }
 
+  // TODO dont depend on this.selectedAccount
   parseTransactionsReponse(res: TTransactionsResponse): TTransaction[] {
     return res.transactions.map(t => {
       t.timestamp = timestampToUnix(t.timestamp);
@@ -467,11 +467,7 @@ export default class WalletStore {
           ? {
               kind: 'send',
               recipient_alias: this.idToName(t.recipientId),
-              recipient_address:
-                // TODO translate
-                t.recipientId ||
-                (t.asset.signature && 'Second Passphrase') ||
-                '',
+              recipient_address: t.recipientId,
               amount: t.amount + t.fee
             }
           : {
@@ -560,7 +556,7 @@ export type TTransaction = {
   // tslint:disable-next-line:no-any
   signatures: any[];
   timestamp: number;
-  type: boolean;
+  type: TransactionType;
 };
 
 export type TTransactionsRequest = {

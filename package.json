@@ -37,7 +37,10 @@
     "tslint": "npx tslint --fix --project tslint.prod.json 'src/**/*.{ts,tsx}'",
     "precommit": "npm run tsc && npm run tslint"
   },
-  "pre-commit": [],
+  "pre-commit": [
+    "tsc",
+    "tslint"
+  ],
   "riw": {
     "defaultLocale": "en",
     "targetLocales": [

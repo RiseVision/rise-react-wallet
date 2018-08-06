@@ -70,6 +70,8 @@ const styles = (theme: Theme) => {
   });
 };
 
+// TODO unify ReceiveTxInfo and SendTxInfo into the same format
+//   and a `type` field
 export interface ReceiveTxInfo {
   kind: 'receive';
   sender_alias: string | null;

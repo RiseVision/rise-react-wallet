@@ -1,4 +1,4 @@
-///<reference path="missing.d.ts"/>
+///<reference path="utils/missing.d.ts"/>
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './containers/App';
