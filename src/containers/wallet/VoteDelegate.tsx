@@ -8,7 +8,7 @@ import ConfirmTransactionForm, {
 import { accountOverviewRoute } from '../../routes';
 import RootStore from '../../stores/root';
 import WalletStore, { TAccount } from '../../stores/wallet';
-import VoteTransactionForm from '../../components/forms/VoteTransactionForm';
+import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
 import { uniqueRandom } from '../../utils/utils';
 import { throttle } from 'lodash';
 
@@ -32,7 +32,7 @@ export interface State {
 @inject('walletStore')
 @observer
 // TODO should have an URL
-export default class VoteTransaction extends React.Component<Props, State> {
+export default class VoteDelegate extends React.Component<Props, State> {
   state: State = {
     suggestedDelegates: [],
     activeDelegates: [],

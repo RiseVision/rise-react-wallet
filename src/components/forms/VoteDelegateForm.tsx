@@ -60,7 +60,6 @@ export interface State {
 
 const stylesDecorator = withStyles(styles);
 
-// TODO address book
 @observer
 class SendTransactionForm extends React.Component<Props, State> {
   state: State = {

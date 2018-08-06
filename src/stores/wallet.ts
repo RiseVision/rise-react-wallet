@@ -5,8 +5,10 @@ import {
   CreateSignatureTx,
   LiskWallet,
   VoteTx,
+  IDelegateTxAsset,
+  BaseTx,
   IVoteAsset,
-  BaseTx
+  DelegateTx
 } from 'dpos-offline';
 import { action, observable, runInAction, computed } from 'mobx';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
@@ -194,8 +196,36 @@ export default class WalletStore {
       assets.votes.push('-' + this.votedDelegate.publicKey);
     }
     const unsigned = new VoteTx(assets)
-      .set('timestamp', getTimestamp())
       .withFees(this.fees.get('vote')!)
+      .set('timestamp', getTimestamp())
+      .set('recipientId', account.id);
+
+    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    await this.refreshAccount(account.id);
+    return res.transactionId;
+  }
+
+  async registerDelegateTransaction(
+    username: string,
+    mnemonic: string,
+    passphrase: string | null,
+    account?: TAccount
+  ): Promise<string> {
+    if (!account) {
+      account = this.selectedAccount!;
+    }
+    assert(account, 'Account required');
+    assert(!account.secondSignature || passphrase, 'Passphrase required');
+
+    const assets: IDelegateTxAsset = {
+      delegate: {
+        publicKey: account.publicKey,
+        username
+      }
+    };
+    const unsigned = new DelegateTx(assets)
+      .withFees(this.fees.get('delegate')!)
+      .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
 
     const res = await this.singAndSend(unsigned, mnemonic, passphrase);

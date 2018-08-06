@@ -34,7 +34,7 @@ import PassphraseForm from '../../components/forms/SettingsPassphrase';
 import FiatForm, {
   State as FiatState
 } from '../../components/forms/SettingsFiat';
-import VoteTransaction from './VoteTransaction';
+import VoteDelegate from './VoteDelegate';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -275,7 +275,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
       case 'delegate':
         return {
           title: 'Vote for Delegate',
-          form: <VoteTransaction onSubmit={this.onSubmitVote} />
+          form: <VoteDelegate onSubmit={this.onSubmitVote} />
         };
       default:
         return {
