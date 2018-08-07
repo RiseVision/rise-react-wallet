@@ -31,6 +31,7 @@ import FiatForm, {
   State as FiatState
 } from '../../components/forms/SettingsFiat';
 import VoteDelegate from './VoteDelegate';
+import RegisterDelegate from './RegisterDelegate';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -59,6 +60,7 @@ interface State {
   dialogOpen: boolean;
   dialogField: string | null;
   delegateLoaded: boolean;
+  registeredLoaded: boolean;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
@@ -138,7 +140,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   state = {
     dialogOpen: false,
     dialogField: null,
-    delegateLoaded: false
+    delegateLoaded: false,
+    registeredLoaded: false
   };
 
   constructor(props: DecoratedProps) {
@@ -171,6 +174,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   handleDelegateClicked = () => {
+    // open only the registered delegate info has been loaded
+    if (this.props.walletStore!.registeredDelegate === undefined) {
+      return;
+    }
     this.setState({ dialogOpen: true, dialogField: 'delegateRegistration' });
   }
 
@@ -205,6 +212,16 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     runInAction(() => {
       this.props.walletStore!.votedDelegate = null;
     });
+    this.onDialogClose();
+  }
+
+  onSubmitRegister = (txId: string) => {
+    // refresh in case the registration actually happened
+    if (txId) {
+      runInAction(() => {
+        this.props.walletStore!.registeredDelegate = null;
+      });
+    }
     this.onDialogClose();
   }
 
@@ -259,6 +276,11 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           title: 'Vote for Delegate',
           form: <VoteDelegate onSubmit={this.onSubmitVote} />
         };
+      case 'delegateRegistration':
+        return {
+          title: 'Delegate Registration',
+          form: <RegisterDelegate onSubmit={this.onSubmitRegister} />
+        };
       default:
         return {
           title: null,
@@ -272,14 +294,17 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   componentWillMount() {
-    this.loadVote();
+    this.loadVotedDelegate();
+    this.loadRegisteredDelegate();
   }
 
   componentDidUpdate() {
-    this.loadVote();
+    // required bc of lack of wallet.selectedAccount during componentWillMount
+    this.loadVotedDelegate();
+    this.loadRegisteredDelegate();
   }
 
-  loadVote() {
+  loadVotedDelegate() {
     const store = this.props.walletStore!;
     // load the delegate data only if the account has been selected
     // and only once
@@ -291,6 +316,20 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     }
     this.setState({ delegateLoaded: true });
     store.loadVotedDelegate();
+  }
+
+  loadRegisteredDelegate() {
+    const store = this.props.walletStore!;
+    // load the registered name only if the account has been selected
+    // and only once
+    if (!this.props.walletStore!.selectedAccount!) {
+      return;
+    }
+    if (this.state.registeredLoaded) {
+      return;
+    }
+    this.setState({ registeredLoaded: true });
+    store.loadRegisteredDelegate();
   }
 
   render() {
@@ -380,8 +419,14 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               <ListItemText
                 primary={intl.formatMessage(messages.delegateRegistration)}
                 secondary={
-                  'TODO / ' +
-                  intl.formatMessage(messages.delegateRegistrationUnsetLabel)
+                  /* TODO translate 'Loading' */
+                  walletStore!.registeredDelegate === undefined
+                    ? 'Loading...'
+                    : walletStore!.registeredDelegate
+                      ? walletStore!.registeredDelegate!.username
+                      : intl.formatMessage(
+                          messages.delegateRegistrationUnsetLabel
+                        )
                 }
               />
             </ListItem>

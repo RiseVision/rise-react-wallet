@@ -102,7 +102,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
     // query for the recommended delegates
     this.loadActiveDelegates();
     // load the current vote (should come from settings)
-    if (!this.props.walletStore!.votedDelegate) {
+    if (this.props.walletStore!.votedDelegate === undefined) {
       this.props.walletStore!.loadVotedDelegate();
     }
   }
@@ -136,14 +136,14 @@ export default class VoteDelegate extends React.Component<Props, State> {
   renderStep2() {
     const { walletStore } = this.props;
     const account = this.props.account! || walletStore!.selectedAccount!;
-    // TODO translate 'recipient'
+    // TODO translate 'Cast Vote', unify with the transaction table
     // TODO show the delegates name?
     return (
       <ConfirmTransactionForm
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipient={'case vote'}
+        recipient={'Cast Vote'}
         amount={0}
         fee={walletStore!.fees.get('vote')!}
         onSubmit={this.onSubmit2}

@@ -12,7 +12,7 @@ import WalletStore, { TAccount } from '../../stores/wallet';
 interface Props {
   store?: RootStore;
   walletStore?: WalletStore;
-  onSubmit?: (txId: string) => void;
+  onSubmit?: (txId?: string) => void;
   account?: TAccount;
 }
 
@@ -31,6 +31,10 @@ export default class VoteTransaction extends React.Component<Props, State> {
   };
 
   onSubmit1 = (username: string) => {
+    // cant change an already registered delegate
+    if (this.props.walletStore!.registeredDelegate) {
+      return this.props.onSubmit ? this.props.onSubmit() : undefined;
+    }
     assert(username, 'Delegate\'s name required');
     // TODO validate the username
     this.setState({
@@ -65,22 +69,25 @@ export default class VoteTransaction extends React.Component<Props, State> {
   }
 
   renderStep1() {
-    return <RegisterDelegateForm onSubmit={this.onSubmit1} />;
+    // TODO assert that registeredDelegate is loaded (or load) before rendering
+    const { registeredDelegate } = this.props.walletStore!;
+    const name = registeredDelegate ? registeredDelegate!.username : '';
+    return <RegisterDelegateForm onSubmit={this.onSubmit1} username={name} />;
   }
 
   renderStep2() {
     const { walletStore } = this.props;
     const account = this.props.account! || walletStore!.selectedAccount!;
-    // TODO translate 'recipient'
+    // TODO translate 'Register Delegate', unify with the transaction table
     // TODO show the delegates name?
     return (
       <ConfirmTransactionForm
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipient={'case vote'}
+        recipient={'Register Delegate'}
         amount={0}
-        fee={walletStore!.fees.get('vote')!}
+        fee={walletStore!.fees.get('delegate')!}
         onSubmit={this.onSubmit2}
       />
     );

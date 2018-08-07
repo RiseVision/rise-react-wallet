@@ -118,7 +118,7 @@ class SendTransactionForm extends React.Component<Props, State> {
               onClick={() =>
                 this.props.onSubmit(
                   delegate,
-                  votedDelegate === delegate.publicKey
+                  votedDelegate !== delegate.publicKey
                 )
               }
             >

@@ -46,6 +46,7 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (username: string) => void;
+  username?: string;
 }
 
 export interface State {
@@ -72,11 +73,12 @@ class RegisterDelegateForm extends React.Component<Props, State> {
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // TODO validate the username
+    // TODO check if the username has changed
     this.props.onSubmit(this.state.username);
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, username } = this.props;
 
     return (
       <form onSubmit={this.onSubmit} className={classes.form}>
@@ -86,19 +88,37 @@ class RegisterDelegateForm extends React.Component<Props, State> {
           top 101 delegates are eligible to forge. All fees are shared equally
           between the top 101 delegates.
         </Typography>
-        <TextField
-          className={classes.input}
-          label="Delegate Name"
-          onChange={this.handleType()}
-          margin="normal"
-          fullWidth={true}
-          autoFocus={true}
-        />
-        <div className={classes.footer}>
-          <Button type="submit" fullWidth={true}>
-            SIGN &amp; BROADCAST
-          </Button>
-        </div>
+        {username ? (
+          <React.Fragment>
+            <Typography>
+              You're already registered as a delegate "{username}". The name
+              can't be changed.
+            </Typography>
+            <div className={classes.footer}>
+              <Button type="submit" fullWidth={true}>
+                CONTINUE
+              </Button>
+            </div>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            {' '}
+            <TextField
+              className={classes.input}
+              label="Delegate Name"
+              onChange={this.handleType()}
+              margin="normal"
+              fullWidth={true}
+              autoFocus={true}
+              value={this.state.username}
+            />
+            <div className={classes.footer}>
+              <Button type="submit" fullWidth={true}>
+                SIGN &amp; BROADCAST
+              </Button>
+            </div>
+          </React.Fragment>
+        )}
       </form>
     );
   }

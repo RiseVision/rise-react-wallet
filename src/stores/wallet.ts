@@ -46,7 +46,12 @@ export default class WalletStore {
     // @ts-ignore
     return this.groupTransactionsByDay(this.recentTransactions);
   }
+  // object OR not voted OR not loaded
+  // TODO represent state and data separately
   @observable votedDelegate?: Delegate | null = undefined;
+  // object OR not registered OR not loaded
+  // TODO represent state and data separately
+  @observable registeredDelegate?: Delegate | null = undefined;
 
   constructor(public config: TConfig) {
     dposAPI.nodeAddress = config.api_url;
@@ -294,7 +299,7 @@ export default class WalletStore {
   }
 
   /**
-   * Loaded the currently voted delegate for the currently selected account.
+   * Loads the currently voted delegate for the currently selected account.
    *
    * TODO make it usefull when called directly
    * TODO handle errors
@@ -310,6 +315,26 @@ export default class WalletStore {
     );
     runInAction(() => {
       this.votedDelegate = delegates.delegates ? delegates.delegates[0] : null;
+    });
+  }
+
+  /**
+   * Loads the delegate registration data for the currently selected account.
+   *
+   * TODO make it usefull when called directly
+   * TODO handle errors
+   */
+  @action
+  async loadRegisteredDelegate() {
+    runInAction(() => {
+      this.registeredDelegate = undefined;
+    });
+    assert(this.selectedAccount, 'Selected account required');
+    const res = await this.dposAPI.delegates.getByPublicKey(
+      this.selectedAccount!.publicKey
+    );
+    runInAction(() => {
+      this.registeredDelegate = res.delegate ? res.delegate : null;
     });
   }
 
@@ -360,6 +385,8 @@ export default class WalletStore {
     // cleanup
     this.recentTransactions.clear();
     this.selectedAccount = account;
+    this.registeredDelegate = undefined;
+    this.votedDelegate = undefined;
     this.calculateFiat();
     if (account.publicKey) {
       this.getRecentTransactions();
@@ -684,6 +711,7 @@ export type TFeesResponse = {
   };
 };
 
+// TODO rename to TFeeTypes or reuse TransactionType from 'dpos-wallet'
 export type TTransactionTypes =
   | 'send'
   | 'vote'
