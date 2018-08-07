@@ -49,6 +49,12 @@ interface Props extends WithStyles<typeof styles> {
   // no recipientId means internal operation (eg second signature)
   recipientId?: string;
   isPassphraseSet: boolean;
+  // progress states
+  isSuccessfull?: boolean;
+  isError?: boolean;
+  isInProgress?: boolean;
+  // states data
+  error?: string;
 }
 
 export interface State {
@@ -85,7 +91,8 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, isInProgress, isSuccessfull, isError } = this.props;
+    const isToConfirm = !isSuccessfull && !isError && !isInProgress;
 
     return (
       <form onSubmit={this.onSubmit} className={classes.form}>
@@ -111,33 +118,75 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
           <p>Network fee: {amountToUser(this.props.fee)} RISE</p>
           <p>Total: {amountToUser(this.props.amount + this.props.fee)} RISE</p>
         </div>
-        <Typography>
-          To confirm this transaction, enter your mnemonic secret
-          {this.props.isPassphraseSet ? ' and the 2nd passphrase ' : ''} in the
-          input boxes below.
-        </Typography>
-        <TextField
-          className={classes.input}
-          label="Account mnemonic secret"
-          onChange={this.handleChange('mnemonic')}
-          margin="normal"
-          autoFocus={true}
-          fullWidth={true}
-        />
-        {this.props.isPassphraseSet ? (
-          <TextField
-            className={classes.input}
-            label="Second passphrase"
-            onChange={this.handleChange('passphrase')}
-            margin="normal"
-            fullWidth={true}
-          />
-        ) : null}
-        <div className={classes.footer}>
-          <Button type="submit" fullWidth={true}>
-            SIGN &amp; BROADCAST
-          </Button>
-        </div>
+        {/* TODO icons */}
+        {isSuccessfull && (
+          <React.Fragment>
+            <Typography>
+              Failed to broadcast the transaction to the network:{' '}
+              {this.props.error || ''}.
+            </Typography>
+            <div className={classes.footer}>
+              <Button id="close" type="submit" fullWidth={true}>
+                CLOSE
+              </Button>
+              <Button id="redo" type="submit" fullWidth={true}>
+                TRY AGAIN
+              </Button>
+            </div>
+          </React.Fragment>
+        )}
+        {/* TODO icons */}
+        {isError && (
+          <React.Fragment>
+            <Typography>
+              The transaction was succesfully broadcast to the network!
+            </Typography>
+            <div className={classes.footer}>
+              <Button type="submit" fullWidth={true}>
+                DONE
+              </Button>
+            </div>
+          </React.Fragment>
+        )}
+        {/* TODO loading spinner */}
+        {isInProgress && (
+          <React.Fragment>
+            <Typography>
+              Broadcasting transaction to the network.<br />Please wait...
+            </Typography>
+          </React.Fragment>
+        )}
+        {isToConfirm && (
+          <React.Fragment>
+            <Typography>
+              To confirm this transaction, enter your mnemonic secret
+              {this.props.isPassphraseSet ? ' and the 2nd passphrase ' : ''} in
+              the input boxes below.
+            </Typography>
+            <TextField
+              className={classes.input}
+              label="Account mnemonic secret"
+              onChange={this.handleChange('mnemonic')}
+              margin="normal"
+              autoFocus={true}
+              fullWidth={true}
+            />
+            {this.props.isPassphraseSet ? (
+              <TextField
+                className={classes.input}
+                label="Second passphrase"
+                onChange={this.handleChange('passphrase')}
+                margin="normal"
+                fullWidth={true}
+              />
+            ) : null}
+            <div className={classes.footer}>
+              <Button type="submit" fullWidth={true}>
+                SIGN &amp; BROADCAST
+              </Button>
+            </div>
+          </React.Fragment>
+        )}
       </form>
     );
   }
