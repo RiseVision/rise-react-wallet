@@ -189,11 +189,18 @@ export default class WalletStore {
     assert(!account.secondSignature || passphrase, 'Passphrase required');
 
     const assets: IVoteAsset = {
-      votes: ['+' + delegatePublicKey]
+      votes: []
     };
     // take down the prev vote
     if (this.votedDelegate) {
       assets.votes.push('-' + this.votedDelegate.publicKey);
+    }
+    // cast a new vote, if different
+    if (
+      !this.votedDelegate ||
+      this.votedDelegate!.publicKey !== delegatePublicKey
+    ) {
+      assets.votes.push('+' + delegatePublicKey);
     }
     const unsigned = new VoteTx(assets)
       .withFees(this.fees.get('vote')!)
