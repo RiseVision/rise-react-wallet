@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core/styles';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import RootStore from '../../stores/root';
-import WalletStore from '../../stores/wallet';
+import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
@@ -215,9 +215,9 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     this.onDialogClose();
   }
 
-  onSubmitRegister = (txId: string) => {
+  onSubmitRegister = (tx?: TTransactionResult) => {
     // refresh in case the registration actually happened
-    if (txId) {
+    if (tx && tx.success) {
       runInAction(() => {
         this.props.walletStore!.registeredDelegate = null;
       });

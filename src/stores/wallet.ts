@@ -37,7 +37,7 @@ export default class WalletStore {
     // TODO def for dapp
   });
   @observable accounts = observable.array<TAccount>();
-  @observable selectedAccount: TAccount | null;
+  @observable selectedAccount: TAccount;
   // TODO maybe keep it for all the accounts as observable.map ?
   @observable fiatAmount: string | null;
   @observable recentTransactions = observable.array<TTransaction>();
@@ -134,7 +134,10 @@ export default class WalletStore {
     return json as TAccountResponse;
   }
 
-  async addPassphrase(mnemonic: string, passphrase: string) {
+  async addPassphrase(
+    mnemonic: string,
+    passphrase: string
+  ): Promise<TTransactionResult> {
     const wallet = new LiskWallet(mnemonic, 'R');
     const wallet2 = new LiskWallet(passphrase, 'R');
     const account = this.selectedAccount!;
@@ -145,8 +148,10 @@ export default class WalletStore {
       .set('fee', this.fees.get('secondsignature')!);
     const tx = wallet.signTransaction(unsigned);
     const transport = await dposAPI.buildTransport();
-    await transport.postTransaction(tx);
+    const ret = await transport.postTransaction(tx);
     await this.refreshAccount(account.id);
+    // TODO return also the error msg
+    return ret;
   }
 
   async sendTransaction(
@@ -155,7 +160,7 @@ export default class WalletStore {
     mnemonic: string,
     passphrase: string | null,
     account?: TAccount
-  ): Promise<string> {
+  ): Promise<TTransactionResult> {
     if (!account) {
       account = this.selectedAccount!;
     }
@@ -170,7 +175,7 @@ export default class WalletStore {
 
     const res = await this.singAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account.id, recipientId);
-    return res.transactionId;
+    return res;
   }
 
   /**
@@ -186,7 +191,7 @@ export default class WalletStore {
     mnemonic: string,
     passphrase: string | null,
     account?: TAccount
-  ): Promise<string> {
+  ): Promise<TTransactionResult> {
     if (!account) {
       account = this.selectedAccount!;
     }
@@ -214,7 +219,7 @@ export default class WalletStore {
 
     const res = await this.singAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account.id);
-    return res.transactionId;
+    return res;
   }
 
   async registerDelegateTransaction(
@@ -222,7 +227,7 @@ export default class WalletStore {
     mnemonic: string,
     passphrase: string | null,
     account?: TAccount
-  ): Promise<string> {
+  ): Promise<TTransactionResult> {
     if (!account) {
       account = this.selectedAccount!;
     }
@@ -242,14 +247,14 @@ export default class WalletStore {
 
     const res = await this.singAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account.id);
-    return res.transactionId;
+    return res;
   }
 
   async singAndSend(
     unsigned: BaseTx,
     mnemonic: string,
     passphrase: string | null
-  ): Promise<{ transactionId: string }> {
+  ): Promise<TTransactionResult> {
     const wallet = new LiskWallet(mnemonic, 'R');
     const tx = wallet.signTransaction(unsigned, this.secondWallet(passphrase));
     const transport = await dposAPI.buildTransport();
@@ -291,6 +296,9 @@ export default class WalletStore {
       }
       const ret = parseAccountReponse(await this.loadAccount(id), local);
       const account = this.accounts.find(a => a.id === id);
+      if (account!.id === this.selectedAccount.id) {
+        this.loadRecentTransactions();
+      }
       runInAction(() => {
         this.accounts.remove(account!);
         this.accounts.push(ret);
@@ -389,7 +397,7 @@ export default class WalletStore {
     this.votedDelegate = undefined;
     this.calculateFiat();
     if (account.publicKey) {
-      this.getRecentTransactions();
+      this.loadRecentTransactions();
     }
   }
 
@@ -404,7 +412,7 @@ export default class WalletStore {
   }
 
   @action
-  async getRecentTransactions(amount: number = 8) {
+  async loadRecentTransactions(amount: number = 8) {
     assert(this.selectedAccount, 'Account not selected');
     const recentPromise = this.loadTransactions({
       limit: amount,
@@ -609,7 +617,14 @@ export function parseAccountReponse(
   };
 }
 
-export type TGroupedTransactions = { [group: string]: TTransaction[] };
+export type TTransactionResult = {
+  transactionId?: string;
+  success: boolean;
+};
+
+export type TGroupedTransactions = {
+  [group: string]: TTransaction[];
+};
 
 export type TStoredAccount = {
   id: string;

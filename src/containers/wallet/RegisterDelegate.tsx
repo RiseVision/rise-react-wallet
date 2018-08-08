@@ -2,24 +2,29 @@ import * as assert from 'assert';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import ConfirmTransactionForm, {
+  ProgressState,
   State as ConfirmFormState
 } from '../../components/forms/ConfirmTransactionForm';
 import RegisterDelegateForm from '../../components/forms/RegisterDelegateForm';
 import { accountOverviewRoute } from '../../routes';
 import RootStore from '../../stores/root';
-import WalletStore, { TAccount } from '../../stores/wallet';
+import WalletStore, { TAccount, TTransactionResult } from '../../stores/wallet';
 
 interface Props {
   store?: RootStore;
   walletStore?: WalletStore;
-  onSubmit?: (txId?: string) => void;
+  onSubmit?: (tx?: TTransactionResult) => void;
   account?: TAccount;
 }
 
 export interface State {
   step: number;
   username?: string;
-  txId?: number;
+  tx?: TTransactionResult;
+  // progress state
+  progress: ProgressState;
+  // states data
+  error?: string;
 }
 
 @inject('walletStore')
@@ -27,7 +32,8 @@ export interface State {
 // TODO should have an URL
 export default class VoteTransaction extends React.Component<Props, State> {
   state: State = {
-    step: 1
+    step: 1,
+    progress: ProgressState.TO_CONFIRM
   };
 
   onSubmit1 = (username: string) => {
@@ -43,24 +49,33 @@ export default class VoteTransaction extends React.Component<Props, State> {
     });
   }
 
-  onSubmit2 = async (state: ConfirmFormState) => {
-    // TODO loading state
-    // TODO validation
-    const { store, walletStore } = this.props;
+  onSend = async (state: ConfirmFormState) => {
+    const { walletStore } = this.props;
     assert(this.state.username, 'Delegate\'s name required');
-    let txId = await walletStore!.registerDelegateTransaction(
-      this.state.username!,
-      state.mnemonic,
-      state.passphrase,
-      this.props.account
-    );
+    // set in-progress
+    this.setState({ progress: ProgressState.IN_PROGRESS });
+    let tx: TTransactionResult;
+    try {
+      // TODO error msg
+      tx = await walletStore!.registerDelegateTransaction(
+        this.state.username!,
+        state.mnemonic,
+        state.passphrase,
+        this.props.account
+      );
+    } catch (e) {
+      tx = { success: false };
+    }
+    const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
+    this.setState({ tx, progress });
+  }
+
+  onClose = async () => {
     if (this.props.onSubmit) {
-      this.props.onSubmit(txId);
+      this.props.onSubmit(this.state.tx);
     } else {
-      // TODO show the TransactionSend dialog
-      this.setState({ step: this.state.step + 1 });
-      // TODO use the same as the SendComponent
-      store!.router.goTo(accountOverviewRoute);
+      // fallback
+      this.props.store!.router.goTo(accountOverviewRoute);
     }
   }
 
@@ -88,7 +103,10 @@ export default class VoteTransaction extends React.Component<Props, State> {
         recipient={'Register Delegate'}
         amount={0}
         fee={walletStore!.fees.get('delegate')!}
-        onSubmit={this.onSubmit2}
+        onSend={this.onSend}
+        onRedo={this.onSend}
+        onClose={this.onClose}
+        progress={this.state.progress}
       />
     );
   }

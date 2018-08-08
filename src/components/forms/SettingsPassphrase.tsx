@@ -1,20 +1,24 @@
+import Button from '@material-ui/core/Button';
 import {
   createStyles,
-  withStyles,
+  Theme,
   WithStyles,
-  Theme
+  withStyles
 } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
-import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
+import { ChangeEvent, FormEvent } from 'react';
+import { accountOverviewRoute } from '../../routes';
+import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import { amountToUser } from '../../utils/utils';
 import TransactionForm, {
+  ProgressState,
   State as TransactionState
 } from './ConfirmTransactionForm';
+import { TTransactionResult } from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -40,24 +44,31 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   walletStore?: WalletStore;
-  onSubmit: (result: boolean) => void;
+  store?: RootStore;
+  onSubmit?: (tx?: TTransactionResult) => void;
 }
 
 export interface State {
   step: number;
   passphrase: string | null;
-  mnemonic: string | null;
+  tx?: TTransactionResult;
+  // progress state
+  progress: ProgressState;
+  // states data
+  error?: string;
 }
 
 const stylesDecorator = withStyles(styles);
 
 @inject('walletStore')
+// TODO inject router only
+@inject('store')
 @observer
 class SettingsPassphraseForm extends React.Component<Props, State> {
-  state = {
+  state: State = {
     step: 1,
     passphrase: null,
-    mnemonic: null
+    progress: ProgressState.TO_CONFIRM
   };
 
   // TODO extract to Form
@@ -80,21 +91,36 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     const isSet = account.secondSignature;
     // cancel if already set or not enought balance
     if (isSet || account.balance < fee) {
-      this.props.onSubmit(false);
+      this.onClose();
     } else {
       this.setState({ step: 2 });
     }
   }
 
-  onSubmit2 = async (state: TransactionState) => {
-    const mnemonic = state.mnemonic;
-    const passphrase = state.passphrase;
-    // TODO implement a loader
-    // this.setState({
-    //   isLoading: true
-    // });
-    await this.props.walletStore!.addPassphrase(mnemonic, passphrase);
-    this.props.onSubmit(true);
+  onSend = async (state: TransactionState) => {
+    // set in-progress
+    this.setState({ progress: ProgressState.IN_PROGRESS });
+    let tx: TTransactionResult;
+    try {
+      // TODO error msg
+      tx = await this.props.walletStore!.addPassphrase(
+        state.mnemonic,
+        state.passphrase
+      );
+    } catch (e) {
+      tx = { success: false };
+    }
+    const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
+    this.setState({ tx, progress });
+  }
+
+  onClose = () => {
+    if (this.props.onSubmit) {
+      this.props.onSubmit(this.state.tx);
+    } else {
+      // fallback
+      this.props.store!.router.goTo(accountOverviewRoute);
+    }
   }
 
   render() {
@@ -105,9 +131,11 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     const { classes, walletStore } = this.props;
     const account = walletStore!.selectedAccount!;
     const fee =
-      walletStore!.fees.get('secondsignature')! + walletStore!.fees.get('send')!;
+      walletStore!.fees.get('secondsignature')! +
+      walletStore!.fees.get('send')!;
     const isSet = account.secondSignature;
 
+    // TODO extract the form markup to a separate file
     return (
       <form onSubmit={this.onSubmit1} className={classes.form}>
         <Typography>
@@ -157,10 +185,11 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     // TODO translate
     return (
       <TransactionForm
-        onSubmit={this.onSubmit2}
-        fee={
-          walletStore.fees.get('secondsignature')! + walletStore.fees.get('send')!
-        }
+        onSend={this.onSend}
+        onRedo={this.onSend}
+        onClose={this.onClose}
+        progress={this.state.progress}
+        fee={walletStore.fees.get('secondsignature')!}
         amount={0}
         isPassphraseSet={account.secondSignature}
         sender={account.name}

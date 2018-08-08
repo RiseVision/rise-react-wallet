@@ -40,7 +40,9 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  onSubmit: (state: State) => void;
+  onSend: (state: State) => void;
+  onRedo: (state: State) => void;
+  onClose: () => void;
   amount: number;
   fee: number;
   sender: string | null;
@@ -49,12 +51,17 @@ interface Props extends WithStyles<typeof styles> {
   // no recipientId means internal operation (eg second signature)
   recipientId?: string;
   isPassphraseSet: boolean;
-  // progress states
-  isSuccessfull?: boolean;
-  isError?: boolean;
-  isInProgress?: boolean;
+  // progress state
+  progress: ProgressState;
   // states data
   error?: string;
+}
+
+export enum ProgressState {
+  TO_CONFIRM,
+  IN_PROGRESS,
+  SUCCESS,
+  ERROR
 }
 
 export interface State {
@@ -87,12 +94,17 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
 
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    this.props.onSubmit({ ...this.state });
+    if (this.props.progress === ProgressState.SUCCESS) {
+      this.props.onClose();
+    } else if (this.props.progress === ProgressState.ERROR) {
+      this.props.onRedo({ ...this.state });
+    } else {
+      this.props.onSend({ ...this.state });
+    }
   }
 
   render() {
-    const { classes, isInProgress, isSuccessfull, isError } = this.props;
-    const isToConfirm = !isSuccessfull && !isError && !isInProgress;
+    const { classes, progress } = this.props;
 
     return (
       <form onSubmit={this.onSubmit} className={classes.form}>
@@ -119,44 +131,48 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
           <p>Total: {amountToUser(this.props.amount + this.props.fee)} RISE</p>
         </div>
         {/* TODO icons */}
-        {isSuccessfull && (
+        {progress === ProgressState.ERROR && (
           <React.Fragment>
             <Typography>
-              Failed to broadcast the transaction to the network:{' '}
-              {this.props.error || ''}.
+              Failed to broadcast the transaction to the network
+              {this.props.error ? `: ${this.props.error}` : ''}.
             </Typography>
             <div className={classes.footer}>
-              <Button id="close" type="submit" fullWidth={true}>
+              <Button
+                name="close"
+                onClick={this.props.onClose}
+                fullWidth={true}
+              >
                 CLOSE
               </Button>
-              <Button id="redo" type="submit" fullWidth={true}>
+              <Button name="redo" type="submit" fullWidth={true}>
                 TRY AGAIN
               </Button>
             </div>
           </React.Fragment>
         )}
         {/* TODO icons */}
-        {isError && (
+        {progress === ProgressState.SUCCESS && (
           <React.Fragment>
             <Typography>
-              The transaction was succesfully broadcast to the network!
+              The transaction was successfully broadcast to the network!
             </Typography>
             <div className={classes.footer}>
-              <Button type="submit" fullWidth={true}>
+              <Button type="submit" fullWidth={true} name="close">
                 DONE
               </Button>
             </div>
           </React.Fragment>
         )}
         {/* TODO loading spinner */}
-        {isInProgress && (
+        {progress === ProgressState.IN_PROGRESS && (
           <React.Fragment>
             <Typography>
               Broadcasting transaction to the network.<br />Please wait...
             </Typography>
           </React.Fragment>
         )}
-        {isToConfirm && (
+        {progress === ProgressState.TO_CONFIRM && (
           <React.Fragment>
             <Typography>
               To confirm this transaction, enter your mnemonic secret
@@ -181,7 +197,7 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
               />
             ) : null}
             <div className={classes.footer}>
-              <Button type="submit" fullWidth={true}>
+              <Button name="send" type="submit" fullWidth={true}>
                 SIGN &amp; BROADCAST
               </Button>
             </div>

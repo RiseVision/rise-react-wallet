@@ -3,11 +3,12 @@ import { Delegate } from 'dpos-api-wrapper';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import ConfirmTransactionForm, {
+  ProgressState,
   State as ConfirmFormState
 } from '../../components/forms/ConfirmTransactionForm';
 import { accountOverviewRoute } from '../../routes';
 import RootStore from '../../stores/root';
-import WalletStore, { TAccount } from '../../stores/wallet';
+import WalletStore, { TAccount, TTransactionResult } from '../../stores/wallet';
 import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
 import { uniqueRandom } from '../../utils/utils';
 import { throttle } from 'lodash';
@@ -15,7 +16,7 @@ import { throttle } from 'lodash';
 interface Props {
   store?: RootStore;
   walletStore?: WalletStore;
-  onSubmit?: (txId: string) => void;
+  onSubmit?: (tx?: TTransactionResult) => void;
   account?: TAccount;
 }
 
@@ -26,7 +27,11 @@ export interface State {
   selectedDelegate?: Delegate;
   addVote?: boolean;
   query: string;
-  txId?: number;
+  tx?: TTransactionResult;
+  // progress state
+  progress: ProgressState;
+  // states data
+  error?: string;
 }
 
 @inject('walletStore')
@@ -37,7 +42,8 @@ export default class VoteDelegate extends React.Component<Props, State> {
     suggestedDelegates: [],
     activeDelegates: [],
     step: 1,
-    query: ''
+    query: '',
+    progress: ProgressState.TO_CONFIRM
   };
   lastSearch = 0;
 
@@ -77,24 +83,33 @@ export default class VoteDelegate extends React.Component<Props, State> {
     });
   }
 
-  onSubmit2 = async (state: ConfirmFormState) => {
-    // TODO loading state
-    // TODO validation
-    const { store, walletStore } = this.props;
+  onSend = async (state: ConfirmFormState) => {
+    const { walletStore } = this.props;
     assert(this.state.selectedDelegate, 'Delegate required');
-    let txId = await walletStore!.voteTransaction(
-      this.state.selectedDelegate!.publicKey,
-      state.mnemonic,
-      state.passphrase,
-      this.props.account
-    );
+    // set in-progress
+    this.setState({ progress: ProgressState.IN_PROGRESS });
+    let tx: TTransactionResult;
+    try {
+      // TODO error msg
+      tx = await walletStore!.voteTransaction(
+        this.state.selectedDelegate!.publicKey,
+        state.mnemonic,
+        state.passphrase,
+        this.props.account
+      );
+    } catch (e) {
+      tx = { success: false };
+    }
+    const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
+    this.setState({ tx, progress });
+  }
+
+  onClose = async () => {
     if (this.props.onSubmit) {
-      this.props.onSubmit(txId);
+      this.props.onSubmit(this.state.tx);
     } else {
-      // TODO show the TransactionSend dialog
-      this.setState({ step: this.state.step + 1 });
-      // TODO use the same as the SendComponent
-      store!.router.goTo(accountOverviewRoute);
+      // fallback
+      this.props.store!.router.goTo(accountOverviewRoute);
     }
   }
 
@@ -146,7 +161,10 @@ export default class VoteDelegate extends React.Component<Props, State> {
         recipient={'Cast Vote'}
         amount={0}
         fee={walletStore!.fees.get('vote')!}
-        onSubmit={this.onSubmit2}
+        onSend={this.onSend}
+        onRedo={this.onSend}
+        onClose={this.onClose}
+        progress={this.state.progress}
       />
     );
   }
