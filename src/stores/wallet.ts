@@ -37,7 +37,8 @@ export default class WalletStore {
     // TODO def for dapp
   });
   @observable accounts = observable.array<TAccount>();
-  @observable selectedAccount: TAccount;
+  // TODO should never be null
+  @observable selectedAccount: TAccount | null;
   // TODO maybe keep it for all the accounts as observable.map ?
   @observable fiatAmount: string | null;
   @observable recentTransactions = observable.array<TTransaction>();
@@ -290,18 +291,22 @@ export default class WalletStore {
    */
   async refreshAccount(...ids: string[]) {
     for (const id of ids) {
+      const wasSelected = this.selectedAccount!.id === id;
       const local = this.storedAccount(id);
       if (!local) {
         continue;
       }
       const ret = parseAccountReponse(await this.loadAccount(id), local);
       const account = this.accounts.find(a => a.id === id);
-      if (account!.id === this.selectedAccount.id) {
+      if (account!.id === this.selectedAccount!.id) {
         this.loadRecentTransactions();
       }
       runInAction(() => {
         this.accounts.remove(account!);
         this.accounts.push(ret);
+        if (!wasSelected) {
+          this.selectedAccount = ret;
+        }
       });
     }
   }
@@ -493,6 +498,17 @@ export default class WalletStore {
     }
   }
 
+  @action
+  signout() {
+    lstore.remove('accounts');
+    lstore.remove('lastSelectedAccount');
+    this.accounts.clear();
+    // TODO extract
+    this.selectedAccount = null;
+    this.fiatAmount = null;
+    this.recentTransactions.clear();
+  }
+
   // TODO switch to dposAPI
   async loadTransactions(
     params: TTransactionsRequest,
@@ -626,15 +642,6 @@ export type TGroupedTransactions = {
   [group: string]: TTransaction[];
 };
 
-export type TStoredAccount = {
-  id: string;
-  publicKey: string;
-  readOnly: boolean;
-  fiatCurrency: string;
-  name: string | null;
-  pinned: boolean;
-};
-
 export type TTransaction = {
   info: TxInfo;
   amount: number;
@@ -670,20 +677,20 @@ export type TTransactionsResponse = {
   transactions: TTransaction[];
 };
 
-export type TAccount = {
+export type TStoredAccount = {
   id: string;
   publicKey: string;
-  name: string | null;
+  readOnly: boolean;
   fiatCurrency: string;
+  name: string | null;
   pinned: boolean;
+};
+
+export type TAccount = TStoredAccount & {
   balance: number;
   unconfirmedBalance: number;
-  readOnly: boolean;
   secondPublicKey: string | null;
   secondSignature: boolean;
-  // _balance: number;
-  // _unconfirmedBalance: number;
-  // voted_delegate: string,
 };
 
 export type TAccountResponse = {

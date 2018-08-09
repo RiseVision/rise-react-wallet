@@ -26,10 +26,7 @@ import {
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import {
-  accountOverviewRoute,
-  onboardingAddAccountRoute
-} from '../../routes';
+import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import { orderBy } from 'lodash';
 import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
@@ -76,7 +73,7 @@ const messages = defineMessages({
     id: 'drawer-content.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
     defaultMessage: 'Unnamed account'
-  },
+  }
 });
 
 @inject('store')
@@ -89,9 +86,17 @@ class DrawerContent extends React.Component<DecoratedProps> {
     store!.router.goTo(accountOverviewRoute);
   }
 
+  handleSignoutCliecked = () => {
+    this.props.walletStore!.signout();
+    this.props.store!.router.goTo(onboardingAddAccountRoute);
+  }
+
   render() {
     const { intl, classes, store, walletStore } = this.props;
-    const unnamedAccountLabel = intl.formatMessage(messages.unnamedAccountLabel);
+    const unnamedAccountLabel = intl.formatMessage(
+      messages.unnamedAccountLabel
+    );
+    const selected = walletStore!.selectedAccount;
 
     return (
       <React.Fragment>
@@ -127,7 +132,8 @@ class DrawerContent extends React.Component<DecoratedProps> {
             <ListItem
               button={true}
               className={classNames(
-                walletStore!.selectedAccount === account &&
+                selected &&
+                  selected!.id === account.id &&
                   classes.selectedListItem
               )}
               onClick={this.handleAccountClicked(account.id)}
@@ -139,7 +145,10 @@ class DrawerContent extends React.Component<DecoratedProps> {
                 </Avatar>
               </ListItemAvatar>
               {/* TODO this doesnt observe */}
-              <ListItemText primary={account.name || unnamedAccountLabel} secondary={account.id} />
+              <ListItemText
+                primary={account.name || unnamedAccountLabel}
+                secondary={account.id}
+              />
             </ListItem>
           ))}
           <ListItem
@@ -182,7 +191,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
               />
             </ListItemText>
           </ListItem>
-          <ListItem button={true}>
+          <ListItem button={true} onClick={this.handleSignoutCliecked}>
             <ListItemIcon className={classes.listIcon}>
               <ExitToAppIcon />
             </ListItemIcon>

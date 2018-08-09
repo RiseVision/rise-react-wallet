@@ -336,8 +336,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     const { intl, classes, walletStore } = this.props;
     const account = walletStore!.selectedAccount!;
 
-    const dialog = this.getDialog();
-
     if (!account) {
       // TODO loading indicator
       return (
@@ -346,6 +344,9 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         </div>
       );
     }
+
+    const readOnly = account.readOnly;
+    const dialog = this.getDialog();
 
     return (
       <React.Fragment>
@@ -378,19 +379,21 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 />
               </ListItemSecondaryAction>
             </ListItem>
-            <ListItem button={true} onClick={this.handleVoteClicked}>
-              <ListItemText
-                primary={intl.formatMessage(messages.votedDelegate)}
-                secondary={
-                  /* TODO translate 'Loading' */
-                  walletStore!.votedDelegate === undefined
-                    ? 'Loading...'
-                    : walletStore!.votedDelegate
-                      ? walletStore!.votedDelegate!.username
-                      : intl.formatMessage(messages.votedDelegateUnsetLabel)
-                }
-              />
-            </ListItem>
+            {!readOnly && (
+              <ListItem button={true} onClick={this.handleVoteClicked}>
+                <ListItemText
+                  primary={intl.formatMessage(messages.votedDelegate)}
+                  secondary={
+                    /* TODO translate 'Loading' */
+                    walletStore!.votedDelegate === undefined
+                      ? 'Loading...'
+                      : walletStore!.votedDelegate
+                        ? walletStore!.votedDelegate!.username
+                        : intl.formatMessage(messages.votedDelegateUnsetLabel)
+                  }
+                />
+              </ListItem>
+            )}
             <ListItem button={true} onClick={this.handleFiatClicked}>
               <ListItemText
                 primary={intl.formatMessage(messages.fiatCurrency)}
@@ -405,31 +408,35 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 {intl.formatMessage(messages.advancedSettings)}
               </ListSubheader>}
           >
-            <ListItem button={true} onClick={this.handlePassphraseClicked}>
-              <ListItemText
-                primary={intl.formatMessage(messages.passphrase)}
-                secondary={
-                  account.secondSignature
-                    ? intl.formatMessage(messages.passphraseSetLabel)
-                    : intl.formatMessage(messages.passphraseUnsetLabel)
-                }
-              />
-            </ListItem>
-            <ListItem button={true} onClick={this.handleDelegateClicked}>
-              <ListItemText
-                primary={intl.formatMessage(messages.delegateRegistration)}
-                secondary={
-                  /* TODO translate 'Loading' */
-                  walletStore!.registeredDelegate === undefined
-                    ? 'Loading...'
-                    : walletStore!.registeredDelegate
-                      ? walletStore!.registeredDelegate!.username
-                      : intl.formatMessage(
-                          messages.delegateRegistrationUnsetLabel
-                        )
-                }
-              />
-            </ListItem>
+            {!readOnly && (
+              <ListItem button={true} onClick={this.handlePassphraseClicked}>
+                <ListItemText
+                  primary={intl.formatMessage(messages.passphrase)}
+                  secondary={
+                    account.secondSignature
+                      ? intl.formatMessage(messages.passphraseSetLabel)
+                      : intl.formatMessage(messages.passphraseUnsetLabel)
+                  }
+                />
+              </ListItem>
+            )}
+            {!readOnly && (
+              <ListItem button={true} onClick={this.handleDelegateClicked}>
+                <ListItemText
+                  primary={intl.formatMessage(messages.delegateRegistration)}
+                  secondary={
+                    /* TODO translate 'Loading' */
+                    walletStore!.registeredDelegate === undefined
+                      ? 'Loading...'
+                      : walletStore!.registeredDelegate
+                        ? walletStore!.registeredDelegate!.username
+                        : intl.formatMessage(
+                            messages.delegateRegistrationUnsetLabel
+                          )
+                  }
+                />
+              </ListItem>
+            )}
             <ListItem button={true} onClick={this.handleRemoveClicked}>
               <ListItemText
                 classes={{

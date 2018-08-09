@@ -1,10 +1,6 @@
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import {
-  InjectedIntlProps,
-  injectIntl,
-  defineMessages,
-} from 'react-intl';
+import { InjectedIntlProps, injectIntl, defineMessages } from 'react-intl';
 import {
   Theme,
   createStyles,
@@ -31,7 +27,7 @@ const styles = (theme: Theme) =>
     fab: {
       position: 'fixed',
       right: 3 * theme.spacing.unit,
-      bottom: 3 * theme.spacing.unit,
+      bottom: 3 * theme.spacing.unit
     },
     dateGroupTitle: {
       marginTop: theme.spacing.unit * 2,
@@ -62,7 +58,7 @@ const messages = defineMessages({
     id: 'wallet-account-overview.send-funds-fab-tooltip',
     description: 'Tooltip for send floating action button',
     defaultMessage: 'Send RISE'
-  },
+  }
 });
 
 @inject('store')
@@ -78,7 +74,11 @@ class AccountOverview extends React.Component<DecoratedProps> {
   render() {
     const { intl, classes, walletStore } = this.props;
     const account = walletStore!.selectedAccount;
-    const unnamedAccountLabel = intl.formatMessage(messages.unnamedAccountLabel);
+    const unnamedAccountLabel = intl.formatMessage(
+      messages.unnamedAccountLabel
+    );
+
+    const readOnly = account && account.readOnly;
 
     return (
       <React.Fragment>
@@ -90,18 +90,20 @@ class AccountOverview extends React.Component<DecoratedProps> {
             balance_in_fiat={walletStore!.fiatAmount!}
           />
         ) : null}
-        <Tooltip
-          placement="left"
-          title={intl.formatMessage(messages.sendFabTooltip)}
-        >
-          <Button
-            variant="fab"
-            className={classes.fab}
-            onClick={this.handleSendClick}
+        {!readOnly && (
+          <Tooltip
+            placement="left"
+            title={intl.formatMessage(messages.sendFabTooltip)}
           >
-            <SendIcon />
-          </Button>
-        </Tooltip>
+            <Button
+              variant="fab"
+              className={classes.fab}
+              onClick={this.handleSendClick}
+            >
+              <SendIcon />
+            </Button>
+          </Tooltip>
+        )}
         <div className={classes.content}>
           {toPairs(walletStore!.groupedTransactions).map(
             ([group, transactions]) => (
