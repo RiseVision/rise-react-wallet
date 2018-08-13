@@ -1,35 +1,13 @@
-import {
-  createStyles,
-  withStyles,
-  WithStyles,
-  Theme
-} from '@material-ui/core/styles';
+import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import NativeSelect from '@material-ui/core/NativeSelect';
 import { observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
-import * as React from 'react';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    input: {
-      color: theme.palette.grey['600'],
-      width: '100%',
-      marginTop: theme.spacing.unit,
-      marginBottom: theme.spacing.unit
-    },
-    footer: {
-      '& button': {
-        color: theme.palette.grey['600']
-      }
-    },
-    error: {
-      /* TODO from the theme */
-      color: 'red'
-    }
-  });
-
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   onSubmit: (state: State) => void;
   fiat: string;
   options: string[];
@@ -39,8 +17,6 @@ export interface State {
   fiat: string | null;
   global: boolean;
 }
-
-const stylesDecorator = withStyles(styles);
 
 @observer
 class SettingsFiatForm extends React.Component<Props, State> {
@@ -71,41 +47,61 @@ class SettingsFiatForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
-    const options = this.props.options;
+    const { options } = this.props;
 
     return (
-      <form onSubmit={this.onSubmit}>
-        <Typography>
-          Select which FIAT currency you prefer to see your RISE account value
-          in.
-        </Typography>
-        <Typography>
-          {/* TODO autoFocus={true} */}
-          <select
-            name="fiat"
+      <Grid
+        container={true}
+        spacing={16}
+        component="form"
+        onSubmit={this.onSubmit}
+      >
+        <Grid item={true} xs={12}>
+          <Typography>
+            <FormattedMessage
+              id="forms-settings-fiat.instructions"
+              description="Instructions before the fiat currency field"
+              defaultMessage={'Select which FIAT currency you prefer to see your ' +
+                'RISE account value in.'}
+            />
+          </Typography>
+        </Grid>
+        <Grid item={true} xs={12}>
+          <NativeSelect
+            value={this.state.fiat || this.props.fiat}
             onChange={this.handleChange('fiat')}
-            className={classes.input}
+            fullWidth={true}
           >
-            {options.map(name => ( this.props.fiat === name ?
-              <option key={name} value={name} selected={true}>
-                {name}
-              </option> :
-              <option key={name} value={name}>
-                {name}
-              </option>
+            {options.map(name => (
+              <option key={name} value={name}>{name}</option>
             ))}
-          </select>
-        </Typography>
-        <div className={classes.footer}>
-          <Button type="submit">SET FOR THIS ACCOUNT</Button>
-          <Button type="submit" onClick={() => this.setState({ global: true })}>
-            SET FOR ALL ACCOUNTS
+          </NativeSelect>
+        </Grid>
+        <Grid item={true} xs={12} sm={6}>
+          <Button type="submit" fullWidth={true}>
+            <FormattedMessage
+              id="forms-settings-fiat.update-for-one"
+              description="Update FIAT for one account button label"
+              defaultMessage="Set for this account"
+            />
           </Button>
-        </div>
-      </form>
+        </Grid>
+        <Grid item={true} xs={12} sm={6}>
+          <Button
+            type="submit"
+            onClick={() => this.setState({ global: true })}
+            fullWidth={true}
+          >
+            <FormattedMessage
+              id="forms-settings-fiat.update-for-all"
+              description="Update FIAT for all accounts button label"
+              defaultMessage="Set for all accounts"
+            />
+          </Button>
+        </Grid>
+      </Grid>
     );
   }
 }
 
-export default stylesDecorator(SettingsFiatForm);
+export default SettingsFiatForm;
