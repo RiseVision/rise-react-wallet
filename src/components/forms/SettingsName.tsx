@@ -1,29 +1,13 @@
-import {
-  createStyles,
-  withStyles,
-  WithStyles,
-  Theme
-} from '@material-ui/core/styles';
+import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import { observer } from 'mobx-react';
 import { ChangeEvent, FormEvent } from 'react';
-import * as React from 'react';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    input: {
-      color: theme.palette.grey['600']
-    },
-    footer: {
-      '& button': {
-        color: theme.palette.grey['600']
-      }
-    }
-  });
-
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   onSubmit: (state: State) => void;
   name: string;
   id: string;
@@ -32,8 +16,6 @@ interface Props extends WithStyles<typeof styles> {
 export interface State {
   name: string | null;
 }
-
-const stylesDecorator = withStyles(styles);
 
 @observer
 class SettingsNameForm extends React.Component<Props, State> {
@@ -63,34 +45,53 @@ class SettingsNameForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
-
     return (
-      <form onSubmit={this.onSubmit}>
-        <Typography>
-          Assign a new name to account {this.props.id}. This name will only be
-          visible to you and nobody else.
-        </Typography>
-        <div>
+      <Grid
+        container={true}
+        spacing={16}
+        component="form"
+        onSubmit={this.onSubmit}
+      >
+        <Grid item={true} xs={12}>
+          <Typography>
+            <FormattedMessage
+              id="forms-settings-name.instructions"
+              description="Instructions before the account name input field"
+              defaultMessage={'Assign a new name to account {address}. ' +
+                'This name will only be visible to you and nobody else.'}
+              values={{
+                address: this.props.id,
+              }}
+            />
+          </Typography>
+        </Grid>
+        <Grid item={true} xs={12}>
           <TextField
-            className={classes.input}
-            id="account-name"
-            label="Account name"
+            label={
+              <FormattedMessage
+                id="forms-settings-name.name-input-label"
+                description="Account name input label"
+                defaultMessage="Account name"
+              />
+            }
             value={this.state.name || ''}
             onChange={this.handleChange('name')}
-            margin="normal"
             autoFocus={true}
             fullWidth={true}
           />
-        </div>
-        <div className={classes.footer}>
+        </Grid>
+        <Grid item={true} xs={12}>
           <Button type="submit" fullWidth={true}>
-            UPDATE NAME
+            <FormattedMessage
+              id="forms-settings-name.update"
+              description="Update account name button label"
+              defaultMessage="Update name"
+            />
           </Button>
-        </div>
-      </form>
+        </Grid>
+      </Grid>
     );
   }
 }
 
-export default stylesDecorator(SettingsNameForm);
+export default SettingsNameForm;
