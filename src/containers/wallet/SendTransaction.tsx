@@ -1,5 +1,6 @@
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import ConfirmTransactionForm, {
   ProgressState,
   State as ConfirmFormState
@@ -97,7 +98,22 @@ export default class SendTransaction extends React.Component<Props, State> {
   }
 
   render() {
-    const title = this.state.step === 1 ? 'Send RISE' : 'Confirm transaction';
+    let title;
+    if (this.state.step === 1) {
+      title = (
+        <FormattedMessage
+          id="settings-dialog-title"
+          defaultMessage={'Send RISE'}
+        />
+      );
+    } else {
+      title = (
+        <FormattedMessage
+          id="settings-dialog-title"
+          defaultMessage={'Confirm transaction'}
+        />
+      );
+    }
     const content =
       this.state.step === 1 ? this.renderStep1() : this.renderStep2();
 

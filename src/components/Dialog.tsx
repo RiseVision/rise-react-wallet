@@ -5,8 +5,8 @@ import {
   Theme
 } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
+import { ReactElement } from 'react';
 import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
 import ModalPaper from './ModalPaper';
 import ModalPaperHeader from './ModalPaperHeader';
 
@@ -28,7 +28,7 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   open: boolean;
-  title: string;
+  title: ReactElement<HTMLElement> | null;
   onClose?: () => void;
 }
 
@@ -67,7 +67,7 @@ class Dialog extends React.Component<Props, State> {
           closeButton={true}
           onCloseClick={this.handleBackClick}
         >
-          <FormattedMessage id="settings-dialog-title" defaultMessage={title} />
+          {title}
         </ModalPaperHeader>
         <div className={classes.content}>{this.props.children}</div>
       </ModalPaper>
