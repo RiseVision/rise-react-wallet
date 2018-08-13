@@ -32,6 +32,7 @@ import FiatForm, {
 } from '../../components/forms/SettingsFiat';
 import VoteDelegate from './VoteDelegate';
 import RegisterDelegate from './RegisterDelegate';
+import { FormattedMessage } from 'react-intl';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -226,7 +227,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   getDialog: () => {
-    title: string | null;
+    title: ReactElement<HTMLElement> | null;
     form: ReactElement<HTMLFormElement> | null;
   } = () => {
     const { store, walletStore } = this.props;
@@ -235,7 +236,12 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     switch (this.state.dialogField!) {
       case 'name':
         return {
-          title: 'Update account name',
+          title: (
+            <FormattedMessage
+              id="settings-dialog-title"
+              defaultMessage={'Update account name'}
+            />
+          ),
           form: (
             <NameForm
               name={account.name!}
@@ -246,7 +252,12 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         };
       case 'removeAccount':
         return {
-          title: 'Remove account?',
+          title: (
+            <FormattedMessage
+              id="settings-dialog-title"
+              defaultMessage={'Remove account?'}
+            />
+          ),
           form: (
             <RemoveAccountForm
               name={account.name}
@@ -257,12 +268,22 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         };
       case 'passphrase':
         return {
-          title: 'Setup 2nd passphrase',
+          title: (
+            <FormattedMessage
+              id="settings-dialog-title"
+              defaultMessage={'Setup 2nd passphrase'}
+            />
+          ),
           form: <PassphraseForm onSubmit={this.onDialogClose} />
         };
       case 'fiat':
         return {
-          title: 'Displayed FIAT currency',
+          title: (
+            <FormattedMessage
+              id="settings-dialog-title"
+              defaultMessage={'Displayed FIAT currency'}
+            />
+          ),
           form: (
             <FiatForm
               fiat={account.fiatCurrency}
@@ -273,12 +294,22 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         };
       case 'delegate':
         return {
-          title: 'Vote for Delegate',
+          title: (
+            <FormattedMessage
+              id="settings-dialog-title"
+              defaultMessage={'Vote for Delegate'}
+            />
+          ),
           form: <VoteDelegate onSubmit={this.onSubmitVote} />
         };
       case 'delegateRegistration':
         return {
-          title: 'Delegate Registration',
+          title: (
+            <FormattedMessage
+              id="settings-dialog-title"
+              defaultMessage={'Delegate Registration'}
+            />
+          ),
           form: <RegisterDelegate onSubmit={this.onSubmitRegister} />
         };
       default:
@@ -351,7 +382,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     return (
       <React.Fragment>
         <Dialog
-          title={dialog.title || ''}
+          title={dialog.title}
           open={this.state.dialogOpen}
           onClose={this.onDialogClose}
         >
