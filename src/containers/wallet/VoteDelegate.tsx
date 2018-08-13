@@ -133,10 +133,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
     const api = this.props.walletStore!.dposAPI;
     this.setState({ loadingDelegates: true });
     const res = await api.delegates.getList();
-    this.setState({
-      loadingDelegates: false,
-      activeDelegates: res.delegates,
-    });
+    this.setState({ activeDelegates: res.delegates });
     // recommend random from active in the beginning
     if (!this.state.query) {
       this.onSearch('');
