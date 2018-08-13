@@ -22,8 +22,9 @@ interface Props {
 
 export interface State {
   step: number;
+  loadingDelegates: boolean;
   activeDelegates: Delegate[];
-  suggestedDelegates: Delegate[];
+  displayedDelegates: Delegate[];
   selectedDelegate?: Delegate;
   addVote?: boolean;
   query: string;
@@ -39,7 +40,8 @@ export interface State {
 // TODO should have an URL
 export default class VoteDelegate extends React.Component<Props, State> {
   state: State = {
-    suggestedDelegates: [],
+    loadingDelegates: false,
+    displayedDelegates: [],
     activeDelegates: [],
     step: 1,
     query: '',
@@ -50,25 +52,30 @@ export default class VoteDelegate extends React.Component<Props, State> {
   onSearch = throttle(
     async (query: string) => {
       const clock = ++this.lastSearch;
-      if (!query || !query.trim()) {
+      const showSuggestions = !query || !query.trim();
+
+      if (showSuggestions) {
         if (!this.state.activeDelegates.length) {
           return;
         }
         const active = this.state.activeDelegates;
         const rand = uniqueRandom(0, active.length - 1);
         this.setState({
-          suggestedDelegates: [active[rand()], active[rand()], active[rand()]]
+          loadingDelegates: false,
+          displayedDelegates: [active[rand()], active[rand()], active[rand()]],
         });
-        return;
+      } else {
+        this.setState({ loadingDelegates: true });
+        const result = await this.props.walletStore!.searchDelegates(query);
+        // check if there was a newer search
+        if (this.lastSearch !== clock) {
+          return;
+        }
+        this.setState({
+          loadingDelegates: false,
+          displayedDelegates: result.slice(0, 3),
+        });
       }
-      const result = await this.props.walletStore!.searchDelegates(query);
-      // check if there was a newer search
-      if (this.lastSearch !== clock) {
-        return;
-      }
-      this.setState({
-        suggestedDelegates: result.slice(0, 3)
-      });
     },
     500,
     { leading: false, trailing: true }
@@ -124,8 +131,12 @@ export default class VoteDelegate extends React.Component<Props, State> {
 
   async loadActiveDelegates() {
     const api = this.props.walletStore!.dposAPI;
+    this.setState({ loadingDelegates: true });
     const res = await api.delegates.getList();
-    this.setState({ activeDelegates: res.delegates });
+    this.setState({
+      loadingDelegates: false,
+      activeDelegates: res.delegates,
+    });
     // recommend random from active in the beginning
     if (!this.state.query) {
       this.onSearch('');
@@ -142,7 +153,8 @@ export default class VoteDelegate extends React.Component<Props, State> {
       <VoteTransactionForm
         onSubmit={this.onSubmit1}
         onSearch={this.onSearch}
-        delegates={this.state.suggestedDelegates}
+        isLoading={this.state.loadingDelegates}
+        delegates={this.state.displayedDelegates}
         votedDelegate={votedDelegate ? votedDelegate!.publicKey : null}
       />
     );

@@ -50,6 +50,7 @@ const styles = (theme: Theme) =>
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
   onSearch: (query: string) => void;
+  isLoading: boolean;
   delegates: Delegate[];
   votedDelegate: string | null;
 }
