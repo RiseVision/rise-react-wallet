@@ -192,5 +192,4 @@ class NewMnemonicPage extends React.Component<Props, State> {
   }
 }
 
-// TODO make it a decorator
 export default stylesDecorator(NewMnemonicPage);

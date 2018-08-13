@@ -412,7 +412,7 @@ export default class WalletStore {
     // TODO calculate
     runInAction(() => {
       // TODO check if the same account is still selected
-      this.fiatAmount = '~666.99 ' + this.selectedAccount!.fiatCurrency;
+      this.fiatAmount = '~??? ' + this.selectedAccount!.fiatCurrency;
     });
   }
 

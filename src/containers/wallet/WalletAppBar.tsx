@@ -161,5 +161,4 @@ class WalletAppBar extends React.Component<DecoratedProps> {
   }
 }
 
-// TODO convert to TS decorators
 export default stylesDecorator(injectIntl(WalletAppBar));
