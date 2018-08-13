@@ -8,9 +8,6 @@ export default class AppStore {
   @observable translationError: Error | null = null;
   @observable locale: Locale;
 
-  // TODO store async components here
-  components = {};
-
   constructor() {
     // Load locale from local storage, trying to autodetect one if unset
     const fallbackLocale = 'en';
