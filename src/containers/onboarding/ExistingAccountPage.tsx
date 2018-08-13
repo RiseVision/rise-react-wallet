@@ -215,5 +215,4 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   }
 }
 
-// TODO make it a decorator
 export default stylesDecorator(injectIntl(ExistingAccountPage));

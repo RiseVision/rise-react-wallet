@@ -129,7 +129,4 @@ class Wallet extends React.Component<DecoratedProps, State> {
   }
 }
 
-// TODO convert to TS decorators
-//   https://github.com/Microsoft/TypeScript/issues/4881
-// TODO is themeDecorator required?
 export default stylesDecorator<Props>(themeDecorator<DecoratedProps>(Wallet));

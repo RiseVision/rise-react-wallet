@@ -122,5 +122,4 @@ class ChooseLanguagePage extends React.Component<Props> {
   }
 }
 
-// TODO make it a decorator
 export default stylesDecorator(ChooseLanguagePage);

@@ -209,5 +209,4 @@ class DrawerContent extends React.Component<DecoratedProps> {
   }
 }
 
-// TODO convert to a TS decorator
 export default stylesDecorator(injectIntl(DrawerContent));
