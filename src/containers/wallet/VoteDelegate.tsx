@@ -10,8 +10,7 @@ import { accountOverviewRoute } from '../../routes';
 import RootStore from '../../stores/root';
 import WalletStore, { TAccount, TTransactionResult } from '../../stores/wallet';
 import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
-import { uniqueRandom } from '../../utils/utils';
-import { throttle } from 'lodash';
+import { throttle, sampleSize } from 'lodash';
 
 interface Props {
   store?: RootStore;
@@ -59,10 +58,9 @@ export default class VoteDelegate extends React.Component<Props, State> {
           return;
         }
         const active = this.state.activeDelegates;
-        const rand = uniqueRandom(0, active.length - 1);
         this.setState({
           loadingDelegates: false,
-          displayedDelegates: [active[rand()], active[rand()], active[rand()]],
+          displayedDelegates: sampleSize(active, 3),
           query,
         });
       } else {

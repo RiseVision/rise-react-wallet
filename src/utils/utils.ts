@@ -36,14 +36,3 @@ export function getTimestamp() {
       .unix()
   );
 }
-
-// TODO webpack has issues with
-// import * as uniqueRandom from 'uniqueRandom';
-export function uniqueRandom(min: number, max: number) {
-  let prev: number;
-  return function rand() {
-    const num = Math.floor(Math.random() * (max - min + 1) + min);
-    prev = num === prev && min !== max ? rand() : num;
-    return prev;
-  };
-}
