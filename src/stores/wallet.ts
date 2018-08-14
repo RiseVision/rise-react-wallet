@@ -11,12 +11,15 @@ import {
   DelegateTx
 } from 'dpos-offline';
 import { action, observable, runInAction, computed } from 'mobx';
+import { RouterStore } from 'mobx-router';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
+import { onboardingAddAccountRoute } from '../routes';
 import {
   getTimestamp,
   normalizeAddress,
   timestampToUnix
 } from '../utils/utils';
+import AccountStore from './account';
 import { TConfig } from './index';
 import * as moment from 'moment-timezone';
 import { groupBy, pick } from 'lodash';
@@ -28,7 +31,7 @@ export default class WalletStore {
 
   // TODO type as not null
   @observable
-  fees = observable.map<TTransactionTypes, number>({
+  fees = observable.map<TFeeTypes, number>({
     send: 10000000,
     vote: 100000000,
     secondsignature: 500000000,
@@ -36,38 +39,27 @@ export default class WalletStore {
     multisignature: 500000000
     // TODO def for dapp
   });
-  @observable accounts = observable.array<TAccount>();
-  // TODO should never be null
-  @observable selectedAccount: TAccount | null;
-  // TODO maybe keep it for all the accounts as observable.map ?
-  @observable fiatAmount: string | null;
-  @observable recentTransactions = observable.array<TTransaction>();
-  @computed
-  get groupedTransactions(): TGroupedTransactions {
-    // @ts-ignore
-    return this.groupTransactionsByDay(this.recentTransactions);
-  }
-  // object OR not voted OR not loaded
-  // TODO represent state and data separately
-  @observable votedDelegate?: Delegate | null = undefined;
-  // object OR not registered OR not loaded
-  // TODO represent state and data separately
-  @observable registeredDelegate?: Delegate | null = undefined;
+  @observable accounts = observable.map<string, AccountStore>();
+  @observable selectedAccount: AccountStore;
 
-  constructor(public config: TConfig) {
+  constructor(public config: TConfig, public router: RouterStore) {
     dposAPI.nodeAddress = config.api_url;
     this.api = config.api_url;
     this.dposAPI = dposAPI;
     const accounts = this.storedAccounts();
-    let isSelected = false;
+    assert(accounts.length, 'No added accounts');
     const lastSelected = lstore.get('lastSelectedAccount');
+    // login all stored accounts
     for (const account of accounts) {
-      const select: boolean =
-        (lastSelected && lastSelected === account.id) ||
-        (!lastSelected && !isSelected);
       // login, merge local data and select the last selected one
-      this.login(account.id, account, select);
-      isSelected = true;
+      this.login(account.id, account);
+    }
+    // select the last selected one
+    if (this.accounts.has(lastSelected)) {
+      this.selectedAccount = this.accounts.get(lastSelected);
+    } else {
+      // or the first one
+      this.selectedAccount = this.accounts.get(this.accounts.keys()[0]);
     }
     this.updateFees();
   }
@@ -78,24 +70,25 @@ export default class WalletStore {
     const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule();
     runInAction(() => {
       for (const [fee, value] of Object.entries(fees.fees)) {
-        this.fees.set(fee as TTransactionTypes, value);
+        this.fees.set(fee as TFeeTypes, value);
       }
     });
   }
 
   /**
-   * Returns the list of stored account IDs.
+   * Returns the list of stored accounts.
    */
   storedAccounts(): TStoredAccount[] {
     return lstore.get('accounts') || [];
   }
 
-  storedAccount(id: string): TStoredAccount | null {
+  storedAccountbyID(id: string): TStoredAccount | null {
     return this.storedAccounts().find(a => a.id === id) || null;
   }
 
   /**
    * Remember the account in local storage.
+   * TODO bind an an observer
    * @param account
    */
   saveAccount(account: TStoredAccount) {
@@ -115,20 +108,15 @@ export default class WalletStore {
     lstore.set('accounts', stored);
   }
 
-  // TODO switch to dposAPI
   async loadAccount(id: string): Promise<TAccountResponse> {
+    // TODO switch to dposAPI
     const res = await fetch(`${this.api}/api/accounts?address=${id}`);
     const json: TAccountResponse | TErrorResponse = await res.json();
     if (!json.success) {
       // fake the account
-      // TODO confirm if expected
       // @ts-ignore
       json.account = {
-        address: id,
-        balance: 0,
-        unconfirmedBalance: 0,
-        secondPassphrase: '',
-        unconfirmedPassphrase: ''
+        address: id
       };
       // throw new Error((json as TErrorResponse).error);
     }
@@ -277,6 +265,20 @@ export default class WalletStore {
   }
 
   /**
+   * @returns The name from the address book OR from one of the added accounts
+   *   OR null if not found
+   * TODO
+   */
+  idToName(id: string): string | null {
+    for (const account of this.accounts) {
+      if (account.id === id && account.name) {
+        return account.name;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Second wallet for signing with the second passphrase.
    * @param passphrase
    */
@@ -292,7 +294,7 @@ export default class WalletStore {
   async refreshAccount(...ids: string[]) {
     for (const id of ids) {
       const wasSelected = this.selectedAccount!.id === id;
-      const local = this.storedAccount(id);
+      const local = this.storedAccountbyID(id);
       if (!local) {
         continue;
       }
@@ -351,26 +353,29 @@ export default class WalletStore {
     });
   }
 
+  /**
+   *
+   * @param id
+   * @param local Optional, omitted on the first login.
+   */
   @action
   async login(
     id: string,
-    local?: Partial<TStoredAccount>,
-    select: boolean = false
-  ) {
+    local?: { id: string } & Partial<TAccount>
+  ): Promise<true> {
     if (!id) {
       throw Error('Address required');
     }
-    if (!normalizeAddress(id)) {
+    id = normalizeAddress(id);
+    if (!id) {
       throw Error('Invalid address');
     }
+    const account = new AccountStore(this.config, local || { id });
+    this.accounts.set(id, account);
+    // TODO use observe() to listen on TStoredAccount fields
+    //   and auto-save them to the lstore
     const res = await this.loadAccount(id);
-    const account = parseAccountReponse(res, local);
-    runInAction(() => {
-      this.accounts.push(account);
-      if (select) {
-        this.selectAccount(id);
-      }
-    });
+    account.importData(parseAccountReponse(res, local));
     // memorize the account
     this.saveAccount(account);
     return true;
@@ -406,18 +411,24 @@ export default class WalletStore {
     }
   }
 
+  getAccountByID(accountID: string) {
+    return this.accounts.find(a => a.id === accountID);
+  }
+
   @action
-  async calculateFiat() {
-    this.fiatAmount = null;
+  async calculateFiat(accountID: string) {
+    const account = this.getAccountByID(accountID);
+    assert(account, `Account ${accountID} not found`);
+    account.fiatAmount = null;
     // TODO calculate
     runInAction(() => {
       // TODO check if the same account is still selected
-      this.fiatAmount = '~??? ' + this.selectedAccount!.fiatCurrency;
+      account.fiatAmount = '~??? ' + this.selectedAccount!.fiatCurrency;
     });
   }
 
   @action
-  async loadRecentTransactions(amount: number = 8) {
+  async loadRecentTransactions(accountID: string, amount: number = 8) {
     assert(this.selectedAccount, 'Account not selected');
     const recentPromise = this.loadTransactions({
       limit: amount,
@@ -445,104 +456,6 @@ export default class WalletStore {
       );
       // @ts-ignore
       this.recentTransactions.push(...this.parseTransactionsReponse(recent));
-    });
-  }
-
-  @action
-  registerAccount(mnemonic: string[]) {
-    const wallet = new LiskWallet(mnemonic.join(' '), 'R');
-    const account = {
-      id: wallet.address,
-      publicKey: wallet.publicKey,
-      name: null,
-      fiatCurrency: 'USD',
-      readOnly: false
-    };
-    this.login(account.id, account, true);
-    return account.id;
-  }
-
-  @action
-  updateAccountName(name: string) {
-    this.selectedAccount!.name = name;
-    this.saveAccount(this.selectedAccount!);
-  }
-
-  @action
-  updateFiat(fiat: string, global: boolean = false) {
-    assert(fiat, 'FIAT required');
-    if (global) {
-      for (const account of this.accounts) {
-        account.fiatCurrency = fiat;
-        this.saveAccount(account);
-      }
-    } else {
-      this.selectedAccount!.fiatCurrency = fiat;
-      this.saveAccount(this.selectedAccount!);
-    }
-    this.calculateFiat();
-  }
-
-  @action
-  removeAccount(id?: string) {
-    if (!id) {
-      id = this.selectedAccount!.id;
-    }
-    const wasSelected = id === this.selectedAccount!.id;
-    const account = this.accounts.find(a => a.id === id);
-    assert(account, `Account ${id} not found`);
-    this.accounts.remove(account!);
-    lstore.set('accounts', this.storedAccounts().filter(a => a.id !== id));
-    if (wasSelected && this.accounts.length) {
-      this.selectAccount(this.accounts[0].id);
-    }
-  }
-
-  @action
-  signout() {
-    lstore.remove('accounts');
-    lstore.remove('lastSelectedAccount');
-    this.accounts.clear();
-    // TODO extract
-    this.selectedAccount = null;
-    this.fiatAmount = null;
-    this.recentTransactions.clear();
-  }
-
-  // TODO switch to dposAPI
-  async loadTransactions(
-    params: TTransactionsRequest,
-    confirmed: boolean = true
-  ): Promise<TTransactionsResponse> {
-    const path = confirmed ? '' : '/unconfirmed';
-    const url = new URL(`${this.api}/api/transactions${path}`);
-    // @ts-ignore
-    url.search = new URLSearchParams(params);
-    // @ts-ignore
-    const res = await fetch(url);
-    const json: TTransactionsResponse | TErrorResponse = await res.json();
-    if (!json.success) {
-      throw new Error((json as TErrorResponse).error);
-    }
-    return json;
-  }
-
-  groupTransactionsByDay(transactions: TTransaction[]): TGroupedTransactions {
-    // @ts-ignore wrong lodash typing for groupBy
-    return groupBy(transactions, (transaction: TTransaction) => {
-      return moment(transaction.timestamp)
-        .startOf('day')
-        .calendar(undefined, {
-          // TODO translate those
-          lastWeek: '[Last] dddd',
-          lastDay: '[Yesterday]',
-          sameDay: '[Today]',
-          nextDay: '[Tomorrow]',
-          nextWeek: 'dddd',
-          sameElse: () => {
-            return this.config.date_format;
-          }
-        });
     });
   }
 
@@ -586,18 +499,83 @@ export default class WalletStore {
     });
   }
 
-  /**
-   * @returns The name from the address book OR from one of the added accounts
-   *   OR null if not found
-   * TODO
-   */
-  idToName(id: string) {
-    for (const account of this.accounts) {
-      if (account.id === id && account.name) {
-        return account.name;
+  @action
+  registerAccount(mnemonic: string[]) {
+    const wallet = new LiskWallet(mnemonic.join(' '), 'R');
+    const account = {
+      id: wallet.address,
+      publicKey: wallet.publicKey
+    };
+    this.login(account.id, account).then(ret => {
+      this.selectedAccount = this.accounts.get(account.id);
+    });
+    return account.id;
+  }
+
+  // TODO move to observable
+  @action
+  updateAccountName(name: string) {
+    this.selectedAccount!.name = name;
+    this.saveAccount(this.selectedAccount!);
+  }
+
+  @action
+  updateFiat(fiat: string, global: boolean = false) {
+    assert(fiat, 'FIAT required');
+    if (global) {
+      for (const account of this.accounts) {
+        account.fiatCurrency = fiat;
+        this.saveAccount(account);
       }
+    } else {
+      this.selectedAccount!.fiatCurrency = fiat;
+      this.saveAccount(this.selectedAccount!);
     }
-    return null;
+    this.calculateFiat();
+  }
+
+  @action
+  removeAccount(id?: string) {
+    if (!id) {
+      id = this.selectedAccount!.id;
+    }
+    const wasSelected = id === this.selectedAccount!.id;
+    const account = this.accounts.find(a => a.id === id);
+    assert(account, `Account ${id} not found`);
+    this.accounts.remove(account!);
+    lstore.set('accounts', this.storedAccounts().filter(a => a.id !== id));
+    if (wasSelected && this.accounts.length) {
+      this.selectAccount(this.accounts[0].id);
+    }
+    // TODO dispose observe() for lstore
+  }
+
+  @action
+  signout() {
+    lstore.remove('accounts');
+    lstore.remove('lastSelectedAccount');
+    this.accounts.clear();
+    // @ts-ignore
+    this.selectedAccount = null;
+    this.router.goTo(onboardingAddAccountRoute);
+  }
+
+  // TODO switch to dposAPI
+  async loadTransactions(
+    params: TTransactionsRequest,
+    confirmed: boolean = true
+  ): Promise<TTransactionsResponse> {
+    const path = confirmed ? '' : '/unconfirmed';
+    const url = new URL(`${this.api}/api/transactions${path}`);
+    // @ts-ignore
+    url.search = new URLSearchParams(params);
+    // @ts-ignore
+    const res = await fetch(url);
+    const json: TTransactionsResponse | TErrorResponse = await res.json();
+    if (!json.success) {
+      throw new Error((json as TErrorResponse).error);
+    }
+    return json;
   }
 }
 
@@ -733,8 +711,8 @@ export type TFeesResponse = {
   };
 };
 
-// TODO rename to TFeeTypes or reuse TransactionType from 'dpos-wallet'
-export type TTransactionTypes =
+// TODO reuse TransactionType from 'dpos-wallet' if possible
+export type TFeeTypes =
   | 'send'
   | 'vote'
   | 'secondsignature'
