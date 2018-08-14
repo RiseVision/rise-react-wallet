@@ -63,9 +63,13 @@ export default class VoteDelegate extends React.Component<Props, State> {
         this.setState({
           loadingDelegates: false,
           displayedDelegates: [active[rand()], active[rand()], active[rand()]],
+          query,
         });
       } else {
-        this.setState({ loadingDelegates: true });
+        this.setState({
+          loadingDelegates: true,
+          query,
+        });
         const result = await this.props.walletStore!.searchDelegates(query);
         // check if there was a newer search
         if (this.lastSearch !== clock) {
@@ -146,11 +150,16 @@ export default class VoteDelegate extends React.Component<Props, State> {
 
   renderStep1() {
     const { votedDelegate } = this.props.walletStore!;
+    const { query } = this.state;
+
+    const showSuggestions = !query || !query.trim();
+
     return (
       <VoteTransactionForm
         onSubmit={this.onSubmit1}
         onSearch={this.onSearch}
         isLoading={this.state.loadingDelegates}
+        isSearch={!showSuggestions}
         delegates={this.state.displayedDelegates}
         votedDelegate={votedDelegate ? votedDelegate!.publicKey : null}
       />

@@ -13,6 +13,7 @@ interface Props {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
   onSearch: (query: string) => void;
   isLoading: boolean;
+  isSearch: boolean;
   delegates: Delegate[];
   votedDelegate: string | null;
 }
@@ -38,9 +39,8 @@ class SendTransactionForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { delegates, votedDelegate, isLoading } = this.props;
+    const { delegates, votedDelegate, isLoading, isSearch } = this.props;
     const { search } = this.state;
-    const isSearch = search && search.trim();
 
     return (
       <React.Fragment>
