@@ -1,3 +1,4 @@
+import { range } from 'lodash';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
@@ -39,91 +40,74 @@ class SendTransactionForm extends React.Component<Props, State> {
   render() {
     const { delegates, votedDelegate, isLoading } = this.props;
     const { search } = this.state;
-    const emptySearch = !search || !search.trim();
-
-    let display: 'loading' | 'suggestions' | 'results' | 'empty';
-    if (isLoading) {
-      display = 'loading';
-    } else if (delegates.length === 0) {
-      display = 'empty';
-    } else if (emptySearch) {
-      display = 'suggestions';
-    } else {
-      display = 'results';
-    }
+    const isSearch = search && search.trim();
 
     return (
-      <Grid
-        container={true}
-        spacing={16}
-      >
-        <Grid item={true} xs={12}>
-          <Typography>
-            <FormattedMessage
-              id="forms-vote-delegate.instructions"
-              description="Instructions before the delegate search field"
-              defaultMessage={'New blocks on the RISE blockchain are forged by the top 101 delegates. ' +
-                'You as the user determine who those delegates are by casting a vote.'}
-            />
-          </Typography>
-        </Grid>
-        <Grid item={true} xs={12}>
-          <TextField
-            label={
+      <React.Fragment>
+        <Grid
+          container={true}
+          spacing={16}
+        >
+          <Grid item={true} xs={12}>
+            <Typography>
               <FormattedMessage
-                id="forms-vote-delegate.search-box-label"
-                description="Delegate search box label"
-                defaultMessage="Find delegates by username or address"
+                id="forms-vote-delegate.instructions"
+                description="Instructions before the delegate search field"
+                defaultMessage={'New blocks on the RISE blockchain are forged by the top 101 delegates. ' +
+                  'You as the user determine who those delegates are by casting a vote.'}
               />
-            }
-            value={search}
-            fullWidth={true}
-            onChange={this.handleType()}
-          />
-        </Grid>
-        {display === 'loading' ? (
-          <Typography>Loading...</Typography>
-        ) : (
-          <React.Fragment>
-            <Grid item={true} xs={12}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                align="left"
-              >
-                {display === 'suggestions' ? (
-                  <FormattedMessage
-                    id="forms-vote-delegate.suggested-title"
-                    description="Title for suggested delegates"
-                    defaultMessage="Suggested delegates"
-                  />
-                ) : display === 'results' ? (
-                  <FormattedMessage
-                    id="forms-vote-delegate.results-title"
-                    description="Title for search results"
-                    defaultMessage="Search results"
-                  />
-                ) : (
-                  <FormattedMessage
-                    id="forms-vote-delegate.no-results-title"
-                    description="Title for no results"
-                    defaultMessage="No results"
-                  />
-                )}
-              </Typography>
-            </Grid>
-            {delegates.map(delegate => (
-              <Grid key={delegate.address} item={true} xs={12}>
+            </Typography>
+          </Grid>
+          <Grid item={true} xs={12}>
+            <TextField
+              label={
+                <FormattedMessage
+                  id="forms-vote-delegate.search-box-label"
+                  description="Delegate search box label"
+                  defaultMessage="Find delegates by username or address"
+                />
+              }
+              value={search}
+              fullWidth={true}
+              onChange={this.handleType()}
+            />
+          </Grid>
+          <Grid item={true} xs={12}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              align="left"
+            >
+              {isSearch ? (
+                <FormattedMessage
+                  id="forms-vote-delegate.results-title"
+                  description="Title for search results"
+                  defaultMessage="Search results"
+                />
+              ) : (
+                <FormattedMessage
+                  id="forms-vote-delegate.suggested-title"
+                  description="Title for suggested delegates"
+                  defaultMessage="Suggested delegates"
+                />
+              )}
+            </Typography>
+          </Grid>
+          {range(3).map(n => {
+            const delegate = delegates[n] || null;
+            return (
+              <Grid key={delegate ? delegate.address : `placeholder-${n}`} item={true} xs={12}>
                 <DelegateVoteComponent
                   delegate={delegate}
                   onSubmit={this.props.onSubmit}
-                  mode={votedDelegate !== delegate.publicKey ? 'add-vote' : 'remove-vote'}
+                  hasVote={delegate ? votedDelegate === delegate.publicKey : false}
+                  isLoading={isLoading}
                 />
               </Grid>
-            ))}
-          </React.Fragment>
-        )}
-      </Grid>
+            );
+          })}
+        </Grid>
+      </React.Fragment>
     );
   }
 }

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as classNames from 'classnames';
 import {
   InjectedIntlProps,
   injectIntl,
@@ -13,12 +14,20 @@ import {
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { Delegate } from 'dpos-api-wrapper';
 import { observer } from 'mobx-react';
 import AccountIcon from './AccountIcon';
 
 const styles = (theme: Theme) => createStyles({
   root: {
+    position: 'relative',
+  },
+  inactive: {
+    opacity: 0.5,
+  },
+  hidden: {
+    visibility: 'hidden',
   },
   content: {
     display: 'flex',
@@ -57,12 +66,23 @@ const styles = (theme: Theme) => createStyles({
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
   },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
-  delegate: Delegate;
-  mode: 'add-vote' | 'remove-vote';
+  delegate: Delegate | null;
+  hasVote: boolean;
+  isLoading: boolean;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -71,78 +91,113 @@ const stylesDecorator = withStyles(styles);
 
 const messages = defineMessages({
   rankTitle: {
-    id: 'delegate-vote-component.delegate-rank-title',
+    id: 'delegate-vote-component.rank-title',
     description: 'Title for rank statistic',
     defaultMessage: 'Rank',
   },
   rankAriaLabel: {
-    id: 'delegate-vote-component.delegate-rank-aria-label',
+    id: 'delegate-vote-component.rank-aria-label',
     description: 'Aria label for rank statistic',
     defaultMessage: 'Rank: #{rank}',
   },
   uptimeTitle: {
-    id: 'delegate-vote-component.delegate-uptime-title',
+    id: 'delegate-vote-component.uptime-title',
     description: 'Title for uptime statistic',
     defaultMessage: 'Uptime',
   },
   uptimeAriaLabel: {
-    id: 'delegate-vote-component.delegate-uptime-aria-label',
+    id: 'delegate-vote-component.uptime-aria-label',
     description: 'Aria label for uptime statistic',
     defaultMessage: 'Uptime: {uptime}',
   },
   approvalTitle: {
-    id: 'delegate-vote-component.delegate-approval-title',
+    id: 'delegate-vote-component.approval-title',
     description: 'Title for approval statistic',
     defaultMessage: 'Approval',
   },
   approvalAriaLabel: {
-    id: 'delegate-vote-component.delegate-approval-aria-label',
+    id: 'delegate-vote-component.approval-aria-label',
     description: 'Aria label for approval statistic',
     defaultMessage: 'Approval: {approval}',
   },
   addVote: {
-    id: 'delegate-vote-component.delegate-add-vote',
+    id: 'delegate-vote-component.add-vote',
     description: 'Add vote button label',
     defaultMessage: 'Cast vote',
   },
   removeVote: {
-    id: 'delegate-vote-component.delegate-remove-vote',
+    id: 'delegate-vote-component.remove-vote',
     description: 'Remove vote button label',
     defaultMessage: 'Remove vote',
+  },
+  noResult: {
+    id: 'delegate-vote-component.no-result',
+    description: 'No results label',
+    defaultMessage: 'No result to display',
   },
 });
 
 @observer
 class DelegateVoteComponent extends React.Component<DecoratedProps> {
   handleButtonClick = () => {
-    const { onSubmit, delegate, mode } = this.props;
-    onSubmit(delegate, mode === 'add-vote');
+    const { onSubmit, delegate, hasVote } = this.props;
+    if (delegate) {
+      onSubmit(delegate, !hasVote);
+    }
   }
 
   render() {
-    const { intl, classes, delegate, mode } = this.props;
+    const { intl, classes, delegate, hasVote, isLoading } = this.props;
 
-    const rank = intl.formatNumber(delegate.rank);
-    const uptime = intl.formatNumber(delegate.rate / 100, {
-      style: 'percent',
-      maximumFractionDigits: 2,
-    });
-    const approval = intl.formatNumber(delegate.approval / 100, {
-      style: 'percent',
-      maximumFractionDigits: 2,
-    });
+    const display = isLoading ? 'loading' : delegate ? 'delegate' : 'empty';
+
+    const {
+      username,
+      address,
+      rank,
+      uptime,
+      approval,
+    } = delegate ? {
+      username: delegate.username,
+      address: delegate.address,
+      rank: intl.formatNumber(delegate.rank),
+      uptime: intl.formatNumber(delegate.rate / 100, {
+        style: 'percent',
+        maximumFractionDigits: 2,
+      }),
+      approval: intl.formatNumber(delegate.approval / 100, {
+        style: 'percent',
+        maximumFractionDigits: 2,
+      }),
+    } : {
+      username: 'N/A',
+      address: 'N/A',
+      rank: 'N/A',
+      uptime: 'N/A',
+      approval: 'N/A',
+    };
 
     return (
-      <Paper className={classes.root}>
-        <div className={classes.content}>
+      <Paper
+        className={classNames(
+          classes.root,
+          display === 'empty' && classes.inactive,
+        )}
+      >
+        <div
+          className={classNames(
+            classes.content,
+            display === 'delegate' || classes.hidden,
+          )}
+        >
           <AccountIcon
             className={classes.delegateIcon}
             size={64}
-            address={delegate.address}
+            address={address}
           />
           <div className={classes.delegateInfo}>
-            <Typography className={classes.delegateName}>{delegate.username}</Typography>
-            <Typography className={classes.delegateAddress}>{delegate.address}</Typography>
+            <Typography className={classes.delegateName}>{username}</Typography>
+            <Typography className={classes.delegateAddress}>{address}</Typography>
             <ul className={classes.delegateStats}>
               <li
                 title={intl.formatMessage(messages.rankTitle)}
@@ -166,12 +221,27 @@ class DelegateVoteComponent extends React.Component<DecoratedProps> {
           </div>
         </div>
         <Button
-          className={classes.button}
+          className={classNames(
+            classes.button,
+            display === 'delegate' || classes.hidden,
+          )}
           fullWidth={true}
           onClick={this.handleButtonClick}
         >
-          {intl.formatMessage(mode === 'add-vote' ? messages.addVote : messages.removeVote)}
+          {intl.formatMessage(!hasVote ? messages.addVote : messages.removeVote)}
         </Button>
+        {display === 'empty' && (
+          <div className={classes.overlay}>
+            <Typography>
+              {intl.formatMessage(messages.noResult)}
+            </Typography>
+          </div>
+        )}
+        {display === 'loading' && (
+          <div className={classes.overlay}>
+            <CircularProgress />
+          </div>
+        )}
       </Paper>
     );
   }
