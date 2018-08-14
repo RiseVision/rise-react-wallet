@@ -1,69 +1,14 @@
 import * as React from 'react';
-import {
-  InjectedIntlProps,
-  injectIntl,
-  defineMessages,
-  FormattedMessage
-} from 'react-intl';
-import {
-  createStyles,
-  withStyles,
-  WithStyles,
-  Theme
-} from '@material-ui/core/styles';
+import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import { Delegate } from 'dpos-api-wrapper';
 import { observer } from 'mobx-react';
 import { ChangeEvent } from 'react';
-import AccountIcon from '../AccountIcon';
+import DelegateVoteComponent from '../DelegateVoteComponent';
 
-const styles = (theme: Theme) => createStyles({
-  delegateRoot: {
-  },
-  delegateContent: {
-    display: 'flex',
-    flexDirection: 'row',
-    '& > *': {
-      margin: theme.spacing.unit,
-    },
-    '& > * + *': {
-      marginLeft: 0,
-    }
-  },
-  delegateIcon: {
-  },
-  delegateInfo: {
-    flex: 1,
-    textAlign: 'left',
-  },
-  delegateName: {
-    ...theme.typography.body2,
-  },
-  delegateAddress: {
-  },
-  delegateStats: {
-    margin: 0,
-    padding: 0,
-    listStyleType: 'none',
-    ...theme.typography.body1,
-    display: 'flex',
-    flexDirection: 'row',
-    '& > *': {
-      display: 'block',
-      flex: 1,
-    },
-  },
-  delegateButton: {
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-  },
-});
-
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
   onSearch: (query: string) => void;
   isLoading: boolean;
@@ -71,59 +16,12 @@ interface Props extends WithStyles<typeof styles> {
   votedDelegate: string | null;
 }
 
-type DecoratedProps = Props & InjectedIntlProps;
-
 export interface State {
   search: string;
 }
 
-const stylesDecorator = withStyles(styles);
-
-const messages = defineMessages({
-  delegateRankTitle: {
-    id: 'forms-vote-delegate.delegate-rank-title',
-    description: 'Title for rank statistic',
-    defaultMessage: 'Rank',
-  },
-  delegateRankAriaLabel: {
-    id: 'forms-vote-delegate.delegate-rank-aria-label',
-    description: 'Aria label for rank statistic',
-    defaultMessage: 'Rank: #{rank}',
-  },
-  delegateUptimeTitle: {
-    id: 'forms-vote-delegate.delegate-uptime-title',
-    description: 'Title for uptime statistic',
-    defaultMessage: 'Uptime',
-  },
-  delegateUptimeAriaLabel: {
-    id: 'forms-vote-delegate.delegate-uptime-aria-label',
-    description: 'Aria label for uptime statistic',
-    defaultMessage: 'Uptime: {uptime}',
-  },
-  delegateApprovalTitle: {
-    id: 'forms-vote-delegate.delegate-approval-title',
-    description: 'Title for approval statistic',
-    defaultMessage: 'Approval',
-  },
-  delegateApprovalAriaLabel: {
-    id: 'forms-vote-delegate.delegate-approval-aria-label',
-    description: 'Aria label for approval statistic',
-    defaultMessage: 'Approval: {approval}',
-  },
-  delegateAddVote: {
-    id: 'forms-vote-delegate.delegate-add-vote',
-    description: 'Add vote button label',
-    defaultMessage: 'Cast vote',
-  },
-  delegateRemoveVote: {
-    id: 'forms-vote-delegate.delegate-remove-vote',
-    description: 'Remove vote button label',
-    defaultMessage: 'Remove vote',
-  },
-});
-
 @observer
-class SendTransactionForm extends React.Component<DecoratedProps, State> {
+class SendTransactionForm extends React.Component<Props, State> {
   state: State = {
     search: ''
   };
@@ -139,7 +37,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
   }
 
   render() {
-    const { intl, classes, delegates, votedDelegate, isLoading } = this.props;
+    const { delegates, votedDelegate, isLoading } = this.props;
     const { search } = this.state;
     const emptySearch = !search || !search.trim();
 
@@ -215,75 +113,12 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
               </Typography>
             </Grid>
             {delegates.map(delegate => (
-              <Grid item={true} xs={12}>
-                <Paper key={delegate.address} className={classes.delegateRoot}>
-                  <div className={classes.delegateContent}>
-                    <AccountIcon
-                      className={classes.delegateIcon}
-                      size={64}
-                      address={delegate.address}
-                    />
-                    <div className={classes.delegateInfo}>
-                      <Typography className={classes.delegateName}>{delegate.username}</Typography>
-                      <Typography className={classes.delegateAddress}>{delegate.address}</Typography>
-                      <ul className={classes.delegateStats}>
-                        <li
-                          title={intl.formatMessage(messages.delegateRankTitle)}
-                          aria-label={intl.formatMessage(messages.delegateRankAriaLabel, {
-                            rank: intl.formatNumber(delegate.rank),
-                          })}
-                        >
-                          {'R: #'}
-                          {intl.formatNumber(delegate.rank)}
-                        </li>
-                        <li
-                          title={intl.formatMessage(messages.delegateUptimeTitle)}
-                          aria-label={intl.formatMessage(messages.delegateUptimeAriaLabel, {
-                            uptime: intl.formatNumber(delegate.rate / 100, {
-                              style: 'percent',
-                              maximumFractionDigits: 2,
-                            }),
-                          })}
-                        >
-                          {'U: '}
-                          {intl.formatNumber(delegate.rate / 100, {
-                            style: 'percent',
-                            maximumFractionDigits: 2,
-                          })}
-                        </li>
-                        <li
-                          title={intl.formatMessage(messages.delegateApprovalTitle)}
-                          aria-label={intl.formatMessage(messages.delegateApprovalAriaLabel, {
-                            approval: intl.formatNumber(delegate.approval / 100, {
-                              style: 'percent',
-                              maximumFractionDigits: 2,
-                            }),
-                          })}
-                        >
-                          {'A: '}
-                          {intl.formatNumber(delegate.approval / 100, {
-                            style: 'percent',
-                            maximumFractionDigits: 2,
-                          })}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <Button
-                    className={classes.delegateButton}
-                    fullWidth={true}
-                    onClick={() =>
-                      this.props.onSubmit(
-                        delegate,
-                        votedDelegate !== delegate.publicKey
-                      )
-                    }
-                  >
-                    {votedDelegate === delegate.publicKey
-                      ? intl.formatMessage(messages.delegateRemoveVote)
-                      : intl.formatMessage(messages.delegateAddVote)}
-                  </Button>
-                </Paper>
+              <Grid key={delegate.address} item={true} xs={12}>
+                <DelegateVoteComponent
+                  delegate={delegate}
+                  onSubmit={this.props.onSubmit}
+                  mode={votedDelegate !== delegate.publicKey ? 'add-vote' : 'remove-vote'}
+                />
               </Grid>
             ))}
           </React.Fragment>
@@ -293,4 +128,4 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
   }
 }
 
-export default stylesDecorator(injectIntl(SendTransactionForm));
+export default SendTransactionForm;
