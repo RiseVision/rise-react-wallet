@@ -1,5 +1,6 @@
 import { configure } from 'mobx';
 import { RouterStore } from 'mobx-router';
+import AccountStore from './account';
 import { TConfig } from './index';
 import AppStore from './app';
 import OnboardingStore from './onboarding';
@@ -13,9 +14,10 @@ export default class RootStore {
   app = new AppStore();
   onboarding: OnboardingStore;
   wallet: WalletStore;
+  account: AccountStore;
 
   constructor(public config: TConfig) {
     this.onboarding = new OnboardingStore();
-    this.wallet = new WalletStore(config);
+    this.wallet = new WalletStore(config, this.router);
   }
 }
