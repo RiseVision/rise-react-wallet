@@ -588,7 +588,7 @@ export default class WalletStore {
 
   /**
    * @returns The name from the address book OR from one of the added accounts
-   *   OR the source ID if not found
+   *   OR null if not found
    * TODO
    */
   idToName(id: string) {
@@ -597,7 +597,7 @@ export default class WalletStore {
         return account.name;
       }
     }
-    return id;
+    return null;
   }
 }
 
