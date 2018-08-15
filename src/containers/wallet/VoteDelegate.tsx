@@ -95,7 +95,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
       step: 2,
       addVote
     });
-  };
+  }
 
   onSend = async (state: ConfirmFormState) => {
     const { walletStore } = this.props;
@@ -117,7 +117,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
     this.setState({ tx, progress });
-  };
+  }
 
   onClose = async () => {
     // refresh the account after a successful transaction
@@ -130,7 +130,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
       // fallback
       this.props.store!.router.goTo(accountOverviewRoute);
     }
-  };
+  }
 
   componentWillMount() {
     // query for the recommended delegates
