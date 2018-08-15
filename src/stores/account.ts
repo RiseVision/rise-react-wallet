@@ -1,16 +1,9 @@
 import * as assert from 'assert';
-import { Delegate, TransactionType } from 'dpos-api-wrapper';
-import { groupBy } from 'lodash';
-import { action, observable, runInAction, computed } from 'mobx';
-import * as moment from 'moment-timezone';
-import { timestampToUnix } from '../utils/utils';
+import { Delegate } from 'dpos-api-wrapper';
+import { action, observable } from 'mobx';
 import { TConfig } from './index';
-import {
-  TAccount,
-  TGroupedTransactions,
-  TTransaction,
-  TTransactionsResponse
-} from './wallet';
+import TransactionsStore from './transactions';
+import { TAccount, TTransaction } from './wallet';
 
 export default class AccountStore {
   config: TConfig;
@@ -38,12 +31,16 @@ export default class AccountStore {
   @observable registeredDelegate?: Delegate | null = undefined;
   @observable groupedTransactions = observable.array<TTransaction>();
 
+  @observable recentTransactions: TransactionsStore;
+
   constructor(config: TConfig, account: Partial<TAccount>) {
     assert(account.id, 'Account ID is missing');
     this.importData(account);
     this.config = config;
+    this.recentTransactions = new TransactionsStore(this.config);
   }
 
+  @action
   importData(account: Partial<TAccount>) {
     for (const [name, value] of Object.entries(account)) {
       this[name] = value;

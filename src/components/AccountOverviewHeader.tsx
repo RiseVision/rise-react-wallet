@@ -1,10 +1,15 @@
-import * as React from 'react';
-import * as classNames from 'classnames';
-import { InjectedIntlProps, injectIntl, defineMessages } from 'react-intl';
-import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import Paper from '@material-ui/core/Paper';
+import {
+  createStyles,
+  Theme,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import * as classNames from 'classnames';
+import * as React from 'react';
+import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from '../components/AccountIcon';
 import { amountToUser } from '../utils/utils';
 

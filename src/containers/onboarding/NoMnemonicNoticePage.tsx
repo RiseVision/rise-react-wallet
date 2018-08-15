@@ -1,16 +1,16 @@
+import Button from '@material-ui/core/Button';
+import {
+  createStyles,
+  Theme,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import {
-  Theme,
-  createStyles,
-  withStyles,
-  WithStyles
-} from '@material-ui/core/styles';
 import { accountOverviewRoute } from '../../routes';
 import RootStore from '../../stores/root';
 

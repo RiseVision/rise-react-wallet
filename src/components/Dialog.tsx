@@ -1,12 +1,12 @@
+import Backdrop from '@material-ui/core/Backdrop';
 import {
   createStyles,
-  withStyles,
+  Theme,
   WithStyles,
-  Theme
+  withStyles
 } from '@material-ui/core/styles';
-import Backdrop from '@material-ui/core/Backdrop';
-import { ReactElement } from 'react';
 import * as React from 'react';
+import { ReactElement } from 'react';
 import ModalPaper from './ModalPaper';
 import ModalPaperHeader from './ModalPaperHeader';
 

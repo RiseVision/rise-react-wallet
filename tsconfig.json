@@ -10,7 +10,14 @@
     "jsx": "react",
     "moduleResolution": "node",
     "rootDir": "src",
+    "downlevelIteration": true,
     "suppressImplicitAnyIndexErrors": true,
+//    "forceConsistentCasingInFileNames": true,
+//    "noImplicitReturns": true,
+//    "noImplicitThis": true,
+//    "noImplicitAny": true,
+//    "strictNullChecks": true,
+//    "noUnusedLocals": true,
     "experimentalDecorators": true
   },
   "exclude": [

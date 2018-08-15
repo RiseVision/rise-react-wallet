@@ -1,23 +1,22 @@
-import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import { InjectedIntlProps, injectIntl, defineMessages } from 'react-intl';
+import Button from '@material-ui/core/Button';
 import {
-  Theme,
   createStyles,
+  Theme,
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
-import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import SendIcon from '@material-ui/icons/Send';
+import { toPairs } from 'lodash';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
-import RootStore from '../../stores/root';
-import AppStore from '../../stores/app';
-import WalletStore from '../../stores/wallet';
 import { accountSendRoute } from '../../routes';
-import { toPairs } from 'lodash';
+import RootStore from '../../stores/root';
+import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -40,7 +39,6 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   store?: RootStore;
-  appStore?: AppStore;
   walletStore?: WalletStore;
 }
 
@@ -62,7 +60,6 @@ const messages = defineMessages({
 });
 
 @inject('store')
-@inject('appStore')
 @inject('walletStore')
 @observer
 class AccountOverview extends React.Component<DecoratedProps> {
@@ -87,7 +84,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
             address={account.id}
             alias={account.name || unnamedAccountLabel}
             balance={account.balance + ' RISE'}
-            balance_in_fiat={walletStore!.fiatAmount!}
+            balance_in_fiat={account.fiatAmount || ''}
           />
         ) : null}
         {!readOnly && (
@@ -105,7 +102,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
           </Tooltip>
         )}
         <div className={classes.content}>
-          {toPairs(walletStore!.groupedTransactions).map(
+          {toPairs(account.recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
               <React.Fragment key={group}>
                 <Typography

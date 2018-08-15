@@ -1,18 +1,18 @@
+import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
+import {
+  createStyles,
+  Theme,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
-import * as classNames from 'classnames';
-import {
-  Theme,
-  createStyles,
-  withStyles,
-  WithStyles
-} from '@material-ui/core/styles';
 import {
   onboardingNewAccountRoute,
   onboardingNewMnemonicRoute

@@ -1,15 +1,15 @@
+import Button from '@material-ui/core/Button';
 import {
   createStyles,
-  withStyles,
+  Theme,
   WithStyles,
-  Theme
+  withStyles
 } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { observer } from 'mobx-react';
-import { ChangeEvent, FormEvent } from 'react';
 import * as React from 'react';
+import { ChangeEvent, FormEvent } from 'react';
 import { amountToUser } from '../../utils/utils';
 
 const styles = (theme: Theme) =>

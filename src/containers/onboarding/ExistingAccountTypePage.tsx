@@ -1,19 +1,19 @@
-import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   accountOverviewRoute,
-  onboardingNoMnemonicNoticeRoute,
-  onboardingExistingAccountRoute
+  onboardingExistingAccountRoute,
+  onboardingNoMnemonicNoticeRoute
 } from '../../routes';
-import RootStore from '../../stores/root';
 import OnboardingStore from '../../stores/onboarding';
+import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
@@ -38,8 +38,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
     if (address) {
       walletStore!.login(
         address,
-        { readOnly: false },
-        true
+        { readOnly: false }
       );
     }
     store!.router.goTo(onboardingNoMnemonicNoticeRoute);
@@ -51,8 +50,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
     if (address) {
       walletStore!.login(
         address,
-        { readOnly: true },
-        true
+        { readOnly: true }
       );
     }
     store!.router.goTo(accountOverviewRoute);

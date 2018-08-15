@@ -1,25 +1,25 @@
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import FlagIcon from '../../components/FlagIcon';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   accountOverviewRoute,
   onboardingChooseLanguageRoute,
   onboardingExistingAccountRoute,
   onboardingNewAccountRoute
 } from '../../routes';
-import RootStore from '../../stores/root';
 import AppStore from '../../stores/app';
 import OnboardingStore from '../../stores/onboarding';
+import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import ModalPaper from '../../components/ModalPaper';
-import ModalPaperHeader from '../../components/ModalPaperHeader';
-import FlagIcon from '../../components/FlagIcon';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
 const riseIcon = require('../../images/rise_icon.svg');
 
@@ -74,7 +74,7 @@ class AddAccountPage extends React.Component<Props> {
     return (
       <ModalPaper open={true}>
         <ModalPaperHeader
-          closeButton={walletStore!.accounts.length > 0}
+          closeButton={[...walletStore!.accounts.keys()].length > 0}
           onCloseClick={this.handleCloseClicked}
         >
           <FormattedMessage

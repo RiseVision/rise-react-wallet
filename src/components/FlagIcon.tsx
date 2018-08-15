@@ -1,6 +1,6 @@
-import * as React from 'react';
-import * as classNames from 'classnames';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import * as classNames from 'classnames';
+import * as React from 'react';
 import { CountryCode } from '../utils/i18n';
 
 const styles = createStyles({

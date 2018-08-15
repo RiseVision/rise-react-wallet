@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import Typography from '@material-ui/core/Typography';
 import { observer } from 'mobx-react';
+import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 interface Props {
   onSubmit: (state: State) => void;

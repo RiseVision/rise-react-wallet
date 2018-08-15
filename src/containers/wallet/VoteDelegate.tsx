@@ -1,5 +1,21 @@
 import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
+import { throttle } from 'lodash';
+import { throttle } from 'lodash';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import ConfirmTransactionForm, {
+  ProgressState,
+  State as ConfirmFormState
+} from '../../components/forms/ConfirmTransactionForm';
+import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
+import { accountOverviewRoute } from '../../routes';
+import AccountStore from '../../stores/account';
+import RootStore from '../../stores/root';
+import WalletStore, { TTransactionResult } from '../../stores/wallet';
+import { uniqueRandom } from '../../utils/utils';
+import * as assert from 'assert';
+import { Delegate } from 'dpos-api-wrapper';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import ConfirmTransactionForm, {
@@ -11,12 +27,14 @@ import RootStore from '../../stores/root';
 import WalletStore, { TAccount, TTransactionResult } from '../../stores/wallet';
 import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
 import { throttle, sampleSize } from 'lodash';
+import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
+import AccountStore from '../../stores/account';
 
 interface Props {
   store?: RootStore;
   walletStore?: WalletStore;
   onSubmit?: (tx?: TTransactionResult) => void;
-  account?: TAccount;
+  account?: AccountStore;
 }
 
 export interface State {
@@ -48,6 +66,10 @@ export default class VoteDelegate extends React.Component<Props, State> {
   };
   lastSearch = 0;
 
+  get account() {
+    return this.props.account! || this.props.walletStore!.selectedAccount;
+  }
+
   onSearch = throttle(
     async (query: string) => {
       const clock = ++this.lastSearch;
@@ -75,7 +97,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
         }
         this.setState({
           loadingDelegates: false,
-          displayedDelegates: result.slice(0, 3),
+          displayedDelegates: result.slice(0, 3)
         });
       }
     },
@@ -104,9 +126,10 @@ export default class VoteDelegate extends React.Component<Props, State> {
         this.state.selectedDelegate!.publicKey,
         state.mnemonic,
         state.passphrase,
-        this.props.account
+        this.account.id
       );
     } catch (e) {
+      // TODO log the error
       tx = { success: false };
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
@@ -114,6 +137,10 @@ export default class VoteDelegate extends React.Component<Props, State> {
   }
 
   onClose = async () => {
+    // refresh the account after a successful transaction
+    if (this.state.tx) {
+      this.props.walletStore!.refreshAccount(this.account.id);
+    }
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state.tx);
     } else {
@@ -126,8 +153,8 @@ export default class VoteDelegate extends React.Component<Props, State> {
     // query for the recommended delegates
     this.loadActiveDelegates();
     // load the current vote (should come from settings)
-    if (this.props.walletStore!.votedDelegate === undefined) {
-      this.props.walletStore!.loadVotedDelegate();
+    if (this.account.votedDelegate === undefined) {
+      this.props.walletStore!.loadVotedDelegate(this.account.id);
     }
   }
 
@@ -147,7 +174,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
   }
 
   renderStep1() {
-    const { votedDelegate } = this.props.walletStore!;
+    const { votedDelegate } = this.account
     const { query } = this.state;
 
     const showSuggestions = !query || !query.trim();
@@ -168,7 +195,6 @@ export default class VoteDelegate extends React.Component<Props, State> {
     const { walletStore } = this.props;
     const { selectedDelegate } = this.state;
     const { votedDelegate } = walletStore!;
-    const account = this.props.account! || walletStore!.selectedAccount!;
 
     let removeVotes = [];
     let addVotes = [];
@@ -180,12 +206,12 @@ export default class VoteDelegate extends React.Component<Props, State> {
     if (!isRemoveTx) {
       addVotes.push(selectedDelegate!.username);
     }
-
     return (
       <ConfirmTransactionForm
-        isPassphraseSet={account.secondSignature}
-        sender={account.name}
-        senderId={account.id}
+        isPassphraseSet={this.account.secondSignature}
+        sender={this.account.name}
+        senderId={this.account.id}
+        recipient={'Cast Vote'}
         fee={walletStore!.fees.get('vote')!}
         data={{
           kind: 'vote',

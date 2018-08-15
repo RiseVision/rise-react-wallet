@@ -1,11 +1,11 @@
 import { BackdropProps } from '@material-ui/core/Backdrop';
-import * as React from 'react';
-import Paper from '@material-ui/core/Paper';
-import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
-import ModalBackdrop from './ModalBackdrop';
-import { duration } from '@material-ui/core/styles/transitions';
+import Modal from '@material-ui/core/Modal';
+import Paper from '@material-ui/core/Paper';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import { duration } from '@material-ui/core/styles/transitions';
+import * as React from 'react';
+import ModalBackdrop from './ModalBackdrop';
 
 const styles = createStyles({
   modal: {

@@ -1,7 +1,7 @@
 import { action, autorun, observable, runInAction } from 'mobx';
+import * as lstore from 'store';
 import { importTranslation, Messages } from '../translations';
 import { getUserLocales, Locale } from '../utils/i18n';
-import * as lstore from 'store';
 
 export default class AppStore {
   @observable translations = observable.map<Locale, Messages>();

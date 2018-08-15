@@ -1,25 +1,25 @@
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import {
-  InjectedIntlProps,
-  injectIntl,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
+  InjectedIntlProps,
+  injectIntl
 } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import AccountIcon from '../../components/AccountIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
-import AccountIcon from '../../components/AccountIcon';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import {
   onboardingAddAccountRoute,
   onboardingExistingAccountTypeRoute
 } from '../../routes';
-import RootStore from '../../stores/root';
 import OnboardingStore from '../../stores/onboarding';
+import RootStore from '../../stores/root';
 import { normalizeAddress } from '../../utils/utils';
 
 const styles = createStyles({

@@ -1,18 +1,19 @@
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import Dialog from '../../components/Dialog';
 import ConfirmTransactionForm, {
   ProgressState,
   State as ConfirmFormState
 } from '../../components/forms/ConfirmTransactionForm';
-import { accountOverviewRoute } from '../../routes';
-import RootStore from '../../stores/root';
-import WalletStore, { TAccount, TTransactionResult } from '../../stores/wallet';
 import SendTransactionForm, {
   State as SendFormState
 } from '../../components/forms/SendTransactionForm';
+import { accountOverviewRoute } from '../../routes';
+import AccountStore from '../../stores/account';
+import RootStore from '../../stores/root';
+import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import { amountToServer } from '../../utils/utils';
-import Dialog from '../../components/Dialog';
 
 interface Props {
   store?: RootStore;
@@ -20,14 +21,14 @@ interface Props {
   onSubmit?: (tx?: TTransactionResult) => void;
   amount?: number;
   recipientId?: string;
-  account?: TAccount;
+  account?: AccountStore;
   // TODO switch to get a dialog the form wrapped in a dialog
   // wrapInDialog?: boolean
 }
 
 export interface State {
   step: number;
-  recipientId: string | null;
+  recipientId?: string;
   tx?: TTransactionResult;
   amount: number | null;
   // progress state
@@ -42,10 +43,13 @@ export interface State {
 export default class SendTransaction extends React.Component<Props, State> {
   state: State = {
     amount: 0,
-    recipientId: null,
     step: 1,
     progress: ProgressState.TO_CONFIRM
   };
+
+  get account() {
+    return this.props.account! || this.props.walletStore!.selectedAccount;
+  }
 
   constructor(props: Props) {
     super(props);
@@ -60,8 +64,9 @@ export default class SendTransaction extends React.Component<Props, State> {
       throw new Error('Amount required');
     }
     // TODO validate amount is a number
+    // TODO validate state.recipientId
     this.setState({
-      recipientId: state.recipientId,
+      recipientId: state.recipientId!,
       amount: amountToServer(state.amount),
       step: 2
     });
@@ -79,9 +84,10 @@ export default class SendTransaction extends React.Component<Props, State> {
         this.state.amount!,
         state.mnemonic,
         state.passphrase,
-        this.props.account
+        this.account.id
       );
     } catch (e) {
+      // TODO log the error
       tx = { success: false };
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
@@ -89,6 +95,10 @@ export default class SendTransaction extends React.Component<Props, State> {
   }
 
   onClose = async () => {
+    // refresh the account after a successful transaction
+    if (this.state.tx) {
+      this.props.walletStore!.refreshAccount(this.account.id);
+    }
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state.tx);
     } else {
@@ -127,17 +137,12 @@ export default class SendTransaction extends React.Component<Props, State> {
 
   renderStep1() {
     const { walletStore } = this.props;
-    const balance =
-      (this.props.account! && this.props.account!.balance) ||
-      (walletStore!.selectedAccount! &&
-        walletStore!.selectedAccount!.balance) ||
-      0;
     // TODO validate the recipient
     return (
       <SendTransactionForm
         amount={this.props.amount || 0}
         fee={walletStore!.fees.get('send')!}
-        balance={balance}
+        balance={this.account.balance}
         onSubmit={this.onSubmit1}
         recipientId={this.props.recipientId}
       />
@@ -146,12 +151,11 @@ export default class SendTransaction extends React.Component<Props, State> {
 
   renderStep2() {
     const { walletStore } = this.props;
-    const account = this.props.account! || walletStore!.selectedAccount!;
     return (
       <ConfirmTransactionForm
-        isPassphraseSet={account.secondSignature}
-        sender={account.name}
-        senderId={account.id}
+        isPassphraseSet={this.account.secondSignature}
+        sender={this.account.name}
+        senderId={this.account.id}
         fee={walletStore!.fees.get('send')!}
         data={{
           kind: 'send',

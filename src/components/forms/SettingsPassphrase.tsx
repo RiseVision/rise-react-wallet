@@ -12,13 +12,12 @@ import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { accountOverviewRoute } from '../../routes';
 import RootStore from '../../stores/root';
-import WalletStore from '../../stores/wallet';
+import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import { amountToUser } from '../../utils/utils';
 import TransactionForm, {
   ProgressState,
   State as TransactionState
 } from './ConfirmTransactionForm';
-import { TTransactionResult } from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -71,6 +70,8 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     progress: ProgressState.TO_CONFIRM
   };
 
+  // TODO get account()
+
   // TODO extract to Form
   handleChange = (field: string) => (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -86,7 +87,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
   onSubmit1 = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const walletStore = this.props.walletStore!;
-    const account = walletStore.selectedAccount!;
+    const account = walletStore.selectedAccount;
     const fee = walletStore.fees.get('secondsignature')!;
     const isSet = account.secondSignature;
     // cancel if already set or not enought balance
@@ -129,7 +130,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
 
   renderStep1() {
     const { classes, walletStore } = this.props;
-    const account = walletStore!.selectedAccount!;
+    const account = walletStore!.selectedAccount;
     const fee =
       walletStore!.fees.get('secondsignature')! +
       walletStore!.fees.get('send')!;
@@ -181,7 +182,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
 
   renderStep2() {
     const walletStore = this.props.walletStore!;
-    const account = walletStore.selectedAccount!;
+    const account = walletStore.selectedAccount;
     return (
       <TransactionForm
         onSend={this.onSend}
@@ -195,6 +196,8 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
+        recipientId="transaction"
+        recipient="2nd passphrase"
       />
     );
   }

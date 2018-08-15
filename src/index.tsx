@@ -1,12 +1,12 @@
-///<reference path="utils/missing.d.ts"/>
+import { Provider } from 'mobx-react';
+import { startRouter } from 'mobx-router';
+/// <reference path="utils/missing.d.ts"/>
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import App from './containers/App';
-import * as routes from './routes';
 import * as config from './config.json';
+import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
-import { startRouter } from 'mobx-router';
-import { Provider } from 'mobx-react';
+import * as routes from './routes';
 import { TConfig } from './stores';
 import RootStore from './stores/root';
 

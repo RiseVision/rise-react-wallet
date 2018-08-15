@@ -1,8 +1,8 @@
 import { configure } from 'mobx';
 import { RouterStore } from 'mobx-router';
 import AccountStore from './account';
-import { TConfig } from './index';
 import AppStore from './app';
+import { TConfig } from './index';
 import OnboardingStore from './onboarding';
 import WalletStore from './wallet';
 

@@ -1,38 +1,38 @@
-import { runInAction } from 'mobx';
-import { inject, observer } from 'mobx-react';
-import { ReactElement } from 'react';
-import * as React from 'react';
-import { InjectedIntlProps, injectIntl, defineMessages } from 'react-intl';
+import red from '@material-ui/core/colors/red';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import {
-  Theme,
   createStyles,
+  Theme,
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
+import Switch from '@material-ui/core/Switch';
+import Typography from '@material-ui/core/Typography';
+import { runInAction } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { ReactElement } from 'react';
+import {
+  defineMessages,
+  FormattedMessage,
+  InjectedIntlProps,
+  injectIntl
+} from 'react-intl';
+import Dialog from '../../components/Dialog';
+import FiatForm, { State as FiatState } from '../../components/forms/SettingsFiat';
+import NameForm, { State as NameState } from '../../components/forms/SettingsName';
+import PassphraseForm from '../../components/forms/SettingsPassphrase';
+import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import RootStore from '../../stores/root';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Switch from '@material-ui/core/Switch';
-import red from '@material-ui/core/colors/red';
-import Dialog from '../../components/Dialog';
-import NameForm, {
-  State as NameState
-} from '../../components/forms/SettingsName';
-import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
-import PassphraseForm from '../../components/forms/SettingsPassphrase';
-import FiatForm, {
-  State as FiatState
-} from '../../components/forms/SettingsFiat';
-import VoteDelegate from './VoteDelegate';
 import RegisterDelegate from './RegisterDelegate';
-import { FormattedMessage } from 'react-intl';
+import VoteDelegate from './VoteDelegate';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -156,7 +156,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   handlePinnedClicked = () => {
     runInAction(() => {
       const walletStore = this.props.walletStore!;
-      const selectedAccount = walletStore.selectedAccount!;
+      const selectedAccount = walletStore.selectedAccount;
       selectedAccount.pinned = !selectedAccount.pinned;
       walletStore.saveAccount(selectedAccount);
     });
@@ -176,7 +176,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   handleDelegateClicked = () => {
     // open only the registered delegate info has been loaded
-    if (this.props.walletStore!.registeredDelegate === undefined) {
+    const account = this.props.walletStore!.selectedAccount;
+    if (account.registeredDelegate === undefined) {
       return;
     }
     this.setState({ dialogOpen: true, dialogField: 'delegateRegistration' });
@@ -194,7 +195,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   onSubmitRemoveAccount = () => {
     let { store, walletStore } = this.props;
 
-    walletStore!.removeAccount(walletStore!.selectedAccount!.id);
+    walletStore!.removeAccount(walletStore!.selectedAccount.id);
     this.onDialogClose();
 
     if (!walletStore!.selectedAccount) {
@@ -210,17 +211,19 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   onSubmitVote = () => {
+    const account = this.props.walletStore!.selectedAccount;
     runInAction(() => {
-      this.props.walletStore!.votedDelegate = null;
+      account.votedDelegate = null;
     });
     this.onDialogClose();
   }
 
   onSubmitRegister = (tx?: TTransactionResult) => {
     // refresh in case the registration actually happened
+    const account = this.props.walletStore!.selectedAccount;
     if (tx && tx.success) {
       runInAction(() => {
-        this.props.walletStore!.registeredDelegate = null;
+        account.registeredDelegate = null;
       });
     }
     this.onDialogClose();
@@ -231,7 +234,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     form: ReactElement<HTMLFormElement> | null;
   } = () => {
     const { store, walletStore } = this.props;
-    const account = walletStore!.selectedAccount!;
+    const account = walletStore!.selectedAccount;
 
     switch (this.state.dialogField!) {
       case 'name':
@@ -337,35 +340,29 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   loadVotedDelegate() {
     const store = this.props.walletStore!;
-    // load the delegate data only if the account has been selected
-    // and only once
-    if (!this.props.walletStore!.selectedAccount!) {
-      return;
-    }
+    // load the delegate data only  once
+    const account = this.props.walletStore!.selectedAccount;
     if (this.state.delegateLoaded) {
       return;
     }
     this.setState({ delegateLoaded: true });
-    store.loadVotedDelegate();
+    store.loadVotedDelegate(account.id);
   }
 
   loadRegisteredDelegate() {
     const store = this.props.walletStore!;
-    // load the registered name only if the account has been selected
-    // and only once
-    if (!this.props.walletStore!.selectedAccount!) {
-      return;
-    }
+    // load the registered name only once
+    const account = this.props.walletStore!.selectedAccount;
     if (this.state.registeredLoaded) {
       return;
     }
     this.setState({ registeredLoaded: true });
-    store.loadRegisteredDelegate();
+    store.loadRegisteredDelegate(account.id);
   }
 
   render() {
     const { intl, classes, walletStore } = this.props;
-    const account = walletStore!.selectedAccount!;
+    const account = walletStore!.selectedAccount;
 
     if (!account) {
       // TODO loading indicator
@@ -416,10 +413,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                   primary={intl.formatMessage(messages.votedDelegate)}
                   secondary={
                     /* TODO translate 'Loading' */
-                    walletStore!.votedDelegate === undefined
+                    account.votedDelegate === undefined
                       ? 'Loading...'
-                      : walletStore!.votedDelegate
-                        ? walletStore!.votedDelegate!.username
+                      : account.votedDelegate
+                        ? account.votedDelegate!.username
                         : intl.formatMessage(messages.votedDelegateUnsetLabel)
                   }
                 />
@@ -457,10 +454,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                   primary={intl.formatMessage(messages.delegateRegistration)}
                   secondary={
                     /* TODO translate 'Loading' */
-                    walletStore!.registeredDelegate === undefined
+                    account.registeredDelegate === undefined
                       ? 'Loading...'
-                      : walletStore!.registeredDelegate
-                        ? walletStore!.registeredDelegate!.username
+                      : account.registeredDelegate
+                        ? account.registeredDelegate!.username
                         : intl.formatMessage(
                             messages.delegateRegistrationUnsetLabel
                           )

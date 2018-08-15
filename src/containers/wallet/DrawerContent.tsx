@@ -1,33 +1,34 @@
-import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import * as classNames from 'classnames';
-import {
-  InjectedIntlProps,
-  injectIntl,
-  defineMessages,
-  FormattedMessage
-} from 'react-intl';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
 import Avatar from '@material-ui/core/Avatar';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import LayersIcon from '@material-ui/icons/Layers';
-import PeopleIcon from '@material-ui/icons/People';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import AddIcon from '@material-ui/icons/Add';
-import AccountIcon from '../../components/AccountIcon';
 import {
-  Theme,
   createStyles,
+  Theme,
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
+import Typography from '@material-ui/core/Typography';
+import AddIcon from '@material-ui/icons/Add';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import LayersIcon from '@material-ui/icons/Layers';
+import PeopleIcon from '@material-ui/icons/People';
+import * as classNames from 'classnames';
 import { orderBy } from 'lodash';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import {
+  defineMessages,
+  FormattedMessage,
+  InjectedIntlProps,
+  injectIntl
+} from 'react-intl';
+import AccountIcon from '../../components/AccountIcon';
+import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
+import AccountStore from '../../stores/account';
 import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
@@ -125,10 +126,10 @@ class DrawerContent extends React.Component<DecoratedProps> {
         <Divider />
         <List>
           {orderBy(
-            walletStore!.accounts,
+            [...walletStore!.accounts.values()],
             ['pinned', 'name'],
             ['desc', 'asc']
-          ).map(account => (
+          ).map((account: AccountStore) => (
             <ListItem
               button={true}
               className={classNames(

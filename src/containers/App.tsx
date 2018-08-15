@@ -1,9 +1,9 @@
+import { inject, observer } from 'mobx-react';
+import { MobxRouter } from 'mobx-router';
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 import AppStore from '../stores/app';
 import ThemeProvider from './ThemeProvider';
-import { observer, inject } from 'mobx-react';
-import { MobxRouter } from 'mobx-router';
 
 interface Props {
   appStore?: AppStore;

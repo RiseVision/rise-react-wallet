@@ -1,10 +1,10 @@
-import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {

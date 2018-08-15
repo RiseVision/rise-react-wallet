@@ -1,26 +1,26 @@
-import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import ModalPaper from '../../components/ModalPaper';
-import ModalPaperHeader from '../../components/ModalPaperHeader';
-import * as classNames from 'classnames';
 import {
-  Theme,
   createStyles,
+  Theme,
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import * as classNames from 'classnames';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import ModalPaper from '../../components/ModalPaper';
+import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingAccountCreatedRoute,
   onboardingNewAccountRoute
 } from '../../routes';
-import RootStore from '../../stores/root';
 import OnboardingStore from '../../stores/onboarding';
+import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) => {

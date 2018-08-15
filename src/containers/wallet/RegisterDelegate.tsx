@@ -7,14 +7,15 @@ import ConfirmTransactionForm, {
 } from '../../components/forms/ConfirmTransactionForm';
 import RegisterDelegateForm from '../../components/forms/RegisterDelegateForm';
 import { accountOverviewRoute } from '../../routes';
+import AccountStore from '../../stores/account';
 import RootStore from '../../stores/root';
-import WalletStore, { TAccount, TTransactionResult } from '../../stores/wallet';
+import WalletStore, { TTransactionResult } from '../../stores/wallet';
 
 interface Props {
   store?: RootStore;
   walletStore?: WalletStore;
   onSubmit?: (tx?: TTransactionResult) => void;
-  account?: TAccount;
+  account?: AccountStore;
 }
 
 export interface State {
@@ -36,9 +37,13 @@ export default class VoteTransaction extends React.Component<Props, State> {
     progress: ProgressState.TO_CONFIRM
   };
 
+  get account() {
+    return this.props.account! || this.props.walletStore!.selectedAccount;
+  }
+
   onSubmit1 = (username: string) => {
     // cant change an already registered delegate
-    if (this.props.walletStore!.registeredDelegate) {
+    if (this.account.registeredDelegate) {
       return this.props.onSubmit ? this.props.onSubmit() : undefined;
     }
     assert(username, 'Delegate\'s name required');
@@ -61,9 +66,10 @@ export default class VoteTransaction extends React.Component<Props, State> {
         this.state.username!,
         state.mnemonic,
         state.passphrase,
-        this.props.account
+        this.account.id
       );
     } catch (e) {
+      // TODO log the error
       tx = { success: false };
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
@@ -71,6 +77,10 @@ export default class VoteTransaction extends React.Component<Props, State> {
   }
 
   onClose = async () => {
+    // refresh the account after a successful transaction
+    if (this.state.tx) {
+      this.props.walletStore!.refreshAccount(this.account.id);
+    }
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state.tx);
     } else {
@@ -85,7 +95,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
 
   renderStep1() {
     // TODO assert that registeredDelegate is loaded (or load) before rendering
-    const { registeredDelegate } = this.props.walletStore!;
+    const { registeredDelegate } = this.account;
     const name = registeredDelegate ? registeredDelegate!.username : '';
     return <RegisterDelegateForm onSubmit={this.onSubmit1} username={name} />;
   }
@@ -93,14 +103,15 @@ export default class VoteTransaction extends React.Component<Props, State> {
   renderStep2() {
     const { walletStore } = this.props;
     const { username } = this.state;
-    const account = this.props.account! || walletStore!.selectedAccount!;
     // TODO translate 'Register Delegate', unify with the transaction table
     // TODO show the delegates name?
     return (
       <ConfirmTransactionForm
-        isPassphraseSet={account.secondSignature}
-        sender={account.name}
-        senderId={account.id}
+        isPassphraseSet={this.account.secondSignature}
+        sender={this.account.name}
+        senderId={this.account.id}
+        recipient={'Register Delegate'}
+        amount={0}
         fee={walletStore!.fees.get('delegate')!}
         data={{
           kind: 'delegate',

@@ -1,15 +1,15 @@
-import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import Hidden from '@material-ui/core/Hidden';
 import Drawer from '@material-ui/core/Drawer';
+import Hidden from '@material-ui/core/Hidden';
 import {
-  Theme,
   createStyles,
+  Theme,
   withStyles,
   WithStyles,
   withTheme,
   WithTheme
 } from '@material-ui/core/styles';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
 import AppStore from '../../stores/app';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';

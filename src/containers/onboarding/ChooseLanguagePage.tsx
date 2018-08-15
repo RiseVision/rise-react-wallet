@@ -1,23 +1,23 @@
-import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import ChevronRight from '@material-ui/icons/ChevronRight';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import FlagIcon from '../../components/FlagIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
-import FlagIcon from '../../components/FlagIcon';
-import RootStore from '../../stores/root';
-import AppStore from '../../stores/app';
-import {
-  Locale,
-  Locales,
-  getUserLocales,
-  getMainCountryForLocale
-} from '../../utils/i18n';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import { onboardingAddAccountRoute } from '../../routes';
+import AppStore from '../../stores/app';
+import RootStore from '../../stores/root';
+import {
+  getMainCountryForLocale,
+  getUserLocales,
+  Locale,
+  Locales
+} from '../../utils/i18n';
 
 const riseIcon = require('../../images/rise_icon.svg');
 
