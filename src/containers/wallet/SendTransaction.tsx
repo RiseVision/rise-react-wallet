@@ -6,9 +6,7 @@ import ConfirmTransactionForm, {
   ProgressState,
   State as ConfirmFormState
 } from '../../components/forms/ConfirmTransactionForm';
-import SendTransactionForm, {
-  State as SendFormState
-} from '../../components/forms/SendTransactionForm';
+import SendTransactionForm, { State as SendFormState } from '../../components/forms/SendTransactionForm';
 import { accountOverviewRoute } from '../../routes';
 import AccountStore from '../../stores/account';
 import RootStore from '../../stores/root';

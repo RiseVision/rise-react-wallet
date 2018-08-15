@@ -196,8 +196,6 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipientId="transaction"
-        recipient="2nd passphrase"
       />
     );
   }

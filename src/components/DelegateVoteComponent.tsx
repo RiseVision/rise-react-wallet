@@ -1,4 +1,5 @@
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import {
   createStyles,
@@ -7,30 +8,11 @@ import {
   withStyles
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import * as classNames from 'classnames';
 import { Delegate } from 'dpos-api-wrapper';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import AccountIcon from './AccountIcon';
-import * as React from 'react';
-import * as classNames from 'classnames';
-import {
-  InjectedIntlProps,
-  injectIntl,
-  defineMessages,
-} from 'react-intl';
-import {
-  createStyles,
-  withStyles,
-  WithStyles,
-  Theme
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Delegate } from 'dpos-api-wrapper';
-import { observer } from 'mobx-react';
 import AccountIcon from './AccountIcon';
 
 const styles = (theme: Theme) => createStyles({

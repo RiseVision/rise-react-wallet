@@ -1,42 +1,119 @@
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
 import {
   createStyles,
-  Theme,
+  withStyles,
   WithStyles,
-  withStyles
+  Theme
 } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
+import { InjectedIntlProps, injectIntl, } from 'react-intl';
 import { amountToUser } from '../../utils/utils';
 import AccountIcon from '../AccountIcon';
 
 const styles = (theme: Theme) =>
   createStyles({
-    input: {
-      color: theme.palette.grey['600']
+    viz: {
+      display: 'flex',
+      flexDirection: 'row',
     },
-    footer: {
+    vizArrow: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 2 * theme.spacing.unit,
+      marginRight: 2 * theme.spacing.unit,
+    },
+    vizAmount: {
+      paddingLeft: 16,
+      paddingRight: 16,
+      marginTop: '-1em',
+    },
+    arrow: {
+      position: 'relative',
+      height: 15,
+      width: '100%',
+      maxWidth: 120,
+      '& > *': {
+        borderColor: '#999',
+      },
+      '&$inactive > *': {
+        borderColor: '#eee',
+      },
+    },
+    inactive: {},
+    arrowShaft: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      height: 7,
+      borderBottomWidth: 1,
+      borderBottomStyle: 'solid',
+      boxSizing: 'content-box',
+    },
+    arrowEnd: {
+      position: 'absolute',
+      top: 2,
+      right: 0,
+      width: 10,
+      height: 10,
+      borderTopWidth: 1,
+      borderTopStyle: 'solid',
+      borderRightWidth: 1,
+      borderRightStyle: 'solid',
+      transform: 'rotate(45deg)',
+    },
+    senderInfo: {
+      textAlign: 'left',
+    },
+    recipientInfo: {
+      textAlign: 'right',
+    },
+    accountAlias: {
+      ...theme.typography.body2,
+    },
+    accountAddress: {
+    },
+    divider: {
+      // Hack around the fact that the parent Dialog component
+      // controls the content padding
+      marginLeft: -2 * theme.spacing.unit,
+      marginRight: -2 * theme.spacing.unit,
+      // Adjust for the Grid margins
       marginTop: theme.spacing.unit,
-      '& button': {
-        color: theme.palette.grey['600']
-      }
+      marginBottom: theme.spacing.unit,
     },
-    error: {
-      /* TODO from the theme */
-      color: 'red'
+    txDetails: {
+      textAlign: 'left',
     },
-    form: {
-      '& > p + p': {
-        marginTop: theme.spacing.unit
-      }
+    txBreakdown: {
+      textAlign: 'right',
+      marginLeft: 'auto',
+      // Display the cost breakdown as a table for easier visual digestion
+      flex: 'none',
+      display: 'table',
+      '& > *': {
+        display: 'table-row',
+        '& > *': {
+          display: 'table-cell',
+          '&:first-child': {
+            paddingRight: theme.spacing.unit,
+          },
+        },
+      },
     },
-    accountAvatar: {
-      backgroundColor: 'white'
-    }
+    totalAmount: {
+      fontWeight: 500,
+    },
   });
 
 type SendTxData = {
@@ -82,6 +159,8 @@ interface Props extends WithStyles<typeof styles> {
   error?: string;
 }
 
+type DecoratedProps = Props & InjectedIntlProps;
+
 export enum ProgressState {
   TO_CONFIRM,
   IN_PROGRESS,
@@ -97,7 +176,7 @@ export interface State {
 const stylesDecorator = withStyles(styles);
 
 @observer
-class ConfirmTransactionForm extends React.Component<Props, State> {
+class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
   state = {
     passphrase: '',
     mnemonic: ''
@@ -130,10 +209,10 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
 
   render() {
     const {
+      intl,
       classes,
       isPassphraseSet,
       progress,
-      sender,
       senderId,
       fee,
       data,
@@ -141,33 +220,149 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
       onClose,
     } = this.props;
 
-    let amount = fee;
-    amount += data.kind === 'send' ? data.amount : 0;
+    const total = fee + (data.kind === 'send' ? data.amount : 0);
+    const recipientId = data.kind === 'send' ? data.recipientId : '';
+    let sender = this.props.sender;
+    if (!sender) {
+      sender = 'Unnamed account';
+    }
+    let recipient = data.kind === 'send' ? data.recipient : null;
+    if (!recipient) {
+      recipient = 'Unknown recipient';
+    }
+
+    const formatAmount = (amount: number) => {
+      return intl.formatNumber(amountToUser(amount));
+    };
 
     return (
-      <form onSubmit={this.onSubmit} className={classes.form}>
-        <div>
-          FROM
-          <Avatar className={classes.accountAvatar}>
-            <AccountIcon size={24} address={senderId} />
-          </Avatar>
-          <p>{sender}</p>
-          <p>{senderId}</p>
-        </div>
-        {data.kind === 'send' && (
-          <div>
-            TO
-            <Avatar className={classes.accountAvatar}>
-              <AccountIcon size={24} address={data.recipientId} />
-            </Avatar>
-            <p>{data.recipient}</p>
-            <p>{data.recipientId}</p>
-          </div>
+      <form onSubmit={this.onSubmit}>
+        <Grid container={true} spacing={16}>
+          <Grid
+            item={true}
+            xs={12}
+            className={classes.viz}
+            aria-label="Send transaction"
+          >
+            <AccountIcon size={64} address={senderId} />
+            <div className={classes.vizArrow}>
+              {data.kind === 'send' && (
+                <Typography
+                  className={classes.vizAmount}
+                  aria-hidden={true}
+                >
+                  {formatAmount(data.amount)} RISE
+                </Typography>
+              )}
+              <div
+                className={classNames(
+                  classes.arrow,
+                  data.kind !== 'send' && classes.inactive,
+                )}
+              >
+                <div className={classes.arrowShaft} />
+                <div className={classes.arrowEnd} />
+              </div>
+            </div>
+            <AccountIcon size={64} address={recipientId} />
+          </Grid>
+          <Grid
+            item={true}
+            xs={12}
+            sm={6}
+            className={classes.senderInfo}
+            aria-label="From unnamed account (1234R)"
+          >
+            <Typography
+              className={classes.accountAlias}
+              aria-hidden={true}
+            >
+              {sender}
+            </Typography>
+            <Typography
+              className={classes.accountAddress}
+              aria-hidden={true}
+            >
+              {senderId}
+            </Typography>
+          </Grid>
+          {data.kind === 'send' && (
+            <Grid
+              item={true}
+              xs={12}
+              sm={6}
+              aria-label="To unnamed recipient (12345R)"
+              className={classes.recipientInfo}
+            >
+              <Typography
+                className={classes.accountAlias}
+                aria-hidden={true}
+              >
+                {recipient}
+              </Typography>
+              <Typography
+                className={classes.accountAddress}
+                aria-hidden={true}
+              >
+                {recipientId}
+              </Typography>
+            </Grid>
+          )}
+        </Grid>
+        {data.kind !== 'send' && (
+          <React.Fragment>
+            <Divider className={classes.divider} />
+            <Grid
+              container={true}
+              spacing={16}
+              className={classes.txDetails}
+              aria-label="Transaction details"
+            >
+              <Grid item={true} xs={12}>
+                <Typography>
+                  Register as a delegate with username <em>USERNAME</em>.
+                </Typography>
+                <Typography>
+                  Remove votes from <em>ex_rise</em>, <em>carpool</em>.
+                </Typography>
+                <Typography>
+                  Cast vote for <em>riseSomeDele</em>.
+                </Typography>
+              </Grid>
+            </Grid>
+          </React.Fragment>
         )}
-        <div>
-          <p>Network fee: {amountToUser(fee)} RISE</p>
-          <p>Total: {amountToUser(amount)} RISE</p>
-        </div>
+        <Divider className={classes.divider} />
+        <Grid
+          container={true}
+          spacing={16}
+        >
+          <Grid
+            item={true}
+            xs={12}
+            className={classes.txBreakdown}
+            aria-label="Transaction cost breakdown"
+          >
+            {data.kind === 'send' && (
+              <Typography>
+                <span>Transfer amount:</span>
+                {' '}
+                <span>{formatAmount(data.amount)} RISE</span>
+              </Typography>
+            )}
+            <Typography>
+              <span>Network fee:</span>
+              {' '}
+              <span>{formatAmount(fee)} RISE</span>
+            </Typography>
+            <Typography>
+              <span>Total:</span>
+              {' '}
+              <span className={classes.totalAmount}>{formatAmount(total)} RISE</span>
+            </Typography>
+          </Grid>
+        </Grid>
+        <Divider className={classes.divider} />
         {/* TODO icons */}
         {progress === ProgressState.ERROR && (
           <React.Fragment>
@@ -175,7 +370,7 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
               Failed to broadcast the transaction to the network
               {error ? `: ${error}` : ''}.
             </Typography>
-            <div className={classes.footer}>
+            <div>
               <Button
                 name="close"
                 onClick={onClose}
@@ -195,7 +390,7 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
             <Typography>
               The transaction was successfully broadcast to the network!
             </Typography>
-            <div className={classes.footer}>
+            <div>
               <Button type="submit" fullWidth={true} name="close">
                 DONE
               </Button>
@@ -218,7 +413,6 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
               the input boxes below.
             </Typography>
             <TextField
-              className={classes.input}
               label="Account mnemonic secret"
               onChange={this.handleChange('mnemonic')}
               margin="normal"
@@ -227,14 +421,13 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
             />
             {isPassphraseSet ? (
               <TextField
-                className={classes.input}
                 label="Second passphrase"
                 onChange={this.handleChange('passphrase')}
                 margin="normal"
                 fullWidth={true}
               />
             ) : null}
-            <div className={classes.footer}>
+            <div>
               <Button name="send" type="submit" fullWidth={true}>
                 SIGN &amp; BROADCAST
               </Button>
@@ -246,4 +439,4 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
   }
 }
 
-export default stylesDecorator(ConfirmTransactionForm);
+export default stylesDecorator(injectIntl(ConfirmTransactionForm));

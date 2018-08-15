@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
-import { throttle } from 'lodash';
-import { throttle } from 'lodash';
+import { throttle, sampleSize } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import ConfirmTransactionForm, {
@@ -13,22 +12,6 @@ import { accountOverviewRoute } from '../../routes';
 import AccountStore from '../../stores/account';
 import RootStore from '../../stores/root';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
-import { uniqueRandom } from '../../utils/utils';
-import * as assert from 'assert';
-import { Delegate } from 'dpos-api-wrapper';
-import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import ConfirmTransactionForm, {
-  ProgressState,
-  State as ConfirmFormState
-} from '../../components/forms/ConfirmTransactionForm';
-import { accountOverviewRoute } from '../../routes';
-import RootStore from '../../stores/root';
-import WalletStore, { TAccount, TTransactionResult } from '../../stores/wallet';
-import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
-import { throttle, sampleSize } from 'lodash';
-import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
-import AccountStore from '../../stores/account';
 
 interface Props {
   store?: RootStore;
@@ -83,12 +66,12 @@ export default class VoteDelegate extends React.Component<Props, State> {
         this.setState({
           loadingDelegates: false,
           displayedDelegates: sampleSize(active, 3),
-          query,
+          query
         });
       } else {
         this.setState({
           loadingDelegates: true,
-          query,
+          query
         });
         const result = await this.props.walletStore!.searchDelegates(query);
         // check if there was a newer search
@@ -112,7 +95,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
       step: 2,
       addVote
     });
-  }
+  };
 
   onSend = async (state: ConfirmFormState) => {
     const { walletStore } = this.props;
@@ -134,7 +117,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
     this.setState({ tx, progress });
-  }
+  };
 
   onClose = async () => {
     // refresh the account after a successful transaction
@@ -147,7 +130,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
       // fallback
       this.props.store!.router.goTo(accountOverviewRoute);
     }
-  }
+  };
 
   componentWillMount() {
     // query for the recommended delegates
@@ -174,7 +157,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
   }
 
   renderStep1() {
-    const { votedDelegate } = this.account
+    const { votedDelegate } = this.account;
     const { query } = this.state;
 
     const showSuggestions = !query || !query.trim();
@@ -194,12 +177,13 @@ export default class VoteDelegate extends React.Component<Props, State> {
   renderStep2() {
     const { walletStore } = this.props;
     const { selectedDelegate } = this.state;
-    const { votedDelegate } = walletStore!;
+    const { votedDelegate } = this.account;
 
     let removeVotes = [];
     let addVotes = [];
 
-    const isRemoveTx = votedDelegate && votedDelegate.publicKey === selectedDelegate!.publicKey;
+    const isRemoveTx =
+      votedDelegate && votedDelegate.publicKey === selectedDelegate!.publicKey;
     if (votedDelegate) {
       removeVotes.push(votedDelegate.username);
     }
@@ -211,12 +195,11 @@ export default class VoteDelegate extends React.Component<Props, State> {
         isPassphraseSet={this.account.secondSignature}
         sender={this.account.name}
         senderId={this.account.id}
-        recipient={'Cast Vote'}
         fee={walletStore!.fees.get('vote')!}
         data={{
           kind: 'vote',
           remove: removeVotes,
-          add: addVotes,
+          add: addVotes
         }}
         onSend={this.onSend}
         onRedo={this.onSend}

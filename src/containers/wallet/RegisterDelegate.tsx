@@ -110,8 +110,6 @@ export default class VoteTransaction extends React.Component<Props, State> {
         isPassphraseSet={this.account.secondSignature}
         sender={this.account.name}
         senderId={this.account.id}
-        recipient={'Register Delegate'}
-        amount={0}
         fee={walletStore!.fees.get('delegate')!}
         data={{
           kind: 'delegate',

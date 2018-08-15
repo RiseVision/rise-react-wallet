@@ -2,26 +2,18 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { Delegate } from 'dpos-api-wrapper';
-import { observer } from 'mobx-react';
-import * as React from 'react';
-import { ChangeEvent } from 'react';
-import { FormattedMessage } from 'react-intl';
-import DelegateVoteComponent from '../DelegateVoteComponent';
 import { range } from 'lodash';
-import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import { Delegate } from 'dpos-api-wrapper';
 import { observer } from 'mobx-react';
+import * as React from 'react';
 import { ChangeEvent } from 'react';
+import { FormattedMessage } from 'react-intl';
 import DelegateVoteComponent from '../DelegateVoteComponent';
 
 interface Props {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
   onSearch: (query: string) => void;
   isLoading: boolean;
+  isSearch: boolean;
   delegates: Delegate[];
   votedDelegate: string | null;
 }
