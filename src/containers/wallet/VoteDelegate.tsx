@@ -166,17 +166,32 @@ export default class VoteDelegate extends React.Component<Props, State> {
 
   renderStep2() {
     const { walletStore } = this.props;
+    const { selectedDelegate } = this.state;
+    const { votedDelegate } = walletStore!;
     const account = this.props.account! || walletStore!.selectedAccount!;
-    // TODO translate 'Cast Vote', unify with the transaction table
-    // TODO show the delegates name?
+
+    let removeVotes = [];
+    let addVotes = [];
+
+    const isRemoveTx = votedDelegate && votedDelegate.publicKey === selectedDelegate!.publicKey;
+    if (votedDelegate) {
+      removeVotes.push(votedDelegate.username);
+    }
+    if (!isRemoveTx) {
+      addVotes.push(selectedDelegate!.username);
+    }
+
     return (
       <ConfirmTransactionForm
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipient={'Cast Vote'}
-        amount={0}
         fee={walletStore!.fees.get('vote')!}
+        data={{
+          kind: 'vote',
+          remove: removeVotes,
+          add: addVotes,
+        }}
         onSend={this.onSend}
         onRedo={this.onSend}
         onClose={this.onClose}

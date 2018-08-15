@@ -182,7 +182,6 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
   renderStep2() {
     const walletStore = this.props.walletStore!;
     const account = walletStore.selectedAccount!;
-    // TODO translate
     return (
       <TransactionForm
         onSend={this.onSend}
@@ -190,12 +189,12 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
         onClose={this.onClose}
         progress={this.state.progress}
         fee={walletStore.fees.get('secondsignature')!}
-        amount={0}
+        data={{
+          kind: 'passphrase',
+        }}
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipientId="transaction"
-        recipient="2nd passphrase"
       />
     );
   }

@@ -136,10 +136,13 @@ export default class SendTransaction extends React.Component<Props, State> {
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipientId={this.state.recipientId!}
-        recipient={walletStore!.idToName(this.state.recipientId!)}
-        amount={this.state.amount!}
         fee={walletStore!.fees.get('send')!}
+        data={{
+          kind: 'send',
+          recipientId: this.state.recipientId!,
+          recipient: walletStore!.idToName(this.state.recipientId!),
+          amount: this.state.amount!,
+        }}
         onSend={this.onSend}
         onRedo={this.onSend}
         onClose={this.onClose}

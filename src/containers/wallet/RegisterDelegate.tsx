@@ -92,6 +92,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
 
   renderStep2() {
     const { walletStore } = this.props;
+    const { username } = this.state;
     const account = this.props.account! || walletStore!.selectedAccount!;
     // TODO translate 'Register Delegate', unify with the transaction table
     // TODO show the delegates name?
@@ -100,9 +101,11 @@ export default class VoteTransaction extends React.Component<Props, State> {
         isPassphraseSet={account.secondSignature}
         sender={account.name}
         senderId={account.id}
-        recipient={'Register Delegate'}
-        amount={0}
         fee={walletStore!.fees.get('delegate')!}
+        data={{
+          kind: 'delegate',
+          username: username!,
+        }}
         onSend={this.onSend}
         onRedo={this.onSend}
         onClose={this.onClose}

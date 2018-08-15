@@ -39,17 +39,42 @@ const styles = (theme: Theme) =>
     }
   });
 
+type SendTxData = {
+  kind: 'send';
+  recipientId: string;
+  recipient: string | null;
+  amount: number;
+};
+
+type PassphraseTxData = {
+  kind: 'passphrase';
+};
+
+type DelegateTxData = {
+  kind: 'delegate';
+  username: string;
+};
+
+type VoteTxData = {
+  kind: 'vote';
+  remove: string[];
+  add: string[];
+};
+
+type TxData =
+  | SendTxData
+  | PassphraseTxData
+  | DelegateTxData
+  | VoteTxData;
+
 interface Props extends WithStyles<typeof styles> {
   onSend: (state: State) => void;
   onRedo: (state: State) => void;
   onClose: () => void;
-  amount: number;
+  data: TxData;
   fee: number;
   sender: string | null;
   senderId: string;
-  recipient: string;
-  // no recipientId means internal operation (eg second signature)
-  recipientId?: string;
   isPassphraseSet: boolean;
   // progress state
   progress: ProgressState;
@@ -104,43 +129,56 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, progress } = this.props;
+    const {
+      classes,
+      isPassphraseSet,
+      progress,
+      sender,
+      senderId,
+      fee,
+      data,
+      error,
+      onClose,
+    } = this.props;
+
+    let amount = fee;
+    amount += data.kind === 'send' ? data.amount : 0;
 
     return (
       <form onSubmit={this.onSubmit} className={classes.form}>
         <div>
           FROM
           <Avatar className={classes.accountAvatar}>
-            <AccountIcon size={24} address={this.props.senderId} />
+            <AccountIcon size={24} address={senderId} />
           </Avatar>
-          <p>{this.props.sender}</p>
-          <p>{this.props.senderId}</p>
+          <p>{sender}</p>
+          <p>{senderId}</p>
         </div>
-        <div>
-          TO
-          {this.props.recipientId && (
+        {data.kind === 'send' && (
+          <div>
+            TO
             <Avatar className={classes.accountAvatar}>
-              <AccountIcon size={24} address={this.props.recipientId} />
+              <AccountIcon size={24} address={data.recipientId} />
             </Avatar>
-          )}
-          <p>{this.props.recipient}</p>
-          <p>{this.props.recipientId}</p>
-        </div>
+            <p>{data.recipient}</p>
+            <p>{data.recipientId}</p>
+          </div>
+        )}
         <div>
-          <p>Network fee: {amountToUser(this.props.fee)} RISE</p>
-          <p>Total: {amountToUser(this.props.amount + this.props.fee)} RISE</p>
+          <p>Network fee: {amountToUser(fee)} RISE</p>
+          <p>Total: {amountToUser(amount)} RISE</p>
         </div>
         {/* TODO icons */}
         {progress === ProgressState.ERROR && (
           <React.Fragment>
             <Typography>
               Failed to broadcast the transaction to the network
-              {this.props.error ? `: ${this.props.error}` : ''}.
+              {error ? `: ${error}` : ''}.
             </Typography>
             <div className={classes.footer}>
               <Button
                 name="close"
-                onClick={this.props.onClose}
+                onClick={onClose}
                 fullWidth={true}
               >
                 CLOSE
@@ -176,7 +214,7 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
           <React.Fragment>
             <Typography>
               To confirm this transaction, enter your mnemonic secret
-              {this.props.isPassphraseSet ? ' and the 2nd passphrase ' : ''} in
+              {isPassphraseSet ? ' and the 2nd passphrase ' : ''} in
               the input boxes below.
             </Typography>
             <TextField
@@ -187,7 +225,7 @@ class ConfirmTransactionForm extends React.Component<Props, State> {
               autoFocus={true}
               fullWidth={true}
             />
-            {this.props.isPassphraseSet ? (
+            {isPassphraseSet ? (
               <TextField
                 className={classes.input}
                 label="Second passphrase"
