@@ -9,11 +9,19 @@ import {
 } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import DoneIcon from '@material-ui/icons/Done';
 import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
-import { InjectedIntlProps, injectIntl, } from 'react-intl';
+import {
+  defineMessages,
+  FormattedMessage,
+  InjectedIntlProps,
+  injectIntl,
+} from 'react-intl';
 import { amountToUser } from '../../utils/utils';
 import AccountIcon from '../AccountIcon';
 
@@ -114,6 +122,25 @@ const styles = (theme: Theme) =>
     totalAmount: {
       fontWeight: 500,
     },
+    statusContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginLeft: 2 * theme.spacing.unit,
+      marginRight: 2 * theme.spacing.unit,
+      marginTop: theme.spacing.unit,
+      marginBottom: theme.spacing.unit,
+      '& > * + *': {
+        marginLeft: 2 * theme.spacing.unit,
+      },
+    },
+    statusIcon: {
+      fontSize: 48,
+    },
+    statusMessage: {
+      textAlign: 'left',
+    },
   });
 
 type SendTxData = {
@@ -143,6 +170,11 @@ type TxData =
   | PassphraseTxData
   | DelegateTxData
   | VoteTxData;
+
+function throwInvalidTxKind(tx: never): never;
+function throwInvalidTxKind(tx: TxData) {
+  throw new Error(`Invalid transaction kind ${tx.kind}`);
+}
 
 interface Props extends WithStyles<typeof styles> {
   onSend: (state: State) => void;
@@ -174,6 +206,69 @@ export interface State {
 }
 
 const stylesDecorator = withStyles(styles);
+
+const messages = defineMessages({
+  unnamedSender: {
+    id: 'forms-confirm-tx.unnamed-sender',
+    description: 'Unnamed sender account',
+    defaultMessage: 'Unnamed account',
+  },
+  unnamedRecipient: {
+    id: 'forms-confirm-tx.unnamed-recipient',
+    description: 'Unnamed recipient account',
+    defaultMessage: 'Unknown recipient',
+  },
+  sendTxTitleAria: {
+    id: 'forms-confirm-tx.send-title-aria',
+    description: 'Send transaction title for accessibility',
+    defaultMessage: 'Send transaction of {amount}',
+  },
+  passphraseTxTitleAria: {
+    id: 'forms-confirm-tx.passphrase-title-aria',
+    description: '2nd passphrase transaction title for accessibility',
+    defaultMessage: 'Setup 2nd passphrase transaction',
+  },
+  delegateTxTitleAria: {
+    id: 'forms-confirm-tx.delegate-title-aria',
+    description: 'Register as delegate transaction title for accessibility',
+    defaultMessage: 'Register as a delegate transaction',
+  },
+  voteTxTitleAria: {
+    id: 'forms-confirm-tx.vote-title-aria',
+    description: 'Vote transaction title for accessibility',
+    defaultMessage: 'Vote transaction',
+  },
+  senderSummaryAria: {
+    id: 'forms-confirm-tx.sender-summary-aria',
+    description: 'Sender summary for accessibility',
+    defaultMessage: 'From {account} ({address})',
+  },
+  recipientSummaryAria: {
+    id: 'forms-confirm-tx.recipient-summary-aria',
+    description: 'Recipient summary for accessibility',
+    defaultMessage: 'To {account} ({address})',
+  },
+  txDetailsAria: {
+    id: 'forms-confirm-tx.details-section-aria',
+    description: 'Transaction details section title for accessibility',
+    defaultMessage: 'Transaction details',
+  },
+  txBreakdownAria: {
+    id: 'forms-confirm-tx.breakdown-section-aria',
+    description: 'Transaction breakdown section title for accessibility',
+    defaultMessage: 'Transaction cost breakdown',
+  },
+  errorIconAria: {
+    id: 'forms-confirm-tx.error-icon-aria',
+    description: 'Error status icon label for accessibility',
+    defaultMessage: 'Error indicator icon',
+  },
+  successIconAria: {
+    id: 'forms-confirm-tx.success-icon-aria',
+    description: 'Success status icon label for accessibility',
+    defaultMessage: 'Success indicator icon',
+  },
+});
 
 @observer
 class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
@@ -224,16 +319,43 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
     const recipientId = data.kind === 'send' ? data.recipientId : '';
     let sender = this.props.sender;
     if (!sender) {
-      sender = 'Unnamed account';
+      sender = intl.formatMessage(messages.unnamedSender);
     }
     let recipient = data.kind === 'send' ? data.recipient : null;
     if (!recipient) {
-      recipient = 'Unknown recipient';
+      recipient = intl.formatMessage(messages.unnamedRecipient);
     }
 
-    const formatAmount = (amount: number) => {
-      return intl.formatNumber(amountToUser(amount));
-    };
+    const formatAmount = (amount: number) => (
+      `${intl.formatNumber(amountToUser(amount))} RISE`
+    );
+
+    const renderDelegates = (usernames: string[]) => (
+      <React.Fragment>
+        {usernames
+          .map(u => (<em key={u}>{u}</em>))
+          .reduce(
+            (a, u) => a.concat(a.length ? ', ' : null, u),
+            [] as Array<null | string | JSX.Element>,
+          )
+        }
+      </React.Fragment>
+    );
+
+    let txTitleAria = '';
+    if (data.kind === 'send') {
+      txTitleAria = intl.formatMessage(messages.sendTxTitleAria, {
+        amount: formatAmount(data.amount),
+      });
+    } else if (data.kind === 'passphrase') {
+      txTitleAria = intl.formatMessage(messages.passphraseTxTitleAria);
+    } else if (data.kind === 'delegate') {
+      txTitleAria = intl.formatMessage(messages.delegateTxTitleAria);
+    } else if (data.kind === 'vote') {
+      txTitleAria = intl.formatMessage(messages.voteTxTitleAria);
+    } else {
+      throwInvalidTxKind(data);
+    }
 
     return (
       <form onSubmit={this.onSubmit}>
@@ -242,7 +364,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             item={true}
             xs={12}
             className={classes.viz}
-            aria-label="Send transaction"
+            aria-label={txTitleAria}
           >
             <AccountIcon size={64} address={senderId} />
             <div className={classes.vizArrow}>
@@ -251,7 +373,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                   className={classes.vizAmount}
                   aria-hidden={true}
                 >
-                  {formatAmount(data.amount)} RISE
+                  {formatAmount(data.amount)}
                 </Typography>
               )}
               <div
@@ -271,7 +393,10 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             xs={12}
             sm={6}
             className={classes.senderInfo}
-            aria-label="From unnamed account (1234R)"
+            aria-label={intl.formatMessage(messages.senderSummaryAria, {
+              account: sender,
+              address: senderId,
+            })}
           >
             <Typography
               className={classes.accountAlias}
@@ -291,8 +416,11 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
               item={true}
               xs={12}
               sm={6}
-              aria-label="To unnamed recipient (12345R)"
               className={classes.recipientInfo}
+              aria-label={intl.formatMessage(messages.recipientSummaryAria, {
+                account: recipient,
+                address: recipientId,
+              })}
             >
               <Typography
                 className={classes.accountAlias}
@@ -311,28 +439,80 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
         </Grid>
         {data.kind !== 'send' && (
           <React.Fragment>
-            <Divider className={classes.divider} />
+            <Divider className={classes.divider} aria-hidden={true} />
             <Grid
               container={true}
               spacing={16}
               className={classes.txDetails}
-              aria-label="Transaction details"
+              aria-label={intl.formatMessage(messages.txDetailsAria)}
             >
               <Grid item={true} xs={12}>
-                <Typography>
-                  Register as a delegate with username <em>USERNAME</em>.
-                </Typography>
-                <Typography>
-                  Remove votes from <em>ex_rise</em>, <em>carpool</em>.
-                </Typography>
-                <Typography>
-                  Cast vote for <em>riseSomeDele</em>.
-                </Typography>
+                {data.kind === 'passphrase' && (
+                  <Typography>
+                    <FormattedMessage
+                      id="forms-confirm-tx.details-add-passphrase"
+                      description="Transaction detail row for 2nd passphrase setup."
+                      defaultMessage="Setup 2nd passphrase for account."
+                    />
+                  </Typography>
+                )}
+                {data.kind === 'delegate' && (
+                  <Typography>
+                    <FormattedMessage
+                      id="forms-confirm-tx.details-register-delegate"
+                      description="Transaction detail row for delegate registration."
+                      defaultMessage="Register as a delegate with username {username}."
+                      values={{
+                        username: (<em>{data.username}</em>),
+                      }}
+                    />
+                  </Typography>
+                )}
+                {data.kind === 'vote' && (
+                  <React.Fragment>
+                    {data.remove.length && (
+                      <Typography>
+                        <FormattedMessage
+                          id="forms-confirm-tx.details-remove-votes"
+                          description="Transaction detail row for vote removal."
+                          defaultMessage={
+                            'Remove {delegateCount, plural,' +
+                            '  one {vote}' +
+                            '  other {votes}' +
+                            '} form {delegates}.'
+                          }
+                          values={{
+                            delegateCount: data.add.length,
+                            delegates: renderDelegates(data.remove),
+                          }}
+                        />
+                      </Typography>
+                    )}
+                    {data.add.length && (
+                      <Typography>
+                        <FormattedMessage
+                          id="forms-confirm-tx.details-add-votes"
+                          description="Transaction detail row for vote addition."
+                          defaultMessage={
+                            'Cast {delegateCount, plural,' +
+                            '  one {vote}' +
+                            '  other {votes}' +
+                            '} for {delegates}.'
+                          }
+                          values={{
+                            delegateCount: data.add.length,
+                            delegates: renderDelegates(data.add),
+                          }}
+                        />
+                      </Typography>
+                    )}
+                  </React.Fragment>
+                )}
               </Grid>
             </Grid>
           </React.Fragment>
         )}
-        <Divider className={classes.divider} />
+        <Divider className={classes.divider} aria-hidden={true} />
         <Grid
           container={true}
           spacing={16}
@@ -341,98 +521,227 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             item={true}
             xs={12}
             className={classes.txBreakdown}
-            aria-label="Transaction cost breakdown"
+            aria-label={intl.formatMessage(messages.txBreakdownAria)}
           >
             {data.kind === 'send' && (
               <Typography>
-                <span>Transfer amount:</span>
+                <FormattedMessage
+                  id="forms-confirm-tx.breakdown-amount-label"
+                  description="Label for transfer amount in transaction breakdown."
+                  defaultMessage="Transfer amount:"
+                />
                 {' '}
-                <span>{formatAmount(data.amount)} RISE</span>
+                <span>{formatAmount(data.amount)}</span>
               </Typography>
             )}
             <Typography>
-              <span>Network fee:</span>
+              <FormattedMessage
+                id="forms-confirm-tx.breakdown-fee-label"
+                description="Label for network fee in transaction breakdown."
+                defaultMessage="Network fee:"
+              />
               {' '}
-              <span>{formatAmount(fee)} RISE</span>
+              <span>{formatAmount(fee)}</span>
             </Typography>
             <Typography>
-              <span>Total:</span>
+              <FormattedMessage
+                id="forms-confirm-tx.breakdown-total-label"
+                description="Label for total cost in transaction breakdown."
+                defaultMessage="Total:"
+              />
               {' '}
-              <span className={classes.totalAmount}>{formatAmount(total)} RISE</span>
+              <span className={classes.totalAmount}>{formatAmount(total)}</span>
             </Typography>
           </Grid>
         </Grid>
-        <Divider className={classes.divider} />
-        {/* TODO icons */}
+        <Divider className={classes.divider} aria-hidden={true} />
         {progress === ProgressState.ERROR && (
-          <React.Fragment>
-            <Typography>
-              Failed to broadcast the transaction to the network
-              {error ? `: ${error}` : ''}.
-            </Typography>
-            <div>
+          <Grid
+            container={true}
+            spacing={16}
+          >
+            <Grid
+              item={true}
+              xs={12}
+              className={classes.statusContainer}
+            >
+              <ErrorOutlineIcon
+                className={classes.statusIcon}
+                color="error"
+                aria-label={intl.formatMessage(messages.errorIconAria)}
+              />
+              <Typography className={classes.statusMessage}>
+                <FormattedMessage
+                  id="forms-confirm-tx.error-msg"
+                  description="Message for when a transaction failed to broadcast."
+                  defaultMessage={'Failed to broadcast the transaction to the network: {error}'}
+                  values={{
+                    error: error || 'N/A',
+                  }}
+                />
+              </Typography>
+            </Grid>
+            <Grid
+              item={true}
+              xs={12}
+              sm={6}
+            >
+              <Button type="submit" fullWidth={true}>
+                <FormattedMessage
+                  id="forms-confirm-tx.try-again-button"
+                  description="Label for try again button."
+                  defaultMessage="Try again"
+                />
+              </Button>
+            </Grid>
+            <Grid
+              item={true}
+              xs={12}
+              sm={6}
+            >
               <Button
-                name="close"
                 onClick={onClose}
                 fullWidth={true}
               >
-                CLOSE
+                <FormattedMessage
+                  id="forms-confirm-tx.close-button"
+                  description="Label for close button."
+                  defaultMessage="Close"
+                />
               </Button>
-              <Button name="redo" type="submit" fullWidth={true}>
-                TRY AGAIN
-              </Button>
-            </div>
-          </React.Fragment>
+            </Grid>
+          </Grid>
         )}
-        {/* TODO icons */}
         {progress === ProgressState.SUCCESS && (
-          <React.Fragment>
-            <Typography>
-              The transaction was successfully broadcast to the network!
-            </Typography>
-            <div>
-              <Button type="submit" fullWidth={true} name="close">
-                DONE
+          <Grid
+            container={true}
+            spacing={16}
+          >
+            <Grid
+              item={true}
+              xs={12}
+              className={classes.statusContainer}
+            >
+              <DoneIcon
+                className={classes.statusIcon}
+                color="secondary"
+                aria-label={intl.formatMessage(messages.successIconAria)}
+              />
+              <Typography className={classes.statusMessage}>
+                <FormattedMessage
+                  id="forms-confirm-tx.success-msg"
+                  description="Message for when a transaction broadcast succeeded."
+                  defaultMessage="The transaction was successfully broadcast to the network!"
+                />
+              </Typography>
+            </Grid>
+            <Grid
+              item={true}
+              xs={12}
+            >
+              <Button
+                type="submit"
+                fullWidth={true}
+              >
+                <FormattedMessage
+                  id="forms-confirm-tx.done-button"
+                  description="Label for done button."
+                  defaultMessage="Done"
+                />
               </Button>
-            </div>
-          </React.Fragment>
+            </Grid>
+          </Grid>
         )}
-        {/* TODO loading spinner */}
         {progress === ProgressState.IN_PROGRESS && (
-          <React.Fragment>
-            <Typography>
-              Broadcasting transaction to the network.<br />Please wait...
-            </Typography>
-          </React.Fragment>
+          <Grid
+            container={true}
+            spacing={16}
+          >
+            <Grid
+              item={true}
+              xs={12}
+              className={classes.statusContainer}
+            >
+              <CircularProgress color="secondary" />
+              <Typography className={classes.statusMessage}>
+                <FormattedMessage
+                  id="forms-confirm-tx.broadcasting-msg"
+                  description="Message for when a transaction is being broadcast."
+                  defaultMessage="Broadcasting transaction to the network. Please wait..."
+                />
+              </Typography>
+            </Grid>
+          </Grid>
         )}
         {progress === ProgressState.TO_CONFIRM && (
-          <React.Fragment>
-            <Typography>
-              To confirm this transaction, enter your mnemonic secret
-              {isPassphraseSet ? ' and the 2nd passphrase ' : ''} in
-              the input boxes below.
-            </Typography>
-            <TextField
-              label="Account mnemonic secret"
-              onChange={this.handleChange('mnemonic')}
-              margin="normal"
-              autoFocus={true}
-              fullWidth={true}
-            />
-            {isPassphraseSet ? (
+          <Grid
+            container={true}
+            spacing={16}
+          >
+            <Grid item={true} xs={12}>
+              <Typography>
+                {isPassphraseSet ? (
+                  <FormattedMessage
+                    id="forms-confirm-tx.instructions-with-passphrase"
+                    description="Instructions on how to confirm the transaction (with 2nd passphrase set)."
+                    defaultMessage={
+                      'To confirm this transaction, enter your mnemonic secret ' +
+                      'and the 2nd passphrase into the text fields below.'
+                    }
+                  />
+                ) : (
+                  <FormattedMessage
+                    id="forms-confirm-tx.instructions"
+                    description="Instructions on how to confirm the transaction."
+                    defaultMessage={
+                      'To confirm this transaction, enter your mnemonic secret ' +
+                      'into the text field below.'
+                    }
+                  />
+                )}
+              </Typography>
+            </Grid>
+            <Grid item={true} xs={12}>
               <TextField
-                label="Second passphrase"
-                onChange={this.handleChange('passphrase')}
-                margin="normal"
+                label={(
+                  <FormattedMessage
+                    id="forms-confirm-tx.mnemonic-input-label"
+                    description="Label for mnemonic text field."
+                    defaultMessage="Account mnemonic secret"
+                  />
+                )}
+                value={this.state.mnemonic}
+                onChange={this.handleChange('mnemonic')}
+                autoFocus={true}
                 fullWidth={true}
               />
-            ) : null}
-            <div>
-              <Button name="send" type="submit" fullWidth={true}>
-                SIGN &amp; BROADCAST
+            </Grid>
+            {isPassphraseSet && (
+              <Grid item={true} xs={12}>
+                <TextField
+                  label={(
+                    <FormattedMessage
+                      id="forms-confirm-tx.passphrase-input-label"
+                      description="Label for 2nd passphrase text field."
+                      defaultMessage="Second passphrase"
+                    />
+                  )}
+                  value={this.state.passphrase}
+                  onChange={this.handleChange('passphrase')}
+                  fullWidth={true}
+                />
+              </Grid>
+            )}
+            <Grid item={true} xs={12}>
+              <Button type="submit" fullWidth={true}>
+                <FormattedMessage
+                  id="forms-confirm-tx.sign-button"
+                  description="Label for sign & broadcast button."
+                  defaultMessage="Sign & broadcast"
+                />
               </Button>
-            </div>
-          </React.Fragment>
+            </Grid>
+          </Grid>
         )}
       </form>
     );

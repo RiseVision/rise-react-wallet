@@ -12,7 +12,7 @@ import { accountOverviewRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
-import { amountToServer } from '../../utils/utils';
+import { amountToServer, normalizeAddress } from '../../utils/utils';
 
 interface Props {
   routerStore?: RouterStore;
@@ -67,7 +67,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     // TODO validate amount is a number
     // TODO validate state.recipientId
     this.setState({
-      recipientId: state.recipientId!,
+      recipientId: normalizeAddress(state.recipientId!),
       amount: amountToServer(state.amount),
       step: 2
     });
