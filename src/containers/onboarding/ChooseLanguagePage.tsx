@@ -4,6 +4,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import FlagIcon from '../../components/FlagIcon';
@@ -11,7 +12,6 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute } from '../../routes';
 import AppStore from '../../stores/app';
-import RootStore from '../../stores/root';
 import {
   getMainCountryForLocale,
   getUserLocales,
@@ -48,20 +48,20 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
   appStore?: AppStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage' });
 
-@inject('store')
+@inject('routerStore')
 @inject('appStore')
 @observer
 class ChooseLanguagePage extends React.Component<Props> {
   handleLanguageClicked = async (locale: Locale) => {
-    const { store, appStore } = this.props;
+    const { routerStore, appStore } = this.props;
     await appStore!.changeLanguage(locale);
-    store!.router.goTo(onboardingAddAccountRoute);
+    routerStore!.goTo(onboardingAddAccountRoute);
   }
 
   render() {

@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import * as bip39 from 'bip39';
 import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
@@ -19,7 +20,6 @@ import {
   onboardingVerifyMnemonicsRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
-import RootStore from '../../stores/root';
 
 const styles = (theme: Theme) => {
   const { pxToRem } = theme.typography;
@@ -83,7 +83,7 @@ function round(val: number) {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
   onboardingStore?: OnboardingStore;
   mnemonic?: string[];
 }
@@ -94,7 +94,7 @@ interface State {
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingNewMnemonicPage' });
 
-@inject('store')
+@inject('routerStore')
 @inject('onboardingStore')
 @observer
 class NewMnemonicPage extends React.Component<Props, State> {
@@ -107,14 +107,14 @@ class NewMnemonicPage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(onboardingNewAccountRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(onboardingNewAccountRoute);
   }
 
   handleContinueClick = () => {
-    const { store, onboardingStore } = this.props;
+    const { routerStore, onboardingStore } = this.props;
     onboardingStore!.mnemonic = this.state.mnemonic;
-    store!.router.goTo(onboardingVerifyMnemonicsRoute);
+    routerStore!.goTo(onboardingVerifyMnemonicsRoute);
   }
 
   render() {

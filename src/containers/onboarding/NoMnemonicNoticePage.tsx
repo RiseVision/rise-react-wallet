@@ -7,12 +7,12 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { accountOverviewRoute } from '../../routes';
-import RootStore from '../../stores/root';
 
 const styles = (theme: Theme) => createStyles({
   content: {
@@ -30,12 +30,12 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage' });
 
-@inject('store')
+@inject('routerStore')
 @observer
 class NoMnemonicNoticePage extends React.Component<Props> {
 
@@ -44,13 +44,13 @@ class NoMnemonicNoticePage extends React.Component<Props> {
   }
 
   handleCloseClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(accountOverviewRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(accountOverviewRoute);
   }
 
   handleContinueClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(accountOverviewRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(accountOverviewRoute);
   }
 
   render() {

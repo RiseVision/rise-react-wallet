@@ -9,6 +9,7 @@ import {
 import Typography from '@material-ui/core/Typography';
 import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
@@ -17,7 +18,6 @@ import {
   onboardingNewAccountRoute,
   onboardingNewMnemonicRoute
 } from '../../routes';
-import RootStore from '../../stores/root';
 
 const styles = (theme: Theme) => createStyles({
   content: {
@@ -45,7 +45,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
 }
 
 interface State {
@@ -54,7 +54,7 @@ interface State {
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage' });
 
-@inject('store')
+@inject('routerStore')
 @observer
 class SecurityNoticePage extends React.Component<Props, State> {
 
@@ -66,8 +66,8 @@ class SecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(onboardingNewAccountRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(onboardingNewAccountRoute);
   }
 
   handleNextTipClick = () => {
@@ -77,8 +77,8 @@ class SecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleContinueClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(onboardingNewMnemonicRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(onboardingNewMnemonicRoute);
   }
 
   render() {

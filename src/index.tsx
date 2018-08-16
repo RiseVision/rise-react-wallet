@@ -7,18 +7,19 @@ import * as config from './config.json';
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
 import * as routes from './routes';
-import { TConfig } from './stores';
+import { TConfig, TStores } from './stores';
 import RootStore from './stores/root';
 
 // tslint:disable-next-line:no-any
 const store = new RootStore((config as any) as TConfig);
 startRouter(routes, store);
 
-const stores = {
+const stores: TStores = {
   store,
   appStore: store.app,
   onboardingStore: store.onboarding,
   walletStore: store.wallet,
+  routerStore: store.router,
 };
 
 const root = (

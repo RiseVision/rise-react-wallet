@@ -13,6 +13,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import {
   defineMessages,
@@ -20,8 +21,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { accountOverviewRoute, accountSettingsRoute, } from '../../routes';
-import RootStore from '../../stores/root';
+import { accountOverviewRoute, accountSettingsRoute } from '../../routes';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -36,7 +36,7 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
   className?: string;
   onToggleDrawer: () => void;
 }
@@ -63,17 +63,13 @@ const messages = defineMessages({
   }
 });
 
-type AppBarState =
-  | null
-  | 'accountOverview'
-  | 'accountSettings';
+type AppBarState = null | 'accountOverview' | 'accountSettings';
 
-@inject('store')
+@inject('routerStore')
 @observer
 class WalletAppBar extends React.Component<DecoratedProps> {
   appBarState() {
-    const { store } = this.props;
-    const path = store!.router.currentView.path;
+    const path = this.props.routerStore!.currentView.path;
 
     let state: AppBarState = null;
     if (path === '/wallet' || path.startsWith('/wallet/send')) {
@@ -85,16 +81,19 @@ class WalletAppBar extends React.Component<DecoratedProps> {
   }
 
   handleNavigateBackClick = () => {
-    const { store } = this.props;
     const state = this.appBarState();
 
     if (state === 'accountSettings') {
-      store!.router.goTo(accountOverviewRoute);
+      this.props.routerStore!.goTo(accountOverviewRoute);
     }
   }
 
+  handleSettingsClick = () => {
+    this.props.routerStore!.goTo(accountSettingsRoute);
+  }
+
   render() {
-    const { intl, classes, store } = this.props;
+    const { intl, classes } = this.props;
     const state = this.appBarState();
 
     return (
@@ -146,7 +145,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               <IconButton
                 aria-label={intl.formatMessage(messages.accountSettingsTooltip)}
                 color="inherit"
-                onClick={() => store!.router.goTo(accountSettingsRoute)}
+                onClick={this.handleSettingsClick}
               >
                 <SettingsOutlinedIcon />
               </IconButton>

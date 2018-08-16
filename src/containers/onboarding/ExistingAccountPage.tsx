@@ -4,6 +4,7 @@ import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import {
   defineMessages,
@@ -19,7 +20,6 @@ import {
   onboardingExistingAccountTypeRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
-import RootStore from '../../stores/root';
 import { normalizeAddress } from '../../utils/utils';
 
 const styles = createStyles({
@@ -39,7 +39,7 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
   onboardingStore?: OnboardingStore;
 }
 
@@ -68,7 +68,7 @@ const messages = defineMessages({
   }
 });
 
-@inject('store')
+@inject('routerStore')
 @inject('onboardingStore')
 @observer
 class ExistingAccountPage extends React.Component<DecoratedProps, State> {
@@ -85,14 +85,14 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   }
 
   handleBackClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(onboardingAddAccountRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(onboardingAddAccountRoute);
   }
 
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    const { store, onboardingStore } = this.props;
+    const { routerStore, onboardingStore } = this.props;
     const { normalizedAddress } = this.state;
     const addressInvalid = !normalizedAddress;
     if (addressInvalid) {
@@ -101,7 +101,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
     }
 
     onboardingStore!.address = normalizedAddress;
-    store!.router.goTo(onboardingExistingAccountTypeRoute);
+    routerStore!.goTo(onboardingExistingAccountTypeRoute);
   }
 
   handleAddressChange = (ev: React.ChangeEvent<HTMLInputElement>) => {

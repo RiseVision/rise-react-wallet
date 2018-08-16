@@ -4,6 +4,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import FlagIcon from '../../components/FlagIcon';
@@ -17,7 +18,6 @@ import {
 } from '../../routes';
 import AppStore from '../../stores/app';
 import OnboardingStore from '../../stores/onboarding';
-import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
 
@@ -30,7 +30,7 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
   appStore?: AppStore;
   onboardingStore?: OnboardingStore;
   walletStore?: WalletStore;
@@ -38,34 +38,34 @@ interface Props extends WithStyles<typeof styles> {
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
 
-@inject('store')
+@inject('routerStore')
 @inject('appStore')
 @inject('onboardingStore')
 @inject('walletStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
   handleCloseClicked = () => {
-    const { store, onboardingStore } = this.props;
+    const { routerStore, onboardingStore } = this.props;
     onboardingStore!.reset();
-    store!.router.goTo(accountOverviewRoute);
+    routerStore!.goTo(accountOverviewRoute);
   }
 
   handleNewAccountClicked = () => {
-    const { store, onboardingStore } = this.props;
+    const { routerStore, onboardingStore } = this.props;
     onboardingStore!.reset();
-    store!.router.goTo(onboardingNewAccountRoute);
+    routerStore!.goTo(onboardingNewAccountRoute);
   }
 
   handleExistingAccountClicked = () => {
-    const { store, onboardingStore } = this.props;
+    const { routerStore, onboardingStore } = this.props;
     onboardingStore!.reset();
-    store!.router.goTo(onboardingExistingAccountRoute);
+    routerStore!.goTo(onboardingExistingAccountRoute);
   }
 
   handleChooseLanguageClicked = () => {
-    const { store, onboardingStore } = this.props;
+    const { routerStore, onboardingStore } = this.props;
     onboardingStore!.reset();
-    store!.router.goTo(onboardingChooseLanguageRoute);
+    routerStore!.goTo(onboardingChooseLanguageRoute);
   }
 
   render() {

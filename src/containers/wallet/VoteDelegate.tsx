@@ -2,6 +2,7 @@ import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
 import { throttle, sampleSize } from 'lodash';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import ConfirmTransactionForm, {
   ProgressState,
@@ -9,12 +10,13 @@ import ConfirmTransactionForm, {
 } from '../../components/forms/ConfirmTransactionForm';
 import VoteTransactionForm from '../../components/forms/VoteDelegateForm';
 import { accountOverviewRoute } from '../../routes';
+import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
-import RootStore from '../../stores/root';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
 
 interface Props {
-  store?: RootStore;
+  routerStore?: RouterStore;
+  accountStore?: AccountStore;
   walletStore?: WalletStore;
   onSubmit?: (tx?: TTransactionResult) => void;
   account?: AccountStore;
@@ -35,6 +37,8 @@ export interface State {
   error?: string;
 }
 
+@inject(accountStore)
+@inject('routerStore')
 @inject('walletStore')
 @observer
 // TODO should have an URL
@@ -50,7 +54,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
   lastSearch = 0;
 
   get account() {
-    return this.props.account! || this.props.walletStore!.selectedAccount;
+    return this.props.account || this.props.accountStore!;
   }
 
   onSearch = throttle(
@@ -128,7 +132,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.store!.router.goTo(accountOverviewRoute);
+      this.props.routerStore!.goTo(accountOverviewRoute);
     }
   }
 

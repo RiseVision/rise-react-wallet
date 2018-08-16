@@ -15,6 +15,7 @@ import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { ReactElement } from 'react';
 import {
@@ -24,12 +25,17 @@ import {
   injectIntl
 } from 'react-intl';
 import Dialog from '../../components/Dialog';
-import FiatForm, { State as FiatState } from '../../components/forms/SettingsFiat';
-import NameForm, { State as NameState } from '../../components/forms/SettingsName';
+import FiatForm, {
+  State as FiatState
+} from '../../components/forms/SettingsFiat';
+import NameForm, {
+  State as NameState
+} from '../../components/forms/SettingsName';
 import PassphraseForm from '../../components/forms/SettingsPassphrase';
 import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
-import RootStore from '../../stores/root';
+import { accountStore } from '../../stores';
+import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import RegisterDelegate from './RegisterDelegate';
 import VoteDelegate from './VoteDelegate';
@@ -51,7 +57,8 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
+  accountStore?: AccountStore;
   walletStore?: WalletStore;
 }
 
@@ -134,7 +141,8 @@ const messages = defineMessages({
   }
 });
 
-@inject('store')
+@inject(accountStore)
+@inject('routerStore')
 @inject('walletStore')
 @observer
 class AccountSettings extends React.Component<DecoratedProps, State> {
@@ -158,6 +166,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
       const walletStore = this.props.walletStore!;
       const selectedAccount = walletStore.selectedAccount;
       selectedAccount.pinned = !selectedAccount.pinned;
+      // TODO handle by observable
       walletStore.saveAccount(selectedAccount);
     });
   }
@@ -193,15 +202,15 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   onSubmitRemoveAccount = () => {
-    let { store, walletStore } = this.props;
+    let { routerStore, walletStore } = this.props;
 
     walletStore!.removeAccount(walletStore!.selectedAccount.id);
     this.onDialogClose();
 
     if (!walletStore!.selectedAccount) {
-      store!.router.goTo(onboardingAddAccountRoute);
+      routerStore!.goTo(onboardingAddAccountRoute);
     } else {
-      store!.router.goTo(accountOverviewRoute);
+      routerStore!.goTo(accountOverviewRoute);
     }
   }
 
@@ -233,8 +242,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     title: ReactElement<HTMLElement> | null;
     form: ReactElement<HTMLFormElement> | null;
   } = () => {
-    const { store, walletStore } = this.props;
-    const account = walletStore!.selectedAccount;
+    const config = this.props.walletStore!.config;
+    const account = this.props.accountStore!;
 
     switch (this.state.dialogField!) {
       case 'name':
@@ -290,7 +299,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           form: (
             <FiatForm
               fiat={account.fiatCurrency}
-              options={store!.config.fiat_currencies}
+              options={config.fiat_currencies}
               onSubmit={this.onSubmitFiat}
             />
           )

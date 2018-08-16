@@ -10,13 +10,14 @@ import Typography from '@material-ui/core/Typography';
 import SendIcon from '@material-ui/icons/Send';
 import { toPairs } from 'lodash';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
 import { accountSendRoute } from '../../routes';
-import RootStore from '../../stores/root';
-import WalletStore from '../../stores/wallet';
+import { accountStore } from '../../stores';
+import AccountStore from '../../stores/account';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -38,8 +39,9 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
-  walletStore?: WalletStore;
+  routerStore?: RouterStore;
+  accountStore?: AccountStore;
+  account?: AccountStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -59,34 +61,34 @@ const messages = defineMessages({
   }
 });
 
-@inject('store')
-@inject('walletStore')
+@inject('routerStore')
+@inject(accountStore)
 @observer
 class AccountOverview extends React.Component<DecoratedProps> {
   handleSendClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(accountSendRoute);
+    this.props.routerStore!.goTo(accountSendRoute);
+  }
+
+  get account() {
+    return this.props.account || this.props.accountStore!;
   }
 
   render() {
-    const { intl, classes, walletStore } = this.props;
-    const account = walletStore!.selectedAccount;
+    const { intl, classes } = this.props;
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );
 
-    const readOnly = account && account.readOnly;
+    const readOnly = this.account && this.account.readOnly;
 
     return (
       <React.Fragment>
-        {account ? (
-          <AccountOverviewHeader
-            address={account.id}
-            alias={account.name || unnamedAccountLabel}
-            balance={account.balance + ' RISE'}
-            balance_in_fiat={account.fiatAmount || ''}
-          />
-        ) : null}
+        <AccountOverviewHeader
+          address={this.account.id}
+          alias={this.account.name || unnamedAccountLabel}
+          balance={this.account.balance + ' RISE'}
+          balance_in_fiat={this.account.fiatAmount || ''}
+        />
         {!readOnly && (
           <Tooltip
             placement="left"
@@ -102,7 +104,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
           </Tooltip>
         )}
         <div className={classes.content}>
-          {toPairs(account.recentTransactions.groupedByDay).map(
+          {toPairs(this.account.recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
               <React.Fragment key={group}>
                 <Typography

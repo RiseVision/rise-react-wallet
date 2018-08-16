@@ -3,6 +3,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
@@ -11,23 +12,22 @@ import {
   onboardingAddAccountRoute,
   onboardingSecurityNoticeRoute
 } from '../../routes';
-import RootStore from '../../stores/root';
 
 interface Props {
-  store?: RootStore;
+  routerStore?: RouterStore;
 }
 
-@inject('store')
+@inject('routerStore')
 @observer
 class NewAccountPage extends React.Component<Props> {
   handleBackClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(onboardingAddAccountRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(onboardingAddAccountRoute);
   }
 
   handleMnemonicClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(onboardingSecurityNoticeRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(onboardingSecurityNoticeRoute);
   }
 
   render() {

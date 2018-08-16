@@ -8,9 +8,8 @@ import {
   withTheme,
   WithTheme
 } from '@material-ui/core/styles';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import * as React from 'react';
-import AppStore from '../../stores/app';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';
 
@@ -56,7 +55,6 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  appStore?: AppStore;
 }
 
 interface State {
@@ -68,7 +66,6 @@ type DecoratedProps = Props & WithTheme;
 const stylesDecorator = withStyles(styles, { name: 'Wallet' });
 const themeDecorator = withTheme();
 
-@inject('appStore')
 @observer
 class Wallet extends React.Component<DecoratedProps, State> {
   constructor(props: DecoratedProps) {

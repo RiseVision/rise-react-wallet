@@ -3,6 +3,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
@@ -13,27 +14,26 @@ import {
   onboardingNoMnemonicNoticeRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
-import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
-  store?: RootStore;
+  routerStore?: RouterStore;
   onboardingStore?: OnboardingStore;
   walletStore?: WalletStore;
 }
 
-@inject('store')
+@inject('routerStore')
 @inject('onboardingStore')
 @inject('walletStore')
 @observer
 class ExistingAccountTypePage extends React.Component<Props> {
   handleBackClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(onboardingExistingAccountRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(onboardingExistingAccountRoute);
   }
 
   handleFullAccessClick = async () => {
-    const { store, onboardingStore, walletStore } = this.props;
+    const { routerStore, onboardingStore, walletStore } = this.props;
     const address = onboardingStore!.address;
     if (address) {
       walletStore!.login(
@@ -41,11 +41,11 @@ class ExistingAccountTypePage extends React.Component<Props> {
         { readOnly: false }
       );
     }
-    store!.router.goTo(onboardingNoMnemonicNoticeRoute);
+    routerStore!.goTo(onboardingNoMnemonicNoticeRoute);
   }
 
   handleReadOnlyClick = () => {
-    const { store, onboardingStore, walletStore } = this.props;
+    const { routerStore, onboardingStore, walletStore } = this.props;
     const address = onboardingStore!.address;
     if (address) {
       walletStore!.login(
@@ -53,7 +53,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
         { readOnly: true }
       );
     }
-    store!.router.goTo(accountOverviewRoute);
+    routerStore!.goTo(accountOverviewRoute);
   }
 
   render() {

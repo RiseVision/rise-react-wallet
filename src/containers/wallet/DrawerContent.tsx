@@ -77,6 +77,7 @@ const messages = defineMessages({
   }
 });
 
+// TODO walletUIStore
 @inject('store')
 @inject('walletStore')
 @observer

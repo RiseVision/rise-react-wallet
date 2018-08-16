@@ -11,6 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
@@ -20,7 +21,6 @@ import {
   onboardingNewAccountRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
-import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) => {
@@ -79,7 +79,7 @@ function round(val: number) {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
+  routerStore?: RouterStore;
   onboardingStore?: OnboardingStore;
   walletStore?: WalletStore;
   mnemonic?: string[];
@@ -95,7 +95,7 @@ interface State {
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingVerifyMnemonicPage' });
 
-@inject('store')
+@inject('routerStore')
 @inject('onboardingStore')
 @inject('walletStore')
 @observer
@@ -106,10 +106,10 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     super(props);
     this.wordInputRef = React.createRef();
 
-    const { store, onboardingStore } = props;
+    const { routerStore, onboardingStore } = props;
     const mnemonic = props.mnemonic || onboardingStore!.mnemonic;
     if (!mnemonic) {
-      store!.router.goTo(onboardingNewAccountRoute);
+      routerStore!.goTo(onboardingNewAccountRoute);
     }
 
     const uncheckedIndices = mnemonic!.map((_, i) => i);
@@ -125,8 +125,8 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    const { store } = this.props;
-    store!.router.goTo(onboardingNewAccountRoute);
+    const { routerStore } = this.props;
+    routerStore!.goTo(onboardingNewAccountRoute);
   }
 
   handlePlaceholderClick = (ev: React.MouseEvent<HTMLElement>) => {
@@ -183,7 +183,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
   }
 
   finish() {
-    const { store, onboardingStore, walletStore } = this.props;
+    const { routerStore, onboardingStore, walletStore } = this.props;
     const { mnemonic } = this.state;
     onboardingStore!.address = walletStore!.registerAccount(
       mnemonic
@@ -191,7 +191,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     // Clear the mnemonic from memory as it has been securely written
     // down by the user (hopefully)
     onboardingStore!.mnemonic = null;
-    store!.router.goTo(onboardingAccountCreatedRoute);
+    routerStore!.goTo(onboardingAccountCreatedRoute);
   }
 
   render() {

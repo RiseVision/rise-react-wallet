@@ -1,4 +1,5 @@
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '../../components/Dialog';
@@ -8,13 +9,14 @@ import ConfirmTransactionForm, {
 } from '../../components/forms/ConfirmTransactionForm';
 import SendTransactionForm, { State as SendFormState } from '../../components/forms/SendTransactionForm';
 import { accountOverviewRoute } from '../../routes';
+import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
-import RootStore from '../../stores/root';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import { amountToServer } from '../../utils/utils';
 
 interface Props {
-  store?: RootStore;
+  routerStore?: RouterStore;
+  accountStore?: AccountStore;
   walletStore?: WalletStore;
   onSubmit?: (tx?: TTransactionResult) => void;
   amount?: number;
@@ -35,7 +37,8 @@ export interface State {
   error?: string;
 }
 
-@inject('store')
+@inject('routerStore')
+@inject(accountStore)
 @inject('walletStore')
 @observer
 export default class SendTransaction extends React.Component<Props, State> {
@@ -46,7 +49,7 @@ export default class SendTransaction extends React.Component<Props, State> {
   };
 
   get account() {
-    return this.props.account! || this.props.walletStore!.selectedAccount;
+    return this.props.account! || this.props.accountStore!;
   }
 
   constructor(props: Props) {
@@ -101,7 +104,7 @@ export default class SendTransaction extends React.Component<Props, State> {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.store!.router.goTo(accountOverviewRoute);
+      this.props.routerStore!.goTo(accountOverviewRoute);
     }
   }
 

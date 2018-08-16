@@ -8,10 +8,12 @@ import {
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { accountOverviewRoute } from '../../routes';
-import RootStore from '../../stores/root';
+import { accountStore } from '../../stores';
+import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import { amountToUser } from '../../utils/utils';
 import TransactionForm, {
@@ -43,8 +45,10 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   walletStore?: WalletStore;
-  store?: RootStore;
+  routerStore?: RouterStore;
+  accountStore?: AccountStore;
   onSubmit?: (tx?: TTransactionResult) => void;
+  account?: AccountStore;
 }
 
 export interface State {
@@ -59,9 +63,11 @@ export interface State {
 
 const stylesDecorator = withStyles(styles);
 
+// TODO extract the form container
+// TODO props.wrapInDialog
 @inject('walletStore')
-// TODO inject router only
-@inject('store')
+@inject('routerStore')
+@inject(accountStore)
 @observer
 class SettingsPassphraseForm extends React.Component<Props, State> {
   state: State = {
@@ -69,6 +75,10 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
     passphrase: null,
     progress: ProgressState.TO_CONFIRM
   };
+
+  get account() {
+    return this.props.account! || this.props.accountStore!;
+  }
 
   // TODO get account()
 
@@ -87,11 +97,10 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
   onSubmit1 = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const walletStore = this.props.walletStore!;
-    const account = walletStore.selectedAccount;
     const fee = walletStore.fees.get('secondsignature')!;
-    const isSet = account.secondSignature;
+    const isSet = this.account.secondSignature;
     // cancel if already set or not enought balance
-    if (isSet || account.balance < fee) {
+    if (isSet || this.account.balance < fee) {
       this.onClose();
     } else {
       this.setState({ step: 2 });
@@ -120,7 +129,7 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.store!.router.goTo(accountOverviewRoute);
+      this.props.routerStore!.goTo(accountOverviewRoute);
     }
   }
 
@@ -130,11 +139,10 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
 
   renderStep1() {
     const { classes, walletStore } = this.props;
-    const account = walletStore!.selectedAccount;
     const fee =
       walletStore!.fees.get('secondsignature')! +
       walletStore!.fees.get('send')!;
-    const isSet = account.secondSignature;
+    const isSet = this.account.secondSignature;
 
     // TODO extract the form markup to a separate file
     return (
@@ -154,14 +162,14 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
           </Typography>
         )}
         {!isSet &&
-          account.balance < fee && (
+          this.account.balance < fee && (
             <Typography className={classes.error}>
               You don't have enough funds on your account to pay the network fee
               of {amountToUser(fee)} RISE to setup a 2nd passphrase!
             </Typography>
           )}
         {!isSet &&
-          account.balance >= fee && (
+          this.account.balance >= fee && (
             <TextField
               className={classes.input}
               label="2nd passphrase"
@@ -182,7 +190,6 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
 
   renderStep2() {
     const walletStore = this.props.walletStore!;
-    const account = walletStore.selectedAccount;
     return (
       <TransactionForm
         onSend={this.onSend}
@@ -193,9 +200,9 @@ class SettingsPassphraseForm extends React.Component<Props, State> {
         data={{
           kind: 'passphrase',
         }}
-        isPassphraseSet={account.secondSignature}
-        sender={account.name}
-        senderId={account.id}
+        isPassphraseSet={this.account.secondSignature}
+        sender={this.account.name}
+        senderId={this.account.id}
       />
     );
   }
