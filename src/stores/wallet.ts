@@ -11,7 +11,12 @@ import {
   VoteTx
 } from 'dpos-offline';
 import { pick } from 'lodash';
-import { action, observable, runInAction } from 'mobx';
+import {
+  action,
+  observable,
+  runInAction,
+  autorun
+} from 'mobx';
 import { RouterStore } from 'mobx-router';
 import * as lstore from 'store';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
@@ -90,7 +95,7 @@ export default class WalletStore {
    * TODO bind an an observer
    * @param account
    */
-  saveAccount(account: TStoredAccount) {
+  saveAccount(account: AccountStore) {
     // field of TStoredAccount
     const fields = [
       'id',
@@ -150,7 +155,7 @@ export default class WalletStore {
     accountID?: string
   ): Promise<TTransactionResult> {
     const account = accountID
-      ? this.accounts.get(accountID) as AccountStore
+      ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
     assert(!account.secondSignature || passphrase, 'Passphrase required');
@@ -181,7 +186,7 @@ export default class WalletStore {
     accountID?: string
   ): Promise<TTransactionResult> {
     const account = accountID
-      ? this.accounts.get(accountID) as AccountStore
+      ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
     assert(!account!.secondSignature || passphrase, 'Passphrase required');
@@ -217,7 +222,7 @@ export default class WalletStore {
     accountID?: string
   ): Promise<TTransactionResult> {
     const account = accountID
-      ? this.accounts.get(accountID) as AccountStore
+      ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
     assert(!account.secondSignature || passphrase, 'Passphrase required');
@@ -367,25 +372,22 @@ export default class WalletStore {
     }
     const account = new AccountStore(this.config, { id, ...local });
     this.accounts.set(id, account);
-    // TODO use observe() to listen on TStoredAccount fields
-    //   and auto-save them to the lstore
+    this.observeAccount(id);
     const res = await this.loadAccount(id);
     account.importData(parseAccountReponse(res, local));
     account.loaded = true;
-    // memorize the account
-    this.saveAccount(account);
     return true;
   }
 
-  @action
-  selectFiat(fiat: string, accountId?: string) {
-    for (const account of this.accounts.values()) {
-      if (!accountId || accountId === account.id) {
-        account.fiatCurrency = fiat;
-        // TODO observer
-        this.saveAccount(account);
+  observeAccount(id: string) {
+    const account = this.accounts.get(id);
+    assert(account, `Account ${id} doesn't exist`);
+    autorun((reaction) => {
+      if (!this.accounts.has(id)) {
+        return reaction.dispose();
       }
-    }
+      this.saveAccount(account!);
+    });
   }
 
   @action
@@ -499,33 +501,6 @@ export default class WalletStore {
       this.selectedAccount = this.accounts.get(account.id) as AccountStore;
     });
     return account.id;
-  }
-
-  // TODO move to observable
-  @action
-  updateAccountName(name: string) {
-    this.selectedAccount.name = name;
-    this.saveAccount(this.selectedAccount);
-  }
-
-  @action
-  updateFiat(fiat: string, global: boolean = false) {
-    assert(fiat, 'FIAT required');
-    if (global) {
-      for (const account of this.accounts.values()) {
-        account.fiatCurrency = fiat;
-        // TODO observer
-        this.calculateFiat(account.id);
-        // TODO observer
-        this.saveAccount(account);
-      }
-    } else {
-      this.selectedAccount.fiatCurrency = fiat;
-      // TODO observer
-      this.calculateFiat(this.selectedAccount.id);
-      // TODO observer
-      this.saveAccount(this.selectedAccount);
-    }
   }
 
   @action

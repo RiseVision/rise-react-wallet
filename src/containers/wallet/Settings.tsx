@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
-import { runInAction } from 'mobx';
+import { runInAction, action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
@@ -60,6 +60,7 @@ interface Props extends WithStyles<typeof styles> {
   routerStore?: RouterStore;
   accountStore?: AccountStore;
   walletStore?: WalletStore;
+  account?: AccountStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -153,6 +154,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     registeredLoaded: false
   };
 
+  get account() {
+    return this.props.account || this.props.accountStore!;
+  }
+
   constructor(props: DecoratedProps) {
     super(props);
   }
@@ -166,8 +171,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
       const walletStore = this.props.walletStore!;
       const selectedAccount = walletStore.selectedAccount;
       selectedAccount.pinned = !selectedAccount.pinned;
-      // TODO handle by observable
-      walletStore.saveAccount(selectedAccount);
     });
   }
 
@@ -196,15 +199,17 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     this.setState({ dialogOpen: true, dialogField: 'removeAccount' });
   }
 
+  @action
   onSubmitName = (state: NameState) => {
-    this.props.walletStore!.updateAccountName(state.name!);
+    // TOOD validate state.name
+    this.account.name = state.name!;
     this.onDialogClose();
   }
 
   onSubmitRemoveAccount = () => {
     let { routerStore, walletStore } = this.props;
 
-    walletStore!.removeAccount(walletStore!.selectedAccount.id);
+    walletStore!.removeAccount(this.account.id);
     this.onDialogClose();
 
     if (!walletStore!.selectedAccount) {
@@ -214,16 +219,23 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     }
   }
 
+  @action
   onSubmitFiat = (state: FiatState) => {
-    this.props.walletStore!.updateFiat(state.fiat!, state.global);
+    // TODO validate state.fiat
+    const wallet = this.props.walletStore!;
+    if (global) {
+      for (const account of [...wallet.accounts.values()]) {
+        account.fiatCurrency = state.fiat!;
+      }
+    } else {
+      this.account.fiatCurrency = state.fiat!;
+    }
     this.onDialogClose();
   }
 
+  @action
   onSubmitVote = () => {
-    const account = this.props.walletStore!.selectedAccount;
-    runInAction(() => {
-      account.votedDelegate = null;
-    });
+    this.account.votedDelegate = null;
     this.onDialogClose();
   }
 
@@ -341,37 +353,34 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     this.loadRegisteredDelegate();
   }
 
-  componentDidUpdate() {
-    // required bc of lack of wallet.selectedAccount during componentWillMount
-    this.loadVotedDelegate();
-    this.loadRegisteredDelegate();
-  }
+  // TODO check if still needed
+  // componentDidUpdate() {
+  //   // required bc of lack of wallet.selectedAccount during componentWillMount
+  //   this.loadVotedDelegate();
+  //   this.loadRegisteredDelegate();
+  // }
 
   loadVotedDelegate() {
-    const store = this.props.walletStore!;
     // load the delegate data only  once
-    const account = this.props.walletStore!.selectedAccount;
     if (this.state.delegateLoaded) {
       return;
     }
     this.setState({ delegateLoaded: true });
-    store.loadVotedDelegate(account.id);
+    this.props.walletStore!.loadVotedDelegate(this.account.id);
   }
 
   loadRegisteredDelegate() {
-    const store = this.props.walletStore!;
     // load the registered name only once
-    const account = this.props.walletStore!.selectedAccount;
     if (this.state.registeredLoaded) {
       return;
     }
     this.setState({ registeredLoaded: true });
-    store.loadRegisteredDelegate(account.id);
+    this.props.walletStore!.loadRegisteredDelegate(this.account.id);
   }
 
   render() {
-    const { intl, classes, walletStore } = this.props;
-    const account = walletStore!.selectedAccount;
+    const { intl, classes } = this.props;
+    const account = this.account;
 
     if (!account) {
       // TODO loading indicator
