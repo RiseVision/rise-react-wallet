@@ -1,63 +1,39 @@
 import Button from '@material-ui/core/Button';
-import {
-  createStyles,
-  Theme,
-  WithStyles,
-  withStyles
-} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
+import { FormattedMessage } from 'react-intl';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    input: {
-      color: theme.palette.grey['600']
-    },
-    footer: {
-      marginTop: theme.spacing.unit,
-      '& button': {
-        color: theme.palette.grey['600']
-      }
-    },
-    remove: {
-      color: 'red'
-    }
-  });
-
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   onSubmit: (state: State) => void;
-  id: string;
+  address: string;
   name: string | null;
 }
 
 export interface State {
-  id?: string;
+  address: string;
 }
-
-const stylesDecorator = withStyles(styles);
 
 @observer
 class SettingsRemoveAccountForm extends React.Component<Props, State> {
   state = {
-    id: ''
+    address: ''
   };
 
-  // TODO extract to Form
-  handleChange = (field: string) => (
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  handleType = (
+    ev: ChangeEvent<HTMLInputElement>
   ) => {
-    const value = event.target.value;
     this.setState({
-      [field]: value
+      address: ev.target.value,
     });
   }
 
-  onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (this.state.id !== this.props.id) {
+  handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+    if (this.state.address !== this.props.address) {
       // TODO error mark the ID field
       return false;
     }
@@ -66,33 +42,67 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { name, id, classes } = this.props;
+    const { name, address } = this.props;
 
     return (
-      <form onSubmit={this.onSubmit}>
-        <Typography>
-          Are you sure you want to remove {name} account ({id}) from the wallet?
-          To confirm, enter the account address in the field below.
-        </Typography>
-        <div>
+      <Grid
+        container={true}
+        spacing={16}
+        component="form"
+        onSubmit={this.handleSubmit}
+      >
+        <Grid item={true} xs={12}>
+          <Typography>
+            {name ? (
+              <FormattedMessage
+                id="forms-remove-account.prompt-text"
+                description="Prompt for named account removal form"
+                defaultMessage={(
+                  'Are you sure you want to remove {name} ({address}) from the wallet? ' +
+                  'To confirm, enter the account address in the field below.'
+                )}
+                values={{ name, address }}
+              />
+            ) : (
+              <FormattedMessage
+                id="forms-remove-account.prompt-text"
+                description="Prompt for unnamed account removal form"
+                defaultMessage={(
+                  'Are you sure you want to remove account {address} from the wallet? ' +
+                  'To confirm, enter the account address in the field below.'
+                )}
+                values={{ address }}
+              />
+            )}
+          </Typography>
+        </Grid>
+        <Grid item={true} xs={12}>
           <TextField
-            className={classes.input}
-            label="Account address"
-            value={this.state.id || ''}
-            onChange={this.handleChange('id')}
-            margin="normal"
+            label={(
+              <FormattedMessage
+                id="forms-remove-account.address-input-label"
+                description="Label for account address text field."
+                defaultMessage="Account address"
+              />
+            )}
+            value={this.state.address}
+            onChange={this.handleType}
             autoFocus={true}
             fullWidth={true}
           />
-        </div>
-        <div className={classes.footer}>
+        </Grid>
+        <Grid item={true} xs={12}>
           <Button type="submit" fullWidth={true}>
-            CONTINUE
+            <FormattedMessage
+              id="forms-remove-account.remove-button"
+              description="Label for remove account button."
+              defaultMessage="Remove account"
+            />
           </Button>
-        </div>
-      </form>
+        </Grid>
+      </Grid>
     );
   }
 }
 
-export default stylesDecorator(SettingsRemoveAccountForm);
+export default SettingsRemoveAccountForm;

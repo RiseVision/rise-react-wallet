@@ -273,7 +273,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           form: (
             <RemoveAccountForm
               name={account.name}
-              id={account.id}
+              address={account.id}
               onSubmit={this.onSubmitRemoveAccount}
             />
           )
