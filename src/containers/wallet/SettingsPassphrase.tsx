@@ -94,9 +94,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
 
   renderStep1() {
     const { walletStore } = this.props;
-    const fee =
-      walletStore!.fees.get('secondsignature')! +
-      walletStore!.fees.get('send')!;
+    const fee = walletStore!.fees.get('secondsignature')!;
     const isSet = this.account.secondSignature;
 
     return (
