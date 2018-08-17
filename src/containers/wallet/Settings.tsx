@@ -33,11 +33,11 @@ import NameForm, {
 } from '../../components/forms/SettingsName';
 import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
-import { accountStore } from '../../stores';
-import AccountStore from '../../stores/account';
+import { LoadingState } from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
-import SettingsPassphrase from './SettingsPassphrase';
+import AccountContainer from './AccountContainer';
 import RegisterDelegate from './RegisterDelegate';
+import SettingsPassphrase from './SettingsPassphrase';
 import VoteDelegate from './VoteDelegate';
 
 const styles = (theme: Theme) =>
@@ -58,9 +58,7 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   routerStore?: RouterStore;
-  accountStore?: AccountStore;
   walletStore?: WalletStore;
-  account?: AccountStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -142,21 +140,16 @@ const messages = defineMessages({
   }
 });
 
-@inject(accountStore)
 @inject('routerStore')
 @inject('walletStore')
 @observer
-class AccountSettings extends React.Component<DecoratedProps, State> {
+class AccountSettings extends AccountContainer<DecoratedProps, State> {
   state = {
     dialogOpen: false,
     dialogField: null,
     delegateLoaded: false,
     registeredLoaded: false
   };
-
-  get account() {
-    return this.props.account || this.props.accountStore!;
-  }
 
   constructor(props: DecoratedProps) {
     super(props);

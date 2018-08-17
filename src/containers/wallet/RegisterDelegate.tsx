@@ -8,16 +8,13 @@ import ConfirmTransactionForm, {
 } from '../../components/forms/ConfirmTransactionForm';
 import RegisterDelegateForm from '../../components/forms/RegisterDelegateForm';
 import { accountOverviewRoute } from '../../routes';
-import { accountStore } from '../../stores';
-import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
+import AccountContainer from './AccountContainer';
 
 interface Props {
   routerStore?: RouterStore;
-  accountStore?: AccountStore;
   walletStore?: WalletStore;
   onSubmit?: (tx?: TTransactionResult) => void;
-  account?: AccountStore;
 }
 
 export interface State {
@@ -30,20 +27,15 @@ export interface State {
   error?: string;
 }
 
-@inject(accountStore)
 @inject('routerStore')
 @inject('walletStore')
 @observer
 // TODO should have an URL
-export default class VoteTransaction extends React.Component<Props, State> {
+export default class VoteTransaction extends AccountContainer<Props, State> {
   state: State = {
     step: 1,
     progress: ProgressState.TO_CONFIRM
   };
-
-  get account() {
-    return this.props.account || this.props.accountStore!;
-  }
 
   onSubmit1 = (username: string) => {
     // cant change an already registered delegate
@@ -117,7 +109,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
         fee={walletStore!.fees.get('delegate')!}
         data={{
           kind: 'delegate',
-          username: username!,
+          username: username!
         }}
         onSend={this.onSend}
         onRedo={this.onSend}
