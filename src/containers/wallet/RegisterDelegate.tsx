@@ -46,16 +46,20 @@ export default class VoteTransaction extends React.Component<Props, State> {
   }
 
   onSubmit1 = (username: string) => {
-    // cant change an already registered delegate
-    if (this.account.registeredDelegate) {
-      return this.props.onSubmit ? this.props.onSubmit() : undefined;
+    const { walletStore } = this.props;
+    const { registeredDelegate } = this.account;
+    const fee = walletStore!.fees.get('delegate')!;
+
+    if (registeredDelegate || this.account.balance < fee) {
+      this.onClose();
+    } else {
+      assert(username, 'Delegate\'s name required');
+      // TODO validate the username
+      this.setState({
+        step: 2,
+        username
+      });
     }
-    assert(username, 'Delegate\'s name required');
-    // TODO validate the username
-    this.setState({
-      step: 2,
-      username
-    });
   }
 
   onSend = async (state: ConfirmFormState) => {
@@ -99,9 +103,23 @@ export default class VoteTransaction extends React.Component<Props, State> {
 
   renderStep1() {
     // TODO assert that registeredDelegate is loaded (or load) before rendering
+    const { walletStore } = this.props;
     const { registeredDelegate } = this.account;
+    const fee = walletStore!.fees.get('delegate')!;
+
     const name = registeredDelegate ? registeredDelegate!.username : '';
-    return <RegisterDelegateForm onSubmit={this.onSubmit1} username={name} />;
+    return (
+      <RegisterDelegateForm
+        onSubmit={this.onSubmit1}
+        fee={fee}
+        registeredUsername={name}
+        error={
+          registeredDelegate ? 'already-registered'
+          : this.account.balance < fee ? 'insufficient-funds'
+          : null
+        }
+      />
+    );
   }
 
   renderStep2() {
