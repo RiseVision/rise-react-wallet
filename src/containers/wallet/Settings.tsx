@@ -31,12 +31,12 @@ import FiatForm, {
 import NameForm, {
   State as NameState
 } from '../../components/forms/SettingsName';
-import PassphraseForm from '../../components/forms/SettingsPassphrase';
 import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
+import SettingsPassphrase from './SettingsPassphrase';
 import RegisterDelegate from './RegisterDelegate';
 import VoteDelegate from './VoteDelegate';
 
@@ -286,7 +286,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               defaultMessage={'Setup 2nd passphrase'}
             />
           ),
-          form: <PassphraseForm onSubmit={this.onDialogClose} />
+          form: <SettingsPassphrase onSubmit={this.onDialogClose} />
         };
       case 'fiat':
         return {
