@@ -87,7 +87,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
                 id="forms-passphrase.insufficient-funds-error"
                 description="Error about not having enough funds to setup a passphrase"
                 defaultMessage={
-                  'You don\'t have enough funds on your account to pay the network fee ' +
+                  'You don\'t have enough funds in your account to pay the network fee ' +
                   'of {fee} to setup a 2nd passphrase!'
                 }
                 values={{
@@ -121,6 +121,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
                   defaultMessage="2nd passphrase"
                 />
               )}
+              value={this.state.passphrase}
               onChange={this.handleType}
               autoFocus={true}
               fullWidth={true}
