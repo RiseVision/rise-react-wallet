@@ -11,7 +11,7 @@ export default class AccountStore {
   @observable id: string;
   @observable publicKey: string;
   @observable readOnly: boolean = false;
-  // TODO enum
+  // TODO enum / config
   @observable fiatCurrency: string = 'USD';
   @observable name: string = '';
   @observable pinned: boolean = false;
@@ -21,8 +21,7 @@ export default class AccountStore {
   @observable secondPublicKey: string | null;
   @observable secondSignature: boolean = false;
 
-  // TODO rename to balanceFiat
-  @observable fiatAmount: string | null;
+  @observable balanceFiat: string | null;
   // object OR not voted OR not loaded
   // TODO represent state and data separately
   @observable votedDelegate?: Delegate | null = undefined;

@@ -11,12 +11,7 @@ import {
   VoteTx
 } from 'dpos-offline';
 import { pick } from 'lodash';
-import {
-  action,
-  observable,
-  runInAction,
-  autorun
-} from 'mobx';
+import { action, observable, runInAction, autorun, observe } from 'mobx';
 import { RouterStore } from 'mobx-router';
 import * as lstore from 'store';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
@@ -382,11 +377,33 @@ export default class WalletStore {
   observeAccount(id: string) {
     const account = this.accounts.get(id);
     assert(account, `Account ${id} doesn't exist`);
-    autorun((reaction) => {
+    autorun(reaction => {
       if (!this.accounts.has(id)) {
         return reaction.dispose();
       }
       this.saveAccount(account!);
+    });
+    const calculateFiat = () => {
+      if (this.accounts.has(id)) {
+        this.calculateFiat(id);
+      }
+    };
+    // @ts-ignore issue with mobx d.ts
+    const disposeBalance = observe(account, 'balance', calculateFiat);
+    // @ts-ignore issue with mobx d.ts
+    const disposeFiat = observe(account, 'fiatCurrency', calculateFiat);
+    this.accounts.observe(change => {
+      // only deletions
+      if (change.type !== 'delete') {
+        return;
+      }
+      // only this account
+      if (change.name !== id) {
+        return;
+      }
+      // dispose the observers
+      disposeBalance();
+      disposeFiat();
     });
   }
 
@@ -407,15 +424,16 @@ export default class WalletStore {
     return this.accounts.get(accountID) || null;
   }
 
+  // TODO throttle per account
   @action
   async calculateFiat(accountID: string) {
     const account = this.getAccountByID(accountID) as AccountStore;
     assert(account, `Account ${accountID} not found`);
-    account.fiatAmount = null;
+    account.balanceFiat = null;
     // TODO calculate
     runInAction(() => {
       // TODO check if the same account is still selected
-      account.fiatAmount = '~??? ' + this.selectedAccount.fiatCurrency;
+      account.balanceFiat = '~??? ' + this.selectedAccount.fiatCurrency;
     });
   }
 
