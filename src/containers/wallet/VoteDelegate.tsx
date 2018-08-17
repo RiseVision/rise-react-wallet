@@ -139,8 +139,8 @@ export default class VoteDelegate extends React.Component<Props, State> {
   componentWillMount() {
     // query for the recommended delegates
     this.loadActiveDelegates();
-    // load the current vote (should come from settings)
-    if (this.account.votedDelegate === undefined) {
+    // load the current vote (settings should preload)
+    if (this.account.votedDelegateState === LoadingState.NOT_LOADED) {
       this.props.walletStore!.loadVotedDelegate(this.account.id);
     }
   }

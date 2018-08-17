@@ -3,7 +3,13 @@ import { Delegate } from 'dpos-api-wrapper';
 import { action, observable } from 'mobx';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
-import { TAccount, TTransaction } from './wallet';
+import { TAccount } from './wallet';
+
+export enum LoadingState {
+  NOT_LOADED,
+  LOADING,
+  LOADED
+}
 
 export default class AccountStore {
   config: TConfig;
@@ -13,22 +19,20 @@ export default class AccountStore {
   @observable readOnly: boolean = false;
   // TODO enum / config
   @observable fiatCurrency: string = 'USD';
-  @observable name: string = '';
-  @observable pinned: boolean = false;
-  @observable loaded: boolean = false;
   @observable balance: number = 0;
   @observable unconfirmedBalance: number = 0;
   @observable secondPublicKey: string | null;
   @observable secondSignature: boolean = false;
-
+  // local only fields
+  @observable name: string = '';
+  @observable pinned: boolean = false;
+  @observable loaded: boolean = false;
+  // dynamic fields
   @observable balanceFiat: string | null;
-  // object OR not voted OR not loaded
-  // TODO represent state and data separately
-  @observable votedDelegate?: Delegate | null = undefined;
-  // object OR not registered OR not loaded
-  // TODO represent state and data separately
-  @observable registeredDelegate?: Delegate | null = undefined;
-  @observable groupedTransactions = observable.array<TTransaction>();
+  @observable votedDelegate: Delegate | null = null;
+  @observable votedDelegateState: LoadingState = LoadingState.NOT_LOADED;
+  @observable registeredDelegate: Delegate | null = null;
+  @observable registeredDelegateState: LoadingState = LoadingState.NOT_LOADED;
 
   @observable recentTransactions: TransactionsStore;
 

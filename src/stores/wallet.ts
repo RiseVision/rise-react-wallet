@@ -21,7 +21,7 @@ import {
   normalizeAddress,
   timestampToUnix
 } from '../utils/utils';
-import AccountStore from './account';
+import AccountStore, { LoadingState } from './account';
 import { TConfig } from './index';
 
 export default class WalletStore {
@@ -186,6 +186,11 @@ export default class WalletStore {
     assert(account, 'Account required');
     assert(!account!.secondSignature || passphrase, 'Passphrase required');
 
+    // make sure prev vote has been loaded
+    if (account.votedDelegateState !== LoadingState.LOADED) {
+      await this.loadVotedDelegate(account.id);
+    }
+
     const assets: IVoteAsset = {
       votes: []
     };
@@ -205,6 +210,11 @@ export default class WalletStore {
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
 
+    runInAction(() => {
+      account.votedDelegate = null;
+      account.votedDelegateState = LoadingState.NOT_LOADED;
+    });
+
     const res = await this.singAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account.id);
     return res;
@@ -221,6 +231,15 @@ export default class WalletStore {
       : this.selectedAccount;
     assert(account, 'Account required');
     assert(!account.secondSignature || passphrase, 'Passphrase required');
+
+    // make sure prev registration has been loaded
+    if (account.registeredDelegateState !== LoadingState.LOADED) {
+      await this.loadRegisteredDelegate(account.id);
+    }
+    // delegate registrations arent mutable
+    if (account.registeredDelegate) {
+      throw new Error('Already registered as a delegate');
+    }
 
     const assets: IDelegateTxAsset = {
       delegate: {
@@ -314,17 +333,12 @@ export default class WalletStore {
     const account = this.accounts.get(accountID) as AccountStore;
     assert(account, `Account ${accountID} doesn't exist`);
     runInAction(() => {
-      // TODO loading states
-      account.votedDelegate = undefined;
+      account.votedDelegateState = LoadingState.LOADING;
     });
-    assert(this.selectedAccount, 'Selected account required');
-    const delegates = await this.dposAPI.accounts.getDelegates(
-      this.selectedAccount.id
-    );
+    const res = await this.dposAPI.accounts.getDelegates(account.id);
     runInAction(() => {
-      account.votedDelegate = delegates.delegates
-        ? delegates.delegates[0]
-        : null;
+      account.votedDelegateState = LoadingState.LOADED;
+      account.votedDelegate = (res.delegates && res.delegates[0]) || null;
     });
   }
 
@@ -339,15 +353,12 @@ export default class WalletStore {
     const account = this.accounts.get(accountID) as AccountStore;
     assert(account, `Account ${accountID} doesn't exist`);
     runInAction(() => {
-      // TODO loading states
-      account.registeredDelegate = undefined;
+      account.registeredDelegateState = LoadingState.LOADING;
     });
-    assert(this.selectedAccount, 'Selected account required');
-    const res = await this.dposAPI.delegates.getByPublicKey(
-      this.selectedAccount.publicKey
-    );
+    const res = await this.dposAPI.delegates.getByPublicKey(account.publicKey);
     runInAction(() => {
-      account.registeredDelegate = res.delegate ? res.delegate : null;
+      account.registeredDelegateState = LoadingState.LOADED;
+      account.registeredDelegate = res.delegate || null;
     });
   }
 

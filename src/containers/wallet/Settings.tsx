@@ -189,7 +189,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   handleDelegateClicked = () => {
     // open only the registered delegate info has been loaded
     const account = this.props.walletStore!.selectedAccount;
-    if (account.registeredDelegate === undefined) {
+    if (account.registeredDelegateState === LoadingState.LOADING) {
       return;
     }
     this.setState({ dialogOpen: true, dialogField: 'delegateRegistration' });
@@ -235,7 +235,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   @action
   onSubmitVote = () => {
-    this.account.votedDelegate = null;
     this.onDialogClose();
   }
 
@@ -353,13 +352,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     this.loadRegisteredDelegate();
   }
 
-  // TODO check if still needed
-  // componentDidUpdate() {
-  //   // required bc of lack of wallet.selectedAccount during componentWillMount
-  //   this.loadVotedDelegate();
-  //   this.loadRegisteredDelegate();
-  // }
-
   loadVotedDelegate() {
     // load the delegate data only  once
     if (this.state.delegateLoaded) {
@@ -431,7 +423,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                   primary={intl.formatMessage(messages.votedDelegate)}
                   secondary={
                     /* TODO translate 'Loading' */
-                    account.votedDelegate === undefined
+                    account.votedDelegateState === LoadingState.LOADING
                       ? 'Loading...'
                       : account.votedDelegate
                         ? account.votedDelegate!.username
@@ -472,7 +464,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                   primary={intl.formatMessage(messages.delegateRegistration)}
                   secondary={
                     /* TODO translate 'Loading' */
-                    account.registeredDelegate === undefined
+                    account.registeredDelegateState === LoadingState.LOADING
                       ? 'Loading...'
                       : account.registeredDelegate
                         ? account.registeredDelegate!.username
