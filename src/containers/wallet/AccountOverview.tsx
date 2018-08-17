@@ -16,8 +16,8 @@ import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
 import { accountSendRoute } from '../../routes';
-import AccountContainer from './AccountContainer';
-import { State } from './VoteDelegate';
+import { accountStore } from '../../stores';
+import AccountStore from '../../stores/account';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -40,6 +40,8 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   routerStore?: RouterStore;
+  accountStore?: AccountStore;
+  account?: AccountStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -60,10 +62,15 @@ const messages = defineMessages({
 });
 
 @inject('routerStore')
+@inject(accountStore)
 @observer
-class AccountOverview extends AccountContainer<DecoratedProps, State> {
+class AccountOverview extends React.Component<DecoratedProps> {
   handleSendClick = () => {
     this.props.routerStore!.goTo(accountSendRoute);
+  }
+
+  get account() {
+    return this.props.account || this.props.accountStore!;
   }
 
   render() {

@@ -2,18 +2,21 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { accountOverviewRoute } from '../../routes';
+import { accountStore } from '../../stores';
+import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import SettingsPassphraseForm from '../../components/forms/SettingsPassphraseForm';
 import ConfirmTransactionForm, {
   ProgressState,
   State as TransactionState
 } from '../../components/forms/ConfirmTransactionForm';
-import AccountContainer from './AccountContainer';
 
 interface Props {
   walletStore?: WalletStore;
   routerStore?: RouterStore;
+  accountStore?: AccountStore;
   onSubmit?: (tx?: TTransactionResult) => void;
+  account?: AccountStore;
 }
 
 export interface State {
@@ -30,13 +33,18 @@ export interface State {
 // TODO props.wrapInDialog
 @inject('walletStore')
 @inject('routerStore')
+@inject(accountStore)
 @observer
-class SettingsPassphrase extends AccountContainer<Props, State> {
+class SettingsPassphrase extends React.Component<Props, State> {
   state: State = {
     step: 1,
     passphrase: null,
     progress: ProgressState.TO_CONFIRM
   };
+
+  get account() {
+    return this.props.account! || this.props.accountStore!;
+  }
 
   onSubmit1 = (passphrase: string) => {
     const walletStore = this.props.walletStore!;
@@ -49,7 +57,7 @@ class SettingsPassphrase extends AccountContainer<Props, State> {
     } else {
       this.setState({
         step: 2,
-        passphrase
+        passphrase,
       });
     }
   }
@@ -94,11 +102,9 @@ class SettingsPassphrase extends AccountContainer<Props, State> {
         onSubmit={this.onSubmit1}
         fee={fee}
         error={
-          isSet
-            ? 'already-set'
-            : this.account.balance < fee
-              ? 'insufficient-funds'
-              : null
+          isSet ? 'already-set'
+          : this.account.balance < fee ? 'insufficient-funds'
+          : null
         }
       />
     );
@@ -114,7 +120,7 @@ class SettingsPassphrase extends AccountContainer<Props, State> {
         progress={this.state.progress}
         fee={walletStore.fees.get('secondsignature')!}
         data={{
-          kind: 'passphrase'
+          kind: 'passphrase',
         }}
         isPassphraseSet={this.account.secondSignature}
         sender={this.account.name}

@@ -13,7 +13,6 @@ import { accountOverviewRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
-import AccountContainer from './AccountContainer';
 
 interface Props {
   routerStore?: RouterStore;
@@ -43,7 +42,7 @@ export interface State {
 @inject('walletStore')
 @observer
 // TODO should have an URL
-export default class VoteDelegate extends AccountContainer<Props, State> {
+export default class VoteDelegate extends React.Component<Props, State> {
   state: State = {
     loadingDelegates: false,
     displayedDelegates: [],
@@ -53,6 +52,10 @@ export default class VoteDelegate extends AccountContainer<Props, State> {
     progress: ProgressState.TO_CONFIRM
   };
   lastSearch = 0;
+
+  get account() {
+    return this.props.account || this.props.accountStore!;
+  }
 
   onSearch = throttle(
     async (query: string) => {

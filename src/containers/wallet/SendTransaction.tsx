@@ -7,20 +7,21 @@ import ConfirmTransactionForm, {
   ProgressState,
   State as ConfirmFormState
 } from '../../components/forms/ConfirmTransactionForm';
-import SendTransactionForm, {
-  State as SendFormState
-} from '../../components/forms/SendTransactionForm';
+import SendTransactionForm, { State as SendFormState } from '../../components/forms/SendTransactionForm';
 import { accountOverviewRoute } from '../../routes';
+import { accountStore } from '../../stores';
+import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import { amountToServer, normalizeAddress } from '../../utils/utils';
-import AccountContainer from './AccountContainer';
 
 interface Props {
   routerStore?: RouterStore;
+  accountStore?: AccountStore;
   walletStore?: WalletStore;
   onSubmit?: (tx?: TTransactionResult) => void;
   amount?: number;
   recipientId?: string;
+  account?: AccountStore;
   // TODO switch to get a dialog the form wrapped in a dialog
   // wrapInDialog?: boolean
 }
@@ -37,14 +38,19 @@ export interface State {
 }
 
 @inject('routerStore')
+@inject(accountStore)
 @inject('walletStore')
 @observer
-export default class SendTransaction extends AccountContainer<Props, State> {
+export default class SendTransaction extends React.Component<Props, State> {
   state: State = {
     amount: 0,
     step: 1,
     progress: ProgressState.TO_CONFIRM
   };
+
+  get account() {
+    return this.props.account! || this.props.accountStore!;
+  }
 
   constructor(props: Props) {
     super(props);
@@ -156,7 +162,7 @@ export default class SendTransaction extends AccountContainer<Props, State> {
           kind: 'send',
           recipientId: this.state.recipientId!,
           recipient: walletStore!.idToName(this.state.recipientId!),
-          amount: this.state.amount!
+          amount: this.state.amount!,
         }}
         onSend={this.onSend}
         onRedo={this.onSend}
