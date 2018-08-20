@@ -1,10 +1,13 @@
 import { Route } from 'mobx-router';
 import * as React from 'react';
+import * as lstore from 'store';
 import AsyncComponent from './components/AsyncComponent';
 import RootStore from './stores/root';
 
-type TOnboardingComponents = typeof import ('./containers/onboarding');
-type TWalletComponents = typeof import ('./containers/wallet');
+type TOnboardingComponents = typeof import('./containers/onboarding');
+type TWalletComponents = typeof import('./containers/wallet');
+
+// onboarding
 
 export const onboardingAddAccountRoute = new Route<RootStore>({
   path: '/onboarding/add-account',
@@ -171,8 +174,22 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
   )
 });
 
+// wallet
+
+function redirWalletNoAccount(
+  route: Route<RootStore>,
+  params: object,
+  store: RootStore
+) {
+  const accounts = lstore.get('accounts');
+  if (!accounts || !accounts.length) {
+    store.router.goTo(onboardingAddAccountRoute);
+  }
+}
+
 export const accountOverviewRoute = new Route({
   path: '/wallet',
+  onEnter: redirWalletNoAccount,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -190,6 +207,7 @@ export const accountOverviewRoute = new Route({
 
 export const accountSettingsRoute = new Route({
   path: '/wallet/settings',
+  onEnter: redirWalletNoAccount,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -209,6 +227,7 @@ export const accountSettingsRoute = new Route({
 //   ?from=123R&to=456R
 export const accountSendRoute = new Route({
   path: '/wallet/send',
+  onEnter: redirWalletNoAccount,
   component: (
     <AsyncComponent
       name="./containers/wallet/send"

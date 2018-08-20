@@ -46,7 +46,10 @@ export default class WalletStore {
     this.api = config.api_url;
     this.dposAPI = dposAPI;
     const accounts = this.storedAccounts();
-    assert(accounts.length, 'No added accounts');
+    if (!accounts.length) {
+      router.goTo(onboardingAddAccountRoute)
+      return
+    }
     const lastSelectedID = lstore.get('lastSelectedAccount');
     // login all stored accounts
     for (const account of accounts) {
