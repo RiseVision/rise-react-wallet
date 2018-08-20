@@ -11,7 +11,14 @@ import {
   VoteTx
 } from 'dpos-offline';
 import { pick } from 'lodash';
-import { action, observable, runInAction, autorun, observe } from 'mobx';
+import {
+  action,
+  observable,
+  runInAction,
+  autorun,
+  observe,
+  IValueWillChange
+} from 'mobx';
 import { RouterStore } from 'mobx-router';
 import * as lstore from 'store';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
@@ -63,6 +70,17 @@ export default class WalletStore {
       // or the first one
       this.selectAccount([...this.accounts.keys()][0]);
     }
+    // observe this.selectedAccount
+    observe(
+      this,
+      'selectedAccount',
+      (change: IValueWillChange<AccountStore>) => {
+        if (!change.newValue) {
+          return;
+        }
+        lstore.set('lastSelectedAccount', change.newValue.id);
+      }
+    );
     this.updateFees();
   }
 
@@ -317,8 +335,6 @@ export default class WalletStore {
       if (!local) {
         continue;
       }
-      // pass await
-      this.loadRecentTransactions(id);
       const data = await this.loadAccount(id);
       const ret = parseAccountReponse(data, local);
       this.accounts.get(id)!.importData(ret);
@@ -412,6 +428,10 @@ export default class WalletStore {
     // @ts-ignore issue with mobx d.ts
     const disposeBalance = observe(account, 'balance', calculateFiat);
     // @ts-ignore issue with mobx d.ts
+    const disposeTransactions = observe(account, 'balance', () => {
+      this.loadRecentTransactions(id);
+    });
+    // @ts-ignore issue with mobx d.ts
     const disposeFiat = observe(account, 'fiatCurrency', calculateFiat);
     this.accounts.observe(change => {
       // only deletions
@@ -425,6 +445,7 @@ export default class WalletStore {
       // dispose the observers
       disposeBalance();
       disposeFiat();
+      disposeTransactions();
     });
   }
 
@@ -435,10 +456,6 @@ export default class WalletStore {
       throw new Error('Unknown account');
     }
     this.selectedAccount = account;
-    // TODO observer
-    this.loadRecentTransactions(id);
-    // TODO observe
-    lstore.set('lastSelectedAccount', id);
   }
 
   getAccountByID(accountID: string): AccountStore | null {
