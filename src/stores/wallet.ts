@@ -47,8 +47,8 @@ export default class WalletStore {
     this.dposAPI = dposAPI;
     const accounts = this.storedAccounts();
     if (!accounts.length) {
-      router.goTo(onboardingAddAccountRoute)
-      return
+      router.goTo(onboardingAddAccountRoute);
+      return;
     }
     const lastSelectedID = lstore.get('lastSelectedAccount');
     // login all stored accounts
@@ -371,7 +371,11 @@ export default class WalletStore {
    * @param local Optional, omitted on the first login.
    */
   @action
-  async login(id: string, local?: Partial<TAccount>): Promise<true> {
+  async login(
+    id: string,
+    local?: Partial<TAccount>,
+    select: boolean = false
+  ): Promise<true> {
     if (!id) {
       throw Error('Address required');
     }
@@ -381,6 +385,9 @@ export default class WalletStore {
     }
     const account = new AccountStore(this.config, { id, ...local });
     this.accounts.set(id, account);
+    if (select) {
+      this.selectAccount(id);
+    }
     this.observeAccount(id);
     const res = await this.loadAccount(id);
     account.importData(parseAccountReponse(res, local));

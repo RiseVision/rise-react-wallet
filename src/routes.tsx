@@ -4,8 +4,8 @@ import * as lstore from 'store';
 import AsyncComponent from './components/AsyncComponent';
 import RootStore from './stores/root';
 
-type TOnboardingComponents = typeof import('./containers/onboarding');
-type TWalletComponents = typeof import('./containers/wallet');
+type TOnboardingComponents = typeof import ('./containers/onboarding');
+type TWalletComponents = typeof import ('./containers/wallet');
 
 // onboarding
 
@@ -248,7 +248,7 @@ export const homeRoute = new Route<RootStore>({
   path: '/',
   onEnter: (route: Route<RootStore>, params: {}, store: RootStore) => {
     const walletStore = store.wallet;
-    if (walletStore && !walletStore.storedAccounts()) {
+    if (walletStore && !walletStore.storedAccounts().length) {
       store.router.goTo(onboardingAddAccountRoute);
     } else {
       store.router.goTo(accountOverviewRoute);

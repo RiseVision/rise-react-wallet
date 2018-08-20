@@ -30,31 +30,25 @@ class ExistingAccountTypePage extends React.Component<Props> {
   handleBackClick = () => {
     const { routerStore } = this.props;
     routerStore!.goTo(onboardingExistingAccountRoute);
-  }
+  };
 
   handleFullAccessClick = async () => {
     const { routerStore, onboardingStore, walletStore } = this.props;
     const address = onboardingStore!.address;
     if (address) {
-      walletStore!.login(
-        address,
-        { readOnly: false }
-      );
+      walletStore!.login(address, { readOnly: false }, true);
     }
     routerStore!.goTo(onboardingNoMnemonicNoticeRoute);
-  }
+  };
 
   handleReadOnlyClick = () => {
     const { routerStore, onboardingStore, walletStore } = this.props;
     const address = onboardingStore!.address;
     if (address) {
-      walletStore!.login(
-        address,
-        { readOnly: true }
-      );
+      walletStore!.login(address, { readOnly: true }, true);
     }
     routerStore!.goTo(accountOverviewRoute);
-  }
+  };
 
   render() {
     return (
@@ -100,7 +94,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
                   id="onboarding-existing-account-type.read-access-tip"
                   description="Existing read access account button tip"
                   defaultMessage={
-                    'I don\'t know the secret mnemonic for this account'
+                    "I don't know the secret mnemonic for this account"
                   }
                 />
               }
