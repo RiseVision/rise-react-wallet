@@ -33,7 +33,7 @@ class SendTransactionForm extends React.Component<Props, State> {
   ) => {
     const value = event.target.value;
     this.setState({
-      search: value
+      search: value.trim()
     });
     this.props.onSearch(value);
   }
