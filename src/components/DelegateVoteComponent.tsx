@@ -157,7 +157,7 @@ class DelegateVoteComponent extends React.Component<DecoratedProps> {
       username: delegate.username,
       address: delegate.address,
       rank: intl.formatNumber(delegate.rank),
-      uptime: intl.formatNumber(delegate.rate / 100, {
+      uptime: intl.formatNumber(delegate.productivity / 100, {
         style: 'percent',
         maximumFractionDigits: 2,
       }),
