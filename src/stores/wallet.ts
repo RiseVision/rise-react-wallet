@@ -21,6 +21,8 @@ import {
 } from 'mobx';
 import { RouterStore } from 'mobx-router';
 import * as lstore from 'store';
+import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
+import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
 import { onboardingAddAccountRoute } from '../routes';
 import {
@@ -129,10 +131,10 @@ export default class WalletStore {
   }
 
   protected async loadAccount(id: string): Promise<TAccountResponse> {
-    // TODO switch to dposAPI
-    const res = await fetch(`${this.api}/api/accounts?address=${id}`);
-    const json: TAccountResponse | TErrorResponse = await res.json();
-    if (!json.success) {
+    const res:
+      | TAccountResponse
+      | TErrorResponse = await this.dposAPI.accounts.getAccount(id);
+    if (!res.success) {
       // fake the account
       // @ts-ignore
       json.account = {
@@ -140,7 +142,7 @@ export default class WalletStore {
       };
       // throw new Error((json as TErrorResponse).error);
     }
-    return json as TAccountResponse;
+    return res as TAccountResponse;
   }
 
   async addPassphrase(
@@ -588,7 +590,6 @@ export default class WalletStore {
     this.router.goTo(onboardingAddAccountRoute);
   }
 
-  // TODO switch to dposAPI
   async loadTransactions(
     params: TTransactionsRequest,
     confirmed: boolean = true
@@ -597,21 +598,34 @@ export default class WalletStore {
     if (params.senderPublicKey === undefined && !params.senderPublicKey) {
       return {
         success: true,
-        count: '0',
+        count: 0,
         transactions: []
       };
     }
-    const path = confirmed ? '' : '/unconfirmed';
-    const url = new URL(`${this.api}/api/transactions${path}`);
-    // @ts-ignore
-    url.search = new URLSearchParams(params);
-    // @ts-ignore
-    const res = await fetch(url);
-    const json: TTransactionsResponse | TErrorResponse = await res.json();
-    if (!json.success) {
-      throw new Error((json as TErrorResponse).error);
+    if (confirmed) {
+      // @ts-ignore TODO type errors in dposAPI
+      const res:
+        | TTransactionsResponse
+        | TErrorResponse = await this.dposAPI.transactions.getList(params);
+      if (!res.success) {
+        throw new Error((res as TErrorResponse).error);
+      }
+      return res;
+    } else {
+      // TODO switch to dposAPI once it supports params for
+      //   unconfirmed transactions
+      const path = confirmed ? '' : '/unconfirmed';
+      const url = new URL(`${this.api}/api/transactions${path}`);
+      // @ts-ignore
+      url.search = new URLSearchParams(params);
+      // @ts-ignore
+      const res = await fetch(url);
+      const json: TTransactionsResponse | TErrorResponse = await res.json();
+      if (!json.success) {
+        throw new Error((json as TErrorResponse).error);
+      }
+      return json;
     }
-    return json;
   }
 }
 
@@ -686,8 +700,8 @@ export type TTransactionsRequest = {
 };
 
 export type TTransactionsResponse = {
-  count: string;
-  success: true;
+  count: number;
+  success: boolean;
   transactions: TTransaction[];
 };
 
@@ -707,24 +721,7 @@ export type TAccount = TStoredAccount & {
   secondSignature: boolean;
 };
 
-export type TAccountResponse = {
-  account: {
-    address: string;
-    balance: string;
-    // TODO
-    // tslint:disable-next-line:no-any
-    multisignatures: any[];
-    publicKey: string;
-    secondPublicKey: string | null;
-    secondSignature: number;
-    // TODO
-    // tslint:disable-next-line:no-any
-    u_multisignatures: any[];
-    unconfirmedBalance: string;
-    unconfirmedSignature: number;
-  };
-  success: true;
-};
+export type TAccountResponse = { account: APIAccount } & BaseApiResponse;
 
 export type TErrorResponse = {
   error: string;
