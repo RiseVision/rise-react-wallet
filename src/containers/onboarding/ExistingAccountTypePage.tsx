@@ -10,8 +10,7 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   accountOverviewRoute,
-  onboardingExistingAccountRoute,
-  onboardingNoMnemonicNoticeRoute
+  onboardingExistingAccountRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
@@ -26,6 +25,7 @@ interface Props {
 @inject('onboardingStore')
 @inject('walletStore')
 @observer
+// TODO handle missing onboardingStore!.address using a redir
 class ExistingAccountTypePage extends React.Component<Props> {
   handleBackClick = () => {
     const { routerStore } = this.props;
@@ -34,20 +34,16 @@ class ExistingAccountTypePage extends React.Component<Props> {
 
   handleFullAccessClick = async () => {
     const { routerStore, onboardingStore, walletStore } = this.props;
-    const address = onboardingStore!.address;
-    if (address) {
-      walletStore!.login(address, { readOnly: false }, true);
-    }
-    routerStore!.goTo(onboardingNoMnemonicNoticeRoute);
+    const address = onboardingStore!.address!;
+    walletStore!.login(address, { readOnly: false }, true);
+    routerStore!.goTo(accountOverviewRoute, { id: address });
   }
 
   handleReadOnlyClick = () => {
     const { routerStore, onboardingStore, walletStore } = this.props;
-    const address = onboardingStore!.address;
-    if (address) {
-      walletStore!.login(address, { readOnly: true }, true);
-    }
-    routerStore!.goTo(accountOverviewRoute);
+    const address = onboardingStore!.address!;
+    walletStore!.login(address, { readOnly: true }, true);
+    routerStore!.goTo(accountOverviewRoute, { id: address });
   }
 
   render() {

@@ -104,7 +104,9 @@ export default class SendTransaction extends React.Component<Props, State> {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.routerStore!.goTo(accountOverviewRoute);
+      this.props.routerStore!.goTo(accountOverviewRoute, {
+        id: this.account.id
+      });
     }
   }
 

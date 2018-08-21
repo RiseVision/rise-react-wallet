@@ -23,7 +23,7 @@ declare module 'mobx-router' {
     rootPath: string;
   }
   export class RouterStore {
-    goTo(route: Route<any>): void;
+    goTo(route: Route<any>, params?: object): void;
     currentView: Route<any>;
     queryParams: Map<string, string>;
     params: Map<string, string>;

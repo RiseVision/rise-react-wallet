@@ -22,6 +22,8 @@ import {
   injectIntl
 } from 'react-intl';
 import { accountOverviewRoute, accountSettingsRoute } from '../../routes';
+import { accountStore } from '../../stores';
+import AccountStore from '../../stores/account';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -37,8 +39,10 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   routerStore?: RouterStore;
+  accountStore?: AccountStore;
   className?: string;
   onToggleDrawer: () => void;
+  account?: AccountStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -66,30 +70,36 @@ const messages = defineMessages({
 type AppBarState = null | 'accountOverview' | 'accountSettings';
 
 @inject('routerStore')
+@inject(accountStore)
 @observer
 class WalletAppBar extends React.Component<DecoratedProps> {
   appBarState() {
     const path = this.props.routerStore!.currentView.path;
 
     let state: AppBarState = null;
-    if (path === '/wallet' || path.startsWith('/wallet/send')) {
+    if (path.startsWith('/account') || path.startsWith('/send')) {
       state = 'accountOverview';
-    } else if (path === '/wallet/settings') {
+    } else if (path.startsWith('/settings')) {
       state = 'accountSettings';
     }
     return state;
   }
 
+  get account() {
+    return this.props.account || this.props.accountStore!;
+  }
+
   handleNavigateBackClick = () => {
     const state = this.appBarState();
-
     if (state === 'accountSettings') {
-      this.props.routerStore!.goTo(accountOverviewRoute);
+      const id = this.account.id;
+      this.props.routerStore!.goTo(accountOverviewRoute, { id });
     }
   }
 
   handleSettingsClick = () => {
-    this.props.routerStore!.goTo(accountSettingsRoute);
+    const id = this.account.id;
+    this.props.routerStore!.goTo(accountSettingsRoute, { id });
   }
 
   render() {

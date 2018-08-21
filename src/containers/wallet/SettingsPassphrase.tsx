@@ -57,7 +57,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
     } else {
       this.setState({
         step: 2,
-        passphrase,
+        passphrase
       });
     }
   }
@@ -84,7 +84,9 @@ class SettingsPassphrase extends React.Component<Props, State> {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.routerStore!.goTo(accountOverviewRoute);
+      this.props.routerStore!.goTo(accountOverviewRoute, {
+        id: this.account.id
+      });
     }
   }
 
@@ -102,9 +104,11 @@ class SettingsPassphrase extends React.Component<Props, State> {
         onSubmit={this.onSubmit1}
         fee={fee}
         error={
-          isSet ? 'already-set'
-          : this.account.balance < fee ? 'insufficient-funds'
-          : null
+          isSet
+            ? 'already-set'
+            : this.account.balance < fee
+              ? 'insufficient-funds'
+              : null
         }
       />
     );
@@ -120,7 +124,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
         progress={this.state.progress}
         fee={walletStore.fees.get('secondsignature')!}
         data={{
-          kind: 'passphrase',
+          kind: 'passphrase'
         }}
         isPassphraseSet={this.account.secondSignature}
         sender={this.account.name}

@@ -65,12 +65,12 @@ const messages = defineMessages({
 @inject(accountStore)
 @observer
 class AccountOverview extends React.Component<DecoratedProps> {
-  handleSendClick = () => {
-    this.props.routerStore!.goTo(accountSendRoute);
-  }
-
   get account() {
     return this.props.account || this.props.accountStore!;
+  }
+
+  handleSendClick = () => {
+    this.props.routerStore!.goTo(accountSendRoute, { id: this.account.id });
   }
 
   render() {

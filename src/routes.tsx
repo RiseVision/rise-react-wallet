@@ -7,6 +7,25 @@ import RootStore from './stores/root';
 type TOnboardingComponents = typeof import ('./containers/onboarding');
 type TWalletComponents = typeof import ('./containers/wallet');
 
+function createNoIDRoute(
+  path: string,
+  target: Route<RootStore>
+): Route<RootStore> {
+  return new Route({
+    path,
+    onEnter: function(
+      route: Route<RootStore>,
+      params: { id?: string },
+      store: RootStore
+    ) {
+      if (!redirWalletNoAccount(route, params, store)) {
+        const id = store.wallet.selectedAccount.id;
+        store.router.goTo(target, { id });
+      }
+    }
+  });
+}
+
 // onboarding
 
 export const onboardingAddAccountRoute = new Route<RootStore>({
@@ -178,17 +197,18 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
 
 function redirWalletNoAccount(
   route: Route<RootStore>,
-  params: object,
+  params: { id?: string },
   store: RootStore
 ) {
   const accounts = lstore.get('accounts');
   if (!accounts || !accounts.length) {
     store.router.goTo(onboardingAddAccountRoute);
   }
+  return false;
 }
 
 export const accountOverviewRoute = new Route({
-  path: '/wallet',
+  path: '/account/:id',
   onEnter: redirWalletNoAccount,
   component: (
     <AsyncComponent
@@ -205,8 +225,13 @@ export const accountOverviewRoute = new Route({
   )
 });
 
+export const accountOverviewNoIDRoute = createNoIDRoute(
+  '/account/',
+  accountOverviewRoute
+);
+
 export const accountSettingsRoute = new Route({
-  path: '/wallet/settings',
+  path: '/settings/:id',
   onEnter: redirWalletNoAccount,
   component: (
     <AsyncComponent
@@ -223,10 +248,15 @@ export const accountSettingsRoute = new Route({
   )
 });
 
+export const accountSettingsNoIDRoute = createNoIDRoute(
+  '/settings/',
+  accountSettingsRoute
+);
+
 // TODO support From and To as query params
 //   ?from=123R&to=456R
 export const accountSendRoute = new Route({
-  path: '/wallet/send',
+  path: '/send/:id',
   onEnter: redirWalletNoAccount,
   component: (
     <AsyncComponent
@@ -244,6 +274,8 @@ export const accountSendRoute = new Route({
   )
 });
 
+export const accountSendNoIDRoute = createNoIDRoute('/send', accountSendRoute);
+
 export const homeRoute = new Route<RootStore>({
   path: '/',
   onEnter: (route: Route<RootStore>, params: {}, store: RootStore) => {
@@ -251,7 +283,8 @@ export const homeRoute = new Route<RootStore>({
     if (walletStore && !walletStore.storedAccounts().length) {
       store.router.goTo(onboardingAddAccountRoute);
     } else {
-      store.router.goTo(accountOverviewRoute);
+      const id = walletStore.selectedAccount.id;
+      store.router.goTo(accountOverviewRoute, { id });
     }
   }
 });

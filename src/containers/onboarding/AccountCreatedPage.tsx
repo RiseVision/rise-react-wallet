@@ -40,7 +40,7 @@ class AccountCreatedPage extends React.Component<Props, State> {
     const { routerStore, onboardingStore } = props;
     const accountAddress = onboardingStore!.address || '';
     this.state = {
-      accountAddress,
+      accountAddress
     };
     if (!accountAddress) {
       routerStore!.goTo(onboardingAddAccountRoute);
@@ -49,7 +49,9 @@ class AccountCreatedPage extends React.Component<Props, State> {
 
   handleOverviewClick = () => {
     const { routerStore } = this.props;
-    routerStore!.goTo(accountOverviewRoute);
+    routerStore!.goTo(accountOverviewRoute, {
+      id: this.state.accountAddress
+    });
   }
 
   render() {

@@ -93,7 +93,9 @@ export default class VoteTransaction extends React.Component<Props, State> {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.routerStore!.goTo(accountOverviewRoute);
+      this.props.routerStore!.goTo(accountOverviewRoute, {
+        id: this.account.id
+      });
     }
   }
 
@@ -114,9 +116,11 @@ export default class VoteTransaction extends React.Component<Props, State> {
         fee={fee}
         registeredUsername={name}
         error={
-          registeredDelegate ? 'already-registered'
-          : this.account.balance < fee ? 'insufficient-funds'
-          : null
+          registeredDelegate
+            ? 'already-registered'
+            : this.account.balance < fee
+              ? 'insufficient-funds'
+              : null
         }
       />
     );
@@ -135,7 +139,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
         fee={walletStore!.fees.get('delegate')!}
         data={{
           kind: 'delegate',
-          username: username!,
+          username: username!
         }}
         onSend={this.onSend}
         onRedo={this.onSend}

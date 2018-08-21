@@ -215,7 +215,9 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     if (!walletStore!.selectedAccount) {
       routerStore!.goTo(onboardingAddAccountRoute);
     } else {
-      routerStore!.goTo(accountOverviewRoute);
+      routerStore!.goTo(accountOverviewRoute, {
+        id: walletStore!.selectedAccount.id
+      });
     }
   }
 

@@ -85,7 +85,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
   handleAccountClicked = (id: string) => () => {
     const { store, walletStore } = this.props;
     walletStore!.selectAccount(id);
-    store!.router.goTo(accountOverviewRoute);
+    store!.router.goTo(accountOverviewRoute, { id });
   }
 
   handleSignoutCliecked = () => {
