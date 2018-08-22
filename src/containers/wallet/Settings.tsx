@@ -32,7 +32,17 @@ import NameForm, {
   State as NameState
 } from '../../components/forms/SettingsName';
 import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
-import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
+import {
+  accountOverviewRoute,
+  onboardingAddAccountRoute,
+  accountSettingsNameRoute,
+  accountSettingsRoute,
+  accountSettingsPassphraseRoute,
+  accountSettingsDelegateRoute,
+  accountSettingsRemoveRoute,
+  accountSettingsVoteRoute,
+  accountSettingsFiatRoute
+} from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
@@ -56,18 +66,28 @@ const styles = (theme: Theme) =>
     }
   });
 
+export enum DialogField {
+  NAME = 'name',
+  DELEGATE_VOTE = 'delegate',
+  FIAT = 'fiat',
+  PASSPHRASE = 'passphrase',
+  DELEGATE_REGISTRATION = 'delegateRegistration',
+  REMOVE_ACCOUNT = 'removeAccount'
+}
+
 interface Props extends WithStyles<typeof styles> {
   routerStore?: RouterStore;
   accountStore?: AccountStore;
   walletStore?: WalletStore;
   account?: AccountStore;
+  openDialog?: DialogField;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface State {
   dialogOpen: boolean;
-  dialogField: string | null;
+  dialogField: DialogField | null;
   delegateLoaded: boolean;
   registeredLoaded: boolean;
 }
@@ -147,12 +167,30 @@ const messages = defineMessages({
 @inject('walletStore')
 @observer
 class AccountSettings extends React.Component<DecoratedProps, State> {
-  state = {
+  state: State = {
     dialogOpen: false,
     dialogField: null,
     delegateLoaded: false,
     registeredLoaded: false
   };
+
+  static getDerivedStateFromProps(
+    nextProps: Props,
+    prevState: State
+  ): Partial<State> | null {
+    if (
+      nextProps.openDialog &&
+      prevState.dialogField !== nextProps.openDialog
+    ) {
+      // open a dialog
+      return { dialogField: nextProps.openDialog, dialogOpen: true };
+    } else if (!nextProps.openDialog) {
+      // close a dialog
+      return { dialogOpen: false, dialogField: null };
+    } else {
+      return null;
+    }
+  }
 
   get account() {
     return this.props.account || this.props.accountStore!;
@@ -160,10 +198,17 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   constructor(props: DecoratedProps) {
     super(props);
+    if (props.openDialog) {
+      this.state.dialogField = props.openDialog;
+      this.state.dialogOpen = true;
+    }
   }
 
+  // CLICK HANDLERS
+
   handleNameClicked = () => {
-    this.setState({ dialogOpen: true, dialogField: 'name' });
+    const id = this.account.id;
+    this.props.routerStore!.goTo(accountSettingsNameRoute, { id });
   }
 
   handlePinnedClicked = () => {
@@ -175,29 +220,35 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   handleVoteClicked = () => {
-    this.setState({ dialogOpen: true, dialogField: 'delegate' });
+    const id = this.account.id;
+    this.props.routerStore!.goTo(accountSettingsVoteRoute, { id });
   }
 
   handleFiatClicked = () => {
-    this.setState({ dialogOpen: true, dialogField: 'fiat' });
+    const id = this.account.id;
+    this.props.routerStore!.goTo(accountSettingsFiatRoute, { id });
   }
 
   handlePassphraseClicked = () => {
-    this.setState({ dialogOpen: true, dialogField: 'passphrase' });
+    const id = this.account.id;
+    this.props.routerStore!.goTo(accountSettingsPassphraseRoute, { id });
   }
 
   handleDelegateClicked = () => {
-    // open only the registered delegate info has been loaded
-    const account = this.props.walletStore!.selectedAccount;
-    if (account.registeredDelegateState === LoadingState.LOADING) {
+    // open only if the registered delegate info has been loaded
+    if (this.account.registeredDelegateState !== LoadingState.LOADED) {
       return;
     }
-    this.setState({ dialogOpen: true, dialogField: 'delegateRegistration' });
+    const id = this.account.id;
+    this.props.routerStore!.goTo(accountSettingsDelegateRoute, { id });
   }
 
   handleRemoveClicked = () => {
-    this.setState({ dialogOpen: true, dialogField: 'removeAccount' });
+    const id = this.account.id;
+    this.props.routerStore!.goTo(accountSettingsRemoveRoute, { id });
   }
+
+  // DIALOG ACTIONS
 
   @action
   onSubmitName = (state: NameState) => {
@@ -346,10 +397,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   onDialogClose = () => {
-    this.setState({ dialogOpen: false });
+    this.props.routerStore!.goTo(accountSettingsRoute, { id: this.account.id });
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.loadVotedDelegate();
     this.loadRegisteredDelegate();
   }

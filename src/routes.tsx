@@ -2,6 +2,7 @@ import { Route } from 'mobx-router';
 import * as React from 'react';
 import * as lstore from 'store';
 import AsyncComponent from './components/AsyncComponent';
+import { DialogField } from './containers/wallet/Settings';
 import RootStore from './stores/root';
 
 type TOnboardingComponents = typeof import ('./containers/onboarding');
@@ -230,6 +231,148 @@ export const accountOverviewNoIDRoute = createNoIDRoute(
   accountOverviewRoute
 );
 
+// settings
+
+export const accountSettingsNameRoute = new Route({
+  path: '/settings/name/:id',
+  onEnter: redirWalletNoAccount,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings openDialog={DialogField.NAME} />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountSettingsNameNoIDRoute = createNoIDRoute(
+  '/settings/name/',
+  accountSettingsNameRoute
+);
+
+export const accountSettingsVoteRoute = new Route({
+  path: '/settings/vote/:id',
+  onEnter: redirWalletNoAccount,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings openDialog={DialogField.DELEGATE_VOTE} />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountSettingsVoteNoIDRoute = createNoIDRoute(
+  '/settings/vote/',
+  accountSettingsVoteRoute
+);
+
+export const accountSettingsFiatRoute = new Route({
+  path: '/settings/fiat/:id',
+  onEnter: redirWalletNoAccount,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings openDialog={DialogField.FIAT} />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountSettingsFiatNoIDRoute = createNoIDRoute(
+  '/settings/fiat/',
+  accountSettingsFiatRoute
+);
+
+export const accountSettingsPassphraseRoute = new Route({
+  path: '/settings/passphrase/:id',
+  onEnter: redirWalletNoAccount,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings openDialog={DialogField.PASSPHRASE} />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountSettingsPassphraseNoIDRoute = createNoIDRoute(
+  '/settings/passphrase/',
+  accountSettingsPassphraseRoute
+);
+
+export const accountSettingsDelegateRoute = new Route({
+  path: '/settings/delegate/:id',
+  onEnter: redirWalletNoAccount,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings
+            openDialog={DialogField.DELEGATE_REGISTRATION}
+          />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountSettingsDelegateNoIDRoute = createNoIDRoute(
+  '/settings/delegate/',
+  accountSettingsDelegateRoute
+);
+
+export const accountSettingsRemoveRoute = new Route({
+  path: '/settings/remove/:id',
+  onEnter: redirWalletNoAccount,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings openDialog={DialogField.REMOVE_ACCOUNT} />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountSettingsRemoveNoIDRoute = createNoIDRoute(
+  '/settings/remove/',
+  accountSettingsRemoveRoute
+);
+
 export const accountSettingsRoute = new Route({
   path: '/settings/:id',
   onEnter: redirWalletNoAccount,
@@ -252,6 +395,8 @@ export const accountSettingsNoIDRoute = createNoIDRoute(
   '/settings/',
   accountSettingsRoute
 );
+
+// send form
 
 // TODO support From and To as query params
 //   ?from=123R&to=456R
