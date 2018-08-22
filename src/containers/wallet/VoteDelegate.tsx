@@ -15,11 +15,14 @@ import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
 
 interface Props {
-  routerStore?: RouterStore;
-  accountStore?: AccountStore;
-  walletStore?: WalletStore;
   onSubmit?: (tx?: TTransactionResult) => void;
   account?: AccountStore;
+}
+
+interface PropsInjected extends Props {
+  accountStore: AccountStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
 }
 
 export interface State {
@@ -53,8 +56,13 @@ export default class VoteDelegate extends React.Component<Props, State> {
   };
   lastSearch = 0;
 
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   get account() {
-    return this.props.account || this.props.accountStore!;
+    return this.props.account || this.injected.accountStore;
   }
 
   onSearch = throttle(
@@ -77,7 +85,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
           loadingDelegates: true,
           query
         });
-        const result = await this.props.walletStore!.searchDelegates(query);
+        const result = await this.injected.walletStore.searchDelegates(query);
         // check if there was a newer search
         if (this.lastSearch !== clock) {
           return;
@@ -102,14 +110,14 @@ export default class VoteDelegate extends React.Component<Props, State> {
   }
 
   onSend = async (state: ConfirmFormState) => {
-    const { walletStore } = this.props;
+    const { walletStore } = this.injected;
     assert(this.state.selectedDelegate, 'Delegate required');
     // set in-progress
     this.setState({ progress: ProgressState.IN_PROGRESS });
     let tx: TTransactionResult;
     try {
       // TODO error msg
-      tx = await walletStore!.voteTransaction(
+      tx = await walletStore.voteTransaction(
         this.state.selectedDelegate!.publicKey,
         state.mnemonic,
         state.passphrase,
@@ -126,13 +134,13 @@ export default class VoteDelegate extends React.Component<Props, State> {
   onClose = async () => {
     // refresh the account after a successful transaction
     if (this.state.tx) {
-      this.props.walletStore!.refreshAccount(this.account.id);
+      this.injected.walletStore.refreshAccount(this.account.id);
     }
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.routerStore!.goTo(accountOverviewRoute, { id: this.account });
+      this.injected.routerStore.goTo(accountOverviewRoute, { id: this.account });
     }
   }
 
@@ -141,12 +149,12 @@ export default class VoteDelegate extends React.Component<Props, State> {
     this.loadActiveDelegates();
     // load the current vote (settings should preload)
     if (this.account.votedDelegateState === LoadingState.NOT_LOADED) {
-      this.props.walletStore!.loadVotedDelegate(this.account.id);
+      this.injected.walletStore.loadVotedDelegate(this.account.id);
     }
   }
 
   async loadActiveDelegates() {
-    const api = this.props.walletStore!.dposAPI;
+    const api = this.injected.walletStore.dposAPI;
     this.setState({ loadingDelegates: true });
     const res = await api.delegates.getList();
     this.setState({ activeDelegates: res.delegates });
@@ -173,33 +181,36 @@ export default class VoteDelegate extends React.Component<Props, State> {
         isLoading={this.state.loadingDelegates}
         isSearch={!showSuggestions}
         delegates={this.state.displayedDelegates}
-        votedDelegate={votedDelegate ? votedDelegate!.publicKey : null}
+        votedDelegate={votedDelegate ? votedDelegate.publicKey : null}
       />
     );
   }
 
   renderStep2() {
-    const { walletStore } = this.props;
-    const { selectedDelegate } = this.state;
+    const { walletStore } = this.injected;
+    let { selectedDelegate } = this.state;
     const { votedDelegate } = this.account;
+
+    assert(selectedDelegate, 'Delegate required');
+    selectedDelegate = selectedDelegate!;
 
     let removeVotes = [];
     let addVotes = [];
 
     const isRemoveTx =
-      votedDelegate && votedDelegate.publicKey === selectedDelegate!.publicKey;
+      votedDelegate && votedDelegate.publicKey === selectedDelegate.publicKey;
     if (votedDelegate) {
       removeVotes.push(votedDelegate.username);
     }
     if (!isRemoveTx) {
-      addVotes.push(selectedDelegate!.username);
+      addVotes.push(selectedDelegate.username);
     }
     return (
       <ConfirmTransactionForm
         isPassphraseSet={this.account.secondSignature}
         sender={this.account.name}
         senderId={this.account.id}
-        fee={walletStore!.fees.get('vote')!}
+        fee={walletStore.fees.get('vote')!}
         data={{
           kind: 'vote',
           remove: removeVotes,

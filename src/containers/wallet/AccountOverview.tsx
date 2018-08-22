@@ -18,6 +18,7 @@ import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
 import { accountSendRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
+import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -39,9 +40,13 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
-  accountStore?: AccountStore;
   account?: AccountStore;
+}
+
+interface PropsInjected extends Props {
+  accountStore: AccountStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -65,16 +70,22 @@ const messages = defineMessages({
 @inject(accountStore)
 @observer
 class AccountOverview extends React.Component<DecoratedProps> {
+
+  get injected(): PropsInjected & DecoratedProps {
+    // @ts-ignore
+    return this.props;
+  }
+
   get account() {
-    return this.props.account || this.props.accountStore!;
+    return this.props.account || this.injected.accountStore;
   }
 
   handleSendClick = () => {
-    this.props.routerStore!.goTo(accountSendRoute, { id: this.account.id });
+    this.injected.routerStore.goTo(accountSendRoute, { id: this.account.id });
   }
 
   render() {
-    const { intl, classes } = this.props;
+    const { intl, classes } = this.injected;
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );

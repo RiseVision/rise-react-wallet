@@ -76,11 +76,14 @@ export enum DialogField {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
-  accountStore?: AccountStore;
-  walletStore?: WalletStore;
   account?: AccountStore;
   openDialog?: DialogField;
+}
+
+interface PropsInjected extends Props {
+  accountStore: AccountStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -192,8 +195,13 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     }
   }
 
+  get injected(): PropsInjected & DecoratedProps {
+    // @ts-ignore
+    return this.props;
+  }
+
   get account() {
-    return this.props.account || this.props.accountStore!;
+    return this.props.account || this.injected.accountStore;
   }
 
   constructor(props: DecoratedProps) {
@@ -208,12 +216,12 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   handleNameClicked = () => {
     const id = this.account.id;
-    this.props.routerStore!.goTo(accountSettingsNameRoute, { id });
+    this.injected.routerStore.goTo(accountSettingsNameRoute, { id });
   }
 
   handlePinnedClicked = () => {
     runInAction(() => {
-      const walletStore = this.props.walletStore!;
+      const walletStore = this.injected.walletStore;
       const selectedAccount = walletStore.selectedAccount;
       selectedAccount.pinned = !selectedAccount.pinned;
     });
@@ -221,17 +229,17 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   handleVoteClicked = () => {
     const id = this.account.id;
-    this.props.routerStore!.goTo(accountSettingsVoteRoute, { id });
+    this.injected.routerStore.goTo(accountSettingsVoteRoute, { id });
   }
 
   handleFiatClicked = () => {
     const id = this.account.id;
-    this.props.routerStore!.goTo(accountSettingsFiatRoute, { id });
+    this.injected.routerStore.goTo(accountSettingsFiatRoute, { id });
   }
 
   handlePassphraseClicked = () => {
     const id = this.account.id;
-    this.props.routerStore!.goTo(accountSettingsPassphraseRoute, { id });
+    this.injected.routerStore.goTo(accountSettingsPassphraseRoute, { id });
   }
 
   handleDelegateClicked = () => {
@@ -240,12 +248,12 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
       return;
     }
     const id = this.account.id;
-    this.props.routerStore!.goTo(accountSettingsDelegateRoute, { id });
+    this.injected.routerStore.goTo(accountSettingsDelegateRoute, { id });
   }
 
   handleRemoveClicked = () => {
     const id = this.account.id;
-    this.props.routerStore!.goTo(accountSettingsRemoveRoute, { id });
+    this.injected.routerStore.goTo(accountSettingsRemoveRoute, { id });
   }
 
   // DIALOG ACTIONS
@@ -258,16 +266,16 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   onSubmitRemoveAccount = () => {
-    let { routerStore, walletStore } = this.props;
+    let { routerStore, walletStore } = this.injected;
 
-    walletStore!.removeAccount(this.account.id);
+    walletStore.removeAccount(this.account.id);
     this.onDialogClose();
 
-    if (!walletStore!.selectedAccount) {
-      routerStore!.goTo(onboardingAddAccountRoute);
+    if (!walletStore.selectedAccount) {
+      routerStore.goTo(onboardingAddAccountRoute);
     } else {
-      routerStore!.goTo(accountOverviewRoute, {
-        id: walletStore!.selectedAccount.id
+      routerStore.goTo(accountOverviewRoute, {
+        id: walletStore.selectedAccount.id
       });
     }
   }
@@ -275,7 +283,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   @action
   onSubmitFiat = (state: FiatState) => {
     // TODO validate state.fiat
-    const wallet = this.props.walletStore!;
+    const wallet = this.injected.walletStore;
     if (global) {
       for (const account of [...wallet.accounts.values()]) {
         account.fiatCurrency = state.fiat!;
@@ -293,7 +301,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   onSubmitRegister = (tx?: TTransactionResult) => {
     // refresh in case the registration actually happened
-    const account = this.props.walletStore!.selectedAccount;
+    const account = this.injected.walletStore.selectedAccount;
     if (tx && tx.success) {
       runInAction(() => {
         account.registeredDelegate = null;
@@ -306,8 +314,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     title: ReactElement<HTMLElement> | null;
     form: ReactElement<HTMLFormElement> | null;
   } = () => {
-    const config = this.props.walletStore!.config;
-    const account = this.props.accountStore!;
+    const config = this.injected.walletStore.config;
+    const account = this.injected.accountStore;
 
     switch (this.state.dialogField!) {
       case 'name':
@@ -397,7 +405,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   onDialogClose = () => {
-    this.props.routerStore!.goTo(accountSettingsRoute, { id: this.account.id });
+    this.injected.routerStore.goTo(accountSettingsRoute, { id: this.account.id });
   }
 
   componentDidMount() {
@@ -411,7 +419,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
       return;
     }
     this.setState({ delegateLoaded: true });
-    this.props.walletStore!.loadVotedDelegate(this.account.id);
+    this.injected.walletStore.loadVotedDelegate(this.account.id);
   }
 
   loadRegisteredDelegate() {
@@ -420,11 +428,11 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
       return;
     }
     this.setState({ registeredLoaded: true });
-    this.props.walletStore!.loadRegisteredDelegate(this.account.id);
+    this.injected.walletStore.loadRegisteredDelegate(this.account.id);
   }
 
   render() {
-    const { intl, classes } = this.props;
+    const { intl, classes } = this.injected;
     const account = this.account;
 
     if (!account) {
@@ -479,7 +487,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                     account.votedDelegateState === LoadingState.LOADING
                       ? 'Loading...'
                       : account.votedDelegate
-                        ? account.votedDelegate!.username
+                        ? account.votedDelegate.username
                         : intl.formatMessage(messages.votedDelegateUnsetLabel)
                   }
                 />
@@ -520,7 +528,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                     account.registeredDelegateState === LoadingState.LOADING
                       ? 'Loading...'
                       : account.registeredDelegate
-                        ? account.registeredDelegate!.username
+                        ? account.registeredDelegate.username
                         : intl.formatMessage(
                             messages.delegateRegistrationUnsetLabel
                           )

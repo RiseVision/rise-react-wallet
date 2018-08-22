@@ -61,8 +61,11 @@ const styles = (theme: Theme) =>
   });
 
 interface Props extends WithStyles<typeof styles> {
-  store?: RootStore;
-  walletStore?: WalletStore;
+}
+
+interface PropsInjected extends Props {
+  store: RootStore;
+  walletStore: WalletStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -77,28 +80,33 @@ const messages = defineMessages({
   }
 });
 
-// TODO walletUIStore
 @inject('store')
 @inject('walletStore')
 @observer
 class DrawerContent extends React.Component<DecoratedProps> {
+
+  get injected(): PropsInjected & DecoratedProps {
+    // @ts-ignore
+    return this.props;
+  }
+
   handleAccountClicked = (id: string) => () => {
-    const { store, walletStore } = this.props;
-    walletStore!.selectAccount(id);
-    store!.router.goTo(accountOverviewRoute, { id });
+    const { store, walletStore } = this.injected;
+    walletStore.selectAccount(id);
+    store.router.goTo(accountOverviewRoute, { id });
   }
 
   handleSignoutCliecked = () => {
-    this.props.walletStore!.signout();
-    this.props.store!.router.goTo(onboardingAddAccountRoute);
+    this.injected.walletStore.signout();
+    this.injected.store.router.goTo(onboardingAddAccountRoute);
   }
 
   render() {
-    const { intl, classes, store, walletStore } = this.props;
+    const { intl, classes, store, walletStore } = this.injected;
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );
-    const selected = walletStore!.selectedAccount;
+    const selected = walletStore.selectedAccount;
 
     return (
       <React.Fragment>
@@ -127,7 +135,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
         <Divider />
         <List>
           {orderBy(
-            [...walletStore!.accounts.values()],
+            [...walletStore.accounts.values()],
             ['pinned', 'name'],
             ['desc', 'asc']
           ).map((account: AccountStore) => (
@@ -135,7 +143,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
               button={true}
               className={classNames(
                 selected &&
-                  selected!.id === account.id &&
+                  selected.id === account.id &&
                   classes.selectedListItem
               )}
               onClick={this.handleAccountClicked(account.id)}
@@ -156,7 +164,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
           <ListItem
             button={true}
             key="add-account"
-            onClick={() => store!.router.goTo(onboardingAddAccountRoute)}
+            onClick={() => store.router.goTo(onboardingAddAccountRoute)}
           >
             <ListItemAvatar>
               <Avatar>

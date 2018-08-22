@@ -15,15 +15,18 @@ import WalletStore, { TTransactionResult } from '../../stores/wallet';
 import { amountToServer, normalizeAddress } from '../../utils/utils';
 
 interface Props {
-  routerStore?: RouterStore;
-  accountStore?: AccountStore;
-  walletStore?: WalletStore;
   onSubmit?: (tx?: TTransactionResult) => void;
   amount?: number;
   recipientId?: string;
   account?: AccountStore;
   // TODO switch to get a dialog the form wrapped in a dialog
   // wrapInDialog?: boolean
+}
+
+interface PropsInjected extends Props {
+  accountStore: AccountStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
 }
 
 export interface State {
@@ -48,8 +51,13 @@ export default class SendTransaction extends React.Component<Props, State> {
     progress: ProgressState.TO_CONFIRM
   };
 
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   get account() {
-    return this.props.account! || this.props.accountStore!;
+    return this.injected.account || this.injected.accountStore;
   }
 
   constructor(props: Props) {
@@ -74,13 +82,13 @@ export default class SendTransaction extends React.Component<Props, State> {
   }
 
   onSend = async (state: ConfirmFormState) => {
-    const { walletStore } = this.props;
+    const { walletStore } = this.injected;
     // set in-progress
     this.setState({ progress: ProgressState.IN_PROGRESS });
     let tx: TTransactionResult;
     try {
       // TODO error msg
-      tx = await walletStore!.sendTransaction(
+      tx = await walletStore.sendTransaction(
         this.state.recipientId!,
         this.state.amount!,
         state.mnemonic,
@@ -98,13 +106,13 @@ export default class SendTransaction extends React.Component<Props, State> {
   onClose = async () => {
     // refresh the account after a successful transaction
     if (this.state.tx) {
-      this.props.walletStore!.refreshAccount(this.account.id);
+      this.injected.walletStore.refreshAccount(this.account.id);
     }
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.routerStore!.goTo(accountOverviewRoute, {
+      this.injected.routerStore.goTo(accountOverviewRoute, {
         id: this.account.id
       });
     }
@@ -139,12 +147,12 @@ export default class SendTransaction extends React.Component<Props, State> {
   }
 
   renderStep1() {
-    const { walletStore } = this.props;
+    const { walletStore } = this.injected;
     // TODO validate the recipient
     return (
       <SendTransactionForm
         amount={this.props.amount || 0}
-        fee={walletStore!.fees.get('send')!}
+        fee={walletStore.fees.get('send')!}
         balance={this.account.balance}
         onSubmit={this.onSubmit1}
         recipientId={this.props.recipientId}
@@ -153,17 +161,17 @@ export default class SendTransaction extends React.Component<Props, State> {
   }
 
   renderStep2() {
-    const { walletStore } = this.props;
+    const { walletStore } = this.injected;
     return (
       <ConfirmTransactionForm
         isPassphraseSet={this.account.secondSignature}
         sender={this.account.name}
         senderId={this.account.id}
-        fee={walletStore!.fees.get('send')!}
+        fee={walletStore.fees.get('send')!}
         data={{
           kind: 'send',
           recipientId: this.state.recipientId!,
-          recipient: walletStore!.idToName(this.state.recipientId!),
+          recipient: walletStore.idToName(this.state.recipientId!),
           amount: this.state.amount!,
         }}
         onSend={this.onSend}

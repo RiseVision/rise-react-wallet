@@ -12,11 +12,14 @@ import ConfirmTransactionForm, {
 } from '../../components/forms/ConfirmTransactionForm';
 
 interface Props {
-  walletStore?: WalletStore;
-  routerStore?: RouterStore;
-  accountStore?: AccountStore;
   onSubmit?: (tx?: TTransactionResult) => void;
   account?: AccountStore;
+}
+
+interface PropsInjected extends Props {
+  accountStore: AccountStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
 }
 
 export interface State {
@@ -42,12 +45,17 @@ class SettingsPassphrase extends React.Component<Props, State> {
     progress: ProgressState.TO_CONFIRM
   };
 
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   get account() {
-    return this.props.account! || this.props.accountStore!;
+    return this.injected.account || this.injected.accountStore;
   }
 
   onSubmit1 = (passphrase: string) => {
-    const walletStore = this.props.walletStore!;
+    const walletStore = this.injected.walletStore;
     const fee = walletStore.fees.get('secondsignature')!;
     const isSet = this.account.secondSignature;
 
@@ -68,7 +76,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
     let tx: TTransactionResult;
     try {
       // TODO error msg
-      tx = await this.props.walletStore!.addPassphrase(
+      tx = await this.injected.walletStore.addPassphrase(
         state.mnemonic,
         state.passphrase
       );
@@ -84,7 +92,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
       this.props.onSubmit(this.state.tx);
     } else {
       // fallback
-      this.props.routerStore!.goTo(accountOverviewRoute, {
+      this.injected.routerStore.goTo(accountOverviewRoute, {
         id: this.account.id
       });
     }
@@ -95,8 +103,8 @@ class SettingsPassphrase extends React.Component<Props, State> {
   }
 
   renderStep1() {
-    const { walletStore } = this.props;
-    const fee = walletStore!.fees.get('secondsignature')!;
+    const { walletStore } = this.injected;
+    const fee = walletStore.fees.get('secondsignature')!;
     const isSet = this.account.secondSignature;
 
     return (
@@ -115,7 +123,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
   }
 
   renderStep2() {
-    const walletStore = this.props.walletStore!;
+    const walletStore = this.injected.walletStore;
     return (
       <ConfirmTransactionForm
         onSend={this.onSend}
