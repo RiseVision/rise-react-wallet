@@ -228,6 +228,7 @@ function redirWhenNoAccounts(
   const accounts = lstore.get('accounts');
   if (!accounts || !accounts.length) {
     store.router.goTo(onboardingAddAccountRoute);
+    return true
   }
   return false;
 }
