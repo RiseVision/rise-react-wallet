@@ -19,17 +19,17 @@ export default class RootStore {
   constructor(public config: TConfig) {
     this.onboarding = new OnboardingStore();
     this.wallet = new WalletStore(config, this.router);
-    const old = this.router.goTo;
     const self = this;
+    const oldGoTo = this.router.goTo;
     this.router.goTo = function(
-      route: Route<any>,
+      route: Route<RootStore>,
       params?: object,
-      store?: any,
+      store?: RootStore,
       queryParamsObj?: object
     ) {
       // use the RootStore as a default store when changing routes
       // TODO create an issue for mobx-router
-      return old.call(this, route, params, store || self, queryParamsObj);
+      return oldGoTo.call(this, route, params, store || self, queryParamsObj);
     };
   }
 }

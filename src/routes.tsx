@@ -6,8 +6,8 @@ import { DialogField } from './containers/wallet/Settings';
 import RootStore from './stores/root';
 import { TStoredAccount } from './stores/wallet';
 
-type TOnboardingComponents = typeof import('./containers/onboarding');
-type TWalletComponents = typeof import('./containers/wallet');
+type TOnboardingComponents = typeof import ('./containers/onboarding');
+type TWalletComponents = typeof import ('./containers/wallet');
 
 function createNoIDRoute(
   path: string,
@@ -197,6 +197,29 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
 
 // wallet
 
+export const accountOverviewRoute = new Route({
+  path: '/account/:id',
+  onEnter: onEnterID,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountOverview />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountOverviewNoIDRoute = createNoIDRoute(
+  '/account/',
+  accountOverviewRoute
+);
+
 function redirWhenNoAccounts(
   route: Route<RootStore>,
   params: { id?: string },
@@ -238,29 +261,6 @@ function onEnterID(
     idFromURL(route, params, store);
   }
 }
-
-export const accountOverviewRoute = new Route({
-  path: '/account/:id',
-  onEnter: onEnterID,
-  component: (
-    <AsyncComponent
-      name="./containers/wallet"
-      resolve={() => {
-        return import('./containers/wallet');
-      }}
-      render={(components: TWalletComponents) => (
-        <components.Wallet>
-          <components.AccountOverview />
-        </components.Wallet>
-      )}
-    />
-  )
-});
-
-export const accountOverviewNoIDRoute = createNoIDRoute(
-  '/account/',
-  accountOverviewRoute
-);
 
 // settings
 
