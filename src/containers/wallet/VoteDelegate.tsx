@@ -171,6 +171,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
   renderStep1() {
     const { votedDelegate } = this.account;
     const { query } = this.state;
+    const fee = this.injected.walletStore.fees.get('vote')!;
 
     const showSuggestions = !query || !query.trim();
 
@@ -182,6 +183,8 @@ export default class VoteDelegate extends React.Component<Props, State> {
         isSearch={!showSuggestions}
         delegates={this.state.displayedDelegates}
         votedDelegate={votedDelegate ? votedDelegate.publicKey : null}
+        fee={fee}
+        error={this.account.balance < fee ? 'insufficient-funds' : null}
       />
     );
   }
