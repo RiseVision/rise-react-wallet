@@ -137,7 +137,7 @@ export default class WalletStore {
     if (!res.success) {
       // fake the account
       // @ts-ignore
-      json.account = {
+      res.account = {
         address: id
       };
       // throw new Error((json as TErrorResponse).error);

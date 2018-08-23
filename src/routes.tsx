@@ -4,9 +4,10 @@ import * as lstore from 'store';
 import AsyncComponent from './components/AsyncComponent';
 import { DialogField } from './containers/wallet/Settings';
 import RootStore from './stores/root';
+import { TStoredAccount } from './stores/wallet';
 
-type TOnboardingComponents = typeof import ('./containers/onboarding');
-type TWalletComponents = typeof import ('./containers/wallet');
+type TOnboardingComponents = typeof import('./containers/onboarding');
+type TWalletComponents = typeof import('./containers/wallet');
 
 function createNoIDRoute(
   path: string,
@@ -19,7 +20,7 @@ function createNoIDRoute(
       params: { id?: string },
       store: RootStore
     ) {
-      if (!redirWalletNoAccount(route, params, store)) {
+      if (!redirWhenNoAccounts(route, params, store)) {
         const id = store.wallet.selectedAccount.id;
         store.router.goTo(target, { id });
       }
@@ -196,7 +197,7 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
 
 // wallet
 
-function redirWalletNoAccount(
+function redirWhenNoAccounts(
   route: Route<RootStore>,
   params: { id?: string },
   store: RootStore
@@ -208,9 +209,39 @@ function redirWalletNoAccount(
   return false;
 }
 
+function idFromURL(
+  route: Route<RootStore>,
+  params: { id: string },
+  store: RootStore
+) {
+  const id = params.id;
+  const accounts = lstore.get('accounts');
+  // make the ID from the URL as a selected account (if exists)
+  if (accounts.find((a: TStoredAccount) => a.id === id)) {
+    // has to be done here, as RouterStore isnt fully initialized during
+    // WalletStore.constructor
+    store.wallet.selectAccount(id);
+  } else {
+    // or redirect to the last selected to update the URL
+    store.router.goTo(accountOverviewRoute, {
+      id: lstore.get('lastSelectedAccount')
+    });
+  }
+}
+
+function onEnterID(
+  route: Route<RootStore>,
+  params: { id: string },
+  store: RootStore
+) {
+  if (!redirWhenNoAccounts(route, params, store)) {
+    idFromURL(route, params, store);
+  }
+}
+
 export const accountOverviewRoute = new Route({
   path: '/account/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -235,7 +266,7 @@ export const accountOverviewNoIDRoute = createNoIDRoute(
 
 export const accountSettingsNameRoute = new Route({
   path: '/settings/name/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -258,7 +289,7 @@ export const accountSettingsNameNoIDRoute = createNoIDRoute(
 
 export const accountSettingsVoteRoute = new Route({
   path: '/settings/vote/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -281,7 +312,7 @@ export const accountSettingsVoteNoIDRoute = createNoIDRoute(
 
 export const accountSettingsFiatRoute = new Route({
   path: '/settings/fiat/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -304,7 +335,7 @@ export const accountSettingsFiatNoIDRoute = createNoIDRoute(
 
 export const accountSettingsPassphraseRoute = new Route({
   path: '/settings/passphrase/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -327,7 +358,7 @@ export const accountSettingsPassphraseNoIDRoute = createNoIDRoute(
 
 export const accountSettingsDelegateRoute = new Route({
   path: '/settings/delegate/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -352,7 +383,7 @@ export const accountSettingsDelegateNoIDRoute = createNoIDRoute(
 
 export const accountSettingsRemoveRoute = new Route({
   path: '/settings/remove/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -375,7 +406,7 @@ export const accountSettingsRemoveNoIDRoute = createNoIDRoute(
 
 export const accountSettingsRoute = new Route({
   path: '/settings/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet"
@@ -402,7 +433,7 @@ export const accountSettingsNoIDRoute = createNoIDRoute(
 //   ?from=123R&to=456R
 export const accountSendRoute = new Route({
   path: '/send/:id',
-  onEnter: redirWalletNoAccount,
+  onEnter: onEnterID,
   component: (
     <AsyncComponent
       name="./containers/wallet/send"
