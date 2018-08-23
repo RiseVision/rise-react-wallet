@@ -14,20 +14,29 @@ import {
 } from '../../routes';
 
 interface Props {
-  routerStore?: RouterStore;
+}
+
+interface PropsInjected extends Props {
+  routerStore: RouterStore;
 }
 
 @inject('routerStore')
 @observer
 class NewAccountPage extends React.Component<Props> {
+
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   handleBackClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(onboardingAddAccountRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(onboardingAddAccountRoute);
   }
 
   handleMnemonicClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(onboardingSecurityNoticeRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(onboardingSecurityNoticeRoute);
   }
 
   render() {

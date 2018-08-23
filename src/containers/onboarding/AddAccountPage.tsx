@@ -30,51 +30,60 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
-  appStore?: AppStore;
-  onboardingStore?: OnboardingStore;
-  walletStore?: WalletStore;
+}
+
+interface PropsInjected extends Props {
+  appStore: AppStore;
+  onboardingStore: OnboardingStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
 
-@inject('routerStore')
 @inject('appStore')
 @inject('onboardingStore')
+@inject('routerStore')
 @inject('walletStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
+
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   handleCloseClicked = () => {
-    const { routerStore, onboardingStore } = this.props;
-    onboardingStore!.reset();
-    routerStore!.goTo(accountOverviewRoute);
+    const { routerStore, onboardingStore } = this.injected;
+    onboardingStore.reset();
+    routerStore.goTo(accountOverviewRoute);
   }
 
   handleNewAccountClicked = () => {
-    const { routerStore, onboardingStore } = this.props;
-    onboardingStore!.reset();
-    routerStore!.goTo(onboardingNewAccountRoute);
+    const { routerStore, onboardingStore } = this.injected;
+    onboardingStore.reset();
+    routerStore.goTo(onboardingNewAccountRoute);
   }
 
   handleExistingAccountClicked = () => {
-    const { routerStore, onboardingStore } = this.props;
-    onboardingStore!.reset();
-    routerStore!.goTo(onboardingExistingAccountRoute);
+    const { routerStore, onboardingStore } = this.injected;
+    onboardingStore.reset();
+    routerStore.goTo(onboardingExistingAccountRoute);
   }
 
   handleChooseLanguageClicked = () => {
-    const { routerStore, onboardingStore } = this.props;
-    onboardingStore!.reset();
-    routerStore!.goTo(onboardingChooseLanguageRoute);
+    const { routerStore, onboardingStore } = this.injected;
+    onboardingStore.reset();
+    routerStore.goTo(onboardingChooseLanguageRoute);
   }
 
   render() {
-    const { classes, appStore, walletStore } = this.props;
+    const { classes, appStore, walletStore } = this.injected;
 
     return (
       <ModalPaper open={true}>
         <ModalPaperHeader
-          closeButton={[...walletStore!.accounts.keys()].length > 0}
+          closeButton={[...walletStore.accounts.keys()].length > 0}
           onCloseClick={this.handleCloseClicked}
         >
           <FormattedMessage
@@ -133,7 +142,7 @@ class AddAccountPage extends React.Component<Props> {
             <ChevronRight />
           </ListItem>
           <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
-            <FlagIcon countryCode={getMainCountryForLocale(appStore!.locale)} />
+            <FlagIcon countryCode={getMainCountryForLocale(appStore.locale)} />
             <ListItemText>
               <FormattedMessage
                 id="onboarding-add-account.change-language"

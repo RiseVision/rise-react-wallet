@@ -94,7 +94,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
   }
 
   get account() {
-    return this.props.account || this.injected.accountStore;
+    return this.injected.account || this.injected.accountStore;
   }
 
   handleNavigateBackClick = () => {
@@ -115,14 +115,14 @@ class WalletAppBar extends React.Component<DecoratedProps> {
     const state = this.appBarState();
 
     return (
-      <AppBar className={this.props.className}>
+      <AppBar className={this.injected.className}>
         <Toolbar>
           {state === 'accountOverview' ? (
             <IconButton
               className={classes.drawerIcon}
               aria-label={intl.formatMessage(messages.openDrawerAriaLabel)}
               color="inherit"
-              onClick={this.props.onToggleDrawer}
+              onClick={this.injected.onToggleDrawer}
             >
               <MenuIcon />
             </IconButton>

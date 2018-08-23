@@ -45,7 +45,10 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
+}
+
+interface PropsInjected extends Props {
+  routerStore: RouterStore;
 }
 
 interface State {
@@ -58,6 +61,11 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage
 @observer
 class SecurityNoticePage extends React.Component<Props, State> {
 
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -66,8 +74,8 @@ class SecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(onboardingNewAccountRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(onboardingNewAccountRoute);
   }
 
   handleNextTipClick = () => {
@@ -77,12 +85,12 @@ class SecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleContinueClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(onboardingNewMnemonicRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(onboardingNewMnemonicRoute);
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes } = this.injected;
 
     const tips = [(
       <FormattedMessage

@@ -33,28 +33,37 @@ interface Props extends WithStyles<typeof styles> {
   routerStore?: RouterStore;
 }
 
+interface PropsInjected extends Props {
+  routerStore: RouterStore;
+}
+
 const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage' });
 
 @inject('routerStore')
 @observer
 class NoMnemonicNoticePage extends React.Component<Props> {
 
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   constructor(props: Props) {
     super(props);
   }
 
   handleCloseClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(accountOverviewRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(accountOverviewRoute);
   }
 
   handleContinueClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(accountOverviewRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(accountOverviewRoute);
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes } = this.injected;
 
     return (
       <ModalPaper open={true}>

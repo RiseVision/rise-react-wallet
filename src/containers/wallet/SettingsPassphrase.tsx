@@ -88,8 +88,12 @@ class SettingsPassphrase extends React.Component<Props, State> {
   }
 
   onClose = () => {
-    if (this.props.onSubmit) {
-      this.props.onSubmit(this.state.tx);
+    // refresh the account after a successful transaction
+    if (this.state.tx) {
+      this.injected.walletStore.refreshAccount(this.account.id);
+    }
+    if (this.injected.onSubmit) {
+      this.injected.onSubmit(this.state.tx);
     } else {
       // fallback
       this.injected.routerStore.goTo(accountOverviewRoute, {

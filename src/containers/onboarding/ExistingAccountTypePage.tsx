@@ -16,34 +16,43 @@ import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
-  routerStore?: RouterStore;
-  onboardingStore?: OnboardingStore;
-  walletStore?: WalletStore;
 }
 
-@inject('routerStore')
+interface PropsInjected extends Props {
+  onboardingStore: OnboardingStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
+}
+
 @inject('onboardingStore')
+@inject('routerStore')
 @inject('walletStore')
 @observer
-// TODO handle missing onboardingStore!.address using a redir
+// TODO handle missing onboardingStore.address using a redir
 class ExistingAccountTypePage extends React.Component<Props> {
+
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   handleBackClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(onboardingExistingAccountRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(onboardingExistingAccountRoute);
   }
 
   handleFullAccessClick = async () => {
-    const { routerStore, onboardingStore, walletStore } = this.props;
-    const address = onboardingStore!.address!;
-    walletStore!.login(address, { readOnly: false }, true);
-    routerStore!.goTo(accountOverviewRoute, { id: address });
+    const { routerStore, onboardingStore, walletStore } = this.injected;
+    const address = onboardingStore.address!;
+    walletStore.login(address, { readOnly: false }, true);
+    routerStore.goTo(accountOverviewRoute, { id: address });
   }
 
   handleReadOnlyClick = () => {
-    const { routerStore, onboardingStore, walletStore } = this.props;
-    const address = onboardingStore!.address!;
-    walletStore!.login(address, { readOnly: true }, true);
-    routerStore!.goTo(accountOverviewRoute, { id: address });
+    const { routerStore, onboardingStore, walletStore } = this.injected;
+    const address = onboardingStore.address!;
+    walletStore.login(address, { readOnly: true }, true);
+    routerStore.goTo(accountOverviewRoute, { id: address });
   }
 
   render() {

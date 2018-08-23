@@ -50,7 +50,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
   }
 
   get account() {
-    return this.props.account || this.injected.accountStore;
+    return this.injected.account || this.injected.accountStore;
   }
 
   onSubmit1 = (username: string) => {
@@ -97,8 +97,8 @@ export default class VoteTransaction extends React.Component<Props, State> {
     if (this.state.tx) {
       this.injected.walletStore.refreshAccount(this.account.id);
     }
-    if (this.props.onSubmit) {
-      this.props.onSubmit(this.state.tx);
+    if (this.injected.onSubmit) {
+      this.injected.onSubmit(this.state.tx);
     } else {
       // fallback
       this.injected.routerStore.goTo(accountOverviewRoute, {

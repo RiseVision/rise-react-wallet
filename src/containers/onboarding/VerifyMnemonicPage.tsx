@@ -79,10 +79,13 @@ function round(val: number) {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
-  onboardingStore?: OnboardingStore;
-  walletStore?: WalletStore;
   mnemonic?: string[];
+}
+
+interface PropsInjected extends Props {
+  onboardingStore: OnboardingStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
 }
 
 interface State {
@@ -95,21 +98,27 @@ interface State {
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingVerifyMnemonicPage' });
 
-@inject('routerStore')
 @inject('onboardingStore')
+@inject('routerStore')
 @inject('walletStore')
 @observer
 class VerifyMnemonicPage extends React.Component<Props, State> {
   wordInputRef: React.RefObject<HTMLInputElement>;
 
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   constructor(props: Props) {
     super(props);
     this.wordInputRef = React.createRef();
 
-    const { routerStore, onboardingStore } = props;
-    const mnemonic = props.mnemonic || onboardingStore!.mnemonic;
+    const { routerStore, onboardingStore } = this.injected;
+    const mnemonic = props.mnemonic || onboardingStore.mnemonic;
     if (!mnemonic) {
-      routerStore!.goTo(onboardingNewAccountRoute);
+      routerStore.goTo(onboardingNewAccountRoute);
+      return;
     }
 
     const uncheckedIndices = mnemonic!.map((_, i) => i);
@@ -125,8 +134,8 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(onboardingNewAccountRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(onboardingNewAccountRoute);
   }
 
   handlePlaceholderClick = (ev: React.MouseEvent<HTMLElement>) => {
@@ -183,19 +192,19 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
   }
 
   finish() {
-    const { routerStore, onboardingStore, walletStore } = this.props;
+    const { routerStore, onboardingStore, walletStore } = this.injected;
     const { mnemonic } = this.state;
-    onboardingStore!.address = walletStore!.registerAccount(
+    onboardingStore.address = walletStore.registerAccount(
       mnemonic
     );
     // Clear the mnemonic from memory as it has been securely written
     // down by the user (hopefully)
-    onboardingStore!.mnemonic = null;
-    routerStore!.goTo(onboardingAccountCreatedRoute);
+    onboardingStore.mnemonic = null;
+    routerStore.goTo(onboardingAccountCreatedRoute);
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes } = this.injected;
     const { mnemonic, uncheckedIndices, currentWordIndex } = this.state;
 
     const words: Array<'unchecked' | 'checked' | 'current'> = mnemonic.map(

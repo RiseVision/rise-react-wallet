@@ -19,8 +19,11 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
-  onboardingStore?: OnboardingStore;
+}
+
+interface PropsInjected extends Props {
+  onboardingStore: OnboardingStore;
+  routerStore: RouterStore;
 }
 
 interface State {
@@ -35,27 +38,33 @@ const stylesDecorator = withStyles(styles, {
 @inject('onboardingStore')
 @observer
 class AccountCreatedPage extends React.Component<Props, State> {
+
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   constructor(props: Props) {
     super(props);
-    const { routerStore, onboardingStore } = props;
-    const accountAddress = onboardingStore!.address || '';
+    const { routerStore, onboardingStore } = this.injected;
+    const accountAddress = onboardingStore.address || '';
     this.state = {
       accountAddress
     };
     if (!accountAddress) {
-      routerStore!.goTo(onboardingAddAccountRoute);
+      routerStore.goTo(onboardingAddAccountRoute);
     }
   }
 
   handleOverviewClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(accountOverviewRoute, {
+    const { routerStore } = this.injected;
+    routerStore.goTo(accountOverviewRoute, {
       id: this.state.accountAddress
     });
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes } = this.injected;
     const { accountAddress } = this.state;
 
     return (

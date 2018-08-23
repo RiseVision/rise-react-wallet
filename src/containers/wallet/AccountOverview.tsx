@@ -77,7 +77,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
   }
 
   get account() {
-    return this.props.account || this.injected.accountStore;
+    return this.injected.account || this.injected.accountStore;
   }
 
   handleSendClick = () => {

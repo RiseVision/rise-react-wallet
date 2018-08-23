@@ -48,20 +48,29 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
-  appStore?: AppStore;
+}
+
+interface PropsInjected extends Props {
+  appStore: AppStore;
+  routerStore: RouterStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage' });
 
-@inject('routerStore')
 @inject('appStore')
+@inject('routerStore')
 @observer
 class ChooseLanguagePage extends React.Component<Props> {
+
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
+
   handleLanguageClicked = async (locale: Locale) => {
-    const { routerStore, appStore } = this.props;
-    await appStore!.changeLanguage(locale);
-    routerStore!.goTo(onboardingAddAccountRoute);
+    const { routerStore, appStore } = this.injected;
+    await appStore.changeLanguage(locale);
+    routerStore.goTo(onboardingAddAccountRoute);
   }
 
   render() {
@@ -83,7 +92,7 @@ class ChooseLanguagePage extends React.Component<Props> {
       return aIdx - bIdx;
     });
 
-    const { classes } = this.props;
+    const { classes } = this.injected;
 
     return (
       <ModalPaper open={true}>

@@ -39,8 +39,11 @@ const styles = createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
-  onboardingStore?: OnboardingStore;
+}
+
+interface PropsInjected extends Props {
+  onboardingStore: OnboardingStore;
+  routerStore: RouterStore;
 }
 
 interface State {
@@ -68,15 +71,21 @@ const messages = defineMessages({
   }
 });
 
-@inject('routerStore')
 @inject('onboardingStore')
+@inject('routerStore')
 @observer
 class ExistingAccountPage extends React.Component<DecoratedProps, State> {
+
+  get injected(): PropsInjected & DecoratedProps {
+    // @ts-ignore
+    return this.props;
+  }
+
   constructor(props: DecoratedProps) {
     super(props);
 
-    const { onboardingStore } = props;
-    const address = onboardingStore!.address || '';
+    const { onboardingStore } = this.injected;
+    const address = onboardingStore.address || '';
     this.state = {
       address,
       addressInvalid: false,
@@ -85,14 +94,14 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   }
 
   handleBackClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(onboardingAddAccountRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(onboardingAddAccountRoute);
   }
 
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    const { routerStore, onboardingStore } = this.props;
+    const { routerStore, onboardingStore } = this.injected;
     const { normalizedAddress } = this.state;
     const addressInvalid = !normalizedAddress;
     if (addressInvalid) {
@@ -100,8 +109,8 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
       return;
     }
 
-    onboardingStore!.address = normalizedAddress;
-    routerStore!.goTo(onboardingExistingAccountTypeRoute);
+    onboardingStore.address = normalizedAddress;
+    routerStore.goTo(onboardingExistingAccountTypeRoute);
   }
 
   handleAddressChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +131,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   }
 
   addressError() {
-    const { intl } = this.props;
+    const { intl } = this.injected;
     const { address, normalizedAddress } = this.state;
     if (normalizedAddress !== '') {
       return '';
@@ -136,7 +145,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes } = this.injected;
     const { address, addressInvalid, normalizedAddress } = this.state;
 
     return (

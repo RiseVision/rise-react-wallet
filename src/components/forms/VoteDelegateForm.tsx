@@ -41,7 +41,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
       search: value.trim()
     });
     this.props.onSearch(value);
-  };
+  }
 
   render() {
     const {
@@ -81,7 +81,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
                   id="forms-register-delegate.insufficient-funds-error"
                   description="Error about not having enough funds to vote for a delegate"
                   defaultMessage={
-                    "You don't have enough funds in your account to pay the" +
+                    'You don\'t have enough funds in your account to pay the' +
                     ' network fee of {fee} for casting a vote for a delegate!'
                   }
                   values={{

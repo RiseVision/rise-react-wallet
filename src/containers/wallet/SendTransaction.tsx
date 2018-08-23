@@ -108,8 +108,8 @@ export default class SendTransaction extends React.Component<Props, State> {
     if (this.state.tx) {
       this.injected.walletStore.refreshAccount(this.account.id);
     }
-    if (this.props.onSubmit) {
-      this.props.onSubmit(this.state.tx);
+    if (this.injected.onSubmit) {
+      this.injected.onSubmit(this.state.tx);
     } else {
       // fallback
       this.injected.routerStore.goTo(accountOverviewRoute, {
@@ -151,11 +151,11 @@ export default class SendTransaction extends React.Component<Props, State> {
     // TODO validate the recipient
     return (
       <SendTransactionForm
-        amount={this.props.amount || 0}
+        amount={this.injected.amount || 0}
         fee={walletStore.fees.get('send')!}
         balance={this.account.balance}
         onSubmit={this.onSubmit1}
-        recipientId={this.props.recipientId}
+        recipientId={this.injected.recipientId}
       />
     );
   }

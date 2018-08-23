@@ -83,9 +83,12 @@ function round(val: number) {
 }
 
 interface Props extends WithStyles<typeof styles> {
-  routerStore?: RouterStore;
-  onboardingStore?: OnboardingStore;
   mnemonic?: string[];
+}
+
+interface PropsInjected extends Props {
+  onboardingStore: OnboardingStore;
+  routerStore: RouterStore;
 }
 
 interface State {
@@ -94,10 +97,15 @@ interface State {
 
 const stylesDecorator = withStyles(styles, { name: 'OnboardingNewMnemonicPage' });
 
-@inject('routerStore')
 @inject('onboardingStore')
+@inject('routerStore')
 @observer
 class NewMnemonicPage extends React.Component<Props, State> {
+
+  get injected(): PropsInjected {
+    // @ts-ignore
+    return this.props;
+  }
 
   constructor(props: Props) {
     super(props);
@@ -107,18 +115,18 @@ class NewMnemonicPage extends React.Component<Props, State> {
   }
 
   handleCloseClick = () => {
-    const { routerStore } = this.props;
-    routerStore!.goTo(onboardingNewAccountRoute);
+    const { routerStore } = this.injected;
+    routerStore.goTo(onboardingNewAccountRoute);
   }
 
   handleContinueClick = () => {
-    const { routerStore, onboardingStore } = this.props;
-    onboardingStore!.mnemonic = this.state.mnemonic;
-    routerStore!.goTo(onboardingVerifyMnemonicsRoute);
+    const { routerStore, onboardingStore } = this.injected;
+    onboardingStore.mnemonic = this.state.mnemonic;
+    routerStore.goTo(onboardingVerifyMnemonicsRoute);
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes } = this.injected;
     const { mnemonic } = this.state;
     const wordCount = mnemonic.length;
 

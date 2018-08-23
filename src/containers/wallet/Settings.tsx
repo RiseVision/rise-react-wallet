@@ -201,7 +201,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   get account() {
-    return this.props.account || this.injected.accountStore;
+    return this.injected.account || this.injected.accountStore;
   }
 
   constructor(props: DecoratedProps) {
