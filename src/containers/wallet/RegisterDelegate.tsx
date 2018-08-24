@@ -123,6 +123,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
         onSubmit={this.onSubmit1}
         fee={fee}
         registeredUsername={name}
+        onClose={this.onClose}
         error={
           registeredDelegate
             ? 'already-registered'

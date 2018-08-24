@@ -5,15 +5,12 @@ import Grid from '@material-ui/core/Grid';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
-import {
-  FormattedMessage,
-  InjectedIntlProps,
-  injectIntl,
-} from 'react-intl';
+import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
 import { amountToUser } from '../../utils/utils';
 
 interface Props {
   onSubmit: (username: string) => void;
+  onClose: () => void;
   fee: number;
   registeredUsername?: string;
   error?: null | 'already-registered' | 'insufficient-funds';
@@ -31,31 +28,37 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     username: ''
   };
 
-  handleType = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  handleType = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     this.setState({
       username: value
     });
-  }
+  };
 
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     const { onSubmit } = this.props;
     const { username } = this.state;
 
     event.preventDefault();
-    // TODO validate the username
-    // TODO check if the username has changed
+    if (!this.isValid()) {
+      return;
+    }
     onSubmit(username);
+  };
+
+  isValid() {
+    return this.isUsernameValid() && !this.props.error;
   }
+
+  isUsernameValid = () => {
+    return Boolean(this.state.username && this.state.username.length >= 3);
+  };
 
   render() {
     const { intl, error, fee, registeredUsername } = this.props;
 
-    const formatAmount = (amount: number) => (
-      `${intl.formatNumber(amountToUser(amount))} RISE`
-    );
+    const formatAmount = (amount: number) =>
+      `${intl.formatNumber(amountToUser(amount))} RISE`;
 
     return (
       <Grid
@@ -85,12 +88,10 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
                 id="forms-register-delegate.insufficient-funds-error"
                 description="Error about not having enough funds to register as a delegate"
                 defaultMessage={
-                  'You don\'t have enough funds in your account to pay the network fee ' +
+                  "You don't have enough funds in your account to pay the network fee " +
                   'of {fee} for registering as a delegate!'
                 }
-                values={{
-                  fee: formatAmount(fee),
-                }}
+                values={{ fee: formatAmount(fee) }}
               />
             </Typography>
           </Grid>
@@ -101,13 +102,11 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
               <FormattedMessage
                 id="forms-register-delegate.already-delegate-error"
                 description="Error about already being registered as a delegate"
-                defaultMessage={(
-                  'You\'ve already registered as a delegate ({username}). ' +
+                defaultMessage={
+                  "You've already registered as a delegate ({username}). " +
                   'The name cannot be changed.'
-                )}
-                values={{
-                  username: registeredUsername || '',
-                }}
+                }
+                values={{ username: registeredUsername || '' }}
               />
             </Typography>
           </Grid>
@@ -115,36 +114,45 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
         {!error && (
           <Grid item={true} xs={12}>
             <TextField
-              label={(
+              label={
                 <FormattedMessage
                   id="forms-register-delegate.username-input-label"
                   description="Label for delegate username text field."
                   defaultMessage="Delegate username"
                 />
-              )}
+              }
               value={this.state.username}
               onChange={this.handleType}
               autoFocus={true}
               fullWidth={true}
+              error={Boolean(this.state.username && !this.isUsernameValid())}
+              helperText={
+                this.state.username &&
+                !this.isUsernameValid() &&
+                'Username has to be at least 3 characters long.'
+              }
             />
           </Grid>
         )}
         <Grid item={true} xs={12}>
-          <Button type="submit" fullWidth={true}>
-            {!error ? (
+          {!error && (
+            <Button type="submit" fullWidth={true} disabled={!this.isValid()}>
               <FormattedMessage
                 id="forms-register-delegate.continue-button"
                 description="Label for continue button."
                 defaultMessage="Continue"
               />
-            ) : (
+            </Button>
+          )}
+          {error && (
+            <Button fullWidth={true} onClick={this.props.onClose}>
               <FormattedMessage
                 id="forms-register-delegate.close-button"
                 description="Label for close button."
                 defaultMessage="Close"
               />
-            )}
-          </Button>
+            </Button>
+          )}
         </Grid>
       </Grid>
     );

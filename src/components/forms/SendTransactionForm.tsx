@@ -86,7 +86,9 @@ class SendTransactionForm extends React.Component<Props, State> {
 
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!this.isValid()) return;
+    if (!this.isValid()) {
+      return;
+    }
     this.props.onSubmit({ ...this.state });
   };
 

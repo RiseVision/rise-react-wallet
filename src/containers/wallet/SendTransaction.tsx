@@ -74,14 +74,12 @@ export default class SendTransaction extends React.Component<Props, State> {
     if (!state.amount) {
       throw new Error('Amount required');
     }
-    // TODO validate amount is a number
-    // TODO validate state.recipientId
     this.setState({
       recipientID: normalizeAddress(state.recipientID!),
       amount: amountToServer(state.amount),
       step: 2
     });
-  };
+  }
 
   onSend = async (state: ConfirmFormState) => {
     const { walletStore } = this.injected;
@@ -103,7 +101,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
     this.setState({ tx, progress });
-  };
+  }
 
   onClose = async () => {
     // refresh the account after a successful transaction
@@ -118,7 +116,7 @@ export default class SendTransaction extends React.Component<Props, State> {
         id: this.account.id
       });
     }
-  };
+  }
 
   render() {
     let title;
