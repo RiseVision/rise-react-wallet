@@ -60,18 +60,18 @@ export default class RegisterDelegate extends React.Component<Props, State> {
     if (registeredDelegate || this.account.balance < fee) {
       this.onClose();
     } else {
-      assert(username, "Delegate's name required");
+      assert(username, 'Delegate\'s name required');
       // TODO validate the username
       this.setState({
         step: 2,
         username
       });
     }
-  };
+  }
 
   onSend = async (state: ConfirmFormState) => {
     const { walletStore } = this.injected;
-    assert(this.state.username, "Delegate's name required");
+    assert(this.state.username, 'Delegate\'s name required');
     // set in-progress
     this.setState({ progress: ProgressState.IN_PROGRESS });
     let tx: TTransactionResult;
@@ -89,7 +89,7 @@ export default class RegisterDelegate extends React.Component<Props, State> {
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
     this.setState({ tx, progress });
-  };
+  }
 
   onClose = async () => {
     // refresh the account after a successful transaction
@@ -104,7 +104,7 @@ export default class RegisterDelegate extends React.Component<Props, State> {
         id: this.account.id
       });
     }
-  };
+  }
 
   render() {
     return this.state.step === 1 ? this.renderStep1() : this.renderStep2();
@@ -126,7 +126,7 @@ export default class RegisterDelegate extends React.Component<Props, State> {
         fee={fee}
         registeredUsername={name}
         delegateLoaded={
-          this.account.registeredDelegateState == LoadingState.LOADED
+          this.account.registeredDelegateState === LoadingState.LOADED
         }
         onClose={this.onClose}
         error={
