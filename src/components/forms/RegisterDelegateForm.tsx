@@ -12,6 +12,7 @@ interface Props {
   onSubmit: (username: string) => void;
   onClose: () => void;
   fee: number;
+  delegateLoaded: boolean;
   registeredUsername?: string;
   error?: null | 'already-registered' | 'insufficient-funds';
 }
@@ -33,7 +34,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     this.setState({
       username: value
     });
-  }
+  };
 
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     const { onSubmit } = this.props;
@@ -44,7 +45,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
       return;
     }
     onSubmit(username);
-  }
+  };
 
   isValid() {
     return this.isUsernameValid() && !this.props.error;
@@ -52,7 +53,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
 
   isUsernameValid = () => {
     return Boolean(this.state.username && this.state.username.length >= 3);
-  }
+  };
 
   render() {
     const { intl, error, fee, registeredUsername } = this.props;
@@ -88,7 +89,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
                 id="forms-register-delegate.insufficient-funds-error"
                 description="Error about not having enough funds to register as a delegate"
                 defaultMessage={
-                  'You don\'t have enough funds in your account to pay the network fee ' +
+                  "You don't have enough funds in your account to pay the network fee " +
                   'of {fee} for registering as a delegate!'
                 }
                 values={{ fee: formatAmount(fee) }}
@@ -103,8 +104,9 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
                 id="forms-register-delegate.already-delegate-error"
                 description="Error about already being registered as a delegate"
                 defaultMessage={
-                  'You\'ve already registered as a delegate ({username}). ' +
-                  'The name cannot be changed.'}
+                  "You've already registered as a delegate ({username}). " +
+                  'The name cannot be changed.'
+                }
                 values={{ username: registeredUsername || '' }}
               />
             </Typography>
@@ -136,7 +138,11 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
         )}
         <Grid item={true} xs={12}>
           {!error && (
-            <Button type="submit" fullWidth={true} disabled={!this.isValid()}>
+            <Button
+              type="submit"
+              fullWidth={true}
+              disabled={!this.isValid() || !this.props.delegateLoaded}
+            >
               <FormattedMessage
                 id="forms-register-delegate.continue-button"
                 description="Label for continue button."

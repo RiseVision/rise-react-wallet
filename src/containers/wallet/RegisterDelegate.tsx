@@ -9,7 +9,7 @@ import ConfirmTransactionForm, {
 import RegisterDelegateForm from '../../components/forms/RegisterDelegateForm';
 import { accountOverviewRoute } from '../../routes';
 import { accountStore } from '../../stores';
-import AccountStore from '../../stores/account';
+import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
 
 interface Props {
@@ -37,8 +37,7 @@ export interface State {
 @inject('routerStore')
 @inject('walletStore')
 @observer
-// TODO should have an URL
-export default class VoteTransaction extends React.Component<Props, State> {
+export default class RegisterDelegate extends React.Component<Props, State> {
   state: State = {
     step: 1,
     progress: ProgressState.TO_CONFIRM
@@ -61,18 +60,18 @@ export default class VoteTransaction extends React.Component<Props, State> {
     if (registeredDelegate || this.account.balance < fee) {
       this.onClose();
     } else {
-      assert(username, 'Delegate\'s name required');
+      assert(username, "Delegate's name required");
       // TODO validate the username
       this.setState({
         step: 2,
         username
       });
     }
-  }
+  };
 
   onSend = async (state: ConfirmFormState) => {
     const { walletStore } = this.injected;
-    assert(this.state.username, 'Delegate\'s name required');
+    assert(this.state.username, "Delegate's name required");
     // set in-progress
     this.setState({ progress: ProgressState.IN_PROGRESS });
     let tx: TTransactionResult;
@@ -90,7 +89,7 @@ export default class VoteTransaction extends React.Component<Props, State> {
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
     this.setState({ tx, progress });
-  }
+  };
 
   onClose = async () => {
     // refresh the account after a successful transaction
@@ -105,14 +104,17 @@ export default class VoteTransaction extends React.Component<Props, State> {
         id: this.account.id
       });
     }
-  }
+  };
 
   render() {
     return this.state.step === 1 ? this.renderStep1() : this.renderStep2();
   }
 
   renderStep1() {
-    // TODO assert that registeredDelegate is loaded (or load) before rendering
+    // make sure the existing delegate info is loaded
+    if (this.account.registeredDelegateState === LoadingState.NOT_LOADED) {
+      this.injected.walletStore.loadRegisteredDelegate(this.account.id);
+    }
     const { walletStore } = this.injected;
     const { registeredDelegate } = this.account;
     const fee = walletStore.fees.get('delegate')!;
@@ -123,6 +125,9 @@ export default class VoteTransaction extends React.Component<Props, State> {
         onSubmit={this.onSubmit1}
         fee={fee}
         registeredUsername={name}
+        delegateLoaded={
+          this.account.registeredDelegateState == LoadingState.LOADED
+        }
         onClose={this.onClose}
         error={
           registeredDelegate
@@ -138,8 +143,6 @@ export default class VoteTransaction extends React.Component<Props, State> {
   renderStep2() {
     const { walletStore } = this.injected;
     const { username } = this.state;
-    // TODO translate 'Register Delegate', unify with the transaction table
-    // TODO show the delegates name?
     return (
       <ConfirmTransactionForm
         isPassphraseSet={this.account.secondSignature}
