@@ -31,7 +31,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
     this.setState({
       passphrase: ev.target.value
     });
-  };
+  }
 
   handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
     const { onSubmit } = this.props;
@@ -39,7 +39,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
 
     ev.preventDefault();
     onSubmit(passphrase);
-  };
+  }
 
   render() {
     const { intl, error, fee } = this.props;
@@ -83,7 +83,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
                 id="forms-passphrase.insufficient-funds-error"
                 description="Error about not having enough funds to setup a passphrase"
                 defaultMessage={
-                  "You don't have enough funds in your account to pay the network fee " +
+                  'You don\'t have enough funds in your account to pay the network fee ' +
                   'of {fee} to setup a 2nd passphrase!'
                 }
                 values={{
@@ -100,7 +100,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
                 id="forms-passphrase.already-set-error"
                 description="Error about the 2nd passphrase being set already"
                 defaultMessage={
-                  "You've already set a 2nd passphrase for this account. You need to " +
+                  'You\'ve already set a 2nd passphrase for this account. You need to ' +
                   'create a new account should you wish to change your passphrase.'
                 }
               />

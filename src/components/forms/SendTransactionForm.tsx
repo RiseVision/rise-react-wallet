@@ -82,7 +82,7 @@ class SendTransactionForm extends React.Component<Props, State> {
         [field]: value
       });
     }
-  };
+  }
 
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -90,7 +90,7 @@ class SendTransactionForm extends React.Component<Props, State> {
       return;
     }
     this.props.onSubmit({ ...this.state });
-  };
+  }
 
   isValid() {
     return this.isRecipientIDValid() && this.isAmountValid();
@@ -102,16 +102,14 @@ class SendTransactionForm extends React.Component<Props, State> {
     }
     const amount = amountToServer(this.state.amount);
     return amount > 0 && amount <= this.props.balance + this.props.fee;
-  };
+  }
 
   isRecipientIDValid = () => {
     return Boolean(normalizeAddress(this.state.recipientID || ''));
-  };
+  }
 
   render() {
     const { classes } = this.props;
-
-    debugger;
 
     return (
       <form onSubmit={this.onSubmit} className={classes.form}>
@@ -125,6 +123,13 @@ class SendTransactionForm extends React.Component<Props, State> {
           onChange={this.handleChange('recipientID')}
           margin="normal"
           fullWidth={true}
+          error={Boolean(this.state.recipientID && !this.isRecipientIDValid())}
+          helperText={
+            this.state.recipientID &&
+            !this.isRecipientIDValid() &&
+            /* TODO translate */
+            `Recipient Address isn't valid`
+          }
         />
         <TextField
           className={classes.input}
@@ -132,20 +137,14 @@ class SendTransactionForm extends React.Component<Props, State> {
           onChange={this.handleChange('amount')}
           margin="normal"
           fullWidth={true}
+          error={Boolean(this.state.amount && !this.isAmountValid())}
+          helperText={
+            this.state.amount &&
+            !this.isAmountValid() &&
+            /* TODO translate */
+            `You don't have enough funds in your account`
+          }
         />
-        {this.state.amount &&
-          !this.isAmountValid() && (
-            /* TODO translate */
-            <Typography color="error">
-              You don't have enough funds in your account. Transfer fee is{' '}
-              {amountToUser(this.props.fee)}.
-            </Typography>
-          )}
-        {this.state.recipientID &&
-          !this.isRecipientIDValid() && (
-            /* TODO translate */
-            <Typography color="error">Recipient ID isnt valid.</Typography>
-          )}
         <Typography>
           Balance: {amountToUser(this.props.balance)} | Fee:{' '}
           {amountToUser(this.props.fee)}
