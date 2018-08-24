@@ -5,15 +5,12 @@ import Typography from '@material-ui/core/Typography';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
-import {
-  FormattedMessage,
-  InjectedIntlProps,
-  injectIntl,
-} from 'react-intl';
+import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
 import { amountToUser } from '../../utils/utils';
 
 interface Props {
   onSubmit: (passphrase: string) => void;
+  onClose: () => void;
   fee: number;
   error?: null | 'already-set' | 'insufficient-funds';
 }
@@ -27,14 +24,14 @@ export interface State {
 @observer
 class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
   state: State = {
-    passphrase: '',
+    passphrase: ''
   };
 
   handleType = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      passphrase: ev.target.value,
+      passphrase: ev.target.value
     });
-  }
+  };
 
   handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
     const { onSubmit } = this.props;
@@ -42,14 +39,13 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
 
     ev.preventDefault();
     onSubmit(passphrase);
-  }
+  };
 
   render() {
     const { intl, error, fee } = this.props;
 
-    const formatAmount = (amount: number) => (
-      `${intl.formatNumber(amountToUser(amount))} RISE`
-    );
+    const formatAmount = (amount: number) =>
+      `${intl.formatNumber(amountToUser(amount))} RISE`;
 
     return (
       <Grid
@@ -87,11 +83,11 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
                 id="forms-passphrase.insufficient-funds-error"
                 description="Error about not having enough funds to setup a passphrase"
                 defaultMessage={
-                  'You don\'t have enough funds in your account to pay the network fee ' +
+                  "You don't have enough funds in your account to pay the network fee " +
                   'of {fee} to setup a 2nd passphrase!'
                 }
                 values={{
-                  fee: formatAmount(fee),
+                  fee: formatAmount(fee)
                 }}
               />
             </Typography>
@@ -104,7 +100,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
                 id="forms-passphrase.already-set-error"
                 description="Error about the 2nd passphrase being set already"
                 defaultMessage={
-                  'You\'ve already set a 2nd passphrase for this account. You need to ' +
+                  "You've already set a 2nd passphrase for this account. You need to " +
                   'create a new account should you wish to change your passphrase.'
                 }
               />
@@ -114,13 +110,13 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
         {!error && (
           <Grid item={true} xs={12}>
             <TextField
-              label={(
+              label={
                 <FormattedMessage
                   id="forms-passphrase.passphrase-input-label"
                   description="Label for 2nd passphrase text field."
                   defaultMessage="2nd passphrase"
                 />
-              )}
+              }
               value={this.state.passphrase}
               onChange={this.handleType}
               autoFocus={true}
@@ -129,21 +125,23 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
           </Grid>
         )}
         <Grid item={true} xs={12}>
-          <Button type="submit" fullWidth={true}>
-            {!error ? (
+          {!error ? (
+            <Button type="submit" fullWidth={true}>
               <FormattedMessage
                 id="forms-passphrase.continue-button"
                 description="Label for continue button."
                 defaultMessage="Continue"
               />
-            ) : (
+            </Button>
+          ) : (
+            <Button onClick={this.props.onClose} fullWidth={true}>
               <FormattedMessage
                 id="forms-passphrase.close-button"
                 description="Label for close button."
                 defaultMessage="Close"
               />
-            )}
-          </Button>
+            </Button>
+          )}
         </Grid>
       </Grid>
     );

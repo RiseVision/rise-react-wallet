@@ -114,6 +114,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
     return (
       <SettingsPassphraseForm
         onSubmit={this.onSubmit1}
+        onClose={this.onClose}
         fee={fee}
         error={
           isSet
