@@ -7,7 +7,9 @@ import ConfirmTransactionForm, {
   ProgressState,
   State as ConfirmFormState
 } from '../../components/forms/ConfirmTransactionForm';
-import SendTransactionForm, { State as SendFormState } from '../../components/forms/SendTransactionForm';
+import SendTransactionForm, {
+  State as SendFormState
+} from '../../components/forms/SendTransactionForm';
 import { accountOverviewRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
@@ -31,7 +33,7 @@ interface PropsInjected extends Props {
 
 export interface State {
   step: number;
-  recipientId?: string;
+  recipientID?: string;
   tx?: TTransactionResult;
   amount: number | null;
   // progress state
@@ -64,7 +66,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     super(props);
     this.state.amount = props.amount || null;
     if (props.recipientId) {
-      this.state.recipientId = props.recipientId;
+      this.state.recipientID = props.recipientId;
     }
   }
 
@@ -75,11 +77,11 @@ export default class SendTransaction extends React.Component<Props, State> {
     // TODO validate amount is a number
     // TODO validate state.recipientId
     this.setState({
-      recipientId: normalizeAddress(state.recipientId!),
+      recipientID: normalizeAddress(state.recipientID!),
       amount: amountToServer(state.amount),
       step: 2
     });
-  }
+  };
 
   onSend = async (state: ConfirmFormState) => {
     const { walletStore } = this.injected;
@@ -89,7 +91,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     try {
       // TODO error msg
       tx = await walletStore.sendTransaction(
-        this.state.recipientId!,
+        this.state.recipientID!,
         this.state.amount!,
         state.mnemonic,
         state.passphrase,
@@ -101,7 +103,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     }
     const progress = tx.success ? ProgressState.SUCCESS : ProgressState.ERROR;
     this.setState({ tx, progress });
-  }
+  };
 
   onClose = async () => {
     // refresh the account after a successful transaction
@@ -116,7 +118,7 @@ export default class SendTransaction extends React.Component<Props, State> {
         id: this.account.id
       });
     }
-  }
+  };
 
   render() {
     let title;
@@ -155,7 +157,7 @@ export default class SendTransaction extends React.Component<Props, State> {
         fee={walletStore.fees.get('send')!}
         balance={this.account.balance}
         onSubmit={this.onSubmit1}
-        recipientId={this.injected.recipientId}
+        recipientID={this.injected.recipientId}
       />
     );
   }
@@ -170,9 +172,9 @@ export default class SendTransaction extends React.Component<Props, State> {
         fee={walletStore.fees.get('send')!}
         data={{
           kind: 'send',
-          recipientId: this.state.recipientId!,
-          recipient: walletStore.idToName(this.state.recipientId!),
-          amount: this.state.amount!,
+          recipientId: this.state.recipientID!,
+          recipient: walletStore.idToName(this.state.recipientID!),
+          amount: this.state.amount!
         }}
         onSend={this.onSend}
         onRedo={this.onSend}
