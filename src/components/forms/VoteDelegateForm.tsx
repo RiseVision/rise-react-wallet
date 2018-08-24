@@ -28,7 +28,7 @@ export interface State {
 }
 
 @observer
-class SendTransactionForm extends React.Component<DecoratedProps, State> {
+class VoteDelegateForm extends React.Component<DecoratedProps, State> {
   state: State = {
     search: ''
   };
@@ -151,4 +151,4 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
   }
 }
 
-export default injectIntl(SendTransactionForm);
+export default injectIntl(VoteDelegateForm);
