@@ -48,10 +48,6 @@ class NoMnemonicNoticePage extends React.Component<Props> {
     return this.props;
   }
 
-  constructor(props: Props) {
-    super(props);
-  }
-
   handleCloseClick = () => {
     const { routerStore } = this.injected;
     routerStore.goTo(accountOverviewNoIDRoute);

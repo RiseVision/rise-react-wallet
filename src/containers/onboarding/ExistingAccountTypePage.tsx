@@ -10,7 +10,7 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   accountOverviewRoute,
-  onboardingExistingAccountRoute
+  onboardingExistingAccountRoute, onboardingAddAccountRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
@@ -34,6 +34,14 @@ class ExistingAccountTypePage extends React.Component<Props> {
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
+  }
+
+  constructor(props: Props) {
+    super(props);
+    const { routerStore, onboardingStore } = this.injected;
+    if (!onboardingStore.address) {
+      routerStore.goTo(onboardingAddAccountRoute);
+    }
   }
 
   handleBackClick = () => {

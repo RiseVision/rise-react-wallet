@@ -18,8 +18,7 @@ const styles = createStyles({
   }
 });
 
-interface Props extends WithStyles<typeof styles> {
-}
+interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
   onboardingStore: OnboardingStore;
@@ -38,7 +37,6 @@ const stylesDecorator = withStyles(styles, {
 @inject('onboardingStore')
 @observer
 class AccountCreatedPage extends React.Component<Props, State> {
-
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -47,12 +45,13 @@ class AccountCreatedPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const { routerStore, onboardingStore } = this.injected;
-    const accountAddress = onboardingStore.address || '';
-    this.state = {
-      accountAddress
-    };
+    const accountAddress = onboardingStore.address;
     if (!accountAddress) {
       routerStore.goTo(onboardingAddAccountRoute);
+    } else {
+      this.state = {
+        accountAddress
+      };
     }
   }
 
