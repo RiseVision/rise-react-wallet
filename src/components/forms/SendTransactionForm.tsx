@@ -52,6 +52,7 @@ interface Props extends WithStyles<typeof styles> {
 export interface State {
   recipientID: string | null;
   amount: number | null;
+  focusField?: string | null;
 }
 
 const stylesDecorator = withStyles(styles);
@@ -84,6 +85,17 @@ class SendTransactionForm extends React.Component<Props, State> {
     }
   }
 
+  // TODO extract to FormComponent
+  onFocus = (event: FocusEvent) => {
+    // @ts-ignore
+    this.setState({ focusField: event.target!.name! });
+  }
+
+  // TODO extract to FormComponent
+  onBlur = () => {
+    this.setState({ focusField: null });
+  }
+
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!this.isValid()) {
@@ -110,6 +122,7 @@ class SendTransactionForm extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.props;
+    const { focusField } = this.state;
 
     return (
       <form onSubmit={this.onSubmit} className={classes.form}>
@@ -121,10 +134,18 @@ class SendTransactionForm extends React.Component<Props, State> {
           className={classes.input}
           label="Recipient address"
           onChange={this.handleChange('recipientID')}
+          name="recipientID"
           margin="normal"
           fullWidth={true}
-          error={Boolean(this.state.recipientID && !this.isRecipientIDValid())}
+          onFocus={this.onFocus}
+          onBlur={this.onBlur}
+          error={Boolean(
+            focusField !== 'recipientID' &&
+              this.state.recipientID &&
+              !this.isRecipientIDValid()
+          )}
           helperText={
+            focusField !== 'recipientID' &&
             this.state.recipientID &&
             !this.isRecipientIDValid() &&
             /* TODO translate */
@@ -135,10 +156,18 @@ class SendTransactionForm extends React.Component<Props, State> {
           className={classes.input}
           label="RISE amount"
           onChange={this.handleChange('amount')}
+          name="amount"
           margin="normal"
           fullWidth={true}
-          error={Boolean(this.state.amount && !this.isAmountValid())}
+          onFocus={this.onFocus}
+          onBlur={this.onBlur}
+          error={Boolean(
+            focusField !== 'amount' &&
+              this.state.amount &&
+              !this.isAmountValid()
+          )}
           helperText={
+            focusField !== 'amount' &&
             this.state.amount &&
             !this.isAmountValid() &&
             /* TODO translate */

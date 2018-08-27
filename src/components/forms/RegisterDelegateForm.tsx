@@ -21,6 +21,7 @@ type DecoratedProps = Props & InjectedIntlProps;
 
 export interface State {
   username: string;
+  focusField?: string | null;
 }
 
 @observer
@@ -29,6 +30,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     username: ''
   };
 
+  // TODO extract to FormComponent
   handleType = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     this.setState({
@@ -36,6 +38,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     });
   }
 
+  // TODO extract to FormComponent
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     const { onSubmit } = this.props;
     const { username } = this.state;
@@ -45,6 +48,17 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
       return;
     }
     onSubmit(username);
+  }
+
+  // TODO extract to FormComponent
+  onFocus = (event: FocusEvent) => {
+    // @ts-ignore
+    this.setState({ focusField: event.target!.name! });
+  }
+
+  // TODO extract to FormComponent
+  onBlur = () => {
+    this.setState({ focusField: null });
   }
 
   isValid() {
@@ -61,6 +75,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     const formatAmount = (amount: number) =>
       `${intl.formatNumber(amountToUser(amount))} RISE`;
 
+    const { focusField } = this.state;
     return (
       <Grid
         container={true}
@@ -122,14 +137,21 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
                 />
               }
               value={this.state.username}
+              name="username"
               onChange={this.handleType}
               autoFocus={true}
+              onFocus={this.onFocus}
+              onBlur={this.onBlur}
               fullWidth={true}
-              error={Boolean(this.state.username && !this.isUsernameValid())}
+              error={Boolean(
+                focusField !== 'username' &&
+                  this.state.username &&
+                  !this.isUsernameValid()
+              )}
               helperText={
+                focusField !== 'username' &&
                 this.state.username &&
-                !this.isUsernameValid() &&
-                /* TODO translate */
+                !this.isUsernameValid() /* TODO translate */ &&
                 'Username has to be at least 3 characters long.'
               }
             />

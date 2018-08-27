@@ -61,7 +61,6 @@ export default class RegisterDelegate extends React.Component<Props, State> {
       this.onClose();
     } else {
       assert(username, 'Delegate\'s name required');
-      // TODO validate the username
       this.setState({
         step: 2,
         username
