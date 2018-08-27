@@ -78,7 +78,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
       // TODO error msg
       tx = await this.injected.walletStore.addPassphrase(
         state.mnemonic,
-        state.passphrase
+        this.state.passphrase!
       );
     } catch (e) {
       tx = { success: false };

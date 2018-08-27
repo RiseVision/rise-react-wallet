@@ -147,11 +147,17 @@ export default class WalletStore {
 
   async addPassphrase(
     mnemonic: string,
-    passphrase: string
+    passphrase: string,
+    accountID?: string
   ): Promise<TTransactionResult> {
+    assert(mnemonic);
+    assert(passphrase);
+    const account = accountID
+      ? (this.accounts.get(accountID) as AccountStore)
+      : this.selectedAccount;
+    assert(account, 'Account required');
     const wallet = new LiskWallet(mnemonic, 'R');
     const wallet2 = new LiskWallet(passphrase, 'R');
-    const account = this.selectedAccount;
     let unsigned = new CreateSignatureTx({
       signature: { publicKey: wallet2.publicKey }
     })

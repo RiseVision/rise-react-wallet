@@ -19,12 +19,14 @@ type DecoratedProps = Props & InjectedIntlProps;
 
 export interface State {
   passphrase: string;
+  focusField: string | null;
 }
 
 @observer
 class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
   state: State = {
-    passphrase: ''
+    passphrase: '',
+    focusField: 'passphrase'
   };
 
   handleType = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +40,30 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
     const { passphrase } = this.state;
 
     ev.preventDefault();
+    if (!this.isValid()) {
+      return;
+    }
+
     onSubmit(passphrase);
+  }
+
+  isValid() {
+    return this.isPassphraseValid() && !this.props.error;
+  }
+
+  isPassphraseValid = () => {
+    return Boolean(this.state.passphrase);
+  }
+
+  // TODO extract to FormComponent
+  onFocus = (event: FocusEvent) => {
+    // @ts-ignore
+    this.setState({ focusField: event.target!.name! });
+  }
+
+  // TODO extract to FormComponent
+  onBlur = () => {
+    this.setState({ focusField: null });
   }
 
   render() {
@@ -46,6 +71,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
 
     const formatAmount = (amount: number) =>
       `${intl.formatNumber(amountToUser(amount))} RISE`;
+    const { focusField } = this.state;
 
     return (
       <Grid
@@ -117,16 +143,27 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
                   defaultMessage="2nd passphrase"
                 />
               }
-              value={this.state.passphrase}
               onChange={this.handleType}
+              onFocus={this.onFocus}
+              onBlur={this.onBlur}
+              name="passphrase"
               autoFocus={true}
               fullWidth={true}
+              error={Boolean(
+                focusField !== 'passphrase' &&
+                  !this.isPassphraseValid()
+              )}
+              helperText={
+                focusField !== 'passphrase' &&
+                !this.isPassphraseValid() /* TODO translate */ &&
+                'Passphrase cannot be empty'
+              }
             />
           </Grid>
         )}
         <Grid item={true} xs={12}>
           {!error ? (
-            <Button type="submit" fullWidth={true}>
+            <Button type="submit" fullWidth={true} disabled={!this.isValid()}>
               <FormattedMessage
                 id="forms-passphrase.continue-button"
                 description="Label for continue button."
