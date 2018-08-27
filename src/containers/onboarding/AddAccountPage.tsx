@@ -11,10 +11,9 @@ import FlagIcon from '../../components/FlagIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
-  accountOverviewRoute,
   onboardingChooseLanguageRoute,
   onboardingExistingAccountRoute,
-  onboardingNewAccountRoute
+  onboardingNewAccountRoute, accountOverviewNoIDRoute
 } from '../../routes';
 import AppStore from '../../stores/app';
 import OnboardingStore from '../../stores/onboarding';
@@ -56,7 +55,7 @@ class AddAccountPage extends React.Component<Props> {
   handleCloseClicked = () => {
     const { routerStore, onboardingStore } = this.injected;
     onboardingStore.reset();
-    routerStore.goTo(accountOverviewRoute);
+    routerStore.goTo(accountOverviewNoIDRoute);
   }
 
   handleNewAccountClicked = () => {

@@ -12,7 +12,7 @@ import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
-import { accountOverviewRoute } from '../../routes';
+import { accountOverviewNoIDRoute } from '../../routes';
 
 const styles = (theme: Theme) => createStyles({
   content: {
@@ -54,12 +54,12 @@ class NoMnemonicNoticePage extends React.Component<Props> {
 
   handleCloseClick = () => {
     const { routerStore } = this.injected;
-    routerStore.goTo(accountOverviewRoute);
+    routerStore.goTo(accountOverviewNoIDRoute);
   }
 
   handleContinueClick = () => {
     const { routerStore } = this.injected;
-    routerStore.goTo(accountOverviewRoute);
+    routerStore.goTo(accountOverviewNoIDRoute);
   }
 
   render() {
