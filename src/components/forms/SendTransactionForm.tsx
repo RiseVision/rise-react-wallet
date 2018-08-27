@@ -5,41 +5,46 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { observer } from 'mobx-react';
 import * as React from 'react';
+import {
+  defineMessages,
+  FormattedMessage,
+  InjectedIntlProps,
+  injectIntl
+} from 'react-intl';
+import AccountIcon from '../../components/AccountIcon';
 import { ChangeEvent, FormEvent } from 'react';
 import {
   amountToUser,
   normalizeAddress,
-  amountToServer
+  amountToServer,
+  parseNumber,
 } from '../../utils/utils';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    input: {
-      color: theme.palette.grey['600']
-    },
-    footer: {
-      marginTop: theme.spacing.unit,
-      '& button': {
-        color: theme.palette.grey['600']
-      }
-    },
-    error: {
-      /* TODO from the theme */
-      color: 'red'
-    },
-    form: {
-      '& > p + p': {
-        marginTop: theme.spacing.unit
-      }
-    }
-  });
+const styles = (theme: Theme) => createStyles({
+  accountContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  accountField: {
+    flex: 1,
+  },
+  accountIcon: {
+    marginLeft: 10,
+  },
+});
+
+export interface SendFormState {
+  recipientID: string;
+  amount: number;
+}
 
 interface Props extends WithStyles<typeof styles> {
-  onSubmit: (state: State) => void;
+  onSubmit: (state: SendFormState) => void;
   amount: number;
   fee: number;
   balance: number;
@@ -49,143 +54,249 @@ interface Props extends WithStyles<typeof styles> {
   recipients?: { id: string; name: string }[];
 }
 
-export interface State {
-  recipientID: string | null;
-  amount: number | null;
-  focusField?: string | null;
+type DecoratedProps = Props & InjectedIntlProps;
+
+interface State {
+  address: string;
+  addressInvalid: boolean;
+  normalizedAddress: string;
+  amount: string;
+  amountInvalid: boolean;
+  parsedAmount: number | null;
 }
 
 const stylesDecorator = withStyles(styles);
 
+const messages = defineMessages({
+  invalidAddress: {
+    id: 'forms-send.invalid-address',
+    description: 'Error label for invalid address text input',
+    defaultMessage: 'Invalid RISE address. A valid address is in the format of "1234567890R".'
+  },
+  invalidAmount: {
+    id: 'forms-send.invalid-amount',
+    description: 'Error label for invalid amount text input',
+    defaultMessage: 'Invalid amount.'
+  },
+  insufficientBalance: {
+    id: 'forms-send.insufficient-balance',
+    description: 'Error label for too high amount text input',
+    defaultMessage: 'This amount exceeds your account balance.'
+  },
+});
+
 // TODO address book
 @observer
-class SendTransactionForm extends React.Component<Props, State> {
+class SendTransactionForm extends React.Component<DecoratedProps, State> {
   state: State = {
-    recipientID: null,
-    amount: null
+    address: '',
+    addressInvalid: false,
+    normalizedAddress: '',
+    amount: '',
+    amountInvalid: false,
+    parsedAmount: null,
   };
 
-  constructor(props: Props) {
+  constructor(props: DecoratedProps) {
     super(props);
-    this.state.recipientID = props.recipientID || null;
-    this.state.amount = props.amount || null;
-  }
 
-  // TODO extract to Form
-  handleChange = (field: string) => (
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const value = event.target.value;
-    const fields = ['recipientID', 'amount'];
-    if (fields.includes(field)) {
-      // @ts-ignore TODO make it generic
-      this.setState({
-        [field]: value
-      });
+    const { intl, recipientID, amount } = this.props;
+
+    if (recipientID) {
+      this.state.address = recipientID;
+      this.state.normalizedAddress = normalizeAddress(recipientID);
+    }
+    if (amount) {
+      this.state.amount = intl.formatNumber(amount);
+      this.state.parsedAmount = amount;
     }
   }
 
-  // TODO extract to FormComponent
-  onFocus = (event: FocusEvent) => {
-    // @ts-ignore
-    this.setState({ focusField: event.target!.name! });
+  handleAddressChange = (ev: ChangeEvent<HTMLInputElement>) => {
+    const address = ev.target.value;
+    const normalizedAddress = normalizeAddress(address.trim());
+
+    this.setState({
+      address,
+      addressInvalid: false,
+      normalizedAddress,
+    });
   }
 
-  // TODO extract to FormComponent
-  onBlur = () => {
-    this.setState({ focusField: null });
+  handleAddressBlur = () => {
+    const { address } = this.state;
+    const addressInvalid = !!address && !!this.addressError();
+    this.setState({ addressInvalid });
   }
 
-  onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!this.isValid()) {
+  handleAmountChange = (ev: ChangeEvent<HTMLInputElement>) => {
+    const { intl } = this.props;
+    const amount = ev.target.value;
+    let parsedAmount = parseNumber(intl, amount.trim());
+    if (parsedAmount) {
+      parsedAmount = amountToServer(parsedAmount);
+    }
+
+    this.setState({
+      amount,
+      amountInvalid: false,
+      parsedAmount,
+    });
+  }
+
+  handleAmountBlur = () => {
+    const { amount } = this.state;
+    const amountInvalid = !!amount && !!this.amountError();
+    this.setState({ amountInvalid });
+  }
+
+  handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+
+    const { normalizedAddress, parsedAmount } = this.state;
+
+    const addressInvalid = !!this.addressError();
+    const amountInvalid = !!this.amountError();
+    if (addressInvalid || amountInvalid) {
+      this.setState({
+        addressInvalid,
+        amountInvalid,
+      });
       return;
     }
-    this.props.onSubmit({ ...this.state });
+
+    this.props.onSubmit({
+      recipientID: normalizedAddress,
+      amount: parsedAmount!,
+    });
   }
 
-  isValid() {
-    return this.isRecipientIDValid() && this.isAmountValid();
-  }
+  addressError(): string | null {
+    const { intl } = this.props;
+    const { normalizedAddress } = this.state;
 
-  isAmountValid = () => {
-    if (!this.state.amount) {
-      return false;
+    if (normalizedAddress === '') {
+      return intl.formatMessage(messages.invalidAddress);
+    } else {
+      return null;
     }
-    const amount = amountToServer(this.state.amount);
-    return amount > 0 && amount <= this.props.balance + this.props.fee;
   }
 
-  isRecipientIDValid = () => {
-    return Boolean(normalizeAddress(this.state.recipientID || ''));
+  amountError(): string | null {
+    const { intl, balance, fee } = this.props;
+    const { parsedAmount } = this.state;
+
+    if (parsedAmount === null || parsedAmount <= 0) {
+      return intl.formatMessage(messages.invalidAmount);
+    } else if (parsedAmount + fee > balance) {
+      return intl.formatMessage(messages.insufficientBalance);
+    } else {
+      return null;
+    }
   }
 
   render() {
-    const { classes } = this.props;
-    const { focusField } = this.state;
+    const { intl, classes } = this.props;
+    const {
+      address,
+      addressInvalid,
+      normalizedAddress,
+      amount,
+      amountInvalid,
+    } = this.state;
+
+    const formatAmount = (value: number) =>
+      `${intl.formatNumber(amountToUser(value))} RISE`;
 
     return (
-      <form onSubmit={this.onSubmit} className={classes.form}>
-        <Typography>
-          Please enter the Recipient Address and RISE Amount that you would like
-          send below.
-        </Typography>
-        <TextField
-          className={classes.input}
-          label="Recipient address"
-          onChange={this.handleChange('recipientID')}
-          name="recipientID"
-          margin="normal"
-          fullWidth={true}
-          onFocus={this.onFocus}
-          onBlur={this.onBlur}
-          error={Boolean(
-            focusField !== 'recipientID' &&
-              this.state.recipientID &&
-              !this.isRecipientIDValid()
-          )}
-          helperText={
-            focusField !== 'recipientID' &&
-            this.state.recipientID &&
-            !this.isRecipientIDValid() &&
-            /* TODO translate */
-            `Recipient Address isn't valid`
-          }
-        />
-        <TextField
-          className={classes.input}
-          label="RISE amount"
-          onChange={this.handleChange('amount')}
-          name="amount"
-          margin="normal"
-          fullWidth={true}
-          onFocus={this.onFocus}
-          onBlur={this.onBlur}
-          error={Boolean(
-            focusField !== 'amount' &&
-              this.state.amount &&
-              !this.isAmountValid()
-          )}
-          helperText={
-            focusField !== 'amount' &&
-            this.state.amount &&
-            !this.isAmountValid() &&
-            /* TODO translate */
-            `You don't have enough funds in your account`
-          }
-        />
-        <Typography>
-          Balance: {amountToUser(this.props.balance)} | Fee:{' '}
-          {amountToUser(this.props.fee)}
-        </Typography>
-        <div className={classes.footer}>
-          <Button type="submit" fullWidth={true} disabled={!this.isValid()}>
-            REVIEW & SEND
+      <Grid
+        container={true}
+        spacing={16}
+        component="form"
+        onSubmit={this.handleSubmit}
+      >
+        <Grid item={true} xs={12}>
+          <Typography>
+            <FormattedMessage
+              id="forms-send.instructions"
+              description="Insturctions for send RISE form"
+              defaultMessage={
+                'Please enter the recipient address and RISE amount that you ' +
+                'wish to send below.'
+              }
+            />
+          </Typography>
+        </Grid>
+        <Grid item={true} xs={12}>
+          <div className={classes.accountContainer}>
+            <TextField
+              className={classes.accountField}
+              label={
+                <FormattedMessage
+                  id="forms-send.recipient-input-label"
+                  description="Label for recipient address text field."
+                  defaultMessage="Recipient address"
+                />
+              }
+              value={address}
+              fullWidth={true}
+              error={addressInvalid}
+              FormHelperTextProps={{
+                error: addressInvalid,
+              }}
+              helperText={addressInvalid ? (this.addressError() || '') : ''}
+              onChange={this.handleAddressChange}
+              onBlur={this.handleAddressBlur}
+            />
+            <AccountIcon
+              className={classes.accountIcon}
+              size={48}
+              address={normalizedAddress}
+            />
+          </div>
+        </Grid>
+        <Grid item={true} xs={12}>
+          <TextField
+            label={
+              <FormattedMessage
+                id="forms-send.amount-input-label"
+                description="Label for amount text field."
+                defaultMessage="RISE amount"
+              />
+            }
+            value={amount}
+            fullWidth={true}
+            error={amountInvalid}
+            helperText={amountInvalid ? (this.amountError() || '') : ''}
+            onChange={this.handleAmountChange}
+            onBlur={this.handleAmountBlur}
+          />
+        </Grid>
+        <Grid item={true} xs={12}>
+          <Typography>
+            <FormattedMessage
+              id="forms-send.balance-fee"
+              description="Account balance & network fee label"
+              defaultMessage="Balance: {balance} | Fee: {fee}"
+              values={{
+                balance: formatAmount(this.props.balance),
+                fee: formatAmount(this.props.fee),
+              }}
+            />
+          </Typography>
+        </Grid>
+        <Grid item={true} xs={12}>
+          <Button type="submit" fullWidth={true}>
+            <FormattedMessage
+              id="forms-send.send-button"
+              description="Send button label"
+              defaultMessage="Review & send"
+            />
           </Button>
-        </div>
-      </form>
+        </Grid>
+      </Grid>
     );
   }
 }
 
-export default stylesDecorator(SendTransactionForm);
+export default stylesDecorator(injectIntl(SendTransactionForm));

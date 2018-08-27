@@ -130,11 +130,11 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
     this.setState({ addressInvalid });
   }
 
-  addressError() {
+  addressError(): string | null {
     const { intl } = this.injected;
     const { address, normalizedAddress } = this.state;
     if (normalizedAddress !== '') {
-      return '';
+      return null;
     }
 
     if (address.trim().indexOf(' ') >= 0) {
@@ -189,7 +189,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
                 FormHelperTextProps={{
                   error: addressInvalid,
                 }}
-                helperText={addressInvalid ? this.addressError() : ''}
+                helperText={addressInvalid ? (this.addressError() || '') : ''}
                 onChange={this.handleAddressChange}
                 onBlur={this.handleAddressBlur}
               />

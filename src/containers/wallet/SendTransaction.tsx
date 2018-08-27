@@ -8,13 +8,12 @@ import ConfirmTransactionForm, {
   State as ConfirmFormState
 } from '../../components/forms/ConfirmTransactionForm';
 import SendTransactionForm, {
-  State as SendFormState
+  SendFormState,
 } from '../../components/forms/SendTransactionForm';
 import { accountOverviewRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
-import { amountToServer, normalizeAddress } from '../../utils/utils';
 
 interface Props {
   onSubmit?: (tx?: TTransactionResult) => void;
@@ -75,9 +74,8 @@ export default class SendTransaction extends React.Component<Props, State> {
       throw new Error('Amount required');
     }
     this.setState({
-      recipientID: normalizeAddress(state.recipientID!),
-      amount: amountToServer(state.amount),
-      step: 2
+      step: 2,
+      ...state,
     });
   }
 
@@ -151,11 +149,11 @@ export default class SendTransaction extends React.Component<Props, State> {
     // TODO validate the recipient
     return (
       <SendTransactionForm
-        amount={this.injected.amount || 0}
         fee={walletStore.fees.get('send')!}
         balance={this.account.balance}
         onSubmit={this.onSubmit1}
         recipientID={this.injected.recipientId}
+        amount={this.injected.amount || 0}
       />
     );
   }
