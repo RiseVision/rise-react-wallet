@@ -25,6 +25,7 @@ import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
 import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
 import { TxInfo } from '../components/TxDetailsExpansionPanel';
 import { onboardingAddAccountRoute } from '../routes';
+import { RawAmount } from '../utils/amounts';
 import {
   getTimestamp,
   normalizeAddress,
@@ -39,13 +40,12 @@ export default class WalletStore {
 
   // TODO type as not null
   @observable
-  fees = observable.map<TFeeTypes, number>({
-    send: 10000000,
-    vote: 100000000,
-    secondsignature: 500000000,
-    delegate: 2500000000,
-    multisignature: 500000000
-    // TODO def for dapp
+  fees = observable.map<TFeeTypes, RawAmount>({
+    send: RawAmount.fromUnit('0.1'),
+    vote: RawAmount.fromUnit('1'),
+    secondsignature: RawAmount.fromUnit('5'),
+    delegate: RawAmount.fromUnit('25'),
+    multisignature: RawAmount.fromUnit('5'),
   });
   @observable accounts = observable.map<string, AccountStore>();
   @observable selectedAccount: AccountStore;
@@ -92,7 +92,7 @@ export default class WalletStore {
     const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule();
     runInAction(() => {
       for (const [fee, value] of Object.entries(fees.fees)) {
-        this.fees.set(fee as TFeeTypes, value);
+        this.fees.set(fee as TFeeTypes, new RawAmount(value));
       }
     });
   }
@@ -162,7 +162,7 @@ export default class WalletStore {
       signature: { publicKey: wallet2.publicKey }
     })
       .set('timestamp', getTimestamp())
-      .set('fee', this.fees.get('secondsignature')!);
+      .set('fee', this.fees.get('secondsignature')!.toNumber());
     const tx = wallet.signTransaction(unsigned);
     const transport = await dposAPI.buildTransport();
     const ret = await transport.postTransaction(tx);
@@ -173,7 +173,7 @@ export default class WalletStore {
 
   async sendTransaction(
     recipientId: string,
-    amount: number,
+    amount: RawAmount,
     mnemonic: string,
     passphrase: string | null,
     accountID?: string
@@ -186,8 +186,8 @@ export default class WalletStore {
 
     const unsigned = new SendTx()
       .set('timestamp', getTimestamp())
-      .set('fee', this.fees.get('send')!)
-      .set('amount', amount)
+      .set('fee', this.fees.get('send')!.toNumber())
+      .set('amount', amount.toNumber())
       .set('recipientId', recipientId);
 
     const res = await this.singAndSend(unsigned, mnemonic, passphrase);
@@ -235,7 +235,7 @@ export default class WalletStore {
       assets.votes.push('+' + delegatePublicKey);
     }
     const unsigned = new VoteTx(assets)
-      .withFees(this.fees.get('vote')!)
+      .withFees(this.fees.get('vote')!.toNumber())
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
 
@@ -277,7 +277,7 @@ export default class WalletStore {
       }
     };
     const unsigned = new DelegateTx(assets)
-      .withFees(this.fees.get('delegate')!)
+      .withFees(this.fees.get('delegate')!.toNumber())
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
 
@@ -516,41 +516,39 @@ export default class WalletStore {
 
   // TODO dont depend on this.selectedAccount
   parseTransactionsReponse(res: TTransactionsResponse): TTransaction[] {
-    return res.transactions.map(t => {
-      t.timestamp = timestampToUnix(t.timestamp);
-      t.info =
-        t.senderId === this.selectedAccount.id
+    const selectedAccountId = this.selectedAccount.id;
+    return res.transactions.map(raw => {
+      const amount = new RawAmount(raw.amount || 0);
+      const fee = new RawAmount(raw.fee);
+      return {
+        ...raw,
+        timestamp: timestampToUnix(raw.timestamp),
+        amount,
+        fee,
+        info: raw.senderId === selectedAccountId
           ? {
-              kind: 'send',
-              recipient_alias: this.idToName(t.recipientId),
-              recipient_address: t.recipientId,
-              amount: t.amount + t.fee
-            }
+            kind: 'send',
+            recipient_alias:
+              // TODO fix TxInfo to a unified format
+              // @ts-ignore TODO translate 'Second Passphrase'
+              raw.type === TransactionType.SIGNATURE ? 'Second Passphrase'
+              // TODO fix TxInfo to a unified format
+              // @ts-ignore TODO translate 'Cast Vote'
+              : raw.type === TransactionType.VOTE ? 'Cast Vote'
+              // TODO fix TxInfo to a unified format
+              // @ts-ignore TODO translate 'Register Delegate'
+              : raw.type === TransactionType.DELEGATE ? 'Register Delegate'
+              : this.idToName(raw.recipientId),
+            recipient_address: raw.recipientId,
+            amount: amount.plus(fee),
+          }
           : {
-              kind: 'receive',
-              sender_alias: this.idToName(t.senderId),
-              sender_address: t.senderId,
-              amount: t.amount
-            };
-      switch (t.type) {
-        case TransactionType.SIGNATURE:
-          // TODO fix TxInfo to a unified format
-          // @ts-ignore TODO translate 'Second Passphrase'
-          t.info.recipient_alias = 'Second Passphrase';
-          break;
-        case TransactionType.VOTE:
-          // TODO fix TxInfo to a unified format
-          // @ts-ignore TODO translate 'Cast Vote'
-          t.info.recipient_alias = 'Cast Vote';
-          break;
-        case TransactionType.DELEGATE:
-          // TODO fix TxInfo to a unified format
-          // @ts-ignore TODO translate 'Register Delegate'
-          t.info.recipient_alias = 'Register Delegate';
-          break;
-        default:
-      }
-      return t;
+            kind: 'receive',
+            sender_alias: this.idToName(raw.senderId),
+            sender_address: raw.senderId,
+            amount,
+          },
+      } as TTransaction;
     });
   }
 
@@ -656,8 +654,8 @@ export function parseAccountReponse(
     // balance: correctAmount(res.account.balance),
     // unconfirmedBalance: correctAmount(res.account.unconfirmedBalance),
     // original data
-    balance: parseInt(res.account.balance, 10) || 0,
-    unconfirmedBalance: parseInt(res.account.unconfirmedBalance, 10) || 0
+    balance: new RawAmount(res.account.balance || 0),
+    unconfirmedBalance: new RawAmount(res.account.unconfirmedBalance || 0),
   };
   return {
     ...parsed,
@@ -676,13 +674,12 @@ export type TGroupedTransactions = {
   [group: string]: TTransaction[];
 };
 
-export type TTransaction = {
-  info: TxInfo;
-  amount: number;
+type APITransaction = {
+  amount: null | number | string;
   asset: { signature?: {} };
   blockId: string;
   confirmations: number;
-  fee: number;
+  fee: number | string;
   height: number;
   id: string;
   recipientId: string;
@@ -697,6 +694,12 @@ export type TTransaction = {
   type: TransactionType;
 };
 
+export type TTransaction = APITransaction & {
+  info: TxInfo;
+  amount: RawAmount;
+  fee: RawAmount;
+};
+
 export type TTransactionsRequest = {
   limit?: number;
   orderBy?: string;
@@ -708,7 +711,7 @@ export type TTransactionsRequest = {
 export type TTransactionsResponse = {
   count: number;
   success: boolean;
-  transactions: TTransaction[];
+  transactions: APITransaction[];
 };
 
 export type TStoredAccount = {
@@ -721,8 +724,8 @@ export type TStoredAccount = {
 };
 
 export type TAccount = TStoredAccount & {
-  balance: number;
-  unconfirmedBalance: number;
+  balance: RawAmount;
+  unconfirmedBalance: RawAmount;
   secondPublicKey: string | null;
   secondSignature: boolean;
 };

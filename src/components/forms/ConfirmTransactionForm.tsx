@@ -22,7 +22,7 @@ import {
   InjectedIntlProps,
   injectIntl,
 } from 'react-intl';
-import { amountToUser } from '../../utils/utils';
+import { RawAmount } from '../../utils/amounts';
 import AccountIcon from '../AccountIcon';
 
 const styles = (theme: Theme) =>
@@ -147,7 +147,7 @@ type SendTxData = {
   kind: 'send';
   recipientId: string;
   recipient: string | null;
-  amount: number;
+  amount: RawAmount;
 };
 
 type PassphraseTxData = {
@@ -181,7 +181,7 @@ interface Props extends WithStyles<typeof styles> {
   onRedo: (state: State) => void;
   onClose: () => void;
   data: TxData;
-  fee: number;
+  fee: RawAmount;
   sender: string | null;
   senderId: string;
   isPassphraseSet: boolean;
@@ -315,7 +315,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
       onClose,
     } = this.props;
 
-    const total = fee + (data.kind === 'send' ? data.amount : 0);
+    const total = fee.plus(data.kind === 'send' ? data.amount : RawAmount.ZERO);
     const recipientId = data.kind === 'send' ? data.recipientId : '';
     let sender = this.props.sender;
     if (!sender) {
@@ -326,8 +326,8 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
       recipient = intl.formatMessage(messages.unnamedRecipient);
     }
 
-    const formatAmount = (amount: number) => (
-      `${intl.formatNumber(amountToUser(amount))} RISE`
+    const formatAmount = (amount: RawAmount) => (
+      `${intl.formatNumber(amount.unit.toNumber())} RISE`
     );
 
     const renderDelegates = (usernames: string[]) => (

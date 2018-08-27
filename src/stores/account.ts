@@ -4,6 +4,7 @@ import { action, observable } from 'mobx';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
 import { TAccount } from './wallet';
+import { RawAmount } from '../utils/amounts';
 
 export enum LoadingState {
   NOT_LOADED,
@@ -19,8 +20,8 @@ export default class AccountStore {
   @observable readOnly: boolean = false;
   // TODO enum / config
   @observable fiatCurrency: string = 'USD';
-  @observable balance: number = 0;
-  @observable unconfirmedBalance: number = 0;
+  @observable balance: RawAmount = RawAmount.ZERO;
+  @observable unconfirmedBalance: RawAmount = RawAmount.ZERO;
   @observable secondPublicKey: string | null;
   @observable secondSignature: boolean = false;
   // local only fields

@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent } from 'react';
 import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
-import { amountToUser } from '../../utils/utils';
+import { RawAmount } from '../../utils/amounts';
 import DelegateVoteComponent from '../DelegateVoteComponent';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
   isSearch: boolean;
   delegates: Delegate[];
   votedDelegate: string | null;
-  fee: number;
+  fee: RawAmount;
   error?: null | 'insufficient-funds';
 }
 
@@ -55,8 +55,8 @@ class VoteDelegateForm extends React.Component<DecoratedProps, State> {
     } = this.props;
     const { search } = this.state;
 
-    const formatAmount = (amount: number) =>
-      `${intl.formatNumber(amountToUser(amount))} RISE`;
+    const formatAmount = (amount: RawAmount) =>
+      `${intl.formatNumber(amount.unit.toNumber())} RISE`;
 
     return (
       <React.Fragment>

@@ -13,7 +13,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import { amountToUser } from '../utils/utils';
+import { RawAmount } from '../utils/amounts';
 
 const styles = (theme: Theme) => {
   return createStyles({
@@ -81,14 +81,14 @@ export interface ReceiveTxInfo {
   kind: 'receive';
   sender_alias: string | null;
   sender_address: string;
-  amount: number;
+  amount: RawAmount;
 }
 
 export interface SendTxInfo {
   kind: 'send';
   recipient_alias: string | null;
   recipient_address: string;
-  amount: number;
+  amount: RawAmount;
 }
 
 export type TxInfo = ReceiveTxInfo | SendTxInfo;
@@ -154,7 +154,7 @@ const TxDetailsExpansionPanel = stylesDecorator(injectIntl(
       } = this.props;
 
       let summaryShort = '', summaryLong = '';
-      let amount = 0;
+      let amount = RawAmount.ZERO;
 
       switch (tx.kind) {
         case 'receive': {
@@ -196,18 +196,18 @@ const TxDetailsExpansionPanel = stylesDecorator(injectIntl(
               address: tx.recipient_address,
             });
           }
-          amount = -tx.amount;
+          amount = RawAmount.ZERO.minus(tx.amount);
           break;
         }
         default: throwInvalidTxKind(tx);
       }
 
       let amountSign = '';
-      if (amount > 0) {
+      if (amount.gt(RawAmount.ZERO)) {
         amountSign = '+';
       }
       let amountShort = `${amountSign}${intl.formatNumber(
-        amountToUser(amount),
+        amount.unit.toNumber(),
         {
           style: 'decimal'
         }
@@ -250,7 +250,7 @@ const TxDetailsExpansionPanel = stylesDecorator(injectIntl(
                 className={classNames(
                   classes.longText,
                   {
-                    [classes.summaryIncomingAmount]: amount > 0,
+                    [classes.summaryIncomingAmount]: amount.gt(RawAmount.ZERO),
                   },
                 )}
                 variant="body2"
@@ -261,7 +261,7 @@ const TxDetailsExpansionPanel = stylesDecorator(injectIntl(
                 className={classNames(
                   classes.shortText,
                   {
-                    [classes.summaryIncomingAmount]: amount > 0,
+                    [classes.summaryIncomingAmount]: amount.gt(RawAmount.ZERO),
                   },
                 )}
                 variant="body2"

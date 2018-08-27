@@ -11,7 +11,7 @@ import * as classNames from 'classnames';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from '../components/AccountIcon';
-import { amountToUser } from '../utils/utils';
+import { RawAmount } from '../utils/amounts';
 
 const styles = (theme: Theme) => {
   const step = 5;
@@ -87,7 +87,7 @@ const styles = (theme: Theme) => {
 interface Props extends WithStyles<typeof styles> {
   address: string;
   alias: string | null;
-  balance: string;
+  balance: RawAmount;
   balance_in_fiat: string;
 }
 
@@ -124,6 +124,9 @@ const AccountOverviewHeader = stylesDecorator(injectIntl(
         balance,
         balance_in_fiat,
       } = this.props;
+
+      const formatAmount = (value: RawAmount) =>
+        `${intl.formatNumber(value.unit.toNumber())} RISE`;
 
       return (
         <Paper square={true} className={classes.container}>
@@ -163,7 +166,7 @@ const AccountOverviewHeader = stylesDecorator(injectIntl(
               className={classes.primary_text}
               aria-label={intl.formatMessage(messages.balanceAriaLabel)}
             >
-              {amountToUser(balance)} RISE
+              {formatAmount(balance)}
             </Typography>
             <Typography className={classes.secondary_text}>
               {balance_in_fiat}

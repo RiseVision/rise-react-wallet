@@ -6,12 +6,12 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
-import { amountToUser } from '../../utils/utils';
+import { RawAmount } from '../../utils/amounts';
 
 interface Props {
   onSubmit: (passphrase: string) => void;
   onClose: () => void;
-  fee: number;
+  fee: RawAmount;
   error?: null | 'already-set' | 'insufficient-funds';
 }
 
@@ -69,8 +69,8 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
   render() {
     const { intl, error, fee } = this.props;
 
-    const formatAmount = (amount: number) =>
-      `${intl.formatNumber(amountToUser(amount))} RISE`;
+    const formatAmount = (amount: RawAmount) =>
+      `${intl.formatNumber(amount.unit.toNumber())} RISE`;
     const { focusField } = this.state;
 
     return (

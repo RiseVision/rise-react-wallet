@@ -14,10 +14,11 @@ import { accountOverviewRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
 import WalletStore, { TTransactionResult } from '../../stores/wallet';
+import { RawAmount } from '../../utils/amounts';
 
 interface Props {
   onSubmit?: (tx?: TTransactionResult) => void;
-  amount?: number;
+  amount?: RawAmount;
   recipientId?: string;
   account?: AccountStore;
   // TODO switch to get a dialog the form wrapped in a dialog
@@ -34,7 +35,7 @@ export interface State {
   step: number;
   recipientID?: string;
   tx?: TTransactionResult;
-  amount: number | null;
+  amount: RawAmount | null;
   // progress state
   progress: ProgressState;
   // states data
@@ -47,7 +48,7 @@ export interface State {
 @observer
 export default class SendTransaction extends React.Component<Props, State> {
   state: State = {
-    amount: 0,
+    amount: RawAmount.ZERO,
     step: 1,
     progress: ProgressState.TO_CONFIRM
   };
@@ -153,7 +154,7 @@ export default class SendTransaction extends React.Component<Props, State> {
         balance={this.account.balance}
         onSubmit={this.onSubmit1}
         recipientID={this.injected.recipientId}
-        amount={this.injected.amount || 0}
+        amount={this.injected.amount || RawAmount.ZERO}
       />
     );
   }

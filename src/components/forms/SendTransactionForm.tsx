@@ -18,11 +18,10 @@ import {
 } from 'react-intl';
 import AccountIcon from '../../components/AccountIcon';
 import { ChangeEvent, FormEvent } from 'react';
+import { RawAmount } from '../../utils/amounts';
 import {
-  amountToUser,
   normalizeAddress,
-  amountToServer,
-  parseNumber,
+  normalizeNumber,
 } from '../../utils/utils';
 
 const styles = (theme: Theme) => createStyles({
@@ -40,14 +39,14 @@ const styles = (theme: Theme) => createStyles({
 
 export interface SendFormState {
   recipientID: string;
-  amount: number;
+  amount: RawAmount;
 }
 
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (state: SendFormState) => void;
-  amount: number;
-  fee: number;
-  balance: number;
+  amount: RawAmount;
+  fee: RawAmount;
+  balance: RawAmount;
   // pre-filled recipient
   recipientID?: string;
   // address book TODO type
@@ -62,7 +61,7 @@ interface State {
   normalizedAddress: string;
   amount: string;
   amountInvalid: boolean;
-  parsedAmount: number | null;
+  parsedAmount: RawAmount | null;
 }
 
 const stylesDecorator = withStyles(styles);
@@ -107,7 +106,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
       this.state.normalizedAddress = normalizeAddress(recipientID);
     }
     if (amount) {
-      this.state.amount = intl.formatNumber(amount);
+      this.state.amount = intl.formatNumber(amount.unit.toNumber());
       this.state.parsedAmount = amount;
     }
   }
@@ -132,9 +131,11 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
   handleAmountChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const { intl } = this.props;
     const amount = ev.target.value;
-    let parsedAmount = parseNumber(intl, amount.trim());
-    if (parsedAmount) {
-      parsedAmount = amountToServer(parsedAmount);
+    const normalizedAmount = normalizeNumber(intl, amount.trim());
+
+    let parsedAmount = null;
+    if (normalizedAmount) {
+      parsedAmount = RawAmount.fromUnit(normalizedAmount);
     }
 
     this.setState({
@@ -186,9 +187,9 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
     const { intl, balance, fee } = this.props;
     const { parsedAmount } = this.state;
 
-    if (parsedAmount === null || parsedAmount <= 0) {
+    if (parsedAmount === null || parsedAmount.lte(RawAmount.ZERO)) {
       return intl.formatMessage(messages.invalidAmount);
-    } else if (parsedAmount + fee > balance) {
+    } else if (parsedAmount.plus(fee).gt(balance)) {
       return intl.formatMessage(messages.insufficientBalance);
     } else {
       return null;
@@ -205,8 +206,8 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
       amountInvalid,
     } = this.state;
 
-    const formatAmount = (value: number) =>
-      `${intl.formatNumber(amountToUser(value))} RISE`;
+    const formatAmount = (value: RawAmount) =>
+      `${intl.formatNumber(value.unit.toNumber())} RISE`;
 
     return (
       <Grid

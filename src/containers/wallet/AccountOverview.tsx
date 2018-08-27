@@ -97,7 +97,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
         <AccountOverviewHeader
           address={this.account.id}
           alias={this.account.name || unnamedAccountLabel}
-          balance={this.account.balance + ' RISE'}
+          balance={this.account.balance}
           balance_in_fiat={this.account.balanceFiat || ''}
         />
         {!readOnly && (
