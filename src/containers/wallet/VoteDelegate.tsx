@@ -186,7 +186,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
         delegates={this.state.displayedDelegates}
         votedDelegate={votedDelegate ? votedDelegate.publicKey : null}
         fee={fee}
-        error={this.account.balance < fee ? 'insufficient-funds' : null}
+        error={this.account.balance.lt(fee) ? 'insufficient-funds' : null}
       />
     );
   }

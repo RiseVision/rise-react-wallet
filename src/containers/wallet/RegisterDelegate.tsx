@@ -57,7 +57,7 @@ export default class RegisterDelegate extends React.Component<Props, State> {
     const { registeredDelegate } = this.account;
     const fee = walletStore.fees.get('delegate')!;
 
-    if (registeredDelegate || this.account.balance < fee) {
+    if (registeredDelegate || this.account.balance.lt(fee)) {
       this.onClose();
     } else {
       assert(username, 'Delegate\'s name required');
@@ -131,7 +131,7 @@ export default class RegisterDelegate extends React.Component<Props, State> {
         error={
           registeredDelegate
             ? 'already-registered'
-            : this.account.balance < fee
+            : this.account.balance.lt(fee)
               ? 'insufficient-funds'
               : null
         }

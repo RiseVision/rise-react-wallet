@@ -20,6 +20,10 @@ export class UnitAmount {
   toString(): string {
     return this.n.toString();
   }
+
+  valueOf() {
+    return this.n.valueOf();
+  }
 }
 
 export class RawAmount {
@@ -83,5 +87,9 @@ export class RawAmount {
 
   toString(): string {
     return this.n.toString();
+  }
+
+  valueOf() {
+    return this.n.valueOf();
   }
 }

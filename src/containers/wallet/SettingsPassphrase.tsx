@@ -60,7 +60,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
     const isSet = this.account.secondSignature;
 
     // cancel if already set or not enough balance
-    if (isSet || this.account.balance < fee) {
+    if (isSet || this.account.balance.lt(fee)) {
       this.onClose();
     } else {
       this.setState({
@@ -119,7 +119,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
         error={
           isSet
             ? 'already-set'
-            : this.account.balance < fee
+            : this.account.balance.lt(fee)
               ? 'insufficient-funds'
               : null
         }
