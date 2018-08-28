@@ -599,7 +599,7 @@ export default class WalletStore {
     confirmed: boolean = true
   ): Promise<TTransactionsResponse> {
     // skip when no public key
-    if (params.senderPublicKey === undefined && !params.senderPublicKey) {
+    if (!params.senderPublicKey) {
       return {
         success: true,
         count: 0,
