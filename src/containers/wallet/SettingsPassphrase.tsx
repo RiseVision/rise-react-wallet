@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
@@ -71,6 +72,9 @@ class SettingsPassphrase extends React.Component<Props, State> {
   }
 
   onSend = async (state: TransactionState) => {
+    const { passphrase } = this.state;
+    assert(passphrase === state.passphrase, 'Passphrase mismatch');
+
     // set in-progress
     this.setState({ progress: ProgressState.IN_PROGRESS });
     let tx: TTransactionResult;
@@ -139,7 +143,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
         data={{
           kind: 'passphrase'
         }}
-        isPassphraseSet={this.account.secondSignature}
+        isPassphraseSet={true}
         sender={this.account.name}
         senderId={this.account.id}
       />
