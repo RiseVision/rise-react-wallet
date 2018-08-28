@@ -53,6 +53,11 @@ const styles = (theme: Theme) =>
     accountAvatar: {
       backgroundColor: 'white'
     },
+    accountName: {
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+    },
     listIcon: {
       // Align the list icons to match the alignment of avatars
       marginLeft: 8,
@@ -156,6 +161,9 @@ class DrawerContent extends React.Component<DecoratedProps> {
               </ListItemAvatar>
               {/* TODO this doesnt observe */}
               <ListItemText
+                classes={{
+                  primary: classes.accountName,
+                }}
                 primary={account.name || unnamedAccountLabel}
                 secondary={account.id}
               />
