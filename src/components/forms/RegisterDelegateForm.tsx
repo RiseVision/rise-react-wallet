@@ -5,8 +5,14 @@ import Grid from '@material-ui/core/Grid';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
-import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
+import {
+  defineMessages,
+  FormattedMessage,
+  InjectedIntlProps,
+  injectIntl,
+} from 'react-intl';
 import { RawAmount } from '../../utils/amounts';
+import { normalizeAddress, normalizeUsername } from '../../utils/utils';
 
 interface Props {
   onSubmit: (username: string) => void;
@@ -19,63 +25,95 @@ interface Props {
 
 type DecoratedProps = Props & InjectedIntlProps;
 
-export interface State {
+interface State {
   username: string;
-  focusField?: string | null;
+  usernameInvalid: boolean;
+  normalizedUsername: string;
 }
+
+const messages = defineMessages({
+  tooLongUsername: {
+    id: 'forms-register-delegate.too-long-username',
+    description: 'Error label for username text input exceeding max length',
+    defaultMessage: 'Too long delegate username. Maximum length is 20 characters.'
+  },
+  usernameResemblesAddress: {
+    id: 'forms-register-delegate.username-resembles-address',
+    description: 'Error label for username text input that looks like an address',
+    defaultMessage: 'Invalid delegate username. The username cannot resemble an address.',
+  },
+  invalidUsername: {
+    id: 'forms-register-delegate.invalid-username',
+    description: 'Error label for invalid username text input',
+    defaultMessage: 'Invalid delegate username. A valid username consists ' +
+      'of letters (a-z), numbers (0-9) and/or some symbols (!@$&_.)'
+  },
+});
 
 @observer
 class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
   state: State = {
-    username: ''
+    username: '',
+    usernameInvalid: false,
+    normalizedUsername: '',
   };
 
-  // TODO extract to FormComponent
-  handleType = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  handleUsernameChange = (ev: ChangeEvent<HTMLInputElement>) => {
+    const username = ev.target.value.trim();
+    let normalizedUsername = normalizeUsername(username);
+
     this.setState({
-      username: value
+      username,
+      usernameInvalid: false,
+      normalizedUsername,
     });
   }
 
-  // TODO extract to FormComponent
-  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  handleUsernameBlur = () => {
+    const { username } = this.state;
+    const usernameInvalid = !!username && !!this.usernameError();
+    this.setState({ usernameInvalid });
+  }
+
+  handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+
     const { onSubmit } = this.props;
     const { username } = this.state;
 
-    event.preventDefault();
-    if (!this.isValid()) {
+    const usernameInvalid = !!this.usernameError();
+    if (usernameInvalid) {
+      this.setState({
+        usernameInvalid,
+      });
       return;
     }
+
     onSubmit(username);
   }
 
-  // TODO extract to FormComponent
-  onFocus = (event: FocusEvent) => {
-    // @ts-ignore
-    this.setState({ focusField: event.target!.name! });
-  }
+  usernameError(): string | null {
+    const { intl } = this.props;
+    const { username, normalizedUsername } = this.state;
 
-  // TODO extract to FormComponent
-  onBlur = () => {
-    this.setState({ focusField: null });
-  }
-
-  isValid() {
-    return this.isUsernameValid() && !this.props.error;
-  }
-
-  isUsernameValid = () => {
-    return Boolean(this.state.username && this.state.username.length >= 3);
+    if (normalizedUsername !== '') {
+      return null;
+    } else if (username.length > 20) {
+      return intl.formatMessage(messages.tooLongUsername);
+    } else if (normalizeAddress(username) !== '') {
+      return intl.formatMessage(messages.usernameResemblesAddress);
+    } else {
+      return intl.formatMessage(messages.invalidUsername);
+    }
   }
 
   render() {
     const { intl, error, fee, registeredUsername } = this.props;
+    const { username, usernameInvalid } = this.state;
 
     const formatAmount = (amount: RawAmount) =>
       `${intl.formatNumber(amount.unit.toNumber())} RISE`;
 
-    const { focusField } = this.state;
     return (
       <Grid
         container={true}
@@ -136,34 +174,21 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
                   defaultMessage="Delegate username"
                 />
               }
-              value={this.state.username}
-              name="username"
-              onChange={this.handleType}
-              autoFocus={true}
-              onFocus={this.onFocus}
-              onBlur={this.onBlur}
+              value={username}
               fullWidth={true}
-              error={Boolean(
-                focusField !== 'username' &&
-                  this.state.username &&
-                  !this.isUsernameValid()
-              )}
-              helperText={
-                focusField !== 'username' &&
-                this.state.username &&
-                !this.isUsernameValid() /* TODO translate */ &&
-                'Username has to be at least 3 characters long.'
-              }
+              error={usernameInvalid}
+              FormHelperTextProps={{
+                error: usernameInvalid,
+              }}
+              helperText={usernameInvalid ? (this.usernameError() || '') : ''}
+              onChange={this.handleUsernameChange}
+              onBlur={this.handleUsernameBlur}
             />
           </Grid>
         )}
         <Grid item={true} xs={12}>
           {!error && (
-            <Button
-              type="submit"
-              fullWidth={true}
-              disabled={!this.isValid() || !this.props.delegateLoaded}
-            >
+            <Button type="submit" fullWidth={true}>
               <FormattedMessage
                 id="forms-register-delegate.continue-button"
                 description="Label for continue button."

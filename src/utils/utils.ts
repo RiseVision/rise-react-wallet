@@ -15,12 +15,26 @@ export function unixToTimestamp(timestamp: number) {
 }
 
 export function normalizeAddress(address: string): string {
-  const normalizedAddress = address.toUpperCase();
+  const normalizedAddress = address.trim().toUpperCase();
   if (!normalizedAddress.match(/^\d{1,20}R$/)) {
     return '';
   } else {
     return normalizedAddress;
   }
+}
+
+export function normalizeUsername(value: string): string {
+  value = value.trim();
+
+  if (!value.match(/^[a-zA-Z0-9!@$&_.]{1,20}$/)) {
+    return '';
+  }
+  // Make sure that the username doesn't resemble an address
+  if (normalizeAddress(value) !== '') {
+    return '';
+  }
+
+  return value;
 }
 
 export function getTimestamp() {
