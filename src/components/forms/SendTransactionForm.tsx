@@ -268,6 +268,9 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
             value={amount}
             fullWidth={true}
             error={amountInvalid}
+            FormHelperTextProps={{
+              error: amountInvalid,
+            }}
             helperText={amountInvalid ? (this.amountError() || '') : ''}
             onChange={this.handleAmountChange}
             onBlur={this.handleAmountBlur}

@@ -5,7 +5,12 @@ import Typography from '@material-ui/core/Typography';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
-import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
+import {
+  defineMessages,
+  FormattedMessage,
+  InjectedIntlProps,
+  injectIntl,
+} from 'react-intl';
 import { RawAmount } from '../../utils/amounts';
 
 interface Props {
@@ -19,59 +24,73 @@ type DecoratedProps = Props & InjectedIntlProps;
 
 export interface State {
   passphrase: string;
-  focusField: string | null;
+  passphraseInvalid: boolean;
 }
+
+const messages = defineMessages({
+  invalidPassphrase: {
+    id: 'forms-passphrase.invalid-passphrase',
+    description: 'Error label for invalid passphrase text input',
+    defaultMessage: 'Invalid passphrase. Passphrase cannot be empty.'
+  },
+});
 
 @observer
 class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
   state: State = {
     passphrase: '',
-    focusField: 'passphrase'
+    passphraseInvalid: false,
   };
 
-  handleType = (ev: ChangeEvent<HTMLInputElement>) => {
+  handlePassphraseChanged = (ev: ChangeEvent<HTMLInputElement>) => {
+    const passphrase = ev.target.value;
+
     this.setState({
-      passphrase: ev.target.value
+      passphrase,
+      passphraseInvalid: false,
     });
   }
 
+  handlePassphraseBlur = () => {
+    const { passphrase } = this.state;
+    const passphraseInvalid = !!passphrase && !!this.passphraseError();
+    this.setState({ passphraseInvalid });
+  }
+
   handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+
     const { onSubmit } = this.props;
     const { passphrase } = this.state;
 
-    ev.preventDefault();
-    if (!this.isValid()) {
+    const passphraseInvalid = !!this.passphraseError();
+    if (passphraseInvalid) {
+      this.setState({
+        passphraseInvalid,
+      });
       return;
     }
 
     onSubmit(passphrase);
   }
 
-  isValid() {
-    return this.isPassphraseValid() && !this.props.error;
-  }
+  passphraseError(): string | null {
+    const { intl } = this.props;
+    const { passphrase } = this.state;
 
-  isPassphraseValid = () => {
-    return Boolean(this.state.passphrase);
-  }
-
-  // TODO extract to FormComponent
-  onFocus = (event: FocusEvent) => {
-    // @ts-ignore
-    this.setState({ focusField: event.target!.name! });
-  }
-
-  // TODO extract to FormComponent
-  onBlur = () => {
-    this.setState({ focusField: null });
+    if (passphrase.trim() !== '') {
+      return null;
+    } else {
+      return intl.formatMessage(messages.invalidPassphrase);
+    }
   }
 
   render() {
     const { intl, error, fee } = this.props;
+    const { passphrase, passphraseInvalid } = this.state;
 
     const formatAmount = (amount: RawAmount) =>
       `${intl.formatNumber(amount.unit.toNumber())} RISE`;
-    const { focusField } = this.state;
 
     return (
       <Grid
@@ -143,27 +162,21 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
                   defaultMessage="2nd passphrase"
                 />
               }
-              onChange={this.handleType}
-              onFocus={this.onFocus}
-              onBlur={this.onBlur}
-              name="passphrase"
-              autoFocus={true}
+              value={passphrase}
+              onChange={this.handlePassphraseChanged}
+              onBlur={this.handlePassphraseBlur}
               fullWidth={true}
-              error={Boolean(
-                focusField !== 'passphrase' &&
-                  !this.isPassphraseValid()
-              )}
-              helperText={
-                focusField !== 'passphrase' &&
-                !this.isPassphraseValid() /* TODO translate */ &&
-                'Passphrase cannot be empty'
-              }
+              error={passphraseInvalid}
+              FormHelperTextProps={{
+                error: passphraseInvalid,
+              }}
+              helperText={passphraseInvalid ? (this.passphraseError() || '') : ''}
             />
           </Grid>
         )}
         <Grid item={true} xs={12}>
           {!error ? (
-            <Button type="submit" fullWidth={true} disabled={!this.isValid()}>
+            <Button type="submit" fullWidth={true}>
               <FormattedMessage
                 id="forms-passphrase.continue-button"
                 description="Label for continue button."
