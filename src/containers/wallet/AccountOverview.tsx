@@ -129,7 +129,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
                   {transactions.map(transaction => (
                     <TxDetailsExpansionPanel
                       key={transaction.id}
-                      tx={transaction.info}
+                      tx={transaction}
                     />
                   ))}
                 </div>

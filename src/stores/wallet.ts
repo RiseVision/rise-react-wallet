@@ -23,7 +23,6 @@ import { RouterStore } from 'mobx-router';
 import * as lstore from 'store';
 import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
 import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
-import { TxInfo } from '../components/TxDetailsExpansionPanel';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';
 import {
@@ -45,7 +44,7 @@ export default class WalletStore {
     vote: RawAmount.fromUnit('1'),
     secondsignature: RawAmount.fromUnit('5'),
     delegate: RawAmount.fromUnit('25'),
-    multisignature: RawAmount.fromUnit('5'),
+    multisignature: RawAmount.fromUnit('5')
   });
   @observable accounts = observable.map<string, AccountStore>();
   @observable selectedAccount: AccountStore;
@@ -507,16 +506,18 @@ export default class WalletStore {
     runInAction(() => {
       account.recentTransactions.items.length = 0;
       account.recentTransactions.items.push(
-        ...this.parseTransactionsReponse(unconfirmed),
-        ...this.parseTransactionsReponse(recent)
+        ...this.parseTransactionsReponse(accountID, unconfirmed),
+        ...this.parseTransactionsReponse(accountID, recent)
       );
     });
     return true;
   }
 
   // TODO dont depend on this.selectedAccount
-  parseTransactionsReponse(res: TTransactionsResponse): TTransaction[] {
-    const selectedAccountId = this.selectedAccount.id;
+  parseTransactionsReponse(
+    accountID: string,
+    res: TTransactionsResponse
+  ): TTransaction[] {
     return res.transactions.map(raw => {
       const amount = new RawAmount(raw.amount || 0);
       const fee = new RawAmount(raw.fee);
@@ -524,32 +525,32 @@ export default class WalletStore {
         ...raw,
         timestamp: timestampToUnix(raw.timestamp),
         amount,
+        amountFee: amount.plus(fee),
         fee,
-        info: raw.senderId === selectedAccountId
-          ? {
-            kind: 'send',
-            recipient_alias:
-              // TODO fix TxInfo to a unified format
-              // @ts-ignore TODO translate 'Second Passphrase'
-              raw.type === TransactionType.SIGNATURE ? 'Second Passphrase'
-              // TODO fix TxInfo to a unified format
-              // @ts-ignore TODO translate 'Cast Vote'
-              : raw.type === TransactionType.VOTE ? 'Cast Vote'
-              // TODO fix TxInfo to a unified format
-              // @ts-ignore TODO translate 'Register Delegate'
-              : raw.type === TransactionType.DELEGATE ? 'Register Delegate'
-              : this.idToName(raw.recipientId),
-            recipient_address: raw.recipientId,
-            amount: amount.plus(fee),
-          }
-          : {
-            kind: 'receive',
-            sender_alias: this.idToName(raw.senderId),
-            sender_address: raw.senderId,
-            amount,
-          },
+        isIncoming: raw.senderId !== accountID,
+        senderName: this.idToName(raw.senderId),
+        recipientName: this.getRecipientName(raw.type, raw.recipientId)
       } as TTransaction;
     });
+  }
+
+  getRecipientName(type: TransactionType, recipientID: string) {
+    const types = TransactionType;
+    switch (type) {
+      case types.SEND:
+        return this.idToName(recipientID);
+      case types.VOTE:
+        // TODO translate
+        return 'Cast Vote';
+      case types.SIGNATURE:
+        // TODO translate
+        return 'Second Passphrase';
+      case types.DELEGATE:
+        // TODO translate
+        return 'Register Delegate';
+      default:
+        return null;
+    }
   }
 
   @action
@@ -655,7 +656,7 @@ export function parseAccountReponse(
     // unconfirmedBalance: correctAmount(res.account.unconfirmedBalance),
     // original data
     balance: new RawAmount(res.account.balance || 0),
-    unconfirmedBalance: new RawAmount(res.account.unconfirmedBalance || 0),
+    unconfirmedBalance: new RawAmount(res.account.unconfirmedBalance || 0)
   };
   return {
     ...parsed,
@@ -695,9 +696,12 @@ type APITransaction = {
 };
 
 export type TTransaction = APITransaction & {
-  info: TxInfo;
   amount: RawAmount;
+  amountFee: RawAmount;
   fee: RawAmount;
+  isIncoming: boolean;
+  senderName: string | null;
+  recipientName: string | null;
 };
 
 export type TTransactionsRequest = {
