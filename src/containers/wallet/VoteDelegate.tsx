@@ -180,6 +180,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
     return (
       <VoteTransactionForm
         onSubmit={this.onSubmit1}
+        onClose={this.onClose}
         onSearch={this.onSearch}
         isLoading={this.state.loadingDelegates}
         isSearch={!showSuggestions}

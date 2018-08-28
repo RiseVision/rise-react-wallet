@@ -1,6 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import { Delegate } from 'dpos-api-wrapper';
 import { range } from 'lodash';
 import { observer } from 'mobx-react';
@@ -12,6 +13,7 @@ import DelegateVoteComponent from '../DelegateVoteComponent';
 
 interface Props {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
+  onClose: () => void;
   onSearch: (query: string) => void;
   isLoading: boolean;
   isSearch: boolean;
@@ -75,21 +77,32 @@ class VoteDelegateForm extends React.Component<DecoratedProps, State> {
             </Typography>
           </Grid>
           {error === 'insufficient-funds' && (
-            <Grid item={true} xs={12}>
-              <Typography color="error">
-                <FormattedMessage
-                  id="forms-register-delegate.insufficient-funds-error"
-                  description="Error about not having enough funds to vote for a delegate"
-                  defaultMessage={
-                    'You don\'t have enough funds in your account to pay the' +
-                    ' network fee of {fee} for casting a vote for a delegate!'
-                  }
-                  values={{
-                    fee: formatAmount(fee)
-                  }}
-                />
-              </Typography>
-            </Grid>
+            <React.Fragment>
+              <Grid item={true} xs={12}>
+                <Typography color="error">
+                  <FormattedMessage
+                    id="forms-vote-delegate.insufficient-funds-error"
+                    description="Error about not having enough funds to vote for a delegate"
+                    defaultMessage={
+                      'You don\'t have enough funds in your account to pay the' +
+                      ' network fee of {fee} for casting a vote for a delegate!'
+                    }
+                    values={{
+                      fee: formatAmount(fee)
+                    }}
+                  />
+                </Typography>
+              </Grid>
+              <Grid item={true} xs={12}>
+                <Button fullWidth={true} onClick={this.props.onClose}>
+                  <FormattedMessage
+                    id="forms-vote-delegate.close-button"
+                    description="Label for close button."
+                    defaultMessage="Close"
+                  />
+                </Button>
+              </Grid>
+            </React.Fragment>
           )}
           {!error && (
             <React.Fragment>
