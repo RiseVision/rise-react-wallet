@@ -598,14 +598,6 @@ export default class WalletStore {
     params: TTransactionsRequest,
     confirmed: boolean = true
   ): Promise<TTransactionsResponse> {
-    // skip when no public key
-    if (!params.senderPublicKey) {
-      return {
-        success: true,
-        count: 0,
-        transactions: []
-      };
-    }
     if (confirmed) {
       // @ts-ignore TODO type errors in dposAPI
       const res:
@@ -615,6 +607,14 @@ export default class WalletStore {
         throw new Error((res as TErrorResponse).error);
       }
       return res;
+    } else if (!params.senderPublicKey) {
+      // Unconfirmed transactions require senderPublicKey to be available,
+      // so when the account hasn't broadcast it yet, skip this step
+      return {
+        success: true,
+        count: 0,
+        transactions: []
+      };
     } else {
       // TODO switch to dposAPI once it supports params for
       //   unconfirmed transactions
