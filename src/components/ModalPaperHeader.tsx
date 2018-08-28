@@ -10,6 +10,11 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import Close from '@material-ui/icons/Close';
 import * as classNames from 'classnames';
 import * as React from 'react';
+import {
+  defineMessages,
+  InjectedIntlProps,
+  injectIntl,
+} from 'react-intl';
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -47,51 +52,76 @@ interface Props extends WithStyles<typeof styles> {
   onCloseClick?: () => void;
 }
 
+type DecoratedProps = Props & InjectedIntlProps;
+
 const stylesDecorator = withStyles(styles, { name: 'ModalPaperHeader' });
 
-const ModalPaperHeader = stylesDecorator(
-  class extends React.Component<Props> {
-    handleBackClick = () => {
-      if (this.props.onBackClick) {
-        this.props.onBackClick();
-      }
-    }
+const messages = defineMessages({
+  backAriaLabel: {
+    id: 'modal-paper-header.back-button-aria-label',
+    description: 'Accessibility label for back button',
+    defaultMessage: 'Go back'
+  },
+  closeAriaLabel: {
+    id: 'modal-paper-header.close-button-aria-label',
+    description: 'Accessibility label for close button',
+    defaultMessage: 'Close dialog'
+  },
+});
 
-    handleCloseClick = () => {
-      if (this.props.onCloseClick) {
-        this.props.onCloseClick();
-      }
-    }
-
-    render() {
-      const { classes, backButton, closeButton, children } = this.props;
-      return (
-        <div className={classes.root}>
-          {backButton && (
-            <Button className={classes.backButton} onClick={this.handleBackClick} size="small" tabIndex={-1}>
-              <ChevronLeft />
-            </Button>
-          )}
-          <Typography
-            className={classNames(
-              classes.content,
-              (!backButton && !!closeButton) && classes.withoutBack,
-              (!!backButton && !closeButton) && classes.withoutClose,
-            )}
-            variant="headline"
-            align="center"
-          >
-            {children}
-          </Typography>
-          {closeButton && (
-            <Button className={classes.closeButton} onClick={this.handleCloseClick} size="small" tabIndex={-1}>
-              <Close />
-            </Button>
-          )}
-        </div>
-      );
+class ModalPaperHeader extends React.Component<DecoratedProps> {
+  handleBackClick = () => {
+    if (this.props.onBackClick) {
+      this.props.onBackClick();
     }
   }
-);
 
-export default ModalPaperHeader;
+  handleCloseClick = () => {
+    if (this.props.onCloseClick) {
+      this.props.onCloseClick();
+    }
+  }
+
+  render() {
+    const { intl, classes, backButton, closeButton, children } = this.props;
+    return (
+      <div className={classes.root}>
+        {backButton && (
+          <Button
+            className={classes.backButton}
+            aria-label={intl.formatMessage(messages.backAriaLabel)}
+            onClick={this.handleBackClick}
+            size="small"
+            tabIndex={-1}
+          >
+            <ChevronLeft />
+          </Button>
+        )}
+        <Typography
+          className={classNames(
+            classes.content,
+            (!backButton && !!closeButton) && classes.withoutBack,
+            (!!backButton && !closeButton) && classes.withoutClose,
+          )}
+          variant="headline"
+          align="center"
+        >
+          {children}
+        </Typography>
+        {closeButton && (
+          <Button
+            className={classes.closeButton}
+            aria-label={intl.formatMessage(messages.closeAriaLabel)}
+            onClick={this.handleCloseClick}
+            size="small"
+            tabIndex={-1}
+          >
+            <Close />
+          </Button>
+        )}
+      </div>
+    );
+  }
+}
+
+export default stylesDecorator(injectIntl(ModalPaperHeader));
