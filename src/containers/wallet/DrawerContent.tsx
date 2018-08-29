@@ -81,8 +81,18 @@ const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
-    defaultMessage: 'Unnamed account'
-  }
+    defaultMessage: 'Unnamed account',
+  },
+  accountsListAriaLabel: {
+    id: 'drawer-content.accounts-list-aria-label',
+    description: 'Accessibility label for the accounts section in the drawer',
+    defaultMessage: 'Accounts',
+  },
+  navigationListAriaLabel: {
+    id: 'drawer-content.navigation-list-aria-label',
+    description: 'Accessibility label for the navigation section in the drawer',
+    defaultMessage: 'Navigation',
+  },
 });
 
 @inject('store')
@@ -137,8 +147,8 @@ class DrawerContent extends React.Component<DecoratedProps> {
             }}
           />
         </Typography>
-        <Divider />
-        <List>
+        <Divider aria-hidden={true} />
+        <List aria-label={intl.formatMessage(messages.accountsListAriaLabel)}>
           {orderBy(
             [...walletStore.accounts.values()],
             ['pinned', 'name'],
@@ -183,8 +193,8 @@ class DrawerContent extends React.Component<DecoratedProps> {
             <ListItemText primary="Add an account" />
           </ListItem>
         </List>
-        <Divider />
-        <List>
+        <Divider aria-hidden={true} />
+        <List aria-label={intl.formatMessage(messages.navigationListAriaLabel)}>
           <ListItem button={true}>
             <ListItemIcon className={classes.listIcon}>
               <PeopleIcon />
