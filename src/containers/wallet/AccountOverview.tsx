@@ -28,7 +28,8 @@ const styles = (theme: Theme) =>
     fab: {
       position: 'fixed',
       right: 3 * theme.spacing.unit,
-      bottom: 3 * theme.spacing.unit
+      bottom: 3 * theme.spacing.unit,
+      zIndex: 1100,
     },
     dateGroupTitle: {
       marginTop: theme.spacing.unit * 2,
