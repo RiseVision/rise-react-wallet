@@ -240,7 +240,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
           onSubmit={this.handleFormSubmit}
         >
           <Hidden xsDown={true} implementation="css">
-            <Grid item={true} xs={12}>
+            <Grid item={true} xs={12} aria-hidden={true}>
               <Typography
                 component="p"
                 variant="title"
