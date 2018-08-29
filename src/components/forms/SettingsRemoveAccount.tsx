@@ -87,7 +87,6 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
             )}
             value={this.state.address}
             onChange={this.handleType}
-            autoFocus={true}
             fullWidth={true}
           />
         </Grid>

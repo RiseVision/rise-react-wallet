@@ -76,7 +76,6 @@ class SettingsNameForm extends React.Component<Props, State> {
             }
             value={this.state.name || ''}
             onChange={this.handleChange('name')}
-            autoFocus={true}
             fullWidth={true}
           />
         </Grid>
