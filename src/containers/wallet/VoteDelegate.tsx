@@ -218,6 +218,8 @@ export default class VoteDelegate extends React.Component<Props, State> {
         isPassphraseSet={this.account.secondSignature}
         sender={this.account.name}
         senderId={this.account.id}
+        publicKey={this.account.publicKey}
+        secondPublicKey={this.account.secondPublicKey}
         fee={walletStore.fees.get('vote')!}
         data={{
           kind: 'vote',

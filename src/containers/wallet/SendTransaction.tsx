@@ -8,7 +8,7 @@ import ConfirmTransactionForm, {
   State as ConfirmFormState
 } from '../../components/forms/ConfirmTransactionForm';
 import SendTransactionForm, {
-  SendFormState,
+  SendFormState
 } from '../../components/forms/SendTransactionForm';
 import { accountOverviewRoute } from '../../routes';
 import { accountStore } from '../../stores';
@@ -21,8 +21,7 @@ interface Props {
   amount?: RawAmount;
   recipientId?: string;
   account?: AccountStore;
-  // TODO switch to get a dialog the form wrapped in a dialog
-  // wrapInDialog?: boolean
+  notModal?: boolean;
 }
 
 interface PropsInjected extends Props {
@@ -76,7 +75,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     }
     this.setState({
       step: 2,
-      ...state,
+      ...state
     });
   }
 
@@ -117,9 +116,18 @@ export default class SendTransaction extends React.Component<Props, State> {
     }
   }
 
+  onBackClick = () => {
+    if (this.state.step === 2) {
+      this.setState({ step: 1 });
+    }
+  }
+
   render() {
     let title;
-    if (this.state.step === 1) {
+    const step = this.state.step;
+    const inProgress = this.state.progress === ProgressState.IN_PROGRESS;
+
+    if (step === 1) {
       title = (
         <FormattedMessage
           id="settings-dialog-title"
@@ -134,12 +142,19 @@ export default class SendTransaction extends React.Component<Props, State> {
         />
       );
     }
-    const content =
-      this.state.step === 1 ? this.renderStep1() : this.renderStep2();
 
-    // TODO honor the props.wrapInDialog switch
+    const content = step === 1 ? this.renderStep1() : this.renderStep2();
+    if (this.props.notModal) {
+      return content;
+    }
+
     return (
-      <Dialog title={title} open={true} onClose={this.onClose}>
+      <Dialog
+        title={title}
+        open={true}
+        onClose={(!inProgress && this.onClose) || undefined}
+        onBackClick={(step === 2 && this.onBackClick) || undefined}
+      >
         {content}
       </Dialog>
     );
@@ -153,8 +168,8 @@ export default class SendTransaction extends React.Component<Props, State> {
         fee={walletStore.fees.get('send')!}
         balance={this.account.balance}
         onSubmit={this.onSubmit1}
-        recipientID={this.injected.recipientId}
-        amount={this.injected.amount || null}
+        recipientID={this.state.recipientID || this.injected.recipientId}
+        amount={this.state.amount || this.injected.amount || null}
       />
     );
   }
@@ -166,6 +181,8 @@ export default class SendTransaction extends React.Component<Props, State> {
         isPassphraseSet={this.account.secondSignature}
         sender={this.account.name}
         senderId={this.account.id}
+        publicKey={this.account.publicKey}
+        secondPublicKey={this.account.secondPublicKey}
         fee={walletStore.fees.get('send')!}
         data={{
           kind: 'send',

@@ -5,7 +5,12 @@ import Grid from '@material-ui/core/Grid';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+  FormattedMessage,
+  defineMessages,
+  injectIntl,
+  InjectedIntlProps
+} from 'react-intl';
 
 interface Props {
   onSubmit: (state: State) => void;
@@ -13,30 +18,42 @@ interface Props {
   name: string | null;
 }
 
+type DecoratedProps = Props & InjectedIntlProps;
+
 export interface State {
   address: string;
+  idError?: string;
 }
 
+const messages = defineMessages({
+  invalidID: {
+    id: 'forms-remove-account.invalid-id',
+    description: 'Error label for invalid account address',
+    defaultMessage: 'Account address doesn\'t match the one you want to remove'
+  }
+});
+
 @observer
-class SettingsRemoveAccountForm extends React.Component<Props, State> {
-  state = {
+class SettingsRemoveAccountForm extends React.Component<DecoratedProps, State> {
+  state: State = {
     address: ''
   };
 
-  handleType = (
-    ev: ChangeEvent<HTMLInputElement>
-  ) => {
+  handleType = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      address: ev.target.value,
+      address: ev.target.value
     });
   }
 
   handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+    const { intl } = this.props;
     ev.preventDefault();
+
     if (this.state.address !== this.props.address) {
-      // TODO error mark the ID field
+      this.setState({ idError: intl.formatMessage(messages.invalidID) });
       return false;
     }
+
     this.props.onSubmit({ ...this.state });
     return true;
   }
@@ -57,20 +74,18 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
               <FormattedMessage
                 id="forms-remove-account.prompt-text"
                 description="Prompt for named account removal form"
-                defaultMessage={(
+                defaultMessage={
                   'Are you sure you want to remove {name} ({address}) from the wallet? ' +
-                  'To confirm, enter the account address in the field below.'
-                )}
+                  'To confirm, enter the account address in the field below.'}
                 values={{ name, address }}
               />
             ) : (
               <FormattedMessage
                 id="forms-remove-account.prompt-text"
                 description="Prompt for unnamed account removal form"
-                defaultMessage={(
+                defaultMessage={
                   'Are you sure you want to remove account {address} from the wallet? ' +
-                  'To confirm, enter the account address in the field below.'
-                )}
+                  'To confirm, enter the account address in the field below.'}
                 values={{ address }}
               />
             )}
@@ -78,15 +93,17 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
         </Grid>
         <Grid item={true} xs={12}>
           <TextField
-            label={(
+            label={
               <FormattedMessage
                 id="forms-remove-account.address-input-label"
                 description="Label for account address text field."
                 defaultMessage="Account address"
               />
-            )}
+            }
             value={this.state.address}
             onChange={this.handleType}
+            error={Boolean(this.state.idError)}
+            helperText={this.state.idError}
             fullWidth={true}
           />
         </Grid>
@@ -104,4 +121,4 @@ class SettingsRemoveAccountForm extends React.Component<Props, State> {
   }
 }
 
-export default SettingsRemoveAccountForm;
+export default injectIntl(SettingsRemoveAccountForm);

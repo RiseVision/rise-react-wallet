@@ -29,6 +29,7 @@ const styles = (theme: Theme) =>
 interface Props extends WithStyles<typeof styles> {
   open: boolean;
   title: ReactElement<HTMLElement> | null;
+  onBackClick?: () => void;
   onClose?: () => void;
 }
 
@@ -46,6 +47,9 @@ class Dialog extends React.Component<Props, State> {
   }
 
   handleESCKey = (event: KeyboardEvent) => {
+    if (!this.props.onClose) {
+      return;
+    }
     if (event.keyCode === 27 && this.props.onClose) {
       this.props.onClose();
     }
@@ -53,19 +57,21 @@ class Dialog extends React.Component<Props, State> {
 
   handleBackClick = () => {
     this.setState({ open: false });
-    if (this.props.onClose) {
-      this.props.onClose();
-    }
+    this.props.onClose!();
   }
 
   render() {
     const { open, title, classes } = this.props;
 
+    let onBackClick = this.props.onBackClick;
+
     return (
       <ModalPaper open={open} backdrop={Backdrop}>
         <ModalPaperHeader
-          closeButton={true}
+          closeButton={Boolean(this.props.onClose)}
           onCloseClick={this.handleBackClick}
+          backButton={Boolean(onBackClick)}
+          onBackClick={onBackClick}
         >
           {title}
         </ModalPaperHeader>

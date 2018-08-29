@@ -138,6 +138,8 @@ class SettingsPassphrase extends React.Component<Props, State> {
         onSend={this.onSend}
         onRedo={this.onSend}
         onClose={this.onClose}
+        publicKey={this.account.publicKey}
+        secondPublicKey={this.account.secondPublicKey}
         progress={this.state.progress}
         fee={walletStore.fees.get('secondsignature')!}
         data={{
