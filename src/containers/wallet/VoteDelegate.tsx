@@ -67,6 +67,8 @@ export default class VoteDelegate extends React.Component<Props, State> {
 
   onSearch = throttle(
     async (query: string) => {
+      query = query.toLowerCase();
+
       const clock = ++this.lastSearch;
       const showSuggestions = !query || !query.trim();
 

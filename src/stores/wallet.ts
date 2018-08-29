@@ -298,6 +298,7 @@ export default class WalletStore {
 
   // TODO missing in dposAPI
   async searchDelegates(query: string): Promise<Delegate[]> {
+    assert(query === query.toLowerCase(), 'Delegate username query must be all lowercase');
     const params = {
       q: query
     };
