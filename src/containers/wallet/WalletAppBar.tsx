@@ -115,7 +115,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
     const state = this.appBarState();
 
     return (
-      <AppBar className={this.injected.className}>
+      <AppBar className={this.injected.className} color="default">
         <Toolbar>
           {state === 'accountOverview' ? (
             <IconButton

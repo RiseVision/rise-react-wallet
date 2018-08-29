@@ -108,6 +108,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
             <Button
               variant="fab"
               className={classes.fab}
+              color="secondary"
               onClick={this.handleSendClick}
             >
               <SendIcon />

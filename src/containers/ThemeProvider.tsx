@@ -1,4 +1,4 @@
-import lightGreen from '@material-ui/core/colors/lightGreen';
+import green from '@material-ui/core/colors/green';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import * as React from 'react';
@@ -6,13 +6,20 @@ import jdenticon from '../utils/jdenticon';
 
 const theme = createMuiTheme({
   palette: {
-    primary: {
-      light: '#ffffff',
-      main: '#eeeeee',
-      dark: '#bcbcbc',
-      contrastText: '#000000',
+    primary: green,
+    secondary: {
+      light: '#75a7ff',
+      main: '#2979ff', // blue.A700
+      dark: '#004ecb',
+      contrastText: '#fff',
     },
-    secondary: lightGreen,
+  },
+  overrides: {
+    MuiAppBar: {
+      colorDefault: {
+        backgroundColor: '#eee',
+      },
+    },
   },
 });
 
