@@ -82,10 +82,6 @@ class Wallet extends React.Component<DecoratedProps, State> {
 
     return (
       <div className={classes.root}>
-        <WalletAppBar
-          className={classes.appBar}
-          onToggleDrawer={this.handleDrawerToggle}
-        />
         <Hidden mdUp={true}>
           <Drawer
             variant="temporary"
@@ -111,6 +107,10 @@ class Wallet extends React.Component<DecoratedProps, State> {
             children={drawer}
           />
         </Hidden>
+        <WalletAppBar
+          className={classes.appBar}
+          onToggleDrawer={this.handleDrawerToggle}
+        />
         <main className={classes.content}>
           <div className={classes.toolbar} />
           {this.props.children}
