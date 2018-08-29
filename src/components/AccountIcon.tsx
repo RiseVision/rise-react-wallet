@@ -54,6 +54,7 @@ const AccountIcon = stylesDecorator(
             width: size,
             height: size,
           }}
+          aria-hidden={true}
         >
           <svg
             ref={this.svgElement}
