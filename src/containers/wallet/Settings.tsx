@@ -31,7 +31,7 @@ import FiatForm, {
 import NameForm, {
   State as NameState
 } from '../../components/forms/SettingsName';
-import RemoveAccountForm from '../../components/forms/SettingsRemoveAccount';
+import RemoveAccountForm from '../../components/forms/SettingsRemoveAccountForm';
 import {
   accountOverviewRoute,
   onboardingAddAccountRoute,
