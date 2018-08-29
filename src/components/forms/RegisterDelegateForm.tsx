@@ -32,21 +32,27 @@ interface State {
 }
 
 const messages = defineMessages({
-  tooLongUsername: {
-    id: 'forms-register-delegate.too-long-username',
-    description: 'Error label for username text input exceeding max length',
-    defaultMessage: 'Too long delegate username. Maximum length is 20 characters.'
-  },
-  usernameResemblesAddress: {
-    id: 'forms-register-delegate.username-resembles-address',
-    description: 'Error label for username text input that looks like an address',
-    defaultMessage: 'Invalid delegate username. The username cannot resemble an address.',
-  },
   invalidUsername: {
     id: 'forms-register-delegate.invalid-username',
     description: 'Error label for invalid username text input',
     defaultMessage: 'Invalid delegate username. A valid username consists ' +
       'of letters (a-z), numbers (0-9) and/or some symbols (!@$&_.)'
+  },
+  invalidUsernameTooLong: {
+    id: 'forms-register-delegate.invalid-username-too-long',
+    description: 'Error label for username text input exceeding max length',
+    defaultMessage: 'Too long delegate username. Maximum length is 20 characters.'
+  },
+  invalidUsernameLikeAddress: {
+    id: 'forms-register-delegate.invalid-username-like-address',
+    description: 'Error label for username text input that looks like an address',
+    defaultMessage: 'Invalid delegate username. The username cannot resemble an address.',
+  },
+  invalidUsernameUppercase: {
+    id: 'forms-register-delegate.invalid-username-uppercase',
+    description: 'Error label for invalid username text input that contains uppercase letters',
+    defaultMessage: 'Invalid delegate username. The username cannot contain ' +
+      'uppercase characters',
   },
 });
 
@@ -99,9 +105,11 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     if (normalizedUsername !== '') {
       return null;
     } else if (username.length > 20) {
-      return intl.formatMessage(messages.tooLongUsername);
+      return intl.formatMessage(messages.invalidUsernameTooLong);
     } else if (normalizeAddress(username) !== '') {
-      return intl.formatMessage(messages.usernameResemblesAddress);
+      return intl.formatMessage(messages.invalidUsernameLikeAddress);
+    } else if (username !== username.toLowerCase()) {
+      return intl.formatMessage(messages.invalidUsernameUppercase);
     } else {
       return intl.formatMessage(messages.invalidUsername);
     }

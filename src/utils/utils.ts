@@ -26,7 +26,7 @@ export function normalizeAddress(address: string): string {
 export function normalizeUsername(value: string): string {
   value = value.trim();
 
-  if (!value.match(/^[a-zA-Z0-9!@$&_.]{1,20}$/)) {
+  if (!value.match(/^[a-z0-9!@$&_.]{1,20}$/)) {
     return '';
   }
   // Make sure that the username doesn't resemble an address
