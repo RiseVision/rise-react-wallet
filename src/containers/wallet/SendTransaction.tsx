@@ -154,7 +154,7 @@ export default class SendTransaction extends React.Component<Props, State> {
         balance={this.account.balance}
         onSubmit={this.onSubmit1}
         recipientID={this.injected.recipientId}
-        amount={this.injected.amount || RawAmount.ZERO}
+        amount={this.injected.amount || null}
       />
     );
   }

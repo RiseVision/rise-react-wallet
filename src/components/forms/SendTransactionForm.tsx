@@ -44,7 +44,7 @@ export interface SendFormState {
 
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (state: SendFormState) => void;
-  amount: RawAmount;
+  amount: RawAmount | null;
   fee: RawAmount;
   balance: RawAmount;
   // pre-filled recipient
