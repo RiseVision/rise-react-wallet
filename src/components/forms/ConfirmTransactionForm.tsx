@@ -635,7 +635,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             <Grid item={true} xs={12} className={classes.statusContainer}>
               <DoneIcon
                 className={classes.statusIcon}
-                color="secondary"
+                color="primary"
                 aria-label={intl.formatMessage(messages.successIconAria)}
               />
               <Typography className={classes.statusMessage}>
@@ -660,7 +660,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
         {progress === ProgressState.IN_PROGRESS && (
           <Grid container={true} spacing={16}>
             <Grid item={true} xs={12} className={classes.statusContainer}>
-              <CircularProgress color="secondary" />
+              <CircularProgress color="primary" />
               <Typography className={classes.statusMessage}>
                 <FormattedMessage
                   id="forms-confirm-tx.broadcasting-msg"
