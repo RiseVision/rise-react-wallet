@@ -13,6 +13,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import DoneIcon from '@material-ui/icons/Done';
 import * as classNames from 'classnames';
+import { LiskWallet } from 'dpos-offline';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
@@ -20,7 +21,7 @@ import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
-  injectIntl,
+  injectIntl
 } from 'react-intl';
 import { RawAmount } from '../../utils/amounts';
 import AccountIcon from '../AccountIcon';
@@ -29,7 +30,7 @@ const styles = (theme: Theme) =>
   createStyles({
     viz: {
       display: 'flex',
-      flexDirection: 'row',
+      flexDirection: 'row'
     },
     vizArrow: {
       flex: 1,
@@ -38,12 +39,12 @@ const styles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       marginLeft: 2 * theme.spacing.unit,
-      marginRight: 2 * theme.spacing.unit,
+      marginRight: 2 * theme.spacing.unit
     },
     vizAmount: {
       paddingLeft: 16,
       paddingRight: 16,
-      marginTop: '-1em',
+      marginTop: '-1em'
     },
     arrow: {
       position: 'relative',
@@ -51,11 +52,11 @@ const styles = (theme: Theme) =>
       width: '100%',
       maxWidth: 120,
       '& > *': {
-        borderColor: '#999',
+        borderColor: '#999'
       },
       '&$inactive > *': {
-        borderColor: '#eee',
-      },
+        borderColor: '#eee'
+      }
     },
     inactive: {},
     arrowShaft: {
@@ -66,7 +67,7 @@ const styles = (theme: Theme) =>
       height: 7,
       borderBottomWidth: 1,
       borderBottomStyle: 'solid',
-      boxSizing: 'content-box',
+      boxSizing: 'content-box'
     },
     arrowEnd: {
       position: 'absolute',
@@ -78,19 +79,18 @@ const styles = (theme: Theme) =>
       borderTopStyle: 'solid',
       borderRightWidth: 1,
       borderRightStyle: 'solid',
-      transform: 'rotate(45deg)',
+      transform: 'rotate(45deg)'
     },
     senderInfo: {
-      textAlign: 'left',
+      textAlign: 'left'
     },
     recipientInfo: {
-      textAlign: 'right',
+      textAlign: 'right'
     },
     accountAlias: {
-      ...theme.typography.body2,
+      ...theme.typography.body2
     },
-    accountAddress: {
-    },
+    accountAddress: {},
     divider: {
       // Hack around the fact that the parent Dialog component
       // controls the content padding
@@ -98,10 +98,10 @@ const styles = (theme: Theme) =>
       marginRight: -2 * theme.spacing.unit,
       // Adjust for the Grid margins
       marginTop: theme.spacing.unit,
-      marginBottom: theme.spacing.unit,
+      marginBottom: theme.spacing.unit
     },
     txDetails: {
-      textAlign: 'left',
+      textAlign: 'left'
     },
     txBreakdown: {
       textAlign: 'right',
@@ -114,13 +114,13 @@ const styles = (theme: Theme) =>
         '& > *': {
           display: 'table-cell',
           '&:first-child': {
-            paddingRight: theme.spacing.unit,
-          },
-        },
-      },
+            paddingRight: theme.spacing.unit
+          }
+        }
+      }
     },
     totalAmount: {
-      fontWeight: 500,
+      fontWeight: 500
     },
     statusContainer: {
       display: 'flex',
@@ -132,15 +132,15 @@ const styles = (theme: Theme) =>
       marginTop: theme.spacing.unit,
       marginBottom: theme.spacing.unit,
       '& > * + *': {
-        marginLeft: 2 * theme.spacing.unit,
-      },
+        marginLeft: 2 * theme.spacing.unit
+      }
     },
     statusIcon: {
-      fontSize: 48,
+      fontSize: 48
     },
     statusMessage: {
-      textAlign: 'left',
-    },
+      textAlign: 'left'
+    }
   });
 
 type SendTxData = {
@@ -165,11 +165,7 @@ type VoteTxData = {
   add: string[];
 };
 
-type TxData =
-  | SendTxData
-  | PassphraseTxData
-  | DelegateTxData
-  | VoteTxData;
+type TxData = SendTxData | PassphraseTxData | DelegateTxData | VoteTxData;
 
 function throwInvalidTxKind(tx: never): never;
 function throwInvalidTxKind(tx: TxData) {
@@ -184,6 +180,8 @@ interface Props extends WithStyles<typeof styles> {
   fee: RawAmount;
   sender: string | null;
   senderId: string;
+  publicKey: string;
+  secondPublicKey?: string | null;
   isPassphraseSet: boolean;
   // progress state
   progress: ProgressState;
@@ -203,6 +201,8 @@ export enum ProgressState {
 export interface State {
   passphrase: string;
   mnemonic: string;
+  passphraseError: string | null;
+  mnemonicError: string | null;
 }
 
 const stylesDecorator = withStyles(styles);
@@ -211,70 +211,82 @@ const messages = defineMessages({
   unnamedSender: {
     id: 'forms-confirm-tx.unnamed-sender',
     description: 'Unnamed sender account',
-    defaultMessage: 'Unnamed account',
+    defaultMessage: 'Unnamed account'
   },
   unnamedRecipient: {
     id: 'forms-confirm-tx.unnamed-recipient',
     description: 'Unnamed recipient account',
-    defaultMessage: 'Unknown recipient',
+    defaultMessage: 'Unknown recipient'
   },
   sendTxTitleAria: {
     id: 'forms-confirm-tx.send-title-aria',
     description: 'Send transaction title for accessibility',
-    defaultMessage: 'Send transaction of {amount}',
+    defaultMessage: 'Send transaction of {amount}'
   },
   passphraseTxTitleAria: {
     id: 'forms-confirm-tx.passphrase-title-aria',
     description: '2nd passphrase transaction title for accessibility',
-    defaultMessage: 'Setup 2nd passphrase transaction',
+    defaultMessage: 'Setup 2nd passphrase transaction'
   },
   delegateTxTitleAria: {
     id: 'forms-confirm-tx.delegate-title-aria',
     description: 'Register as delegate transaction title for accessibility',
-    defaultMessage: 'Register as a delegate transaction',
+    defaultMessage: 'Register as a delegate transaction'
   },
   voteTxTitleAria: {
     id: 'forms-confirm-tx.vote-title-aria',
     description: 'Vote transaction title for accessibility',
-    defaultMessage: 'Vote transaction',
+    defaultMessage: 'Vote transaction'
   },
   senderSummaryAria: {
     id: 'forms-confirm-tx.sender-summary-aria',
     description: 'Sender summary for accessibility',
-    defaultMessage: 'From {account} ({address})',
+    defaultMessage: 'From {account} ({address})'
   },
   recipientSummaryAria: {
     id: 'forms-confirm-tx.recipient-summary-aria',
     description: 'Recipient summary for accessibility',
-    defaultMessage: 'To {account} ({address})',
+    defaultMessage: 'To {account} ({address})'
   },
   txDetailsAria: {
     id: 'forms-confirm-tx.details-section-aria',
     description: 'Transaction details section title for accessibility',
-    defaultMessage: 'Transaction details',
+    defaultMessage: 'Transaction details'
   },
   txBreakdownAria: {
     id: 'forms-confirm-tx.breakdown-section-aria',
     description: 'Transaction breakdown section title for accessibility',
-    defaultMessage: 'Transaction cost breakdown',
+    defaultMessage: 'Transaction cost breakdown'
   },
   errorIconAria: {
     id: 'forms-confirm-tx.error-icon-aria',
     description: 'Error status icon label for accessibility',
-    defaultMessage: 'Error indicator icon',
+    defaultMessage: 'Error indicator icon'
   },
   successIconAria: {
     id: 'forms-confirm-tx.success-icon-aria',
     description: 'Success status icon label for accessibility',
-    defaultMessage: 'Success indicator icon',
+    defaultMessage: 'Success indicator icon'
   },
+  invalidPassphrase: {
+    id: 'forms-register-delegate.invalid-passphrase',
+    description: 'Error label for an invalid passphrase',
+    defaultMessage: 'Passphrase you entered isn\'t invalid'
+  },
+  invalidMnemonic: {
+    id: 'forms-register-delegate.invalid-mnemonic',
+    description: 'Error label for an invalid mnemonic',
+    defaultMessage: 'Mnemonic you entered isn\'t invalid'
+  }
 });
 
 @observer
 class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
   state = {
     passphrase: '',
-    mnemonic: ''
+    mnemonic: '',
+    passphraseError: null,
+    mnemonicError: null
   };
 
   // TODO extract to Form
@@ -282,17 +294,58 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const value = event.target.value;
-    const fields = ['passphrase', 'mnemonic'];
-    if (fields.includes(field)) {
-      // @ts-ignore TODO make it generic
+    if (field === 'passphrase') {
       this.setState({
-        [field]: value
+        passphrase: value,
+        passphraseError: null
+      });
+    } else if (field === 'mnemonic') {
+      this.setState({
+        mnemonic: value,
+        mnemonicError: null
       });
     }
   }
 
+  validatePassphrase = () => {
+    if (!this.props.secondPublicKey) {
+      return true;
+    }
+
+    const { intl } = this.props;
+    const wallet = new LiskWallet(this.state.passphrase, 'R');
+    const valid = this.props.secondPublicKey === wallet.publicKey;
+
+    this.setState({
+      passphraseError: valid
+        ? null
+        : intl.formatMessage(messages.invalidPassphrase)
+    });
+
+    return valid;
+  }
+
+  validateMnemonic = () => {
+    const { intl } = this.props;
+    const wallet = new LiskWallet(this.state.mnemonic, 'R');
+    const valid = this.props.publicKey === wallet.publicKey;
+
+    this.setState({
+      mnemonicError: valid ? null : intl.formatMessage(messages.invalidMnemonic)
+    });
+
+    return valid;
+  }
+
+  isValid() {
+    return this.validatePassphrase() && this.validatePassphrase();
+  }
+
   onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!this.isValid()) {
+      return;
+    }
     if (this.props.progress === ProgressState.SUCCESS) {
       this.props.onClose();
     } else if (this.props.progress === ProgressState.ERROR) {
@@ -312,7 +365,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
       fee,
       data,
       error,
-      onClose,
+      onClose
     } = this.props;
 
     const total = fee.plus(data.kind === 'send' ? data.amount : RawAmount.ZERO);
@@ -326,26 +379,25 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
       recipient = intl.formatMessage(messages.unnamedRecipient);
     }
 
-    const formatAmount = (amount: RawAmount) => (
-      `${intl.formatNumber(amount.unit.toNumber())} RISE`
-    );
+    // TODO extract
+    const formatAmount = (amount: RawAmount) =>
+      `${intl.formatNumber(amount.unit.toNumber())} RISE`;
 
+    // TODO extract
     const renderDelegates = (usernames: string[]) => (
       <React.Fragment>
         {usernames
-          .map(u => (<em key={u}>{u}</em>))
-          .reduce(
-            (a, u) => a.concat(a.length ? ', ' : null, u),
-            [] as Array<null | string | JSX.Element>,
-          )
-        }
+          .map(u => <em key={u}>{u}</em>)
+          .reduce((a, u) => a.concat(a.length ? ', ' : null, u), [] as Array<
+            null | string | JSX.Element
+          >)}
       </React.Fragment>
     );
 
     let txTitleAria = '';
     if (data.kind === 'send') {
       txTitleAria = intl.formatMessage(messages.sendTxTitleAria, {
-        amount: formatAmount(data.amount),
+        amount: formatAmount(data.amount)
       });
     } else if (data.kind === 'passphrase') {
       txTitleAria = intl.formatMessage(messages.passphraseTxTitleAria);
@@ -356,6 +408,10 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
     } else {
       throwInvalidTxKind(data);
     }
+
+    const { mnemonicError, passphraseError } = this.state;
+    const isMnemonicError = Boolean(mnemonicError);
+    const isPassphraseError = Boolean(passphraseError);
 
     return (
       <form onSubmit={this.onSubmit}>
@@ -369,17 +425,14 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             <AccountIcon size={64} address={senderId} />
             <div className={classes.vizArrow}>
               {data.kind === 'send' && (
-                <Typography
-                  className={classes.vizAmount}
-                  aria-hidden={true}
-                >
+                <Typography className={classes.vizAmount} aria-hidden={true}>
                   {formatAmount(data.amount)}
                 </Typography>
               )}
               <div
                 className={classNames(
                   classes.arrow,
-                  data.kind !== 'send' && classes.inactive,
+                  data.kind !== 'send' && classes.inactive
                 )}
               >
                 <div className={classes.arrowShaft} />
@@ -395,19 +448,13 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             className={classes.senderInfo}
             aria-label={intl.formatMessage(messages.senderSummaryAria, {
               account: sender,
-              address: senderId,
+              address: senderId
             })}
           >
-            <Typography
-              className={classes.accountAlias}
-              aria-hidden={true}
-            >
+            <Typography className={classes.accountAlias} aria-hidden={true}>
               {sender}
             </Typography>
-            <Typography
-              className={classes.accountAddress}
-              aria-hidden={true}
-            >
+            <Typography className={classes.accountAddress} aria-hidden={true}>
               {senderId}
             </Typography>
           </Grid>
@@ -419,19 +466,13 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
               className={classes.recipientInfo}
               aria-label={intl.formatMessage(messages.recipientSummaryAria, {
                 account: recipient,
-                address: recipientId,
+                address: recipientId
               })}
             >
-              <Typography
-                className={classes.accountAlias}
-                aria-hidden={true}
-              >
+              <Typography className={classes.accountAlias} aria-hidden={true}>
                 {recipient}
               </Typography>
-              <Typography
-                className={classes.accountAddress}
-                aria-hidden={true}
-              >
+              <Typography className={classes.accountAddress} aria-hidden={true}>
                 {recipientId}
               </Typography>
             </Grid>
@@ -463,7 +504,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                       description="Transaction detail row for delegate registration."
                       defaultMessage="Register as a delegate with username {username}."
                       values={{
-                        username: (<em>{data.username}</em>),
+                        username: <em>{data.username}</em>
                       }}
                     />
                   </Typography>
@@ -483,7 +524,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                           }
                           values={{
                             delegateCount: data.add.length,
-                            delegates: renderDelegates(data.remove),
+                            delegates: renderDelegates(data.remove)
                           }}
                         />
                       </Typography>
@@ -501,7 +542,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                           }
                           values={{
                             delegateCount: data.add.length,
-                            delegates: renderDelegates(data.add),
+                            delegates: renderDelegates(data.add)
                           }}
                         />
                       </Typography>
@@ -513,10 +554,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
           </React.Fragment>
         )}
         <Divider className={classes.divider} aria-hidden={true} />
-        <Grid
-          container={true}
-          spacing={16}
-        >
+        <Grid container={true} spacing={16}>
           <Grid
             item={true}
             xs={12}
@@ -529,8 +567,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                   id="forms-confirm-tx.breakdown-amount-label"
                   description="Label for transfer amount in transaction breakdown."
                   defaultMessage="Transfer amount:"
-                />
-                {' '}
+                />{' '}
                 <span>{formatAmount(data.amount)}</span>
               </Typography>
             )}
@@ -539,8 +576,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                 id="forms-confirm-tx.breakdown-fee-label"
                 description="Label for network fee in transaction breakdown."
                 defaultMessage="Network fee:"
-              />
-              {' '}
+              />{' '}
               <span>{formatAmount(fee)}</span>
             </Typography>
             <Typography>
@@ -548,23 +584,15 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                 id="forms-confirm-tx.breakdown-total-label"
                 description="Label for total cost in transaction breakdown."
                 defaultMessage="Total:"
-              />
-              {' '}
+              />{' '}
               <span className={classes.totalAmount}>{formatAmount(total)}</span>
             </Typography>
           </Grid>
         </Grid>
         <Divider className={classes.divider} aria-hidden={true} />
         {progress === ProgressState.ERROR && (
-          <Grid
-            container={true}
-            spacing={16}
-          >
-            <Grid
-              item={true}
-              xs={12}
-              className={classes.statusContainer}
-            >
+          <Grid container={true} spacing={16}>
+            <Grid item={true} xs={12} className={classes.statusContainer}>
               <ErrorOutlineIcon
                 className={classes.statusIcon}
                 color="error"
@@ -574,18 +602,15 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                 <FormattedMessage
                   id="forms-confirm-tx.error-msg"
                   description="Message for when a transaction failed to broadcast."
-                  defaultMessage={'Failed to broadcast the transaction to the network: {error}'}
+                  defaultMessage={
+                    'Failed to broadcast the transaction to the network: {error}'}
                   values={{
-                    error: error || 'N/A',
+                    error: error || 'N/A'
                   }}
                 />
               </Typography>
             </Grid>
-            <Grid
-              item={true}
-              xs={12}
-              sm={6}
-            >
+            <Grid item={true} xs={12} sm={6}>
               <Button type="submit" fullWidth={true}>
                 <FormattedMessage
                   id="forms-confirm-tx.try-again-button"
@@ -594,15 +619,8 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                 />
               </Button>
             </Grid>
-            <Grid
-              item={true}
-              xs={12}
-              sm={6}
-            >
-              <Button
-                onClick={onClose}
-                fullWidth={true}
-              >
+            <Grid item={true} xs={12} sm={6}>
+              <Button onClick={onClose} fullWidth={true}>
                 <FormattedMessage
                   id="forms-confirm-tx.close-button"
                   description="Label for close button."
@@ -613,15 +631,8 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
           </Grid>
         )}
         {progress === ProgressState.SUCCESS && (
-          <Grid
-            container={true}
-            spacing={16}
-          >
-            <Grid
-              item={true}
-              xs={12}
-              className={classes.statusContainer}
-            >
+          <Grid container={true} spacing={16}>
+            <Grid item={true} xs={12} className={classes.statusContainer}>
               <DoneIcon
                 className={classes.statusIcon}
                 color="secondary"
@@ -635,14 +646,8 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                 />
               </Typography>
             </Grid>
-            <Grid
-              item={true}
-              xs={12}
-            >
-              <Button
-                type="submit"
-                fullWidth={true}
-              >
+            <Grid item={true} xs={12}>
+              <Button type="submit" fullWidth={true}>
                 <FormattedMessage
                   id="forms-confirm-tx.done-button"
                   description="Label for done button."
@@ -653,15 +658,8 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
           </Grid>
         )}
         {progress === ProgressState.IN_PROGRESS && (
-          <Grid
-            container={true}
-            spacing={16}
-          >
-            <Grid
-              item={true}
-              xs={12}
-              className={classes.statusContainer}
-            >
+          <Grid container={true} spacing={16}>
+            <Grid item={true} xs={12} className={classes.statusContainer}>
               <CircularProgress color="secondary" />
               <Typography className={classes.statusMessage}>
                 <FormattedMessage
@@ -674,10 +672,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
           </Grid>
         )}
         {progress === ProgressState.TO_CONFIRM && (
-          <Grid
-            container={true}
-            spacing={16}
-          >
+          <Grid container={true} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography>
                 {isPassphraseSet ? (
@@ -703,15 +698,18 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             </Grid>
             <Grid item={true} xs={12}>
               <TextField
-                label={(
+                label={
                   <FormattedMessage
                     id="forms-confirm-tx.mnemonic-input-label"
                     description="Label for mnemonic text field."
                     defaultMessage="Account mnemonic secret"
                   />
-                )}
+                }
                 value={this.state.mnemonic}
                 onChange={this.handleChange('mnemonic')}
+                onBlur={this.validateMnemonic}
+                error={isMnemonicError}
+                helperText={mnemonicError}
                 autoFocus={true}
                 fullWidth={true}
               />
@@ -719,15 +717,18 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             {isPassphraseSet && (
               <Grid item={true} xs={12}>
                 <TextField
-                  label={(
+                  label={
                     <FormattedMessage
                       id="forms-confirm-tx.passphrase-input-label"
                       description="Label for 2nd passphrase text field."
                       defaultMessage="Second passphrase"
                     />
-                  )}
+                  }
                   value={this.state.passphrase}
                   onChange={this.handleChange('passphrase')}
+                  onBlur={this.validatePassphrase}
+                  error={isPassphraseError}
+                  helperText={passphraseError}
                   fullWidth={true}
                 />
               </Grid>
