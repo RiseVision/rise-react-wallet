@@ -2,6 +2,7 @@ import { Route } from 'mobx-router';
 import * as React from 'react';
 import * as lstore from 'store';
 import AsyncComponent from './components/AsyncComponent';
+import LoadingIndicator from './components/LoadingIndicator';
 import { DialogField } from './containers/wallet/Settings';
 import RootStore from './stores/root';
 import { TStoredAccount } from './stores/wallet';
@@ -36,6 +37,7 @@ export const onboardingAddAccountRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.AddAccountPage />
@@ -51,6 +53,7 @@ export const onboardingChooseLanguageRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.ChooseLanguagePage />
@@ -66,6 +69,7 @@ export const onboardingExistingAccountRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.ExistingAccountPage />
@@ -81,6 +85,7 @@ export const onboardingExistingAccountTypeRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.ExistingAccountTypePage />
@@ -96,6 +101,7 @@ export const onboardingNoMnemonicNoticeRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.NoMnemonicNoticePage />
@@ -111,6 +117,7 @@ export const onboardingNewAccountRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.NewAccountPage />
@@ -126,6 +133,7 @@ export const onboardingNewMnemonicsRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.NewMnemonicPage />
@@ -141,6 +149,7 @@ export const onboardingVerifyMnemonicsRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.VerifyMnemonicPage />
@@ -156,6 +165,7 @@ export const onboardingAccountCreatedRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.AccountCreatedPage />
@@ -171,6 +181,7 @@ export const onboardingSecurityNoticeRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.SecurityNoticePage />
@@ -186,6 +197,7 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
     <AsyncComponent
       name="./containers/onboarding"
       resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
       render={(components: TOnboardingComponents) => (
         <components.Onboarding>
           <components.NewMnemonicPage />
@@ -206,6 +218,7 @@ export const accountOverviewRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountOverview />
@@ -274,6 +287,7 @@ export const accountSettingsNameRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountSettings openDialog={DialogField.NAME} />
@@ -297,6 +311,7 @@ export const accountSettingsVoteRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountSettings openDialog={DialogField.DELEGATE_VOTE} />
@@ -320,6 +335,7 @@ export const accountSettingsFiatRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountSettings openDialog={DialogField.FIAT} />
@@ -343,6 +359,7 @@ export const accountSettingsPassphraseRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountSettings openDialog={DialogField.PASSPHRASE} />
@@ -366,6 +383,7 @@ export const accountSettingsDelegateRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountSettings
@@ -391,6 +409,7 @@ export const accountSettingsRemoveRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountSettings openDialog={DialogField.REMOVE_ACCOUNT} />
@@ -414,6 +433,7 @@ export const accountSettingsRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountSettings />
@@ -441,6 +461,7 @@ export const accountSendRoute = new Route({
       resolve={() => {
         return import('./containers/wallet');
       }}
+      loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountOverview />

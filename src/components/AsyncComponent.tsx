@@ -61,7 +61,8 @@ export default class AsyncComponent extends React.Component<Props, State> {
       return this.props.render(this.state.components);
     } else if (this.props.loading) {
       return this.props.loading;
+    } else {
+      return null;
     }
-    return <span />;
   }
 }

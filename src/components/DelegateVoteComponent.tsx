@@ -1,5 +1,4 @@
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import {
   createStyles,
@@ -14,6 +13,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from './AccountIcon';
+import LoadingIndicator from './LoadingIndicator';
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -234,9 +234,7 @@ class DelegateVoteComponent extends React.Component<DecoratedProps> {
           </div>
         )}
         {display === 'loading' && (
-          <div className={classes.overlay}>
-            <CircularProgress />
-          </div>
+          <LoadingIndicator />
         )}
       </Paper>
     );

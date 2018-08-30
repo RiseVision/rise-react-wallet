@@ -4,6 +4,7 @@ import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 import AppStore from '../stores/app';
 import ThemeProvider from './ThemeProvider';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 interface Props {
   appStore?: AppStore;
@@ -56,9 +57,8 @@ class App extends React.Component<Props, State> {
         <div style={{position: 'relative'}}>{message}</div>
       );
     } else if (isLoading) {
-      // TODO: Implement better loading indicator
       content = (
-        <div style={{position: 'relative'}}>loading...</div>
+        <LoadingIndicator />
       );
     }
 

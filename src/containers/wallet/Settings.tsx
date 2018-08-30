@@ -12,7 +12,6 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
 import { runInAction, action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
@@ -24,6 +23,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import LoadingIndicator from '../../components/LoadingIndicator';
 import Dialog from '../../components/Dialog';
 import FiatForm, {
   State as FiatState
@@ -98,6 +98,11 @@ interface State {
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 
 const messages = defineMessages({
+  loadingLabel: {
+    id: 'account-settings.loading-label',
+    description: 'Label for settings 2nd row while data is being loaded',
+    defaultMessage: 'Loading...'
+  },
   unnamedAccountLabel: {
     id: 'account-settings.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
@@ -436,11 +441,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     const account = this.account;
 
     if (!account) {
-      // TODO loading indicator
       return (
-        <div className={classes.content}>
-          <Typography>Loading</Typography>
-        </div>
+        <LoadingIndicator />
       );
     }
 
@@ -483,9 +485,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 <ListItemText
                   primary={intl.formatMessage(messages.votedDelegate)}
                   secondary={
-                    /* TODO translate 'Loading' */
                     account.votedDelegateState === LoadingState.LOADING
-                      ? 'Loading...'
+                      ? intl.formatMessage(messages.loadingLabel)
                       : account.votedDelegate
                         ? account.votedDelegate.username
                         : intl.formatMessage(messages.votedDelegateUnsetLabel)
@@ -524,9 +525,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 <ListItemText
                   primary={intl.formatMessage(messages.delegateRegistration)}
                   secondary={
-                    /* TODO translate 'Loading' */
                     account.registeredDelegateState === LoadingState.LOADING
-                      ? 'Loading...'
+                      ? intl.formatMessage(messages.loadingLabel)
                       : account.registeredDelegate
                         ? account.registeredDelegate.username
                         : intl.formatMessage(
