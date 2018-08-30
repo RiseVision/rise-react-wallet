@@ -20,29 +20,33 @@ interface Props {
   delegates: Delegate[];
   votedDelegate: string | null;
   fee: RawAmount;
+  query?: string;
   error?: null | 'insufficient-funds';
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
 
 export interface State {
-  search: string;
+  query: string;
 }
 
 @observer
 class VoteDelegateForm extends React.Component<DecoratedProps, State> {
   state: State = {
-    search: ''
+    query: ''
   };
+
+  constructor(props: DecoratedProps) {
+    super(props);
+    this.state.query = props.query || '';
+  }
 
   handleType = () => (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const value = event.target.value;
-    this.setState({
-      search: value.trim()
-    });
-    this.props.onSearch(value);
+    const query = event.target.value.trim().toLowerCase();
+    this.setState({ query });
+    this.props.onSearch(query);
   }
 
   render() {
@@ -55,7 +59,7 @@ class VoteDelegateForm extends React.Component<DecoratedProps, State> {
       error,
       fee
     } = this.props;
-    const { search } = this.state;
+    const { query } = this.state;
 
     const formatAmount = (amount: RawAmount) =>
       `${intl.formatNumber(amount.unit.toNumber())} RISE`;
@@ -115,7 +119,7 @@ class VoteDelegateForm extends React.Component<DecoratedProps, State> {
                       defaultMessage="Find delegates by username or address"
                     />
                   }
-                  value={search}
+                  value={query}
                   fullWidth={true}
                   onChange={this.handleType()}
                 />

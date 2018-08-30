@@ -23,7 +23,6 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import LoadingIndicator from '../../components/LoadingIndicator';
 import Dialog from '../../components/Dialog';
 import FiatForm, {
   State as FiatState
@@ -45,7 +44,7 @@ import {
 } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore, { LoadingState } from '../../stores/account';
-import WalletStore, { TTransactionResult } from '../../stores/wallet';
+import WalletStore from '../../stores/wallet';
 import SettingsPassphrase from './SettingsPassphrase';
 import RegisterDelegate from './RegisterDelegate';
 import VoteDelegate from './VoteDelegate';
@@ -299,118 +298,81 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     this.onDialogClose();
   }
 
-  @action
-  onSubmitVote = () => {
-    this.onDialogClose();
-  }
-
-  onSubmitRegister = (tx?: TTransactionResult) => {
-    // refresh in case the registration actually happened
-    const account = this.injected.walletStore.selectedAccount;
-    if (tx && tx.success) {
-      runInAction(() => {
-        account.registeredDelegate = null;
-      });
-    }
-    this.onDialogClose();
-  }
-
-  getDialog: () => {
-    title: ReactElement<HTMLElement> | null;
-    form: ReactElement<HTMLFormElement> | null;
-  } = () => {
+  getDialog: () => ReactElement<HTMLElement> | null = () => {
+    let form, title;
     const config = this.injected.walletStore.config;
-    const account = this.injected.accountStore;
 
     switch (this.state.dialogField!) {
-      case 'name':
-        return {
-          title: (
-            <FormattedMessage
-              id="settings-dialog-title"
-              defaultMessage={'Update account name'}
-            />
-          ),
-          form: (
-            <NameForm
-              name={account.name!}
-              id={account.id}
-              onSubmit={this.onSubmitName}
-            />
-          )
-        };
-      case 'removeAccount':
-        return {
-          title: (
-            <FormattedMessage
-              id="settings-dialog-title"
-              defaultMessage={'Remove account?'}
-            />
-          ),
-          form: (
-            <RemoveAccountForm
-              name={account.name}
-              address={account.id}
-              onSubmit={this.onSubmitRemoveAccount}
-            />
-          )
-        };
+      case 'delegate':
+        return <VoteDelegate onSubmit={this.onDialogClose} />;
+      case 'delegateRegistration':
+        return <RegisterDelegate onSubmit={this.onDialogClose} />;
       case 'passphrase':
-        return {
-          title: (
-            <FormattedMessage
-              id="settings-dialog-title"
-              defaultMessage={'Setup 2nd passphrase'}
-            />
-          ),
-          form: <SettingsPassphrase onSubmit={this.onDialogClose} />
-        };
+        return <SettingsPassphrase onSubmit={this.onDialogClose} />;
+      case 'name':
+        title = (
+          <FormattedMessage
+            id="settings-dialog-title"
+            defaultMessage={'Update account name'}
+          />
+        );
+        form = (
+          <NameForm
+            name={this.account.name || ''}
+            id={this.account.id}
+            onSubmit={this.onSubmitName}
+          />
+        );
+        break;
+      case 'removeAccount':
+        title = (
+          <FormattedMessage
+            id="settings-dialog-title"
+            defaultMessage={'Remove account?'}
+          />
+        );
+        form = (
+          <RemoveAccountForm
+            name={this.account.name}
+            address={this.account.id}
+            onSubmit={this.onSubmitRemoveAccount}
+          />
+        );
+        break;
       case 'fiat':
-        return {
-          title: (
-            <FormattedMessage
-              id="settings-dialog-title"
-              defaultMessage={'Displayed FIAT currency'}
-            />
-          ),
-          form: (
+        (title = (
+          <FormattedMessage
+            id="settings-dialog-title"
+            defaultMessage={'Displayed FIAT currency'}
+          />
+        )),
+          (form = (
             <FiatForm
-              fiat={account.fiatCurrency}
+              fiat={this.account.fiatCurrency}
               options={config.fiat_currencies}
               onSubmit={this.onSubmitFiat}
             />
-          )
-        };
-      case 'delegate':
-        return {
-          title: (
-            <FormattedMessage
-              id="settings-dialog-title"
-              defaultMessage={'Vote for Delegate'}
-            />
-          ),
-          form: <VoteDelegate onSubmit={this.onSubmitVote} />
-        };
-      case 'delegateRegistration':
-        return {
-          title: (
-            <FormattedMessage
-              id="settings-dialog-title"
-              defaultMessage={'Delegate Registration'}
-            />
-          ),
-          form: <RegisterDelegate onSubmit={this.onSubmitRegister} />
-        };
+          ));
+        break;
       default:
-        return {
-          title: null,
-          form: null
-        };
+        return null;
     }
+
+    return (
+      <Dialog
+        title={title}
+        open={this.state.dialogOpen}
+        onClose={this.onDialogClose}
+      >
+        {form}
+      </Dialog>
+    );
   }
 
   onDialogClose = () => {
-    this.injected.routerStore.goTo(accountSettingsRoute, { id: this.account.id });
+    this.injected.routerStore.goTo(accountSettingsRoute, {
+      id: this.account.id
+    });
   }
 
   componentDidMount() {
@@ -439,25 +401,11 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   render() {
     const { intl, classes } = this.injected;
     const account = this.account;
-
-    if (!account) {
-      return (
-        <LoadingIndicator />
-      );
-    }
-
-    const readOnly = account.readOnly;
-    const dialog = this.getDialog();
+    const { readOnly } = account;
 
     return (
       <React.Fragment>
-        <Dialog
-          title={dialog.title}
-          open={this.state.dialogOpen}
-          onClose={this.onDialogClose}
-        >
-          {dialog.form}
-        </Dialog>
+        {this.getDialog()}
         <div className={classes.content}>
           <List>
             <ListItem button={true} onClick={this.handleNameClicked}>

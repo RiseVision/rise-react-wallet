@@ -9,13 +9,14 @@ import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
-  injectIntl,
+  injectIntl
 } from 'react-intl';
 import { RawAmount } from '../../utils/amounts';
 
 interface Props {
   onSubmit: (passphrase: string) => void;
   onClose: () => void;
+  passphrase?: string;
   fee: RawAmount;
   error?: null | 'already-set' | 'insufficient-funds';
 }
@@ -32,22 +33,27 @@ const messages = defineMessages({
     id: 'forms-passphrase.invalid-passphrase',
     description: 'Error label for invalid passphrase text input',
     defaultMessage: 'Invalid passphrase. Passphrase cannot be empty.'
-  },
+  }
 });
 
 @observer
 class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
   state: State = {
     passphrase: '',
-    passphraseInvalid: false,
+    passphraseInvalid: false
   };
 
+  constructor(props: DecoratedProps) {
+    super(props);
+    this.state.passphrase = props.passphrase || '';
+  }
+
   handlePassphraseChanged = (ev: ChangeEvent<HTMLInputElement>) => {
-    const passphrase = ev.target.value;
+    const passphrase = ev.target.value.trim();
 
     this.setState({
       passphrase,
-      passphraseInvalid: false,
+      passphraseInvalid: false
     });
   }
 
@@ -66,7 +72,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
     const passphraseInvalid = !!this.passphraseError();
     if (passphraseInvalid) {
       this.setState({
-        passphraseInvalid,
+        passphraseInvalid
       });
       return;
     }
@@ -78,11 +84,9 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
     const { intl } = this.props;
     const { passphrase } = this.state;
 
-    if (passphrase.trim() !== '') {
-      return null;
-    } else {
-      return intl.formatMessage(messages.invalidPassphrase);
-    }
+    return passphrase
+      ? null
+      : intl.formatMessage(messages.invalidPassphrase);
   }
 
   render() {
@@ -168,9 +172,9 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
               fullWidth={true}
               error={passphraseInvalid}
               FormHelperTextProps={{
-                error: passphraseInvalid,
+                error: passphraseInvalid
               }}
-              helperText={passphraseInvalid ? (this.passphraseError() || '') : ''}
+              helperText={passphraseInvalid ? this.passphraseError() || '' : ''}
             />
           </Grid>
         )}

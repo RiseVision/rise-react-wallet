@@ -1,7 +1,10 @@
 import * as assert from 'assert';
+import { LiskWallet } from 'dpos-offline';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import Dialog from '../../components/Dialog';
 import { accountOverviewRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
@@ -15,6 +18,7 @@ import ConfirmTransactionForm, {
 interface Props {
   onSubmit?: (tx?: TTransactionResult) => void;
   account?: AccountStore;
+  noDialog?: boolean;
 }
 
 interface PropsInjected extends Props {
@@ -91,13 +95,20 @@ class SettingsPassphrase extends React.Component<Props, State> {
     this.setState({ tx, progress });
   }
 
+  onBackClick = () => {
+    if (this.state.step === 2) {
+      this.setState({ step: 1 });
+    }
+  }
+
   onClose = () => {
     // refresh the account after a successful transaction
-    if (this.state.tx) {
+    let tx = this.state.tx;
+    if (tx && tx.success) {
       this.injected.walletStore.refreshAccount(this.account.id);
     }
     if (this.injected.onSubmit) {
-      this.injected.onSubmit(this.state.tx);
+      this.injected.onSubmit(tx);
     } else {
       // fallback
       this.injected.routerStore.goTo(accountOverviewRoute, {
@@ -107,7 +118,46 @@ class SettingsPassphrase extends React.Component<Props, State> {
   }
 
   render() {
-    return this.state.step === 1 ? this.renderStep1() : this.renderStep2();
+    let title;
+    const step = this.state.step;
+    const { progress } = this.state;
+    const states = ProgressState;
+    const inProgress = progress === states.IN_PROGRESS;
+    const showBackButton =
+      step === 2 &&
+      (progress === states.ERROR || progress === states.TO_CONFIRM);
+
+    if (step === 1) {
+      title = (
+        <FormattedMessage
+          id="settings-dialog-title"
+          defaultMessage={'Setup 2nd passphrase'}
+        />
+      );
+    } else {
+      title = (
+        <FormattedMessage
+          id="settings-dialog-title"
+          defaultMessage={'Confirm transaction'}
+        />
+      );
+    }
+
+    const content = step === 1 ? this.renderStep1() : this.renderStep2();
+    if (this.props.noDialog) {
+      return content;
+    }
+
+    return (
+      <Dialog
+        title={title}
+        open={true}
+        onClose={(!inProgress && this.onClose) || undefined}
+        onBackClick={(showBackButton && this.onBackClick) || undefined}
+      >
+        {content}
+      </Dialog>
+    );
   }
 
   renderStep1() {
@@ -120,6 +170,7 @@ class SettingsPassphrase extends React.Component<Props, State> {
         onSubmit={this.onSubmit1}
         onClose={this.onClose}
         fee={fee}
+        passphrase={this.state.passphrase || ''}
         error={
           isSet
             ? 'already-set'
@@ -133,13 +184,15 @@ class SettingsPassphrase extends React.Component<Props, State> {
 
   renderStep2() {
     const walletStore = this.injected.walletStore;
+    const wallet = new LiskWallet(this.state.passphrase!, 'R');
+
     return (
       <ConfirmTransactionForm
         onSend={this.onSend}
         onRedo={this.onSend}
         onClose={this.onClose}
         publicKey={this.account.publicKey}
-        secondPublicKey={this.account.secondPublicKey}
+        secondPublicKey={wallet.publicKey}
         progress={this.state.progress}
         fee={walletStore.fees.get('secondsignature')!}
         data={{

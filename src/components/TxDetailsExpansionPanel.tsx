@@ -172,7 +172,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
         summaryShort = intl.formatMessage(messages.summarySendShort, data);
       } else if (!tx.recipientName) {
         // regular send
-        const data = { address: tx.senderId };
+        const data = { address: tx.recipientId };
         summaryLong = intl.formatMessage(messages.summarySendLong, data);
         summaryShort = intl.formatMessage(messages.summarySendShort, data);
       } else {

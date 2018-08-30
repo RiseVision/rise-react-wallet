@@ -4,6 +4,8 @@ import { throttle, sampleSize } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import Dialog from '../../components/Dialog';
 import ConfirmTransactionForm, {
   ProgressState,
   State as ConfirmFormState
@@ -17,6 +19,7 @@ import WalletStore, { TTransactionResult } from '../../stores/wallet';
 interface Props {
   onSubmit?: (tx?: TTransactionResult) => void;
   account?: AccountStore;
+  noDialog?: boolean;
 }
 
 interface PropsInjected extends Props {
@@ -67,12 +70,9 @@ export default class VoteDelegate extends React.Component<Props, State> {
 
   onSearch = throttle(
     async (query: string) => {
-      query = query.toLowerCase();
-
       const clock = ++this.lastSearch;
-      const showSuggestions = !query || !query.trim();
 
-      if (showSuggestions) {
+      if (!query) {
         if (!this.state.activeDelegates.length) {
           return;
         }
@@ -133,13 +133,20 @@ export default class VoteDelegate extends React.Component<Props, State> {
     this.setState({ tx, progress });
   }
 
+  onBackClick = () => {
+    if (this.state.step === 2) {
+      this.setState({ step: 1 });
+    }
+  }
+
   onClose = async () => {
     // refresh the account after a successful transaction
-    if (this.state.tx) {
+    let tx = this.state.tx;
+    if (tx && tx.success) {
       this.injected.walletStore.refreshAccount(this.account.id);
     }
     if (this.injected.onSubmit) {
-      this.injected.onSubmit(this.state.tx);
+      this.injected.onSubmit(tx);
     } else {
       // fallback
       this.injected.routerStore.goTo(accountOverviewRoute, {
@@ -169,7 +176,46 @@ export default class VoteDelegate extends React.Component<Props, State> {
   }
 
   render() {
-    return this.state.step === 1 ? this.renderStep1() : this.renderStep2();
+    let title;
+    const step = this.state.step;
+    const { progress } = this.state;
+    const states = ProgressState;
+    const inProgress = progress === states.IN_PROGRESS;
+    const showBackButton =
+      step === 2 &&
+      (progress === states.ERROR || progress === states.TO_CONFIRM);
+
+    if (step === 1) {
+      title = (
+        <FormattedMessage
+          id="settings-dialog-title"
+          defaultMessage={'Vote for Delegate'}
+        />
+      );
+    } else {
+      title = (
+        <FormattedMessage
+          id="settings-dialog-title"
+          defaultMessage={'Confirm transaction'}
+        />
+      );
+    }
+
+    const content = step === 1 ? this.renderStep1() : this.renderStep2();
+    if (this.props.noDialog) {
+      return content;
+    }
+
+    return (
+      <Dialog
+        title={title}
+        open={true}
+        onClose={(!inProgress && this.onClose) || undefined}
+        onBackClick={(showBackButton && this.onBackClick) || undefined}
+      >
+        {content}
+      </Dialog>
+    );
   }
 
   renderStep1() {
@@ -184,6 +230,7 @@ export default class VoteDelegate extends React.Component<Props, State> {
         onSubmit={this.onSubmit1}
         onClose={this.onClose}
         onSearch={this.onSearch}
+        query={this.state.query}
         isLoading={this.state.loadingDelegates}
         isSearch={!showSuggestions}
         delegates={this.state.displayedDelegates}

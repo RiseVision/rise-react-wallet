@@ -21,7 +21,7 @@ interface Props {
   amount?: RawAmount;
   recipientId?: string;
   account?: AccountStore;
-  notModal?: boolean;
+  noDialog?: boolean;
 }
 
 interface PropsInjected extends Props {
@@ -125,7 +125,12 @@ export default class SendTransaction extends React.Component<Props, State> {
   render() {
     let title;
     const step = this.state.step;
-    const inProgress = this.state.progress === ProgressState.IN_PROGRESS;
+    const { progress } = this.state;
+    const states = ProgressState;
+    const inProgress = progress === states.IN_PROGRESS;
+    const showBackButton =
+      step === 2 &&
+      (progress === states.ERROR || progress === states.TO_CONFIRM);
 
     if (step === 1) {
       title = (
@@ -144,7 +149,7 @@ export default class SendTransaction extends React.Component<Props, State> {
     }
 
     const content = step === 1 ? this.renderStep1() : this.renderStep2();
-    if (this.props.notModal) {
+    if (this.props.noDialog) {
       return content;
     }
 
@@ -153,7 +158,7 @@ export default class SendTransaction extends React.Component<Props, State> {
         title={title}
         open={true}
         onClose={(!inProgress && this.onClose) || undefined}
-        onBackClick={(step === 2 && this.onBackClick) || undefined}
+        onBackClick={(showBackButton && this.onBackClick) || undefined}
       >
         {content}
       </Dialog>

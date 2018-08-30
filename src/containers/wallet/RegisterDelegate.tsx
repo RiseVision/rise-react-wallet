@@ -2,6 +2,8 @@ import * as assert from 'assert';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import Dialog from '../../components/Dialog';
 import ConfirmTransactionForm, {
   ProgressState,
   State as ConfirmFormState
@@ -15,6 +17,7 @@ import WalletStore, { TTransactionResult } from '../../stores/wallet';
 interface Props {
   onSubmit?: (tx?: TTransactionResult) => void;
   account?: AccountStore;
+  noDialog?: boolean;
 }
 
 interface PropsInjected extends Props {
@@ -60,6 +63,7 @@ export default class RegisterDelegate extends React.Component<Props, State> {
     if (registeredDelegate || this.account.balance.lt(fee)) {
       this.onClose();
     } else {
+      // TODO dont throw, UI error
       assert(username, 'Delegate\'s name required');
       this.setState({
         step: 2,
@@ -90,13 +94,20 @@ export default class RegisterDelegate extends React.Component<Props, State> {
     this.setState({ tx, progress });
   }
 
+  onBackClick = () => {
+    if (this.state.step === 2) {
+      this.setState({ step: 1 });
+    }
+  }
+
   onClose = async () => {
     // refresh the account after a successful transaction
-    if (this.state.tx) {
+    let tx = this.state.tx;
+    if (tx && tx.success) {
       this.injected.walletStore.refreshAccount(this.account.id);
     }
     if (this.injected.onSubmit) {
-      this.injected.onSubmit(this.state.tx);
+      this.injected.onSubmit(tx);
     } else {
       // fallback
       this.injected.routerStore.goTo(accountOverviewRoute, {
@@ -106,7 +117,46 @@ export default class RegisterDelegate extends React.Component<Props, State> {
   }
 
   render() {
-    return this.state.step === 1 ? this.renderStep1() : this.renderStep2();
+    let title;
+    const step = this.state.step;
+    const { progress } = this.state;
+    const states = ProgressState;
+    const inProgress = progress === states.IN_PROGRESS;
+    const showBackButton =
+      step === 2 &&
+      (progress === states.ERROR || progress === states.TO_CONFIRM);
+
+    if (step === 1) {
+      title = (
+        <FormattedMessage
+          id="settings-dialog-title"
+          defaultMessage={'Delegate Registration'}
+        />
+      );
+    } else {
+      title = (
+        <FormattedMessage
+          id="settings-dialog-title"
+          defaultMessage={'Confirm transaction'}
+        />
+      );
+    }
+
+    const content = step === 1 ? this.renderStep1() : this.renderStep2();
+    if (this.props.noDialog) {
+      return content;
+    }
+
+    return (
+      <Dialog
+        title={title}
+        open={true}
+        onClose={(!inProgress && this.onClose) || undefined}
+        onBackClick={(showBackButton && this.onBackClick) || undefined}
+      >
+        {content}
+      </Dialog>
+    );
   }
 
   renderStep1() {
@@ -127,6 +177,7 @@ export default class RegisterDelegate extends React.Component<Props, State> {
         delegateLoaded={
           this.account.registeredDelegateState === LoadingState.LOADED
         }
+        username={this.state.username}
         onClose={this.onClose}
         error={
           registeredDelegate

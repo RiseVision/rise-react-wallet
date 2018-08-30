@@ -9,7 +9,7 @@ import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
-  injectIntl,
+  injectIntl
 } from 'react-intl';
 import { RawAmount } from '../../utils/amounts';
 import { normalizeAddress, normalizeUsername } from '../../utils/utils';
@@ -20,6 +20,7 @@ interface Props {
   fee: RawAmount;
   delegateLoaded: boolean;
   registeredUsername?: string;
+  username?: string;
   error?: null | 'already-registered' | 'insufficient-funds';
 }
 
@@ -35,25 +36,31 @@ const messages = defineMessages({
   invalidUsername: {
     id: 'forms-register-delegate.invalid-username',
     description: 'Error label for invalid username text input',
-    defaultMessage: 'Invalid delegate username. A valid username consists ' +
+    defaultMessage:
+      'Invalid delegate username. A valid username consists ' +
       'of letters (a-z), numbers (0-9) and/or some symbols (!@$&_.)'
   },
   invalidUsernameTooLong: {
     id: 'forms-register-delegate.invalid-username-too-long',
     description: 'Error label for username text input exceeding max length',
-    defaultMessage: 'Too long delegate username. Maximum length is 20 characters.'
+    defaultMessage:
+      'Too long delegate username. Maximum length is 20 characters.'
   },
   invalidUsernameLikeAddress: {
     id: 'forms-register-delegate.invalid-username-like-address',
-    description: 'Error label for username text input that looks like an address',
-    defaultMessage: 'Invalid delegate username. The username cannot resemble an address.',
+    description:
+      'Error label for username text input that looks like an address',
+    defaultMessage:
+      'Invalid delegate username. The username cannot resemble an address.'
   },
   invalidUsernameUppercase: {
     id: 'forms-register-delegate.invalid-username-uppercase',
-    description: 'Error label for invalid username text input that contains uppercase letters',
-    defaultMessage: 'Invalid delegate username. The username cannot contain ' +
-      'uppercase characters',
-  },
+    description:
+      'Error label for invalid username text input that contains uppercase letters',
+    defaultMessage:
+      'Invalid delegate username. The username cannot contain ' +
+      'uppercase characters'
+  }
 });
 
 @observer
@@ -61,8 +68,13 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
   state: State = {
     username: '',
     usernameInvalid: false,
-    normalizedUsername: '',
+    normalizedUsername: ''
   };
+
+  constructor(props: DecoratedProps) {
+    super(props);
+    this.state.username = props.username || '';
+  }
 
   handleUsernameChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const username = ev.target.value.trim();
@@ -71,7 +83,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     this.setState({
       username,
       usernameInvalid: false,
-      normalizedUsername,
+      normalizedUsername
     });
   }
 
@@ -90,7 +102,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     const usernameInvalid = !!this.usernameError();
     if (usernameInvalid) {
       this.setState({
-        usernameInvalid,
+        usernameInvalid
       });
       return;
     }
@@ -100,9 +112,9 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
 
   usernameError(): string | null {
     const { intl } = this.props;
-    const { username, normalizedUsername } = this.state;
+    const { username } = this.state;
 
-    if (normalizedUsername !== '') {
+    if (normalizeUsername(username)) {
       return null;
     } else if (username.length > 20) {
       return intl.formatMessage(messages.invalidUsernameTooLong);
@@ -186,9 +198,9 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
               fullWidth={true}
               error={usernameInvalid}
               FormHelperTextProps={{
-                error: usernameInvalid,
+                error: usernameInvalid
               }}
-              helperText={usernameInvalid ? (this.usernameError() || '') : ''}
+              helperText={usernameInvalid ? this.usernameError() || '' : ''}
               onChange={this.handleUsernameChange}
               onBlur={this.handleUsernameBlur}
             />

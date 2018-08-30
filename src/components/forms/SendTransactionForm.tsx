@@ -241,6 +241,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
               }
               value={address}
               fullWidth={true}
+              autoFocus={true}
               error={addressInvalid}
               FormHelperTextProps={{
                 error: addressInvalid,
