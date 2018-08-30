@@ -16,6 +16,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import Downshift, { StateChangeOptions } from 'downshift';
 import AccountIcon from '../../components/AccountIcon';
 import { ChangeEvent, FormEvent } from 'react';
 import { RawAmount } from '../../utils/amounts';
@@ -23,13 +24,16 @@ import {
   normalizeAddress,
   normalizeNumber,
 } from '../../utils/utils';
+import AddressSuggestionsMenu from '../../components/AddressSuggestionsMenu';
+import { deburr, take } from 'lodash';
 
 const styles = (theme: Theme) => createStyles({
   accountContainer: {
     display: 'flex',
     alignItems: 'center',
+    position: 'relative',
   },
-  accountField: {
+  recipientField: {
     flex: 1,
   },
   accountIcon: {
@@ -56,8 +60,8 @@ interface Props extends WithStyles<typeof styles> {
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface State {
-  address: string;
-  addressInvalid: boolean;
+  recipient: AddressRecord;
+  recipientInvalid: boolean;
   normalizedAddress: string;
   amount: string;
   amountInvalid: boolean;
@@ -82,14 +86,49 @@ const messages = defineMessages({
     description: 'Error label for too high amount text input',
     defaultMessage: 'This amount exceeds your account balance.'
   },
+  recipientFromAddressBook: {
+    id: 'forms-send.recipient-from-address-book',
+    description: 'Info label for recipient field when filled via suggestions',
+    defaultMessage: 'Address for {name} (from your address book)',
+  },
+  recipientIsDelegate: {
+    id: 'forms-send.recipient-is-delegate',
+    description: 'Info label for recipient field when filled via suggestions',
+    defaultMessage: 'Address for {name} (a registered delegate)',
+  },
 });
 
-// TODO address book
+type AddressRecord = {
+  address: string;
+  label: string;
+  source: 'user' | 'addressbook' | 'delegate';
+};
+
+// TODO: Replace fake dataset with actual data from address book
+const fakeDataSet: AddressRecord[] = [
+  { address: '10820014087913201714R', label: 'Beer frenzy', source: 'addressbook' },
+  { address: '7851658041862611161R', label: 'Pretty gem', source: 'addressbook' },
+  { address: '4551846025748003872R', label: 'Pink rose', source: 'addressbook' },
+  { address: '8978172996617645434R', label: 'whiteknight', source: 'delegate' },
+  { address: '6364858697947958466R', label: 'wakescpt2018', source: 'delegate' },
+  { address: '18130374930582746781R', label: 'veke.ledger', source: 'delegate' },
+  { address: '3858637968282355585R', label: 'corsaro', source: 'delegate' },
+  { address: '13623845592771759209R', label: 'spookiestevie', source: 'delegate' },
+  { address: '4982634728794354643R', label: 'hirish', source: 'delegate' },
+  { address: '4551846025748003872R', label: 'doodoo', source: 'delegate' },
+  { address: '6318860244441701655R', label: 'mcanever', source: 'delegate' },
+  { address: '8466748795473371581R', label: 'ondin', source: 'delegate' },
+];
+
 @observer
 class SendTransactionForm extends React.Component<DecoratedProps, State> {
   state: State = {
-    address: '',
-    addressInvalid: false,
+    recipient: {
+      address: '',
+      label: '',
+      source: 'user',
+    },
+    recipientInvalid: false,
     normalizedAddress: '',
     amount: '',
     amountInvalid: false,
@@ -102,7 +141,11 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
     const { intl, recipientID, amount } = this.props;
 
     if (recipientID) {
-      this.state.address = recipientID;
+      this.state.recipient = {
+        address: recipientID,
+        label: '',
+        source: 'user',
+      };
       this.state.normalizedAddress = normalizeAddress(recipientID);
     }
     if (amount) {
@@ -111,21 +154,39 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
     }
   }
 
-  handleAddressChange = (ev: ChangeEvent<HTMLInputElement>) => {
-    const address = ev.target.value;
-    const normalizedAddress = normalizeAddress(address.trim());
+  handleRecipientStateChange = (options: StateChangeOptions<AddressRecord>) => {
+    const { type, inputValue } = options;
+    if (type === '__autocomplete_change_input__' && inputValue) {
+      // Handle user typing
+      const normalizedAddress = normalizeAddress(inputValue.trim());
 
-    this.setState({
-      address,
-      addressInvalid: false,
-      normalizedAddress,
-    });
+      this.setState({
+        recipient: {
+          address: inputValue,
+          label: '',
+          source: 'user',
+        },
+        recipientInvalid: false,
+        normalizedAddress,
+      });
+
+    } else if (type === '__autocomplete_blur_input__') {
+      // Handle user leaving the input
+      const { address } = this.state.recipient;
+      const recipientInvalid = !!address && !!this.recipientError();
+      this.setState({ recipientInvalid });
+    }
   }
 
-  handleAddressBlur = () => {
-    const { address } = this.state;
-    const addressInvalid = !!address && !!this.addressError();
-    this.setState({ addressInvalid });
+  handleRecipientChange = (recipient: AddressRecord) => {
+    // Handle user selecting a suggestion
+    const normalizedAddress = normalizeAddress(recipient.address.trim());
+
+    this.setState({
+      recipient,
+      recipientInvalid: false,
+      normalizedAddress,
+    });
   }
 
   handleAmountChange = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -156,11 +217,11 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
 
     const { normalizedAddress, parsedAmount } = this.state;
 
-    const addressInvalid = !!this.addressError();
+    const recipientInvalid = !!this.recipientError();
     const amountInvalid = !!this.amountError();
-    if (addressInvalid || amountInvalid) {
+    if (recipientInvalid || amountInvalid) {
       this.setState({
-        addressInvalid,
+        recipientInvalid,
         amountInvalid,
       });
       return;
@@ -172,7 +233,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
     });
   }
 
-  addressError(): string | null {
+  recipientError(): string | null {
     const { intl } = this.props;
     const { normalizedAddress } = this.state;
 
@@ -196,11 +257,70 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
     }
   }
 
+  recipientSummary(rec: AddressRecord): string {
+    const { intl } = this.props;
+
+    if (rec.source === 'addressbook') {
+      return intl.formatMessage(messages.recipientFromAddressBook, {
+        name: rec.label,
+      });
+    } else if (rec.source === 'delegate') {
+      return intl.formatMessage(messages.recipientIsDelegate, {
+        name: rec.label,
+      });
+    } else {
+      return '';
+    }
+  }
+
+  getSuggestions(query: string): AddressRecord[] {
+    // For a valid address don't show suggestions
+    const normalizedAddress = normalizeAddress(query.trim());
+    if (normalizedAddress !== '') {
+      return [];
+    }
+
+    // Run through a very simple scoring algorithm
+    const queryPlain = deburr(query).toLowerCase().replace(/\s/iug, '');
+
+    let suggestions = fakeDataSet;
+
+    if (query.trim().length > 0) {
+      let arr = suggestions
+        .map((data) => {
+          const labelPlain = deburr(data.label).toLowerCase().replace(/\s/iug, '');
+
+          let score = 0;
+          if (data.address.startsWith(query)) {
+            score += 2;
+          }
+          if (data.label.trim() === query) {
+            score += 3;
+          } else if (labelPlain.startsWith(queryPlain)) {
+            score += 2;
+          } else if (labelPlain.indexOf(queryPlain) >= 0) {
+            score += 1;
+          }
+
+          return { data, score };
+        })
+        .filter(({ score }) => score > 0);
+
+      // Sort in descending score order
+      arr.sort((a, b) => b.score - a.score);
+
+      suggestions = arr.map(({ data }) => data);
+    }
+
+    // Limit to 5 results per search
+    return take(suggestions, 5);
+  }
+
   render() {
     const { intl, classes } = this.props;
     const {
-      address,
-      addressInvalid,
+      recipient,
+      recipientInvalid,
       normalizedAddress,
       amount,
       amountInvalid,
@@ -229,33 +349,56 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
           </Typography>
         </Grid>
         <Grid item={true} xs={12}>
-          <div className={classes.accountContainer}>
-            <TextField
-              className={classes.accountField}
-              label={
-                <FormattedMessage
-                  id="forms-send.recipient-input-label"
-                  description="Label for recipient address text field."
-                  defaultMessage="Recipient address"
+          <Downshift
+            itemToString={rec => rec.address}
+            selectedItem={recipient}
+            onStateChange={this.handleRecipientStateChange}
+            onChange={this.handleRecipientChange}
+          >
+            {({
+              getInputProps,
+              getItemProps,
+              isOpen,
+              inputValue,
+              highlightedIndex
+            }) => (
+              <div className={classes.accountContainer}>
+                <TextField
+                  className={classes.recipientField}
+                  label={
+                    <FormattedMessage
+                      id="forms-send.recipient-input-label"
+                      description="Label for recipient address text field."
+                      defaultMessage="Recipient address"
+                    />
+                  }
+                  InputProps={getInputProps()}
+                  fullWidth={true}
+                  error={recipientInvalid}
+                  FormHelperTextProps={{
+                    error: recipientInvalid,
+                  }}
+                  helperText={
+                    recipientInvalid ? (this.recipientError() || '')
+                    : this.recipientSummary(recipient)
+                  }
                 />
-              }
-              value={address}
-              fullWidth={true}
-              autoFocus={true}
-              error={addressInvalid}
-              FormHelperTextProps={{
-                error: addressInvalid,
-              }}
-              helperText={addressInvalid ? (this.addressError() || '') : ''}
-              onChange={this.handleAddressChange}
-              onBlur={this.handleAddressBlur}
-            />
-            <AccountIcon
-              className={classes.accountIcon}
-              size={48}
-              address={normalizedAddress}
-            />
-          </div>
+                {isOpen && (
+                  <AddressSuggestionsMenu
+                    suggestions={this.getSuggestions(inputValue || '')}
+                    highlightedIndex={highlightedIndex}
+                    selectedItem={recipient}
+                    getItemProps={getItemProps}
+                  />
+                )}
+                <AccountIcon
+                  className={classes.accountIcon}
+                  size={48}
+                  address={normalizedAddress}
+                />
+              </div>
+            )}
+          </Downshift>
         </Grid>
         <Grid item={true} xs={12}>
           <TextField

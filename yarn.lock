@@ -1812,6 +1812,10 @@ compression@^1.5.2:
     safe-buffer "5.1.2"
     vary "~1.1.2"
 
+compute-scroll-into-view@^1.0.2:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/compute-scroll-into-view/-/compute-scroll-into-view-1.0.8.tgz#ad0acd869dc6dc1069201532c025783a30ea177d"
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -2399,6 +2403,13 @@ dotenv-expand@4.2.0:
 dotenv@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
+
+downshift@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-2.2.0.tgz#08887b6196eaccf1d7a3d26c5ac65630f4f43b7b"
+  dependencies:
+    compute-scroll-into-view "^1.0.2"
+    prop-types "^15.6.0"
 
 dpos-api-wrapper@^1.3.2:
   version "1.3.2"
