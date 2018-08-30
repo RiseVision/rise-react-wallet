@@ -2,6 +2,7 @@ import { inject, observer } from 'mobx-react';
 import { MobxRouter } from 'mobx-router';
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
+import { Helmet } from 'react-helmet';
 import AppStore from '../stores/app';
 import ThemeProvider from './ThemeProvider';
 import LoadingIndicator from '../components/LoadingIndicator';
@@ -66,6 +67,11 @@ class App extends React.Component<Props, State> {
       <ThemeProvider>
         <IntlProvider key={locale} locale={locale} messages={translations}>
           <React.Fragment>
+            <Helmet
+              htmlAttributes={{
+                lang: locale,
+              }}
+            />
             {content}
             <MobxRouter />
           </React.Fragment>
