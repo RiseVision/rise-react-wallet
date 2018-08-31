@@ -46,6 +46,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
+  titleId?: string;
   backButton?: boolean;
   onBackClick?: () => void;
   closeButton?: boolean;
@@ -83,7 +84,14 @@ class ModalPaperHeader extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { intl, classes, backButton, closeButton, children } = this.props;
+    const {
+      intl,
+      classes,
+      titleId,
+      backButton,
+      closeButton,
+      children,
+    } = this.props;
     return (
       <div className={classes.root}>
         {backButton && (
@@ -98,6 +106,7 @@ class ModalPaperHeader extends React.Component<DecoratedProps> {
           </Button>
         )}
         <Typography
+          id={titleId}
           className={classNames(
             classes.content,
             (!backButton && !!closeButton) && classes.withoutBack,

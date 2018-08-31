@@ -27,9 +27,6 @@ import Dialog from '../../components/Dialog';
 import FiatForm, {
   State as FiatState
 } from '../../components/forms/SettingsFiat';
-import NameForm, {
-  State as NameState
-} from '../../components/forms/SettingsName';
 import RemoveAccountForm from '../../components/forms/SettingsRemoveAccountForm';
 import {
   accountOverviewRoute,
@@ -48,6 +45,7 @@ import WalletStore from '../../stores/wallet';
 import SettingsPassphrase from './SettingsPassphrase';
 import RegisterDelegate from './RegisterDelegate';
 import VoteDelegate from './VoteDelegate';
+import AccountNameDialog from '../../components/dialogs/AccountNameDialog';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -263,9 +261,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   // DIALOG ACTIONS
 
   @action
-  onSubmitName = (state: NameState) => {
-    // TOOD validate state.name
-    this.account.name = state.name!;
+  onSubmitName = (acc: { name: string }) => {
+    this.account.name = acc.name;
     this.onDialogClose();
   }
 
@@ -301,6 +298,21 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   getDialog: () => ReactElement<HTMLElement> | null = () => {
     let form, title;
     const config = this.injected.walletStore.config;
+    const { dialogField } = this.state;
+
+    if (dialogField === 'name') {
+      return (
+        <AccountNameDialog
+          account={{
+            name: this.account.name,
+            address: this.account.id,
+          }}
+          open={this.state.dialogOpen}
+          onCloseClick={this.onDialogClose}
+          onChange={this.onSubmitName}
+        />
+      );
+    }
 
     switch (this.state.dialogField!) {
       case 'delegate':
@@ -309,21 +321,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         return <RegisterDelegate onSubmit={this.onDialogClose} />;
       case 'passphrase':
         return <SettingsPassphrase onSubmit={this.onDialogClose} />;
-      case 'name':
-        title = (
-          <FormattedMessage
-            id="settings-dialog-title"
-            defaultMessage={'Update account name'}
-          />
-        );
-        form = (
-          <NameForm
-            name={this.account.name || ''}
-            id={this.account.id}
-            onSubmit={this.onSubmitName}
-          />
-        );
-        break;
       case 'removeAccount':
         title = (
           <FormattedMessage
