@@ -31,7 +31,7 @@ export type CountryCode =
 const localeInfo: {
   [P in Locale]: {
     mainCountry: CountryCode;
-  };
+  }
 } = {
   en: { mainCountry: 'gb' },
   de: { mainCountry: 'de' },
@@ -45,7 +45,7 @@ const localeInfo: {
   ro: { mainCountry: 'ro' },
   ru: { mainCountry: 'ru' },
   uk: { mainCountry: 'ua' },
-  zh: { mainCountry: 'cn' },
+  zh: { mainCountry: 'cn' }
 };
 
 export const Locales: Locale[] = Object.keys(localeInfo) as Locale[];

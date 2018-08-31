@@ -19,33 +19,33 @@ import {
   onboardingNewMnemonicRoute
 } from '../../routes';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: 20,
-  },
-  pretext: {
-    marginBottom: 5,
-  },
-  tipContainer: {
-    paddingLeft: 20,
-  },
-  tipText: {
-    display: 'list-item',
-    listStyle: 'disc',
-    marginTop: 5,
-    marginBottom: 5,
-  },
-  inactiveTipText: {
-    opacity: 0.65,
-    transition: theme.transitions.create('opacity'),
-  },
-  button: {
-    marginTop: 5,
-  },
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: 20
+    },
+    pretext: {
+      marginBottom: 5
+    },
+    tipContainer: {
+      paddingLeft: 20
+    },
+    tipText: {
+      display: 'list-item',
+      listStyle: 'disc',
+      marginTop: 5,
+      marginBottom: 5
+    },
+    inactiveTipText: {
+      opacity: 0.65,
+      transition: theme.transitions.create('opacity')
+    },
+    button: {
+      marginTop: 5
+    }
+  });
 
-interface Props extends WithStyles<typeof styles> {
-}
+interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
   routerStore: RouterStore;
@@ -55,12 +55,13 @@ interface State {
   currentTip: number;
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage' });
+const stylesDecorator = withStyles(styles, {
+  name: 'OnboardingSecurityNoticePage'
+});
 
 @inject('routerStore')
 @observer
 class SecurityNoticePage extends React.Component<Props, State> {
-
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -69,7 +70,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      currentTip: 0,
+      currentTip: 0
     };
   }
 
@@ -79,7 +80,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
   }
 
   handleNextTipClick = () => {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       return { currentTip: prevState.currentTip + 1 };
     });
   }
@@ -92,7 +93,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
   render() {
     const { classes } = this.injected;
 
-    const tips = [(
+    const tips = [
       <FormattedMessage
         id="onboarding-security-notice.correct-url-tip"
         description="Tip about checking the browser URL"
@@ -101,8 +102,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'yourself or use a bookmark that you yourself created. Never trust links posted ' +
           'on social media, in search results, sent in emails or listed on other websites.'
         }
-      />
-    ), (
+      />,
       <FormattedMessage
         id="onboarding-security-notice.trust-browser-tip"
         description="Tip about truting your browser"
@@ -111,8 +111,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'get in touch with us and report it. Do not ignore the warning nor enter your ' +
           'mnemonic secret!'
         }
-      />
-    ), (
+      />,
       <FormattedMessage
         id="onboarding-security-notice.own-devices-tip"
         description="Tip about untrustworthy devices"
@@ -121,8 +120,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'secret on untrustworthy devices (public computers, friends computers/phones, etc) ' +
           'as they might be littered with malware and keyloggers.'
         }
-      />
-    ), (
+      />,
       <FormattedMessage
         id="onboarding-security-notice.apply-updates-tip"
         description="Tip about installing security updates"
@@ -130,8 +128,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'Always keep your operating system, anti-virus software and browser up to date with ' +
           'latest security updates.'
         }
-      />
-    ), (
+      />,
       <FormattedMessage
         id="onboarding-security-notice.hardware-wallets-tip"
         description="Tip about using hardware wallets"
@@ -140,11 +137,14 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'amounts of RISE.'
         }
       />
-    )];
+    ];
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
+        <ModalPaperHeader
+          closeButton={true}
+          onCloseClick={this.handleCloseClick}
+        >
           <FormattedMessage
             id="onboarding-security-notice.title"
             description="Security notice screen title"
@@ -168,7 +168,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
               <Typography
                 className={classNames(
                   classes.tipText,
-                  idx !== this.state.currentTip && classes.inactiveTipText,
+                  idx !== this.state.currentTip && classes.inactiveTipText
                 )}
                 children={tip}
               />

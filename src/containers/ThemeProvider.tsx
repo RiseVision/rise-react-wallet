@@ -11,16 +11,16 @@ const theme = createMuiTheme({
       light: '#75a7ff',
       main: '#2979ff', // blue.A700
       dark: '#004ecb',
-      contrastText: '#fff',
-    },
+      contrastText: '#fff'
+    }
   },
   overrides: {
     MuiAppBar: {
       colorDefault: {
-        backgroundColor: '#eee',
-      },
-    },
-  },
+        backgroundColor: '#eee'
+      }
+    }
+  }
 });
 
 interface Props {
@@ -31,14 +31,14 @@ class ThemeProvider extends React.Component<Props> {
   componentWillMount() {
     jdenticon.config = {
       lightness: {
-        color: [0.40, 0.80],
-        grayscale: [0.30, 0.90]
+        color: [0.4, 0.8],
+        grayscale: [0.3, 0.9]
       },
       saturation: {
-          color: 0.50,
-          grayscale: 0.00
+        color: 0.5,
+        grayscale: 0.0
       },
-      replaceMode: 'never',
+      replaceMode: 'never'
     };
   }
 

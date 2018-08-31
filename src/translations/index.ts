@@ -14,9 +14,7 @@ interface TranslationModule {
   default: Translation;
 }
 
-const translations: {
-  [P in Locale]: () => Promise<TranslationModule>;
-} = {
+const translations: { [P in Locale]: () => Promise<TranslationModule> } = {
   de: () => import('./de'),
   es: () => import('./es'),
   et: () => import('./et'),

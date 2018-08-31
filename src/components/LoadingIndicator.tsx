@@ -1,4 +1,6 @@
-import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress';
+import CircularProgress, {
+  CircularProgressProps
+} from '@material-ui/core/CircularProgress';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as classNames from 'classnames';
 import * as React from 'react';
@@ -13,16 +15,14 @@ const styles = createStyles({
     bottom: 0,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
-  progress: {
-  },
+  progress: {}
 });
 
 type BaseProps = CircularProgressProps & WithStyles<typeof styles>;
 
-interface Props extends BaseProps {
-}
+interface Props extends BaseProps {}
 
 type DecoratedProps = Props & InjectedIntlProps;
 
@@ -32,8 +32,8 @@ const messages = defineMessages({
   loadingAriaLabel: {
     id: 'loading-indicator.loading-aria-label',
     description: 'Accessibility label for loading indicator',
-    defaultMessage: 'Loading',
-  },
+    defaultMessage: 'Loading'
+  }
 });
 
 class LoadingIndicator extends React.Component<DecoratedProps> {
@@ -45,10 +45,7 @@ class LoadingIndicator extends React.Component<DecoratedProps> {
         aria-label={intl.formatMessage(messages.loadingAriaLabel)}
       >
         <CircularProgress
-          className={classNames(
-            classes.progress,
-            className,
-          )}
+          className={classNames(classes.progress, className)}
           {...other}
         />
       </div>

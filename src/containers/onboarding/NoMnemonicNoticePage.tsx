@@ -14,20 +14,21 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { accountOverviewNoIDRoute } from '../../routes';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: 20,
-  },
-  text: {
-    marginTop: 10,
-    '&:first-child': {
-      marginTop: 0,
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: 20
     },
-  },
-  button: {
-    marginTop: 10,
-  },
-});
+    text: {
+      marginTop: 10,
+      '&:first-child': {
+        marginTop: 0
+      }
+    },
+    button: {
+      marginTop: 10
+    }
+  });
 
 interface Props extends WithStyles<typeof styles> {
   routerStore?: RouterStore;
@@ -37,12 +38,13 @@ interface PropsInjected extends Props {
   routerStore: RouterStore;
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingSecurityNoticePage' });
+const stylesDecorator = withStyles(styles, {
+  name: 'OnboardingSecurityNoticePage'
+});
 
 @inject('routerStore')
 @observer
 class NoMnemonicNoticePage extends React.Component<Props> {
-
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -63,7 +65,10 @@ class NoMnemonicNoticePage extends React.Component<Props> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
+        <ModalPaperHeader
+          closeButton={true}
+          onCloseClick={this.handleCloseClick}
+        >
           <FormattedMessage
             id="onboarding-no-mnemonic-notice.title"
             description="No passphrase notice screen title"

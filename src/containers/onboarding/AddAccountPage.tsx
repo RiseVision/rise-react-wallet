@@ -13,7 +13,8 @@ import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingChooseLanguageRoute,
   onboardingExistingAccountRoute,
-  onboardingNewAccountRoute, accountOverviewNoIDRoute
+  onboardingNewAccountRoute,
+  accountOverviewNoIDRoute
 } from '../../routes';
 import AppStore from '../../stores/app';
 import OnboardingStore from '../../stores/onboarding';
@@ -24,12 +25,11 @@ const riseIcon = require('../../images/rise_icon.svg');
 
 const styles = createStyles({
   titleIcon: {
-    margin: '-4px 4px',
-  },
+    margin: '-4px 4px'
+  }
 });
 
-interface Props extends WithStyles<typeof styles> {
-}
+interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
   appStore: AppStore;
@@ -38,7 +38,9 @@ interface PropsInjected extends Props {
   walletStore: WalletStore;
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' });
+const stylesDecorator = withStyles(styles, {
+  name: 'OnboardingAddAccountPage'
+});
 
 @inject('appStore')
 @inject('onboardingStore')
@@ -46,7 +48,6 @@ const stylesDecorator = withStyles(styles, { name: 'OnboardingAddAccountPage' })
 @inject('walletStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
-
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -97,46 +98,46 @@ class AddAccountPage extends React.Component<Props> {
                   height={24}
                   alt=""
                 />
-              ),
+              )
             }}
           />
         </ModalPaperHeader>
         <List>
           <ListItem button={true} onClick={this.handleNewAccountClicked}>
             <ListItemText
-              primary={(
+              primary={
                 <FormattedMessage
                   id="onboarding-add-account.new-account"
                   description="New account button title"
                   defaultMessage="New account"
                 />
-              )}
-              secondary={(
+              }
+              secondary={
                 <FormattedMessage
                   id="onboarding-add-account.new-account-tip"
                   description="New account button tip"
                   defaultMessage="I want to create a new account on the RISE network"
                 />
-              )}
+              }
             />
             <ChevronRight />
           </ListItem>
           <ListItem button={true} onClick={this.handleExistingAccountClicked}>
             <ListItemText
-              primary={(
+              primary={
                 <FormattedMessage
                   id="onboarding-add-account.existing-account"
                   description="Existing account button title"
                   defaultMessage="Existing account"
                 />
-              )}
-              secondary={(
+              }
+              secondary={
                 <FormattedMessage
                   id="onboarding-add-account.existing-account-tip"
                   description="Existing account button tip"
                   defaultMessage="I want to access an existing account on the RISE network"
                 />
-              )}
+              }
             />
             <ChevronRight />
           </ListItem>

@@ -11,8 +11,7 @@ interface Props {
   appStore?: AppStore;
 }
 
-interface State {
-}
+interface State {}
 
 @inject('appStore')
 @observer
@@ -20,8 +19,7 @@ class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = {
-    };
+    this.state = {};
   }
 
   render() {
@@ -54,13 +52,9 @@ class App extends React.Component<Props, State> {
         message = '' + currentError;
       }
 
-      content = (
-        <div style={{position: 'relative'}}>{message}</div>
-      );
+      content = <div style={{ position: 'relative' }}>{message}</div>;
     } else if (isLoading) {
-      content = (
-        <LoadingIndicator />
-      );
+      content = <LoadingIndicator />;
     }
 
     return (
@@ -69,7 +63,7 @@ class App extends React.Component<Props, State> {
           <React.Fragment>
             <Helmet
               htmlAttributes={{
-                lang: locale,
+                lang: locale
               }}
             />
             {content}

@@ -38,8 +38,7 @@ const styles = createStyles({
   }
 });
 
-interface Props extends WithStyles<typeof styles> {
-}
+interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
   onboardingStore: OnboardingStore;
@@ -62,12 +61,15 @@ const messages = defineMessages({
   invalidAddressGeneric: {
     id: 'onboarding-existing-account.invalid-address-generic',
     description: 'Error label for invalid address text input',
-    defaultMessage: 'Invalid RISE address. A valid address is in the format of "1234567890R".'
+    defaultMessage:
+      'Invalid RISE address. A valid address is in the format of "1234567890R".'
   },
   invalidAddressMnemonic: {
     id: 'onboarding-existing-account.invalid-address-mnemonic',
-    description: 'Error label for invalid address text input when it looks like a mnemonic',
-    defaultMessage: 'Looks like you\'re trying to enter your passphrase. Please enter your account address instead.'
+    description:
+      'Error label for invalid address text input when it looks like a mnemonic',
+    defaultMessage:
+      'Looks like you\'re trying to enter your passphrase. Please enter your account address instead.'
   }
 });
 
@@ -75,7 +77,6 @@ const messages = defineMessages({
 @inject('routerStore')
 @observer
 class ExistingAccountPage extends React.Component<DecoratedProps, State> {
-
   get injected(): PropsInjected & DecoratedProps {
     // @ts-ignore
     return this.props;
@@ -187,9 +188,9 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
                 error={addressInvalid}
                 value={address}
                 FormHelperTextProps={{
-                  error: addressInvalid,
+                  error: addressInvalid
                 }}
-                helperText={addressInvalid ? (this.addressError() || '') : ''}
+                helperText={addressInvalid ? this.addressError() || '' : ''}
                 onChange={this.handleAddressChange}
                 onBlur={this.handleAddressBlur}
               />

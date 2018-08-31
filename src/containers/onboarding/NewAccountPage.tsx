@@ -13,8 +13,7 @@ import {
   onboardingSecurityNoticeRoute
 } from '../../routes';
 
-interface Props {
-}
+interface Props {}
 
 interface PropsInjected extends Props {
   routerStore: RouterStore;
@@ -23,7 +22,6 @@ interface PropsInjected extends Props {
 @inject('routerStore')
 @observer
 class NewAccountPage extends React.Component<Props> {
-
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -52,41 +50,45 @@ class NewAccountPage extends React.Component<Props> {
         <List>
           <ListItem button={true} onClick={this.handleMnemonicClick}>
             <ListItemText
-              primary={(
+              primary={
                 <FormattedMessage
                   id="onboarding-new-account.using-mnemonic"
                   description="New account w/ a mnemonic button title"
                   defaultMessage="Create an account using a secret"
                 />
-              )}
-              secondary={(
+              }
+              secondary={
                 <FormattedMessage
                   id="onboarding-new-account.using-mnemonic-tip"
                   description="New account w/ a mnemonic button tip"
-                  defaultMessage={'I want to create a new account that '
-                    + 'can be accessed using a mnemonic secret'}
+                  defaultMessage={
+                    'I want to create a new account that ' +
+                    'can be accessed using a mnemonic secret'
+                  }
                 />
-              )}
+              }
             />
             <ChevronRight />
           </ListItem>
           <ListItem button={true}>
             <ListItemText
-              primary={(
+              primary={
                 <FormattedMessage
                   id="onboarding-new-account.using-ledger"
                   description="New account w/ Ledger button title"
                   defaultMessage="Import an account from hardware wallet"
                 />
-              )}
-              secondary={(
+              }
+              secondary={
                 <FormattedMessage
                   id="onboarding-new-account.using-ledger-tip"
                   description="New account w/ Ledger button tip"
-                  defaultMessage={'I want to import a new account from my '
-                    + 'Ledger hardware wallet'}
+                  defaultMessage={
+                    'I want to import a new account from my ' +
+                    'Ledger hardware wallet'
+                  }
                 />
-              )}
+              }
             />
             <ChevronRight />
           </ListItem>

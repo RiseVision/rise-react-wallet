@@ -61,8 +61,10 @@ class SettingsFiatForm extends React.Component<Props, State> {
             <FormattedMessage
               id="forms-settings-fiat.instructions"
               description="Instructions before the fiat currency field"
-              defaultMessage={'Select which FIAT currency you prefer to see your ' +
-                'RISE account value in.'}
+              defaultMessage={
+                'Select which FIAT currency you prefer to see your ' +
+                'RISE account value in.'
+              }
             />
           </Typography>
         </Grid>
@@ -73,7 +75,9 @@ class SettingsFiatForm extends React.Component<Props, State> {
             fullWidth={true}
           >
             {options.map(name => (
-              <option key={name} value={name}>{name}</option>
+              <option key={name} value={name}>
+                {name}
+              </option>
             ))}
           </NativeSelect>
         </Grid>

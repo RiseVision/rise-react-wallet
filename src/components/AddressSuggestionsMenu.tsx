@@ -7,37 +7,38 @@ import {
   createStyles,
   Theme,
   WithStyles,
-  withStyles,
+  withStyles
 } from '@material-ui/core/styles';
 import { PropGetters } from 'downshift';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import AccountIcon from './AccountIcon';
 
-const styles = (theme: Theme) => createStyles({
-  root: {
-    position: 'absolute',
-    zIndex: 1,
-    marginTop: theme.spacing.unit,
-    top: '100%',
-    left: 0,
-    right: 0,
-  },
-  menuItemRoot: {
-    height: 'initial',
-  },
-  accountIcon: {
-    backgroundColor: 'white'
-  },
-  accountName: {
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-  },
-  selected: {
-    fontWeight: 500,
-  },
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    root: {
+      position: 'absolute',
+      zIndex: 1,
+      marginTop: theme.spacing.unit,
+      top: '100%',
+      left: 0,
+      right: 0
+    },
+    menuItemRoot: {
+      height: 'initial'
+    },
+    accountIcon: {
+      backgroundColor: 'white'
+    },
+    accountName: {
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden'
+    },
+    selected: {
+      fontWeight: 500
+    }
+  });
 
 interface Record {
   address: string;
@@ -56,11 +57,7 @@ const stylesDecorator = withStyles(styles, { name: 'AddressSuggestionsMenu' });
 
 class AddressSuggestionsMenu extends React.Component<Props> {
   render() {
-    const {
-      classes,
-      suggestions,
-      getItemProps,
-    } = this.props;
+    const { classes, suggestions, getItemProps } = this.props;
 
     return (
       <Paper className={classes.root} square={true}>
@@ -70,7 +67,7 @@ class AddressSuggestionsMenu extends React.Component<Props> {
             component="div"
             selected={this.isItemHighlighted(index)}
             classes={{
-              root: classes.menuItemRoot,
+              root: classes.menuItemRoot
             }}
             {...getItemProps({ index, item })}
           >
@@ -78,11 +75,11 @@ class AddressSuggestionsMenu extends React.Component<Props> {
               classes={{
                 primary: classNames(
                   classes.accountName,
-                  this.isItemSelected(item) && classes.selected,
+                  this.isItemSelected(item) && classes.selected
                 ),
                 secondary: classNames(
-                  this.isItemSelected(item) && classes.selected,
-                ),
+                  this.isItemSelected(item) && classes.selected
+                )
               }}
               primary={item.label}
               secondary={item.address}
@@ -105,8 +102,9 @@ class AddressSuggestionsMenu extends React.Component<Props> {
 
   private isItemSelected(rec: Record): boolean {
     const { selectedItem } = this.props;
-    return selectedItem.address === rec.address
-      && selectedItem.source === rec.source;
+    return (
+      selectedItem.address === rec.address && selectedItem.source === rec.source
+    );
   }
 }
 

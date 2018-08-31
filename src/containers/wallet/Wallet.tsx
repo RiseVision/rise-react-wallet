@@ -49,13 +49,12 @@ const styles = (theme: Theme) =>
       backgroundColor: theme.palette.background.default,
       '& > :last-child': {
         flex: 1,
-        overflow: 'auto',
-      },
+        overflow: 'auto'
+      }
     }
   });
 
-interface Props extends WithStyles<typeof styles> {
-}
+interface Props extends WithStyles<typeof styles> {}
 
 interface State {
   mobileDrawerOpen: boolean;

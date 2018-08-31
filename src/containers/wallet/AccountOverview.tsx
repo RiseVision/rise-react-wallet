@@ -29,7 +29,7 @@ const styles = (theme: Theme) =>
       position: 'fixed',
       right: 3 * theme.spacing.unit,
       bottom: 3 * theme.spacing.unit,
-      zIndex: 1100,
+      zIndex: 1100
     },
     dateGroupTitle: {
       marginTop: theme.spacing.unit * 2,
@@ -71,7 +71,6 @@ const messages = defineMessages({
 @inject(accountStore)
 @observer
 class AccountOverview extends React.Component<DecoratedProps> {
-
   get injected(): PropsInjected & DecoratedProps {
     // @ts-ignore
     return this.props;

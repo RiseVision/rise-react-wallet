@@ -33,8 +33,8 @@ const styles = createStyles({
   }
 });
 
-type BaseProps = React.HTMLAttributes<HTMLDivElement>
-  & WithStyles<typeof styles>;
+type BaseProps = React.HTMLAttributes<HTMLDivElement> &
+  WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
   open: boolean;

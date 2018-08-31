@@ -4,17 +4,17 @@
 const jdenticon = require('jdenticon/dist/jdenticon');
 
 interface Config {
-    hues?: null | number[];
-    lightness?: {
-        color?: number[];
-        grayscale?: number[];
-    };
-    saturation?: {
-        color?: number;
-        grayscale?: number;
-    };
-    backColor?: string;
-    replaceMode?: 'never' | 'once' | 'observe';
+  hues?: null | number[];
+  lightness?: {
+    color?: number[];
+    grayscale?: number[];
+  };
+  saturation?: {
+    color?: number;
+    grayscale?: number;
+  };
+  backColor?: string;
+  replaceMode?: 'never' | 'once' | 'observe';
 }
 
 class Jdenticon {

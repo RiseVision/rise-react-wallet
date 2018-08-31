@@ -10,13 +10,13 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   accountOverviewRoute,
-  onboardingExistingAccountRoute, onboardingAddAccountRoute
+  onboardingExistingAccountRoute,
+  onboardingAddAccountRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 
-interface Props {
-}
+interface Props {}
 
 interface PropsInjected extends Props {
   onboardingStore: OnboardingStore;
@@ -30,7 +30,6 @@ interface PropsInjected extends Props {
 @observer
 // TODO handle missing onboardingStore.address using a redir
 class ExistingAccountTypePage extends React.Component<Props> {
-
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;

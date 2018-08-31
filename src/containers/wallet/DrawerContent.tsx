@@ -56,7 +56,7 @@ const styles = (theme: Theme) =>
     accountName: {
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
-      overflow: 'hidden',
+      overflow: 'hidden'
     },
     listIcon: {
       // Align the list icons to match the alignment of avatars
@@ -65,8 +65,7 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface Props extends WithStyles<typeof styles> {
-}
+interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
   store: RootStore;
@@ -81,25 +80,24 @@ const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
-    defaultMessage: 'Unnamed account',
+    defaultMessage: 'Unnamed account'
   },
   accountsListAriaLabel: {
     id: 'drawer-content.accounts-list-aria-label',
     description: 'Accessibility label for the accounts section in the drawer',
-    defaultMessage: 'Accounts',
+    defaultMessage: 'Accounts'
   },
   navigationListAriaLabel: {
     id: 'drawer-content.navigation-list-aria-label',
     description: 'Accessibility label for the navigation section in the drawer',
-    defaultMessage: 'Navigation',
-  },
+    defaultMessage: 'Navigation'
+  }
 });
 
 @inject('store')
 @inject('walletStore')
 @observer
 class DrawerContent extends React.Component<DecoratedProps> {
-
   get injected(): PropsInjected & DecoratedProps {
     // @ts-ignore
     return this.props;
@@ -172,7 +170,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
               {/* TODO this doesnt observe */}
               <ListItemText
                 classes={{
-                  primary: classes.accountName,
+                  primary: classes.accountName
                 }}
                 primary={account.name || unnamedAccountLabel}
                 secondary={account.id}

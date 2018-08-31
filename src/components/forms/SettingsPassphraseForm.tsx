@@ -84,9 +84,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
     const { intl } = this.props;
     const { passphrase } = this.state;
 
-    return passphrase
-      ? null
-      : intl.formatMessage(messages.invalidPassphrase);
+    return passphrase ? null : intl.formatMessage(messages.invalidPassphrase);
   }
 
   render() {

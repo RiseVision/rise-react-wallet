@@ -10,13 +10,11 @@ const styles = createStyles({
     borderRadius: 3,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center',
-  },
+    backgroundPosition: 'center'
+  }
 });
 
-const countryFlags: {
-  [P in CountryCode]: string;
-} = {
+const countryFlags: { [P in CountryCode]: string } = {
   de: require('svg-country-flags/svg/de.svg'),
   gb: require('svg-country-flags/svg/gb.svg'),
   es: require('svg-country-flags/svg/es.svg'),
@@ -29,7 +27,7 @@ const countryFlags: {
   ro: require('svg-country-flags/svg/ro.svg'),
   ru: require('svg-country-flags/svg/ru.svg'),
   ua: require('svg-country-flags/svg/ua.svg'),
-  cn: require('svg-country-flags/svg/cn.svg'),
+  cn: require('svg-country-flags/svg/cn.svg')
 };
 
 interface Props extends WithStyles<typeof styles> {
@@ -42,11 +40,7 @@ const stylesDecorator = withStyles(styles, { name: 'AccountIcon' });
 const FlagIcon = stylesDecorator(
   class extends React.Component<Props> {
     render() {
-      const {
-        classes,
-        className: classNameProp,
-        countryCode,
-      } = this.props;
+      const { classes, className: classNameProp, countryCode } = this.props;
       return (
         <div
           className={classNames(classes.root, classNameProp)}

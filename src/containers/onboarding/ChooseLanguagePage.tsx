@@ -23,9 +23,7 @@ const riseIcon = require('../../images/rise_icon.svg');
 
 // Labels are hard-coded here as we want to load the actual localization data
 // after the user has selected the language, not before.
-const localeLabels: {
-  [P in Locale]: string;
-} = {
+const localeLabels: { [P in Locale]: string } = {
   de: 'Weiter auf Deutsch',
   en: 'Continue in English',
   es: 'Continuar en español',
@@ -38,30 +36,30 @@ const localeLabels: {
   ro: 'Continuați în română',
   ru: 'Продолжить на русском',
   uk: 'Продовжуйте по-українськи',
-  zh: '繼續用中文',
+  zh: '繼續用中文'
 };
 
 const styles = createStyles({
   titleIcon: {
-    margin: '-4px 4px',
-  },
+    margin: '-4px 4px'
+  }
 });
 
-interface Props extends WithStyles<typeof styles> {
-}
+interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
   appStore: AppStore;
   routerStore: RouterStore;
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingChooseLanguagePage' });
+const stylesDecorator = withStyles(styles, {
+  name: 'OnboardingChooseLanguagePage'
+});
 
 @inject('appStore')
 @inject('routerStore')
 @observer
 class ChooseLanguagePage extends React.Component<Props> {
-
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -76,19 +74,23 @@ class ChooseLanguagePage extends React.Component<Props> {
   render() {
     // Order languages by browser preference
     const userLanguages = getUserLocales();
-    let languages = Locales.map((locale) => {
+    let languages = Locales.map(locale => {
       return {
         locale: locale,
         countryCode: getMainCountryForLocale(locale),
-        label: localeLabels[locale],
+        label: localeLabels[locale]
       };
     });
     languages.sort((a, b) => {
       let aIdx = userLanguages.indexOf(a.locale);
       let bIdx = userLanguages.indexOf(b.locale);
 
-      if (aIdx < 0) { aIdx = userLanguages.length; }
-      if (bIdx < 0) { bIdx = userLanguages.length; }
+      if (aIdx < 0) {
+        aIdx = userLanguages.length;
+      }
+      if (bIdx < 0) {
+        bIdx = userLanguages.length;
+      }
       return aIdx - bIdx;
     });
 
@@ -109,7 +111,7 @@ class ChooseLanguagePage extends React.Component<Props> {
                   height={24}
                   alt=""
                 />
-              ),
+              )
             }}
           />
         </ModalPaperHeader>

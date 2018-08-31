@@ -11,21 +11,18 @@ import {
 } from '@material-ui/core/styles';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
-import {
-  defineMessages,
-  InjectedIntlProps,
-  injectIntl
-} from 'react-intl';
+import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import ModalPaper from '../ModalPaper';
 import ModalPaperHeader from '../ModalPaperHeader';
 import autoId from '../../utils/autoId';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center',
-  },
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    }
+  });
 
 const stylesDecorator = withStyles(styles);
 
@@ -33,24 +30,25 @@ const messages = defineMessages({
   dialogTitle: {
     id: 'account-name-dialog.dialog-title',
     description: 'Account name dialog title',
-    defaultMessage: 'Update account name',
+    defaultMessage: 'Update account name'
   },
   instructions: {
     id: 'account-name-dialog.instructions',
     description: 'Instructions before the account name input field',
-    defaultMessage: 'Assign a new name to account {address}. ' +
-      'This name will only be visible to you and nobody else.',
+    defaultMessage:
+      'Assign a new name to account {address}. ' +
+      'This name will only be visible to you and nobody else.'
   },
   nameField: {
     id: 'account-name-dialog.name-input-label',
     description: 'Account name text field label',
-    defaultMessage: 'Account name',
+    defaultMessage: 'Account name'
   },
   updateButton: {
     id: 'account-name-dialog.update-button-label',
     description: 'Update account name button label',
-    defaultMessage: 'Update name',
-  },
+    defaultMessage: 'Update name'
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {
@@ -61,7 +59,7 @@ interface Props extends WithStyles<typeof styles> {
   };
   onBackClick?: () => void;
   onCloseClick?: () => void;
-  onChange: (account: { address: string; name: string; }) => void;
+  onChange: (account: { address: string; name: string }) => void;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -75,7 +73,7 @@ class AccountNameDialog extends React.Component<DecoratedProps, State> {
   @autoId dialogContentId: string;
 
   state = {
-    name: '',
+    name: ''
   };
 
   constructor(props: DecoratedProps) {
@@ -97,7 +95,7 @@ class AccountNameDialog extends React.Component<DecoratedProps, State> {
     const { name } = this.state;
     onChange({
       address: account.address,
-      name: name.trim(),
+      name: name.trim()
     });
   }
 
@@ -108,11 +106,9 @@ class AccountNameDialog extends React.Component<DecoratedProps, State> {
       open,
       account,
       onBackClick,
-      onCloseClick,
+      onCloseClick
     } = this.props;
-    const {
-      name,
-    } = this.state;
+    const { name } = this.state;
     return (
       <ModalPaper
         open={open}
@@ -140,7 +136,7 @@ class AccountNameDialog extends React.Component<DecoratedProps, State> {
             <Typography
               id={this.dialogContentId}
               children={intl.formatMessage(messages.instructions, {
-                address: account.address,
+                address: account.address
               })}
             />
           </Grid>

@@ -30,7 +30,7 @@ const styles = (theme: Theme) => {
 
   return createStyles({
     content: {
-      padding: 20,
+      padding: 20
     },
     mnemonic: {
       display: 'flex',
@@ -40,14 +40,14 @@ const styles = (theme: Theme) => {
       lineHeight: `${round(mnemonicLineHeight / mnemonicFontSize)}em`,
       verticalAlign: 'bottom',
       textAlign: 'center',
-      userSelect: 'none',
+      userSelect: 'none'
     },
     wordGroup: {
       position: 'relative',
       marginTop: pxToRem(10),
       marginBottom: pxToRem(10),
       marginLeft: '0.35em',
-      marginRight: '0.35em',
+      marginRight: '0.35em'
     },
     wordLabel: {
       position: 'absolute',
@@ -58,7 +58,7 @@ const styles = (theme: Theme) => {
       lineHeight: '1em',
       opacity: 0.5,
       userSelect: 'none',
-      pointerEvents: 'none',
+      pointerEvents: 'none'
     },
     wordValue: {
       display: 'block',
@@ -69,8 +69,8 @@ const styles = (theme: Theme) => {
     },
     currentWordValue: {
       color: theme.palette.text.primary,
-      borderBottom: '1px dashed #000',
-    },
+      borderBottom: '1px dashed #000'
+    }
   });
 };
 
@@ -96,7 +96,9 @@ interface State {
   currentWordInvalid: boolean;
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingVerifyMnemonicPage' });
+const stylesDecorator = withStyles(styles, {
+  name: 'OnboardingVerifyMnemonicPage'
+});
 
 @inject('onboardingStore')
 @inject('routerStore')
@@ -194,9 +196,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
   finish() {
     const { routerStore, onboardingStore, walletStore } = this.injected;
     const { mnemonic } = this.state;
-    onboardingStore.address = walletStore.registerAccount(
-      mnemonic
-    );
+    onboardingStore.address = walletStore.registerAccount(mnemonic);
     // Clear the mnemonic from memory as it has been securely written
     // down by the user (hopefully)
     onboardingStore.mnemonic = null;
@@ -248,7 +248,10 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
               >
                 {words.map((state, idx) => (
                   <React.Fragment key={idx}>
-                    <span className={classes.wordGroup} onClick={this.handlePlaceholderClick}>
+                    <span
+                      className={classes.wordGroup}
+                      onClick={this.handlePlaceholderClick}
+                    >
                       <span className={classes.wordLabel}>#{idx + 1}</span>
                       <span
                         className={classNames(

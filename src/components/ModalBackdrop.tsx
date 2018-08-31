@@ -17,34 +17,40 @@ const styles = createStyles({
     backgroundAttachment: 'fixed',
 
     // Remove grey highlight
-    WebkitTapHighlightColor: 'transparent',
+    WebkitTapHighlightColor: 'transparent'
   },
   invisible: {
     backgroundColor: 'transparent',
-    backgroundImage: 'none',
-  },
+    backgroundImage: 'none'
+  }
 });
 
 type BaseProps = BackdropProps & WithStyles<typeof styles>;
 
-interface Props extends BaseProps {
-}
+interface Props extends BaseProps {}
 
 const stylesDecorator = withStyles(styles, { name: 'ModalBackdrop' });
 
 const ModalBackdrop = stylesDecorator(
   class extends React.Component<Props> {
     render() {
-      const { classes, className, invisible, open, transitionDuration, ...other } = this.props;
+      const {
+        classes,
+        className,
+        invisible,
+        open,
+        transitionDuration,
+        ...other
+      } = this.props;
       return (
         <Fade appear={true} in={open} timeout={transitionDuration} {...other}>
           <div
             className={classNames(
               classes.root,
               {
-                [classes.invisible]: invisible,
+                [classes.invisible]: invisible
               },
-              className,
+              className
             )}
             aria-hidden="true"
           />

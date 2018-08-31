@@ -33,15 +33,14 @@ const styles = (theme: Theme) => {
 
   return createStyles({
     content: {
-      padding: 20,
+      padding: 20
     },
     mnemonic: {
       fontSize: pxToRem(mnemonicFontSize),
       lineHeight: `${round((mnemonicLineHeight + 20) / mnemonicFontSize)}em`,
-      textAlign: 'center',
+      textAlign: 'center'
     },
-    separator: {
-    },
+    separator: {},
     word: {
       display: 'inline-block',
       position: 'relative',
@@ -56,8 +55,8 @@ const styles = (theme: Theme) => {
         lineHeight: '1em',
         opacity: 0.5,
         userSelect: 'none',
-        pointerEvents: 'none',
-      },
+        pointerEvents: 'none'
+      }
     },
     'word-1': { '&::before': { content: '"#1"' } },
     'word-2': { '&::before': { content: '"#2"' } },
@@ -70,7 +69,7 @@ const styles = (theme: Theme) => {
     'word-9': { '&::before': { content: '"#9"' } },
     'word-10': { '&::before': { content: '"#10"' } },
     'word-11': { '&::before': { content: '"#11"' } },
-    'word-12': { '&::before': { content: '"#12"' } },
+    'word-12': { '&::before': { content: '"#12"' } }
   });
 };
 
@@ -95,13 +94,14 @@ interface State {
   mnemonic: string[];
 }
 
-const stylesDecorator = withStyles(styles, { name: 'OnboardingNewMnemonicPage' });
+const stylesDecorator = withStyles(styles, {
+  name: 'OnboardingNewMnemonicPage'
+});
 
 @inject('onboardingStore')
 @inject('routerStore')
 @observer
 class NewMnemonicPage extends React.Component<Props, State> {
-
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -110,7 +110,7 @@ class NewMnemonicPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      mnemonic: props.mnemonic || newMnemonic(),
+      mnemonic: props.mnemonic || newMnemonic()
     };
   }
 
@@ -132,14 +132,22 @@ class NewMnemonicPage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader closeButton={true} onCloseClick={this.handleCloseClick}>
+        <ModalPaperHeader
+          closeButton={true}
+          onCloseClick={this.handleCloseClick}
+        >
           <FormattedMessage
             id="onboarding-new-mnemonic.title"
             description="New mnemonic screen title"
             defaultMessage="Write this down"
           />
         </ModalPaperHeader>
-        <Grid container={true} className={classes.content} spacing={16} justify="center">
+        <Grid
+          container={true}
+          className={classes.content}
+          spacing={16}
+          justify="center"
+        >
           <Grid item={true} xs={12}>
             <Typography>
               <FormattedMessage
@@ -147,20 +155,24 @@ class NewMnemonicPage extends React.Component<Props, State> {
                 description="Text before the mnemonic secret"
                 defaultMessage={`This is your new {wordCount, number}-word mnemonic secret:`}
                 values={{
-                  wordCount,
+                  wordCount
                 }}
               />
             </Typography>
           </Grid>
           <Grid item={true} xs={12}>
-            <Typography className={classes.mnemonic} component="p" variant="title">
+            <Typography
+              className={classes.mnemonic}
+              component="p"
+              variant="title"
+            >
               {mnemonic.map((word, idx) => (
                 <React.Fragment key={idx}>
                   {idx > 0 && ' '}
                   <span
                     className={classNames(
                       classes.word,
-                      classes[`word-${idx + 1}`],
+                      classes[`word-${idx + 1}`]
                     )}
                   >
                     {word}

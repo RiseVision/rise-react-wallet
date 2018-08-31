@@ -305,7 +305,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         <AccountNameDialog
           account={{
             name: this.account.name,
-            address: this.account.id,
+            address: this.account.id
           }}
           open={this.state.dialogOpen}
           onCloseClick={this.onDialogClose}

@@ -18,6 +18,7 @@
     "mobx-react": "^5.2.3",
     "mobx-router": "^0.0.13",
     "moment-timezone": "^0.5.21",
+    "prettier": "^1.14.2",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-helmet": "^5.2.0",
@@ -37,10 +38,12 @@
     "riw:status": "riw app status",
     "tsc": "tsc --project tsconfig.prod.json --noEmit",
     "tslint": "npx tslint --fix --project tslint.prod.json 'src/**/*.{ts,tsx}'",
-    "precommit": "npm run tsc && npm run tslint"
+    "precommit": "npm run tsc && npm run prettier && npm run tslint",
+    "prettier": "prettier src/**.{ts,tsx} --write"
   },
   "pre-commit": [
     "tsc",
+    "prettier",
     "tslint"
   ],
   "riw": {
