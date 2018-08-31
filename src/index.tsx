@@ -12,7 +12,7 @@ import RootStore from './stores/root';
 
 // tslint:disable-next-line:no-any
 const store = new RootStore((config as any) as TConfig);
-startRouter(routes, store);
+startRouter(routes, store, { strict: false });
 
 const stores: TStores = {
   store,

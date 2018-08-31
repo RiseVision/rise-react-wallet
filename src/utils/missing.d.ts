@@ -36,7 +36,8 @@ declare module 'mobx-router' {
   export class MobxRouter extends React.Component {}
   export function startRouter(
     routes: { [route: string]: Route<any> },
-    store: Object
+    store: Object,
+    options?: Object
   ): void;
 }
 
