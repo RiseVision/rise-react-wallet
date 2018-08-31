@@ -137,8 +137,8 @@ const messages = defineMessages({
 });
 
 class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
-  render() {
-    const { intl, classes, tx } = this.props;
+  getSummary() {
+    const { intl, tx } = this.props;
 
     let summaryShort = '',
       summaryLong = '';
@@ -199,6 +199,20 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
     )}`;
     let amountLong = `${amountShort} RISE`;
 
+    return { summaryShort, summaryLong, amount, amountLong, amountShort };
+  }
+
+  render() {
+    const { classes, tx, intl } = this.props;
+
+    const {
+      summaryShort,
+      summaryLong,
+      amount,
+      amountLong,
+      amountShort
+    } = this.getSummary();
+
     return (
       <ExpansionPanel>
         <ExpansionPanelSummary
@@ -248,7 +262,26 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             root: classes.detailsRoot
           }}
         >
-          <Typography>TODO: Transaction details</Typography>
+          <Typography>
+            <ul>
+              <li>ID: {tx.id}</li>
+              <li>Confirmations: {tx.confirmations}</li>
+              <li>
+                Amount:{' '}
+                {intl.formatNumber(tx.amount.toNumber(), {
+                  style: 'decimal'
+                })}
+              </li>
+              <li>
+                Fee:{' '}
+                {intl.formatNumber(tx.fee.toNumber(), {
+                  style: 'decimal'
+                })}
+              </li>
+              <li>Fiat: TODO</li>
+              <li>Time: {tx.time}</li>
+            </ul>
+          </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>
     );

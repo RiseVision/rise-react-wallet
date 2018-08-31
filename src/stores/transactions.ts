@@ -21,7 +21,7 @@ export default class TransactionsStore {
           nextDay: '[Tomorrow]',
           nextWeek: 'dddd',
           sameElse: () => {
-            return this.config.date_format;
+            return this.config.date_format_short;
           }
         });
     });

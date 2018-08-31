@@ -32,6 +32,7 @@ import {
 } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
 import { TConfig } from './index';
+import * as moment from 'moment-timezone';
 
 export default class WalletStore {
   api: string;
@@ -298,7 +299,10 @@ export default class WalletStore {
 
   // TODO missing in dposAPI
   async searchDelegates(query: string): Promise<Delegate[]> {
-    assert(query === query.toLowerCase(), 'Delegate username query must be all lowercase');
+    assert(
+      query === query.toLowerCase(),
+      'Delegate username query must be all lowercase'
+    );
     const params = {
       q: query
     };
@@ -530,7 +534,10 @@ export default class WalletStore {
         fee,
         isIncoming: raw.senderId !== accountID,
         senderName: this.idToName(raw.senderId),
-        recipientName: this.getRecipientName(raw.type, raw.recipientId)
+        recipientName: this.getRecipientName(raw.type, raw.recipientId),
+        time: moment(timestampToUnix(raw.timestamp)).format(
+          this.config.date_format
+        )
       } as TTransaction;
     });
   }
@@ -703,6 +710,7 @@ export type TTransaction = APITransaction & {
   isIncoming: boolean;
   senderName: string | null;
   recipientName: string | null;
+  time: string;
 };
 
 export type TTransactionsRequest = {
