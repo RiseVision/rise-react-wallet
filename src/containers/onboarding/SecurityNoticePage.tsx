@@ -77,23 +77,24 @@ class SecurityNoticePage extends React.Component<Props, State> {
   handleCloseClick = () => {
     const { routerStore } = this.injected;
     routerStore.goTo(onboardingNewAccountRoute);
-  }
+  };
 
   handleNextTipClick = () => {
     this.setState(prevState => {
       return { currentTip: prevState.currentTip + 1 };
     });
-  }
+  };
 
   handleContinueClick = () => {
     const { routerStore } = this.injected;
     routerStore.goTo(onboardingNewMnemonicRoute);
-  }
+  };
 
   render() {
     const { classes } = this.injected;
 
-    const tips = [
+    const tips = [];
+    tips.push(
       <FormattedMessage
         id="onboarding-security-notice.correct-url-tip"
         description="Tip about checking the browser URL"
@@ -102,7 +103,9 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'yourself or use a bookmark that you yourself created. Never trust links posted ' +
           'on social media, in search results, sent in emails or listed on other websites.'
         }
-      />,
+      />
+    );
+    tips.push(
       <FormattedMessage
         id="onboarding-security-notice.trust-browser-tip"
         description="Tip about truting your browser"
@@ -111,7 +114,9 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'get in touch with us and report it. Do not ignore the warning nor enter your ' +
           'mnemonic secret!'
         }
-      />,
+      />
+    );
+    tips.push(
       <FormattedMessage
         id="onboarding-security-notice.own-devices-tip"
         description="Tip about untrustworthy devices"
@@ -120,7 +125,9 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'secret on untrustworthy devices (public computers, friends computers/phones, etc) ' +
           'as they might be littered with malware and keyloggers.'
         }
-      />,
+      />
+    );
+    tips.push(
       <FormattedMessage
         id="onboarding-security-notice.apply-updates-tip"
         description="Tip about installing security updates"
@@ -128,7 +135,9 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'Always keep your operating system, anti-virus software and browser up to date with ' +
           'latest security updates.'
         }
-      />,
+      />
+    );
+    tips.push(
       <FormattedMessage
         id="onboarding-security-notice.hardware-wallets-tip"
         description="Tip about using hardware wallets"
@@ -137,7 +146,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
           'amounts of RISE.'
         }
       />
-    ];
+    );
 
     return (
       <ModalPaper open={true}>
