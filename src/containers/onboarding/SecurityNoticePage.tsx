@@ -77,18 +77,18 @@ class SecurityNoticePage extends React.Component<Props, State> {
   handleCloseClick = () => {
     const { routerStore } = this.injected;
     routerStore.goTo(onboardingNewAccountRoute);
-  };
+  }
 
   handleNextTipClick = () => {
     this.setState(prevState => {
       return { currentTip: prevState.currentTip + 1 };
     });
-  };
+  }
 
   handleContinueClick = () => {
     const { routerStore } = this.injected;
     routerStore.goTo(onboardingNewMnemonicRoute);
-  };
+  }
 
   render() {
     const { classes } = this.injected;
