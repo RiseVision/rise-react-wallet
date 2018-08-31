@@ -36,6 +36,7 @@ const styles = createStyles({
 interface Props extends WithStyles<typeof styles> {
   open: boolean;
   backdrop?: React.ReactType<BackdropProps>;
+  onEscapeKeyDown?: React.ReactEventHandler<{}>;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'ModalPaper' });
@@ -43,7 +44,7 @@ const stylesDecorator = withStyles(styles, { name: 'ModalPaper' });
 const ModalPaper = stylesDecorator(
   class extends React.Component<Props> {
     render() {
-      const { classes, open, children } = this.props;
+      const { classes, open, onEscapeKeyDown, children } = this.props;
       const transitionDuration = {
         enter: duration.enteringScreen,
         exit: duration.leavingScreen
@@ -56,6 +57,7 @@ const ModalPaper = stylesDecorator(
             transitionDuration
           }}
           BackdropComponent={this.props.backdrop || ModalBackdrop}
+          onEscapeKeyDown={onEscapeKeyDown}
         >
           <Fade appear={true} in={open} timeout={transitionDuration}>
             <div className={classes.content}>

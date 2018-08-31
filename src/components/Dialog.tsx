@@ -38,35 +38,18 @@ interface State {}
 const stylesDecorator = withStyles(styles);
 
 class Dialog extends React.Component<Props, State> {
-  componentDidMount() {
-    document.addEventListener('keyup', this.handleESCKey);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keyup', this.handleESCKey);
-  }
-
-  handleESCKey = (event: KeyboardEvent) => {
-    if (!this.props.onClose) {
-      return;
-    }
-    if (event.keyCode === 27 && this.props.onClose) {
-      this.props.onClose();
-    }
-  }
-
   handleBackClick = () => {
     this.setState({ open: false });
     this.props.onClose!();
   }
 
   render() {
-    const { open, title, classes } = this.props;
+    const { open, title, classes, onClose } = this.props;
 
     let onBackClick = this.props.onBackClick;
 
     return (
-      <ModalPaper open={open} backdrop={Backdrop}>
+      <ModalPaper open={open} backdrop={Backdrop} onEscapeKeyDown={onClose}>
         <ModalPaperHeader
           closeButton={Boolean(this.props.onClose)}
           onCloseClick={this.handleBackClick}
