@@ -45,7 +45,7 @@ import WalletStore from '../../stores/wallet';
 import SettingsPassphrase from './SettingsPassphrase';
 import RegisterDelegate from './RegisterDelegate';
 import VoteDelegate from './VoteDelegate';
-import AccountNameDialog from '../../components/dialogs/AccountNameDialog';
+import UpdateAccountName from './UpdateAccountName';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -260,12 +260,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   // DIALOG ACTIONS
 
-  @action
-  onSubmitName = (acc: { name: string }) => {
-    this.account.name = acc.name;
-    this.onDialogClose();
-  }
-
   onSubmitRemoveAccount = () => {
     let { routerStore, walletStore } = this.injected;
 
@@ -300,21 +294,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     const config = this.injected.walletStore.config;
     const { dialogField } = this.state;
 
-    if (dialogField === 'name') {
-      return (
-        <AccountNameDialog
-          account={{
-            name: this.account.name,
-            address: this.account.id
-          }}
-          open={this.state.dialogOpen}
-          onCloseClick={this.onDialogClose}
-          onChange={this.onSubmitName}
-        />
-      );
-    }
-
-    switch (this.state.dialogField!) {
+    switch (dialogField) {
       case 'delegate':
         return <VoteDelegate onSubmit={this.onDialogClose} />;
       case 'delegateRegistration':
@@ -402,6 +382,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
     return (
       <React.Fragment>
+        <UpdateAccountName
+          account={this.account}
+          onNavigateBack={this.onDialogClose}
+        />
         {this.getDialog()}
         <div className={classes.content}>
           <List>
