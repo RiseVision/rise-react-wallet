@@ -79,7 +79,7 @@ class Dialog extends React.PureComponent<Props, State> {
 
 export default stylesDecorator(Dialog);
 
-interface DialogContentProps {
+export interface DialogContentProps {
   setDialogContent?: (value: DialogContent) => void;
 }
 
@@ -109,17 +109,22 @@ const contentStyles = (theme: Theme) => createStyles({
   },
 });
 
-interface LegacyContentProps extends WithStyles<typeof contentStyles> {
+type BaseLegacyContentProps = WithStyles<typeof contentStyles>
+  & DialogContentProps;
+
+interface LegacyContentProps extends BaseLegacyContentProps {
   title: JSX.Element;
-  setDialogContent?: (value: DialogContent) => void;
 }
 
 export const LegacyContent = withStyles(contentStyles)(
   class extends React.Component<LegacyContentProps> {
-    render() {
-      const { classes, title, children } = this.props;
-
+    componentWillMount() {
+      const { title } = this.props;
       SetDialogContent(this, { title });
+    }
+
+    render() {
+      const { classes, children } = this.props;
 
       return (
         <div
