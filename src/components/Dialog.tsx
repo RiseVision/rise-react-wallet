@@ -1,4 +1,6 @@
-import Backdrop from '@material-ui/core/Backdrop';
+import MuiDialog, {
+  DialogProps as MuiDialogProps
+} from '@material-ui/core/Dialog';
 import {
   createStyles,
   Theme,
@@ -6,62 +8,125 @@ import {
   withStyles
 } from '@material-ui/core/styles';
 import * as React from 'react';
-import { ReactElement } from 'react';
-import ModalPaper from './ModalPaper';
+import { ReactElement, ReactEventHandler } from 'react';
 import ModalPaperHeader from './ModalPaperHeader';
+import autoId from '../utils/autoId';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    content: {
-      padding: theme.spacing.unit * 2,
-      textAlign: 'center',
-      '& p': {
-        marginBottom: 0
-      }
-    },
-    footer: {
-      '& button': {
-        color: 'gray'
-      }
-    }
-  });
+const styles = (theme: Theme) => createStyles({
+});
 
-interface Props extends WithStyles<typeof styles> {
-  open: boolean;
-  title: ReactElement<HTMLElement> | null;
-  onBackClick?: () => void;
-  onClose?: () => void;
+type BaseProps = MuiDialogProps
+  & WithStyles<typeof styles>;
+
+interface Props extends BaseProps {
+  onNavigateBack?: ReactEventHandler<{}>;
+  children: ReactElement<DialogContentProps>;
 }
 
-interface State {}
+interface State {
+  title: JSX.Element;
+  childContentId: null | string;
+}
 
 const stylesDecorator = withStyles(styles);
 
-class Dialog extends React.Component<Props, State> {
-  handleBackClick = () => {
-    this.setState({ open: false });
-    this.props.onClose!();
+class Dialog extends React.PureComponent<Props, State> {
+  @autoId dialogTitleId: string;
+  @autoId dialogContentId: string;
+
+  state = {
+    title: <span />,
+    childContentId: null,
+  };
+
+  setDialogContent = (dc: DialogContent) => {
+    this.setState({
+      title: dc.title,
+      childContentId: dc.contentId || null,
+    });
   }
 
   render() {
-    const { open, title, classes, onClose } = this.props;
-
-    let onBackClick = this.props.onBackClick;
+    const { onClose, onNavigateBack, children, ...others } = this.props;
+    const { title, childContentId } = this.state;
 
     return (
-      <ModalPaper open={open} backdrop={Backdrop} onEscapeKeyDown={onClose}>
+      <MuiDialog
+        aria-labelledby={this.dialogTitleId}
+        aria-describedby={childContentId || this.dialogContentId}
+        onClose={onClose}
+        {...others}
+      >
         <ModalPaperHeader
-          closeButton={Boolean(this.props.onClose)}
-          onCloseClick={this.handleBackClick}
-          backButton={Boolean(onBackClick)}
-          onBackClick={onBackClick}
+          closeButton={!!onClose}
+          onCloseClick={onClose}
+          backButton={!!onNavigateBack}
+          onBackClick={onNavigateBack}
+          children={title}
+        />
+        <div
+          id={this.dialogContentId}
+          key={children.key !== null ? children.key : undefined}
         >
-          {title}
-        </ModalPaperHeader>
-        <div className={classes.content}>{this.props.children}</div>
-      </ModalPaper>
+          {React.cloneElement(children, {
+            setDialogContent: this.setDialogContent,
+          })}
+        </div>
+      </MuiDialog>
     );
   }
 }
 
 export default stylesDecorator(Dialog);
+
+interface DialogContentProps {
+  setDialogContent?: (value: DialogContent) => void;
+}
+
+export interface DialogContent {
+  title: JSX.Element;
+  contentId?: null | string;
+}
+
+export function SetDialogContent(
+  component: React.Component<DialogContentProps>,
+  content: DialogContent
+) {
+  const { setDialogContent } = component.props;
+
+  if (setDialogContent) {
+    setDialogContent(content);
+  }
+}
+
+const contentStyles = (theme: Theme) => createStyles({
+  content: {
+    padding: theme.spacing.unit * 2,
+    textAlign: 'center',
+    '& p': {
+      marginBottom: 0
+    }
+  },
+});
+
+interface LegacyContentProps extends WithStyles<typeof contentStyles> {
+  title: JSX.Element;
+  setDialogContent?: (value: DialogContent) => void;
+}
+
+export const LegacyContent = withStyles(contentStyles)(
+  class extends React.Component<LegacyContentProps> {
+    render() {
+      const { classes, title, children } = this.props;
+
+      SetDialogContent(this, { title });
+
+      return (
+        <div
+          className={classes.content}
+          children={children}
+        />
+      );
+    }
+  }
+);

@@ -10,6 +10,7 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import Close from '@material-ui/icons/Close';
 import * as classNames from 'classnames';
 import * as React from 'react';
+import { ReactEventHandler, MouseEvent } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 
 const styles = (theme: Theme) =>
@@ -45,9 +46,9 @@ const styles = (theme: Theme) =>
 interface Props extends WithStyles<typeof styles> {
   titleId?: string;
   backButton?: boolean;
-  onBackClick?: () => void;
+  onBackClick?: ReactEventHandler<{}>;
   closeButton?: boolean;
-  onCloseClick?: () => void;
+  onCloseClick?: ReactEventHandler<{}>;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -68,15 +69,15 @@ const messages = defineMessages({
 });
 
 class ModalPaperHeader extends React.Component<DecoratedProps> {
-  handleBackClick = () => {
+  handleBackClick = (ev: MouseEvent<HTMLElement>) => {
     if (this.props.onBackClick) {
-      this.props.onBackClick();
+      this.props.onBackClick(ev);
     }
   }
 
-  handleCloseClick = () => {
+  handleCloseClick = (ev: MouseEvent<HTMLElement>) => {
     if (this.props.onCloseClick) {
-      this.props.onCloseClick();
+      this.props.onCloseClick(ev);
     }
   }
 

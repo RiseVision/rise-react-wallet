@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import Dialog from '../../components/Dialog';
+import Dialog, { LegacyContent } from '../../components/Dialog';
 import ConfirmTransactionForm, {
   ProgressState,
   State as ConfirmFormState
@@ -149,12 +149,14 @@ export default class RegisterDelegate extends React.Component<Props, State> {
 
     return (
       <Dialog
-        title={title}
         open={true}
         onClose={(!inProgress && this.onClose) || undefined}
-        onBackClick={(showBackButton && this.onBackClick) || undefined}
+        onNavigateBack={(showBackButton && this.onBackClick) || undefined}
       >
-        {content}
+        <LegacyContent
+          title={title}
+          children={content}
+        />
       </Dialog>
     );
   }

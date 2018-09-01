@@ -23,7 +23,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import Dialog from '../../components/Dialog';
+import Dialog, { LegacyContent } from '../../components/Dialog';
 import FiatForm, {
   State as FiatState
 } from '../../components/forms/SettingsFiat';
@@ -337,11 +337,13 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
     return (
       <Dialog
-        title={title}
         open={this.state.dialogOpen}
         onClose={this.onDialogClose}
       >
-        {form}
+        <LegacyContent
+          title={title}
+          children={form}
+        />
       </Dialog>
     );
   }
