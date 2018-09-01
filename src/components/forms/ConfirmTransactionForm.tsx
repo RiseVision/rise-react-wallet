@@ -383,7 +383,6 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
     const formatAmount = (amount: RawAmount) =>
       `${intl.formatNumber(amount.unit.toNumber())} RISE`;
 
-    // TODO extract
     const renderDelegates = (usernames: string[]) => (
       <React.Fragment>
         {usernames
