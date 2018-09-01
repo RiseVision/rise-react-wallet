@@ -24,7 +24,7 @@ interface Props extends BaseProps {
 }
 
 interface State {
-  title: JSX.Element;
+  title: string | JSX.Element;
   childContentId: null | string;
 }
 
@@ -35,7 +35,7 @@ class Dialog extends React.PureComponent<Props, State> {
   @autoId dialogContentId: string;
 
   state = {
-    title: <span />,
+    title: '',
     childContentId: null,
   };
 
@@ -84,7 +84,7 @@ export interface DialogContentProps {
 }
 
 export interface DialogContent {
-  title: JSX.Element;
+  title: string | JSX.Element;
   contentId?: null | string;
 }
 

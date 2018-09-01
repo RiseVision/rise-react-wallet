@@ -1,4 +1,3 @@
-import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -12,8 +11,7 @@ import {
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import ModalPaper from '../ModalPaper';
-import ModalPaperHeader from '../ModalPaperHeader';
+import { DialogContentProps, SetDialogContent } from '../Dialog';
 import autoId from '../../utils/autoId';
 
 const styles = (theme: Theme) =>
@@ -24,41 +22,41 @@ const styles = (theme: Theme) =>
     }
   });
 
-const stylesDecorator = withStyles(styles);
+const stylesDecorator = withStyles(styles, { name: 'AccountNameDialogContent' });
 
 const messages = defineMessages({
   dialogTitle: {
-    id: 'account-name-dialog.dialog-title',
+    id: 'account-name-dialog-content.dialog-title',
     description: 'Account name dialog title',
     defaultMessage: 'Update account name'
   },
   instructions: {
-    id: 'account-name-dialog.instructions',
+    id: 'account-name-dialog-content.instructions',
     description: 'Instructions before the account name input field',
     defaultMessage:
       'Assign a new name to account {address}. ' +
       'This name will only be visible to you and nobody else.'
   },
   nameField: {
-    id: 'account-name-dialog.name-input-label',
+    id: 'account-name-dialog-content.name-input-label',
     description: 'Account name text field label',
     defaultMessage: 'Account name'
   },
   updateButton: {
-    id: 'account-name-dialog.update-button-label',
+    id: 'account-name-dialog-content.update-button-label',
     description: 'Update account name button label',
     defaultMessage: 'Update name'
   }
 });
 
-interface Props extends WithStyles<typeof styles> {
-  open: boolean;
+type BaseProps = WithStyles<typeof styles>
+  & DialogContentProps;
+
+interface Props extends BaseProps {
   account: {
     name: string;
     address: string;
   };
-  onBackClick?: () => void;
-  onCloseClick?: () => void;
   onChange: (account: { address: string; name: string }) => void;
 }
 
@@ -68,8 +66,7 @@ interface State {
   name: string;
 }
 
-class AccountNameDialog extends React.Component<DecoratedProps, State> {
-  @autoId dialogTitleId: string;
+class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
   @autoId dialogContentId: string;
 
   state = {
@@ -99,67 +96,58 @@ class AccountNameDialog extends React.Component<DecoratedProps, State> {
     });
   }
 
+  componentWillMount() {
+    const { intl } = this.props;
+
+    SetDialogContent(this, {
+      title: intl.formatMessage(messages.dialogTitle),
+      contentId: this.dialogContentId,
+    });
+  }
+
   render() {
     const {
       intl,
       classes,
-      open,
       account,
-      onBackClick,
-      onCloseClick
     } = this.props;
+
     const { name } = this.state;
     return (
-      <ModalPaper
-        open={open}
-        backdrop={Backdrop}
-        aria-labelledby={this.dialogTitleId}
-        aria-describedby={this.dialogContentId}
-        onEscapeKeyDown={onCloseClick}
+      <Grid
+        className={classes.content}
+        container={true}
+        spacing={16}
+        component="form"
+        onSubmit={this.handleFormSubmit}
       >
-        <ModalPaperHeader
-          titleId={this.dialogTitleId}
-          closeButton={!!onCloseClick}
-          onCloseClick={onCloseClick}
-          backButton={!!onBackClick}
-          onBackClick={onBackClick}
-          children={intl.formatMessage(messages.dialogTitle)}
-        />
-        <Grid
-          className={classes.content}
-          container={true}
-          spacing={16}
-          component="form"
-          onSubmit={this.handleFormSubmit}
-        >
-          <Grid item={true} xs={12}>
-            <Typography
-              id={this.dialogContentId}
-              children={intl.formatMessage(messages.instructions, {
-                address: account.address
-              })}
-            />
-          </Grid>
-          <Grid item={true} xs={12}>
-            <TextField
-              label={intl.formatMessage(messages.nameField)}
-              autoFocus={true}
-              value={name}
-              onChange={this.handleNameChange}
-              fullWidth={true}
-            />
-          </Grid>
-          <Grid item={true} xs={12}>
-            <Button
-              type="submit"
-              fullWidth={true}
-              children={intl.formatMessage(messages.updateButton)}
-            />
-          </Grid>
+        <Grid item={true} xs={12}>
+          <Typography
+            id={this.dialogContentId}
+            children={intl.formatMessage(messages.instructions, {
+              address: account.address
+            })}
+          />
         </Grid>
-      </ModalPaper>
+        <Grid item={true} xs={12}>
+          <TextField
+            label={intl.formatMessage(messages.nameField)}
+            autoFocus={true}
+            value={name}
+            onChange={this.handleNameChange}
+            fullWidth={true}
+          />
+        </Grid>
+        <Grid item={true} xs={12}>
+          <Button
+            type="submit"
+            fullWidth={true}
+            children={intl.formatMessage(messages.updateButton)}
+          />
+        </Grid>
+      </Grid>
     );
   }
 }
 
-export default stylesDecorator(injectIntl(AccountNameDialog));
+export default stylesDecorator(injectIntl(AccountNameDialogContent));

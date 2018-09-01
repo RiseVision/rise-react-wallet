@@ -45,7 +45,7 @@ import WalletStore from '../../stores/wallet';
 import SettingsPassphrase from './SettingsPassphrase';
 import RegisterDelegate from './RegisterDelegate';
 import VoteDelegate from './VoteDelegate';
-import UpdateAccountName from './UpdateAccountName';
+import AccountNameDialog from './AccountNameDialog';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -384,7 +384,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
     return (
       <React.Fragment>
-        <UpdateAccountName
+        <AccountNameDialog
           account={this.account}
           onNavigateBack={this.onDialogClose}
         />

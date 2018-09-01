@@ -3,8 +3,9 @@ import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import { accountSettingsNameRoute } from '../../routes';
+import Dialog from '../../components/Dialog';
 import AccountStore from '../../stores/account';
-import AccountNameDialog from '../../components/dialogs/AccountNameDialog';
+import AccountNameDialogContent from '../../components/content/AccountNameDialogContent';
 
 interface Props {
   account: AccountStore;
@@ -17,7 +18,7 @@ interface InjectedProps extends Props {
 
 @inject('routerStore')
 @observer
-class UpdateAccountName extends React.Component<Props> {
+class AccountNameDialog extends React.Component<Props> {
   private get injected(): InjectedProps {
     return this.props as InjectedProps;
   }
@@ -35,17 +36,20 @@ class UpdateAccountName extends React.Component<Props> {
     const isOpen = routerStore.currentView === accountSettingsNameRoute;
 
     return (
-      <AccountNameDialog
-        account={{
-          name: account.name,
-          address: account.id,
-        }}
+      <Dialog
         open={isOpen}
-        onCloseClick={onNavigateBack}
-        onChange={this.handleChange}
-      />
+        onClose={onNavigateBack}
+      >
+        <AccountNameDialogContent
+          account={{
+            name: account.name,
+            address: account.id,
+          }}
+          onChange={this.handleChange}
+        />
+      </Dialog>
     );
   }
 }
 
-export default UpdateAccountName;
+export default AccountNameDialog;
