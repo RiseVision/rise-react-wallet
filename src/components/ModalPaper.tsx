@@ -70,16 +70,26 @@ const ModalPaper = stylesDecorator(
           BackdropComponent={this.props.backdrop || ModalBackdrop}
           onEscapeKeyDown={onEscapeKeyDown}
         >
-          <div
-            className={classes.content}
-            role={role || 'dialog'}
-            aria-modal={true}
-            {...other}
+          <Fade
+            appear={true}
+            in={open}
+            timeout={transitionDuration}
+            {...{
+              // Fade component passes all extra props to its children,
+              // but TS typedef don't reflect that. Modal component does
+              // various detections based on it's child props, so this is
+              // a hacky way around the TS compiler to make everything work.
+              role: role || 'dialog',
+            }}
           >
-            <Fade appear={true} in={open} timeout={transitionDuration}>
+            <div
+              className={classes.content}
+              aria-modal={true}
+              {...other}
+            >
               <Paper className={classes.paper}>{children}</Paper>
-            </Fade>
-          </div>
+            </div>
+          </Fade>
         </Modal>
       );
     }
