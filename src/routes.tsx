@@ -462,7 +462,6 @@ export const accountSendRoute = new Route({
       render={(components: TWalletComponents) => (
         <components.Wallet>
           <components.AccountOverview />
-          <components.SendTransaction />
         </components.Wallet>
       )}
     />

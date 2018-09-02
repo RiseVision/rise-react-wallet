@@ -8,7 +8,6 @@ import {
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { observer } from 'mobx-react';
 import * as React from 'react';
 import {
   defineMessages,
@@ -23,9 +22,15 @@ import { RawAmount } from '../../utils/amounts';
 import { normalizeAddress, normalizeNumber } from '../../utils/utils';
 import AddressSuggestionsMenu from '../../components/AddressSuggestionsMenu';
 import { deburr, take } from 'lodash';
+import { DialogContentProps, SetDialogContent } from '../Dialog';
+import autoId from '../../utils/autoId';
 
 const styles = (theme: Theme) =>
   createStyles({
+    content: {
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    },
     accountContainer: {
       display: 'flex',
       alignItems: 'center',
@@ -39,15 +44,20 @@ const styles = (theme: Theme) =>
     }
   });
 
+const stylesDecorator = withStyles(styles, { name: 'SendCoinsDialogContent' });
+
 export interface SendFormState {
   recipientID: string;
   amount: RawAmount;
 }
 
-interface Props extends WithStyles<typeof styles> {
+type BaseProps = WithStyles<typeof styles>
+  & DialogContentProps;
+
+interface Props extends BaseProps {
   onSubmit: (state: SendFormState) => void;
   amount: RawAmount | null;
-  fee: RawAmount;
+  sendFee: RawAmount;
   balance: RawAmount;
   // pre-filled recipient
   recipientID?: string;
@@ -66,32 +76,35 @@ interface State {
   parsedAmount: RawAmount | null;
 }
 
-const stylesDecorator = withStyles(styles);
-
 const messages = defineMessages({
+  dialogTitle: {
+    id: 'send-coins-dialog-content.dialog-title',
+    description: 'Send coins dialog title',
+    defaultMessage: 'Send RISE'
+  },
   invalidAddress: {
-    id: 'forms-send.invalid-address',
+    id: 'send-coins-dialog-content.invalid-address',
     description: 'Error label for invalid address text input',
     defaultMessage:
       'Invalid RISE address. A valid address is in the format of "1234567890R".'
   },
   invalidAmount: {
-    id: 'forms-send.invalid-amount',
+    id: 'send-coins-dialog-content.invalid-amount',
     description: 'Error label for invalid amount text input',
     defaultMessage: 'Invalid amount.'
   },
   insufficientBalance: {
-    id: 'forms-send.insufficient-balance',
+    id: 'send-coins-dialog-content.insufficient-balance',
     description: 'Error label for too high amount text input',
     defaultMessage: 'This amount exceeds your account balance.'
   },
   recipientFromAddressBook: {
-    id: 'forms-send.recipient-from-address-book',
+    id: 'send-coins-dialog-content.recipient-from-address-book',
     description: 'Info label for recipient field when filled via suggestions',
     defaultMessage: 'Address for {name} (from your address book)'
   },
   recipientIsDelegate: {
-    id: 'forms-send.recipient-is-delegate',
+    id: 'send-coins-dialog-content.recipient-is-delegate',
     description: 'Info label for recipient field when filled via suggestions',
     defaultMessage: 'Address for {name} (a registered delegate)'
   }
@@ -143,8 +156,9 @@ const fakeDataSet: AddressRecord[] = [
   { address: '8466748795473371581R', label: 'ondin', source: 'delegate' }
 ];
 
-@observer
-class SendTransactionForm extends React.Component<DecoratedProps, State> {
+class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
+  @autoId dialogContentId: string;
+
   state: State = {
     recipient: {
       address: '',
@@ -234,7 +248,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
     this.setState({ amountInvalid });
   }
 
-  handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+  handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
     const { normalizedAddress, parsedAmount } = this.state;
@@ -267,12 +281,12 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
   }
 
   amountError(): string | null {
-    const { intl, balance, fee } = this.props;
+    const { intl, balance, sendFee } = this.props;
     const { parsedAmount } = this.state;
 
     if (parsedAmount === null || parsedAmount.lte(RawAmount.ZERO)) {
       return intl.formatMessage(messages.invalidAmount);
-    } else if (parsedAmount.plus(fee).gt(balance)) {
+    } else if (parsedAmount.plus(sendFee).gt(balance)) {
       return intl.formatMessage(messages.insufficientBalance);
     } else {
       return null;
@@ -342,6 +356,15 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
     return take(suggestions, 5);
   }
 
+  componentWillMount() {
+    const { intl } = this.props;
+
+    SetDialogContent(this, {
+      title: intl.formatMessage(messages.dialogTitle),
+      contentId: this.dialogContentId,
+    });
+  }
+
   render() {
     const { intl, classes } = this.props;
     const {
@@ -357,15 +380,16 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
 
     return (
       <Grid
+        className={classes.content}
         container={true}
         spacing={16}
         component="form"
-        onSubmit={this.handleSubmit}
+        onSubmit={this.handleFormSubmit}
       >
         <Grid item={true} xs={12}>
-          <Typography>
+          <Typography id={this.dialogContentId}>
             <FormattedMessage
-              id="forms-send.instructions"
+              id="send-coins-dialog-content.instructions"
               description="Insturctions for send RISE form"
               defaultMessage={
                 'Please enter the recipient address and RISE amount that you ' +
@@ -390,10 +414,11 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
             }) => (
               <div className={classes.accountContainer}>
                 <TextField
+                  autoFocus={true}
                   className={classes.recipientField}
                   label={
                     <FormattedMessage
-                      id="forms-send.recipient-input-label"
+                      id="send-coins-dialog-content.recipient-input-label"
                       description="Label for recipient address text field."
                       defaultMessage="Recipient address"
                     />
@@ -431,7 +456,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
           <TextField
             label={
               <FormattedMessage
-                id="forms-send.amount-input-label"
+                id="send-coins-dialog-content.amount-input-label"
                 description="Label for amount text field."
                 defaultMessage="RISE amount"
               />
@@ -450,12 +475,12 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
         <Grid item={true} xs={12}>
           <Typography>
             <FormattedMessage
-              id="forms-send.balance-fee"
+              id="send-coins-dialog-content.balance-fee"
               description="Account balance & network fee label"
               defaultMessage="Balance: {balance} | Fee: {fee}"
               values={{
                 balance: formatAmount(this.props.balance),
-                fee: formatAmount(this.props.fee)
+                fee: formatAmount(this.props.sendFee)
               }}
             />
           </Typography>
@@ -463,7 +488,7 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
         <Grid item={true} xs={12}>
           <Button type="submit" fullWidth={true}>
             <FormattedMessage
-              id="forms-send.send-button"
+              id="send-coins-dialog-content.send-button"
               description="Send button label"
               defaultMessage="Review & send"
             />
@@ -474,4 +499,4 @@ class SendTransactionForm extends React.Component<DecoratedProps, State> {
   }
 }
 
-export default stylesDecorator(injectIntl(SendTransactionForm));
+export default stylesDecorator(injectIntl(SendCoinsDialogContent));

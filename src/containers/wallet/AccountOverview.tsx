@@ -13,9 +13,10 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import SendCoinsDialog from './SendCoinsDialog';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
-import { accountSendRoute } from '../../routes';
+import { accountOverviewRoute, accountSendRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
 import WalletStore from '../../stores/wallet';
@@ -84,6 +85,10 @@ class AccountOverview extends React.Component<DecoratedProps> {
     this.injected.routerStore.goTo(accountSendRoute, { id: this.account.id });
   }
 
+  handleNavigateBack = () => {
+    this.injected.routerStore.goTo(accountOverviewRoute, { id: this.account.id });
+  }
+
   render() {
     const { intl, classes } = this.injected;
     const unnamedAccountLabel = intl.formatMessage(
@@ -115,6 +120,10 @@ class AccountOverview extends React.Component<DecoratedProps> {
             </Button>
           </Tooltip>
         )}
+        <SendCoinsDialog
+          account={this.account}
+          onNavigateBack={this.handleNavigateBack}
+        />
         <div className={classes.content}>
           {toPairs(this.account.recentTransactions.groupedByDay).map(
             ([group, transactions]) => (

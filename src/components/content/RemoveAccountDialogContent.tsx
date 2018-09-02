@@ -8,7 +8,6 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
-import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import {
@@ -58,7 +57,6 @@ const messages = defineMessages({
   }
 });
 
-@observer
 class RemoveAccountDialogContent extends React.Component<DecoratedProps, State> {
   @autoId dialogContentId: string;
 

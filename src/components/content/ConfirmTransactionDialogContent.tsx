@@ -87,7 +87,7 @@ const styles = (theme: Theme) =>
       position: 'absolute',
       top: 2,
       right: 0,
-      width: 0,
+      width: 10,
       height: 10,
       borderTopWidth: 1,
       borderTopStyle: 'solid',
