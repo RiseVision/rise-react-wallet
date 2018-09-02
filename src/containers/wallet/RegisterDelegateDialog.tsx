@@ -2,11 +2,10 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
-import { LiskWallet } from 'dpos-offline';
 import TransactionDialog, { Secrets } from './TransactionDialog';
-import AddSecondPassphraseDialogContent from '../../components/content/AddSecondPassphraseDialogContent';
-import { accountSettingsPassphraseRoute } from '../../routes';
-import AccountStore from '../../stores/account';
+import RegisterDelegateDialogContent from '../../components/content/RegisterDelegateDialogContent';
+import { accountSettingsDelegateRoute } from '../../routes';
+import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
@@ -20,21 +19,22 @@ interface PropsInjected extends Props {
 }
 
 interface State {
+  usernameInput: string;
   step:
     | 'form'
     | 'transaction';
   transaction: null | {
-    passphrase: string;
-    publicKey: string;
+    username: string;
   };
 }
 
 @inject('routerStore')
 @inject('walletStore')
 @observer
-class AddSecondPassphraseDialog extends React.Component<Props, State> {
+class RegisterDelegateDialog extends React.Component<Props, State> {
   disposeOpenMonitor: null | IReactionDisposer = null;
   state: State = {
+    usernameInput: '',
     step: 'form',
     transaction: null,
   };
@@ -62,12 +62,19 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
     }
   }
 
-  handleAddPassphrase = (passphrase: string) => {
+  handleUsernameChange = (username: string) => {
+    this.setState({
+      usernameInput: username,
+    });
+  }
+
+  handleUsernameCommit = () => {
+    const { usernameInput } = this.state;
+
     this.setState({
       step: 'transaction',
       transaction: {
-        passphrase,
-        publicKey: derivePublicKey(passphrase),
+        username: usernameInput,
       },
     });
   }
@@ -77,7 +84,8 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
     const { step, transaction } = this.state;
 
     if (step === 'transaction' && transaction !== null) {
-      return walletStore.addPassphrase(
+      return walletStore.registerDelegateTransaction(
+        transaction.username,
         secrets.mnemonic,
         secrets.passphrase!,
         account.id,
@@ -89,6 +97,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
 
   resetState() {
     this.setState({
+      usernameInput: '',
       step: 'form',
       transaction: null,
     });
@@ -113,7 +122,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
 
   get isOpen() {
     const { routerStore } = this.injected;
-    return routerStore.currentView === accountSettingsPassphraseRoute;
+    return routerStore.currentView === accountSettingsDelegateRoute;
   }
 
   render() {
@@ -127,30 +136,39 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
         open={this.isOpen}
         account={account}
         transaction={transaction ? {
-          kind: 'passphrase',
+          kind: 'delegate',
+          username: transaction.username,
         } : null}
-        passphrasePublicKey={transaction ? transaction.publicKey : ''}
         onSendTransaction={this.handleSendTransaction}
         onClose={this.handleClose}
         onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
-        children={this.renderPassphraseContent()}
+        children={this.renderDelegateContent()}
       />
     );
   }
 
-  renderPassphraseContent() {
+  renderDelegateContent() {
     const { account, walletStore } = this.injected;
-    const fee = walletStore.fees.get('secondsignature')!;
-    const isSet = account.secondSignature;
+    const { usernameInput } = this.state;
+    const { registeredDelegate } = account;
+    const fee = walletStore.fees.get('delegate')!;
 
+    if (account.registeredDelegateState === LoadingState.NOT_LOADED) {
+      walletStore.loadRegisteredDelegate(account.id);
+    }
+
+    const regUsername = registeredDelegate ? registeredDelegate.username : '';
     return (
-      <AddSecondPassphraseDialogContent
-        onSubmit={this.handleAddPassphrase}
+      <RegisterDelegateDialogContent
+        onSubmit={this.handleUsernameCommit}
         onClose={this.handleClose}
-        passphraseFee={fee}
+        onUsernameChange={this.handleUsernameChange}
+        delegateFee={fee}
+        registeredUsername={regUsername}
+        username={usernameInput}
         error={
-          isSet
-            ? 'already-set'
+          registeredDelegate
+            ? 'already-registered'
             : account.balance.lt(fee)
               ? 'insufficient-funds'
               : null
@@ -160,9 +178,4 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
   }
 }
 
-export default AddSecondPassphraseDialog;
-
-function derivePublicKey(secret: string): string {
-  const w = new LiskWallet(secret, 'R');
-  return w.publicKey;
-}
+export default RegisterDelegateDialog;

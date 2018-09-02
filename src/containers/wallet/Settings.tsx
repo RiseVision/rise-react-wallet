@@ -39,7 +39,7 @@ import {
 import { accountStore } from '../../stores';
 import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
-import RegisterDelegate from './RegisterDelegate';
+import RegisterDelegateDialog from './RegisterDelegateDialog';
 import VoteDelegateDialog from './VoteDelegateDialog';
 import AccountNameDialog from './AccountNameDialog';
 import ChooseFiatDialog from './ChooseFiatDialog';
@@ -278,8 +278,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     const { dialogField } = this.state;
 
     switch (dialogField) {
-      case 'delegateRegistration':
-        return <RegisterDelegate onSubmit={this.onDialogClose} />;
       case 'removeAccount':
         title = (
           <FormattedMessage
@@ -361,6 +359,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           onNavigateBack={this.onDialogClose}
         />
         <AddSecondPassphraseDialog
+          account={this.account}
+          onNavigateBack={this.onDialogClose}
+        />
+        <RegisterDelegateDialog
           account={this.account}
           onNavigateBack={this.onDialogClose}
         />

@@ -2,37 +2,60 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import {
+  createStyles,
+  Theme,
+  WithStyles,
+  withStyles
+} from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { ChangeEvent, FormEvent } from 'react';
+import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
 import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { DialogContentProps, SetDialogContent } from '../Dialog';
+import autoId from '../../utils/autoId';
 import { RawAmount } from '../../utils/amounts';
 import { normalizeAddress, normalizeUsername } from '../../utils/utils';
 
-interface Props {
-  onSubmit: (username: string) => void;
-  onClose: () => void;
-  fee: RawAmount;
-  delegateLoaded: boolean;
+const styles = (theme: Theme) => createStyles({
+  content: {
+    padding: theme.spacing.unit * 2,
+    textAlign: 'center'
+  }
+});
+
+const stylesDecorator = withStyles(styles, { name: 'RegisterDelegateDialogContent' });
+
+type BaseProps = WithStyles<typeof styles>
+  & DialogContentProps;
+
+interface Props extends BaseProps {
+  onSubmit: () => void;
+  onClose: ReactEventHandler<{}>;
+  delegateFee: RawAmount;
   registeredUsername?: string;
-  username?: string;
+  username: string;
+  onUsernameChange: (username: string) => void;
   error?: null | 'already-registered' | 'insufficient-funds';
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface State {
-  username: string;
   usernameInvalid: boolean;
-  normalizedUsername: string;
 }
 
 const messages = defineMessages({
+  dialogTitle: {
+    id: 'register-delegate-dialog-content.dialog-title',
+    description: 'Register delegate dialog title',
+    defaultMessage: 'Delegate registration'
+  },
   invalidUsername: {
     id: 'forms-register-delegate.invalid-username',
     description: 'Error label for invalid username text input',
@@ -64,40 +87,42 @@ const messages = defineMessages({
 });
 
 @observer
-class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
+class RegisterDelegateDialogContent extends React.Component<DecoratedProps, State> {
+  @autoId dialogContentId: string;
+
   state: State = {
-    username: '',
     usernameInvalid: false,
-    normalizedUsername: ''
   };
 
   constructor(props: DecoratedProps) {
     super(props);
-    this.state.username = props.username || '';
+
+    this.state = {
+      usernameInvalid: false,
+    };
   }
 
   handleUsernameChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const username = ev.target.value.trim();
-    let normalizedUsername = normalizeUsername(username);
+    const { onUsernameChange } = this.props;
 
     this.setState({
-      username,
       usernameInvalid: false,
-      normalizedUsername
     });
+
+    onUsernameChange(username);
   }
 
   handleUsernameBlur = () => {
-    const { username } = this.state;
+    const { username } = this.props;
     const usernameInvalid = !!username && !!this.usernameError();
     this.setState({ usernameInvalid });
   }
 
-  handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+  handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
     const { onSubmit } = this.props;
-    const { username } = this.state;
 
     const usernameInvalid = !!this.usernameError();
     if (usernameInvalid) {
@@ -107,12 +132,11 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
       return;
     }
 
-    onSubmit(username);
+    onSubmit();
   }
 
   usernameError(): string | null {
-    const { intl } = this.props;
-    const { username } = this.state;
+    const { intl, username } = this.props;
 
     if (normalizeUsername(username)) {
       return null;
@@ -127,22 +151,39 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
     }
   }
 
+  componentWillMount() {
+    const { intl } = this.props;
+
+    SetDialogContent(this, {
+      title: intl.formatMessage(messages.dialogTitle),
+      contentId: this.dialogContentId,
+    });
+  }
+
   render() {
-    const { intl, error, fee, registeredUsername } = this.props;
-    const { username, usernameInvalid } = this.state;
+    const {
+      intl,
+      classes,
+      error,
+      delegateFee,
+      registeredUsername,
+      username
+    } = this.props;
+    const { usernameInvalid } = this.state;
 
     const formatAmount = (amount: RawAmount) =>
       `${intl.formatNumber(amount.unit.toNumber())} RISE`;
 
     return (
       <Grid
+        className={classes.content}
         container={true}
         spacing={16}
         component="form"
-        onSubmit={this.handleSubmit}
+        onSubmit={this.handleFormSubmit}
       >
         <Grid item={true} xs={12}>
-          <Typography>
+          <Typography id={this.dialogContentId}>
             <FormattedMessage
               id="forms-register-delegate.instructions"
               description="Instructions for delegate registration form"
@@ -165,7 +206,7 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
                   'You don\'t have enough funds in your account to pay the network fee ' +
                   'of {fee} for registering as a delegate!'
                 }
-                values={{ fee: formatAmount(fee) }}
+                values={{ fee: formatAmount(delegateFee) }}
               />
             </Typography>
           </Grid>
@@ -231,4 +272,4 @@ class RegisterDelegateForm extends React.Component<DecoratedProps, State> {
   }
 }
 
-export default injectIntl(RegisterDelegateForm);
+export default stylesDecorator(injectIntl(RegisterDelegateDialogContent));
