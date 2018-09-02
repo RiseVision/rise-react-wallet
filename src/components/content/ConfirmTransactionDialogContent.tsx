@@ -1,4 +1,3 @@
-import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
@@ -15,6 +14,7 @@ import {
 } from '@material-ui/core/styles';
 import * as classNames from 'classnames';
 import * as React from 'react';
+import { ReactEventHandler } from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import {
   defineMessages,
@@ -23,17 +23,24 @@ import {
   injectIntl
 } from 'react-intl';
 import { LiskWallet } from 'dpos-offline';
-import ModalPaper from '../ModalPaper';
-import ModalPaperHeader from '../ModalPaperHeader';
-import autoId from '../../utils/autoId';
+import { DialogContentProps, SetDialogContent } from '../Dialog';
 import { RawAmount } from '../../utils/amounts';
 import AccountIcon from '../AccountIcon';
 
 const styles = (theme: Theme) =>
   createStyles({
     content: {
-      padding: theme.spacing.unit * 2,
-      textAlign: 'center'
+      paddingLeft: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit * 2,
+      paddingTop: theme.spacing.unit,
+      paddingBottom: theme.spacing.unit,
+      textAlign: 'center',
+      '&:first-child': {
+        paddingTop: theme.spacing.unit * 2,
+      },
+      '&:last-child': {
+        paddingBottom: theme.spacing.unit * 2,
+      }
     },
     viz: {
       display: 'flex',
@@ -80,7 +87,7 @@ const styles = (theme: Theme) =>
       position: 'absolute',
       top: 2,
       right: 0,
-      width: 10,
+      width: 0,
       height: 10,
       borderTopWidth: 1,
       borderTopStyle: 'solid',
@@ -141,71 +148,71 @@ const styles = (theme: Theme) =>
     }
   });
 
-const stylesDecorator = withStyles(styles);
+const stylesDecorator = withStyles(styles, { name: 'ConfirmTransactionDialogContent' });
 
 const messages = defineMessages({
   dialogTitle: {
-    id: 'confirm-tx-dialog.dialog-title',
+    id: 'confirm-tx-dialog-content.dialog-title',
     description: 'Confirm transaction dialog title',
     defaultMessage: 'Confirm transaction'
   },
   unnamedSender: {
-    id: 'forms-confirm-tx.unnamed-sender',
+    id: 'confirm-tx-dialog-content.unnamed-sender',
     description: 'Unnamed sender account',
     defaultMessage: 'Unnamed account'
   },
   unnamedRecipient: {
-    id: 'forms-confirm-tx.unnamed-recipient',
+    id: 'confirm-tx-dialog-content.unnamed-recipient',
     description: 'Unnamed recipient account',
     defaultMessage: 'Unknown recipient'
   },
   sendTxTitleAria: {
-    id: 'forms-confirm-tx.send-title-aria',
+    id: 'confirm-tx-dialog-content.send-title-aria',
     description: 'Send transaction title for accessibility',
     defaultMessage: 'Send transaction of {amount}'
   },
   passphraseTxTitleAria: {
-    id: 'forms-confirm-tx.passphrase-title-aria',
+    id: 'confirm-tx-dialog-content.passphrase-title-aria',
     description: '2nd passphrase transaction title for accessibility',
     defaultMessage: 'Setup 2nd passphrase transaction'
   },
   delegateTxTitleAria: {
-    id: 'forms-confirm-tx.delegate-title-aria',
+    id: 'confirm-tx-dialog-content.delegate-title-aria',
     description: 'Register as delegate transaction title for accessibility',
     defaultMessage: 'Register as a delegate transaction'
   },
   voteTxTitleAria: {
-    id: 'forms-confirm-tx.vote-title-aria',
+    id: 'confirm-tx-dialog-content.vote-title-aria',
     description: 'Vote transaction title for accessibility',
     defaultMessage: 'Vote transaction'
   },
   senderSummaryAria: {
-    id: 'forms-confirm-tx.sender-summary-aria',
+    id: 'confirm-tx-dialog-content.sender-summary-aria',
     description: 'Sender summary for accessibility',
     defaultMessage: 'From {account} ({address})'
   },
   recipientSummaryAria: {
-    id: 'forms-confirm-tx.recipient-summary-aria',
+    id: 'confirm-tx-dialog-content.recipient-summary-aria',
     description: 'Recipient summary for accessibility',
     defaultMessage: 'To {account} ({address})'
   },
   txDetailsAria: {
-    id: 'forms-confirm-tx.details-section-aria',
+    id: 'confirm-tx-dialog-content.details-section-aria',
     description: 'Transaction details section title for accessibility',
     defaultMessage: 'Transaction details'
   },
   txBreakdownAria: {
-    id: 'forms-confirm-tx.breakdown-section-aria',
+    id: 'confirm-tx-dialog-content.breakdown-section-aria',
     description: 'Transaction breakdown section title for accessibility',
     defaultMessage: 'Transaction cost breakdown'
   },
   errorIconAria: {
-    id: 'forms-confirm-tx.error-icon-aria',
+    id: 'confirm-tx-dialog-content.error-icon-aria',
     description: 'Error status icon label for accessibility',
     defaultMessage: 'Error indicator icon'
   },
   successIconAria: {
-    id: 'forms-confirm-tx.success-icon-aria',
+    id: 'confirm-tx-dialog-content.success-icon-aria',
     description: 'Success status icon label for accessibility',
     defaultMessage: 'Success indicator icon'
   },
@@ -238,8 +245,8 @@ const messages = defineMessages({
 
 type SendTxData = {
   kind: 'send';
-  recipientId: string;
-  recipient: string | null;
+  recipientAddress: string;
+  recipientName: string | null;
   amount: RawAmount;
 };
 
@@ -269,7 +276,7 @@ type ConfirmStep = {
   kind: 'confirm';
   publicKey: string;
   secondPublicKey: string | null;
-  onSend: (data: { mnemonic: string; passphrase: null | string }) => void;
+  onConfirm: (data: { mnemonic: string; passphrase: null | string }) => void;
 };
 
 type InProgressStep = {
@@ -278,11 +285,13 @@ type InProgressStep = {
 
 type SuccessStep = {
   kind: 'success';
+  onClose: ReactEventHandler<{}>;
 };
 
 type FailureStep = {
   kind: 'failure';
-  onRetry?: () => void;
+  onRetry?: ReactEventHandler<{}>;
+  onClose: ReactEventHandler<{}>;
   reason: string;
 };
 
@@ -292,14 +301,14 @@ type Step =
   | SuccessStep
   | FailureStep;
 
-interface Props extends WithStyles<typeof styles> {
-  open: boolean;
-  onBackClick?: () => void;
-  onCloseClick?: () => void;
+type BaseProps = WithStyles<typeof styles>
+  & DialogContentProps;
+
+interface Props extends BaseProps {
   data: TxData;
   fee: RawAmount;
-  sender: string | null;
-  senderId: string;
+  senderName: string | null;
+  senderAddress: string;
   step: Step;
 }
 
@@ -312,9 +321,7 @@ interface State {
   passphraseInvalid: boolean;
 }
 
-class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
-  @autoId dialogTitleId: string;
-
+class ConfirmTransactionDialogContent extends React.Component<DecoratedProps, State> {
   state = {
     mnemonic: '',
     mnemonicInvalid: false,
@@ -324,7 +331,10 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
 
   handleMnemonicChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const mnemonic = ev.target.value;
-    this.setState({ mnemonic });
+    this.setState({
+      mnemonic,
+      mnemonicInvalid: false,
+    });
   }
 
   handleMnemonicBlur = () => {
@@ -335,7 +345,10 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
 
   handlePassphraseChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const passphrase = ev.target.value;
-    this.setState({ passphrase });
+    this.setState({
+      passphrase,
+      passphraseInvalid: false,
+    });
   }
 
   handlePassphraseBlur = () => {
@@ -351,7 +364,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
 
     if (step.kind === 'confirm') {
       const mnemonicInvalid = !!this.mnemonicError();
-      const passphraseInvalid = !step.secondPublicKey || !!this.passphraseError();
+      const passphraseInvalid = !!step.secondPublicKey && !!this.passphraseError();
 
       if (mnemonicInvalid || passphraseInvalid) {
         this.setState({
@@ -362,7 +375,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
       }
 
       const { mnemonic, passphrase } = this.state;
-      step.onSend({
+      step.onConfirm({
         mnemonic,
         passphrase: step.secondPublicKey ? passphrase : null,
       });
@@ -417,16 +430,21 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
     }
   }
 
+  componentWillMount() {
+    const { intl } = this.props;
+
+    SetDialogContent(this, {
+      title: intl.formatMessage(messages.dialogTitle),
+    });
+  }
+
   render() {
     const {
       intl,
       classes,
-      open,
-      onBackClick,
-      onCloseClick,
       data,
       fee,
-      senderId,
+      senderAddress,
       step
     } = this.props;
 
@@ -435,14 +453,14 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
       `${intl.formatNumber(amount.unit.toNumber())} RISE`;
 
     const total = fee.plus(data.kind === 'send' ? data.amount : RawAmount.ZERO);
-    const recipientId = data.kind === 'send' ? data.recipientId : '';
-    let sender = this.props.sender;
-    if (!sender) {
-      sender = intl.formatMessage(messages.unnamedSender);
+    const recipientAddress = data.kind === 'send' ? data.recipientAddress : '';
+    let senderName = this.props.senderName;
+    if (!senderName) {
+      senderName = intl.formatMessage(messages.unnamedSender);
     }
-    let recipient = data.kind === 'send' ? data.recipient : null;
-    if (!recipient) {
-      recipient = intl.formatMessage(messages.unnamedRecipient);
+    let recipientName = data.kind === 'send' ? data.recipientName : null;
+    if (!recipientName) {
+      recipientName = intl.formatMessage(messages.unnamedRecipient);
     }
 
     let txTitleAria = '';
@@ -461,20 +479,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
     }
 
     return (
-      <ModalPaper
-        open={open}
-        backdrop={Backdrop}
-        aria-labelledby={this.dialogTitleId}
-        onEscapeKeyDown={onCloseClick}
-      >
-        <ModalPaperHeader
-          titleId={this.dialogTitleId}
-          closeButton={!!onCloseClick}
-          onCloseClick={onCloseClick}
-          backButton={!!onBackClick}
-          onBackClick={onBackClick}
-          children={intl.formatMessage(messages.dialogTitle)}
-        />
+      <React.Fragment>
         <Grid
           className={classes.content}
           container={true}
@@ -486,7 +491,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
             className={classes.viz}
             aria-label={txTitleAria}
           >
-            <AccountIcon size={64} address={senderId} />
+            <AccountIcon size={64} address={senderAddress} />
             <div className={classes.vizArrow}>
               {data.kind === 'send' && (
                 <Typography className={classes.vizAmount} aria-hidden={true}>
@@ -503,7 +508,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
                 <div className={classes.arrowEnd} />
               </div>
             </div>
-            <AccountIcon size={64} address={recipientId} />
+            <AccountIcon size={64} address={recipientAddress} />
           </Grid>
           <Grid
             item={true}
@@ -511,19 +516,19 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
             sm={6}
             className={classes.senderInfo}
             aria-label={intl.formatMessage(messages.senderSummaryAria, {
-              account: sender,
-              address: senderId
+              account: senderName,
+              address: senderAddress
             })}
           >
             <Typography
               className={classes.accountAlias}
               aria-hidden={true}
-              children={sender}
+              children={senderName}
             />
             <Typography
               className={classes.accountAddress}
               aria-hidden={true}
-              children={senderId}
+              children={senderAddress}
             />
           </Grid>
           {data.kind === 'send' && (
@@ -533,19 +538,19 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
               sm={6}
               className={classes.recipientInfo}
               aria-label={intl.formatMessage(messages.recipientSummaryAria, {
-                account: recipient,
-                address: recipientId
+                account: recipientName,
+                address: recipientAddress
               })}
             >
               <Typography
                 className={classes.accountAlias}
                 aria-hidden={true}
-                children={recipient}
+                children={recipientName}
               />
               <Typography
                 className={classes.accountAddress}
                 aria-hidden={true}
-                children={recipientId}
+                children={recipientAddress}
               />
             </Grid>
           )}
@@ -566,7 +571,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
                 {data.kind === 'passphrase' && (
                   <Typography>
                     <FormattedMessage
-                      id="forms-confirm-tx.details-add-passphrase"
+                      id="confirm-tx-dialog-content.details-add-passphrase"
                       description="Transaction detail row for 2nd passphrase setup."
                       defaultMessage="Setup 2nd passphrase for account."
                     />
@@ -575,7 +580,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
                 {data.kind === 'delegate' && (
                   <Typography>
                     <FormattedMessage
-                      id="forms-confirm-tx.details-register-delegate"
+                      id="confirm-tx-dialog-content.details-register-delegate"
                       description="Transaction detail row for delegate registration."
                       defaultMessage="Register as a delegate with username {username}."
                       values={{
@@ -586,10 +591,10 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
                 )}
                 {data.kind === 'vote' && (
                   <React.Fragment>
-                    {data.remove.length && (
+                    {data.remove.length > 0 && (
                       <Typography>
                         <FormattedMessage
-                          id="forms-confirm-tx.details-remove-votes"
+                          id="confirm-tx-dialog-content.details-remove-votes"
                           description="Transaction detail row for vote removal."
                           defaultMessage={
                             'Remove {delegateCount, plural,' +
@@ -598,16 +603,16 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
                             '} form {delegates}.'
                           }
                           values={{
-                            delegateCount: data.add.length,
+                            delegateCount: data.remove.length,
                             delegates: emphasizeAndJoin(data.remove)
                           }}
                         />
                       </Typography>
                     )}
-                    {data.add.length && (
+                    {data.add.length > 0 && (
                       <Typography>
                         <FormattedMessage
-                          id="forms-confirm-tx.details-add-votes"
+                          id="confirm-tx-dialog-content.details-add-votes"
                           description="Transaction detail row for vote addition."
                           defaultMessage={
                             'Cast {delegateCount, plural,' +
@@ -629,7 +634,11 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
           </React.Fragment>
         )}
         <Divider aria-hidden={true} />
-        <Grid container={true} spacing={16}>
+        <Grid
+          className={classes.content}
+          container={true}
+          spacing={16}
+        >
           <Grid
             item={true}
             xs={12}
@@ -639,7 +648,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
             {data.kind === 'send' && (
               <Typography>
                 <FormattedMessage
-                  id="forms-confirm-tx.breakdown-amount-label"
+                  id="confirm-tx-dialog-content.breakdown-amount-label"
                   description="Label for transfer amount in transaction breakdown."
                   defaultMessage="Transfer amount:"
                 />{' '}
@@ -648,7 +657,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
             )}
             <Typography>
               <FormattedMessage
-                id="forms-confirm-tx.breakdown-fee-label"
+                id="confirm-tx-dialog-content.breakdown-fee-label"
                 description="Label for network fee in transaction breakdown."
                 defaultMessage="Network fee:"
               />{' '}
@@ -656,7 +665,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
             </Typography>
             <Typography>
               <FormattedMessage
-                id="forms-confirm-tx.breakdown-total-label"
+                id="confirm-tx-dialog-content.breakdown-total-label"
                 description="Label for total cost in transaction breakdown."
                 defaultMessage="Total:"
               />{' '}
@@ -669,7 +678,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
         {step.kind === 'success' && this.renderSuccessFooter(step)}
         {step.kind === 'in-progress' && this.renderInProgressFooter(step)}
         {step.kind === 'confirm' && this.renderConfirmFooter(step)}
-      </ModalPaper>
+      </React.Fragment>
     );
   }
 
@@ -681,7 +690,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
       passphrase,
       passphraseInvalid
     } = this.state;
-    const isPassphraseSet = !step.secondPublicKey;
+    const isPassphraseSet = !!step.secondPublicKey;
 
     return (
       <Grid
@@ -695,7 +704,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
           <Typography>
             {isPassphraseSet ? (
               <FormattedMessage
-                id="forms-confirm-tx.instructions-with-passphrase"
+                id="confirm-tx-dialog-content.instructions-with-passphrase"
                 description="Instructions on how to confirm the transaction (with 2nd passphrase set)."
                 defaultMessage={
                   'To confirm this transaction, enter your mnemonic secret ' +
@@ -704,7 +713,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
               />
             ) : (
               <FormattedMessage
-                id="forms-confirm-tx.instructions"
+                id="confirm-tx-dialog-content.instructions"
                 description="Instructions on how to confirm the transaction."
                 defaultMessage={
                   'To confirm this transaction, enter your mnemonic secret ' +
@@ -716,9 +725,10 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
         </Grid>
         <Grid item={true} xs={12}>
           <TextField
+            type="password"
             label={
               <FormattedMessage
-                id="forms-confirm-tx.mnemonic-input-label"
+                id="confirm-tx-dialog-content.mnemonic-input-label"
                 description="Label for mnemonic text field."
                 defaultMessage="Account mnemonic secret"
               />
@@ -735,9 +745,10 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
         {isPassphraseSet && (
           <Grid item={true} xs={12}>
             <TextField
+              type="password"
               label={
                 <FormattedMessage
-                  id="forms-confirm-tx.passphrase-input-label"
+                  id="confirm-tx-dialog-content.passphrase-input-label"
                   description="Label for 2nd passphrase text field."
                   defaultMessage="Second passphrase"
                 />
@@ -754,7 +765,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
         <Grid item={true} xs={12}>
           <Button type="submit" fullWidth={true}>
             <FormattedMessage
-              id="forms-confirm-tx.sign-button"
+              id="confirm-tx-dialog-content.sign-button"
               description="Label for sign & broadcast button."
               defaultMessage="Sign & broadcast"
             />
@@ -777,7 +788,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
           <CircularProgress color="primary" />
           <Typography className={classes.statusMessage}>
             <FormattedMessage
-              id="forms-confirm-tx.broadcasting-msg"
+              id="confirm-tx-dialog-content.broadcasting-msg"
               description="Message for when a transaction is being broadcast."
               defaultMessage="Broadcasting transaction to the network. Please wait..."
             />
@@ -788,7 +799,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
   }
 
   renderSuccessFooter(step: SuccessStep) {
-    const { intl, classes, onCloseClick } = this.props;
+    const { intl, classes } = this.props;
 
     return (
       <Grid
@@ -804,16 +815,16 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
           />
           <Typography className={classes.statusMessage}>
             <FormattedMessage
-              id="forms-confirm-tx.success-msg"
+              id="confirm-tx-dialog-content.success-msg"
               description="Message for when a transaction broadcast succeeded."
               defaultMessage="The transaction was successfully broadcast to the network!"
             />
           </Typography>
         </Grid>
         <Grid item={true} xs={12}>
-          <Button onClick={onCloseClick} fullWidth={true}>
+          <Button onClick={step.onClose} fullWidth={true}>
             <FormattedMessage
-              id="forms-confirm-tx.done-button"
+              id="confirm-tx-dialog-content.done-button"
               description="Label for done button."
               defaultMessage="Done"
             />
@@ -824,11 +835,15 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
   }
 
   renderFailureFooter(step: FailureStep) {
-    const { intl, classes, onCloseClick } = this.props;
+    const { intl, classes } = this.props;
     const canRetry = !!step.onRetry;
 
     return (
-      <Grid container={true} spacing={16}>
+      <Grid
+        className={classes.content}
+        container={true}
+        spacing={16}
+      >
         <Grid item={true} xs={12} className={classes.statusContainer}>
           <ErrorOutlineIcon
             className={classes.statusIcon}
@@ -837,7 +852,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
           />
           <Typography className={classes.statusMessage}>
             <FormattedMessage
-              id="forms-confirm-tx.error-msg"
+              id="confirm-tx-dialog-content.error-msg"
               description="Message for when a transaction failed to broadcast."
               defaultMessage={
                 'Failed to broadcast the transaction to the network: {error}'}
@@ -851,7 +866,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
           <Grid item={true} xs={12} sm={6}>
             <Button onClick={step.onRetry} fullWidth={true}>
               <FormattedMessage
-                id="forms-confirm-tx.try-again-button"
+                id="confirm-tx-dialog-content.try-again-button"
                 description="Label for try again button."
                 defaultMessage="Try again"
               />
@@ -859,9 +874,9 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
           </Grid>
         )}
         <Grid item={true} xs={12} sm={canRetry ? 6 : 12}>
-          <Button onClick={onCloseClick} fullWidth={true}>
+          <Button onClick={step.onClose} fullWidth={true}>
             <FormattedMessage
-              id="forms-confirm-tx.close-button"
+              id="confirm-tx-dialog-content.close-button"
               description="Label for close button."
               defaultMessage="Close"
             />
@@ -872,7 +887,7 @@ class ConfirmTransactionDialog extends React.Component<DecoratedProps, State> {
   }
 }
 
-export default stylesDecorator(injectIntl(ConfirmTransactionDialog));
+export default stylesDecorator(injectIntl(ConfirmTransactionDialogContent));
 
 function derivePublicKey(secret: string): string {
   const w = new LiskWallet(secret, 'R');

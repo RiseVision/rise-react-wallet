@@ -44,7 +44,7 @@ import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 import SettingsPassphrase from './SettingsPassphrase';
 import RegisterDelegate from './RegisterDelegate';
-import VoteDelegate from './VoteDelegate';
+import VoteDelegateDialog from './VoteDelegateDialog';
 import AccountNameDialog from './AccountNameDialog';
 
 const styles = (theme: Theme) =>
@@ -295,8 +295,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     const { dialogField } = this.state;
 
     switch (dialogField) {
-      case 'delegate':
-        return <VoteDelegate onSubmit={this.onDialogClose} />;
       case 'delegateRegistration':
         return <RegisterDelegate onSubmit={this.onDialogClose} />;
       case 'passphrase':
@@ -385,6 +383,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     return (
       <React.Fragment>
         <AccountNameDialog
+          account={this.account}
+          onNavigateBack={this.onDialogClose}
+        />
+        <VoteDelegateDialog
           account={this.account}
           onNavigateBack={this.onDialogClose}
         />

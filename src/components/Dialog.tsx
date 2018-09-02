@@ -18,7 +18,7 @@ const styles = (theme: Theme) => createStyles({
 type BaseProps = MuiDialogProps
   & WithStyles<typeof styles>;
 
-interface Props extends BaseProps {
+export interface DialogProps extends BaseProps {
   onNavigateBack?: ReactEventHandler<{}>;
   children: ReactElement<DialogContentProps>;
 }
@@ -30,7 +30,7 @@ interface State {
 
 const stylesDecorator = withStyles(styles);
 
-class Dialog extends React.PureComponent<Props, State> {
+class Dialog extends React.PureComponent<DialogProps, State> {
   @autoId dialogTitleId: string;
   @autoId dialogContentId: string;
 
