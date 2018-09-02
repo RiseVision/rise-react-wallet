@@ -2,22 +2,42 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import {
+  createStyles,
+  Theme,
+  WithStyles,
+  withStyles
+} from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { ChangeEvent, FormEvent } from 'react';
+import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
 import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { DialogContentProps, SetDialogContent } from '../Dialog';
+import autoId from '../../utils/autoId';
 import { RawAmount } from '../../utils/amounts';
 
-interface Props {
+const styles = (theme: Theme) => createStyles({
+  content: {
+    padding: theme.spacing.unit * 2,
+    textAlign: 'center'
+  }
+});
+
+const stylesDecorator = withStyles(styles, { name: 'AddSecondPassphraseDialogContent' });
+
+type BaseProps = WithStyles<typeof styles>
+  & DialogContentProps;
+
+interface Props extends BaseProps {
   onSubmit: (passphrase: string) => void;
-  onClose: () => void;
+  onClose: ReactEventHandler<{}>;
   passphrase?: string;
-  fee: RawAmount;
+  passphraseFee: RawAmount;
   error?: null | 'already-set' | 'insufficient-funds';
 }
 
@@ -29,15 +49,22 @@ export interface State {
 }
 
 const messages = defineMessages({
+  dialogTitle: {
+    id: 'add-second-passphrase-dialog-content.dialog-title',
+    description: 'Add second passphrase dialog title',
+    defaultMessage: 'Setup 2nd passphrase'
+  },
   invalidPassphrase: {
-    id: 'forms-passphrase.invalid-passphrase',
+    id: 'add-second-passphrase-dialog-content.invalid-passphrase',
     description: 'Error label for invalid passphrase text input',
     defaultMessage: 'Invalid passphrase. Passphrase cannot be empty.'
   }
 });
 
 @observer
-class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
+class AddSecondPassphraseDialogContent extends React.Component<DecoratedProps, State> {
+  @autoId dialogContentId: string;
+
   state: State = {
     passphrase: '',
     passphraseInvalid: false
@@ -63,7 +90,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
     this.setState({ passphraseInvalid });
   }
 
-  handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+  handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
     const { onSubmit } = this.props;
@@ -87,8 +114,17 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
     return passphrase ? null : intl.formatMessage(messages.invalidPassphrase);
   }
 
+  componentWillMount() {
+    const { intl } = this.props;
+
+    SetDialogContent(this, {
+      title: intl.formatMessage(messages.dialogTitle),
+      contentId: this.dialogContentId,
+    });
+  }
+
   render() {
-    const { intl, error, fee } = this.props;
+    const { intl, classes, error, passphraseFee } = this.props;
     const { passphrase, passphraseInvalid } = this.state;
 
     const formatAmount = (amount: RawAmount) =>
@@ -96,15 +132,16 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
 
     return (
       <Grid
+        className={classes.content}
         container={true}
         spacing={16}
         component="form"
-        onSubmit={this.handleSubmit}
+        onSubmit={this.handleFormSubmit}
       >
         <Grid item={true} xs={12}>
-          <Typography>
+          <Typography id={this.dialogContentId}>
             <FormattedMessage
-              id="forms-passphrase.instructions-about"
+              id="add-second-passphrase-dialog-content.instructions-about"
               description="Instructions for setup 2nd passphrase form"
               defaultMessage={
                 'The second passphrase offers an extra layer of protection for forgers ' +
@@ -117,7 +154,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
         <Grid item={true} xs={12}>
           <Typography>
             <FormattedMessage
-              id="forms-passphrase.instructions-immutable"
+              id="add-second-passphrase-dialog-content.instructions-immutable"
               description="Warning about the 2nd passphrase being immutable"
               defaultMessage="Once the 2nd passphrase has been set it cannot be changed nor removed."
             />
@@ -127,14 +164,14 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
           <Grid item={true} xs={12}>
             <Typography color="error">
               <FormattedMessage
-                id="forms-passphrase.insufficient-funds-error"
+                id="add-second-passphrase-dialog-content.insufficient-funds-error"
                 description="Error about not having enough funds to setup a passphrase"
                 defaultMessage={
                   'You don\'t have enough funds in your account to pay the network fee ' +
                   'of {fee} to setup a 2nd passphrase!'
                 }
                 values={{
-                  fee: formatAmount(fee)
+                  fee: formatAmount(passphraseFee)
                 }}
               />
             </Typography>
@@ -144,7 +181,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
           <Grid item={true} xs={12}>
             <Typography color="error">
               <FormattedMessage
-                id="forms-passphrase.already-set-error"
+                id="add-second-passphrase-dialog-content.already-set-error"
                 description="Error about the 2nd passphrase being set already"
                 defaultMessage={
                   'You\'ve already set a 2nd passphrase for this account. You need to ' +
@@ -157,9 +194,10 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
         {!error && (
           <Grid item={true} xs={12}>
             <TextField
+              type="password"
               label={
                 <FormattedMessage
-                  id="forms-passphrase.passphrase-input-label"
+                  id="add-second-passphrase-dialog-content.passphrase-input-label"
                   description="Label for 2nd passphrase text field."
                   defaultMessage="2nd passphrase"
                 />
@@ -180,7 +218,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
           {!error ? (
             <Button type="submit" fullWidth={true}>
               <FormattedMessage
-                id="forms-passphrase.continue-button"
+                id="add-second-passphrase-dialog-content.continue-button"
                 description="Label for continue button."
                 defaultMessage="Continue"
               />
@@ -188,7 +226,7 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
           ) : (
             <Button onClick={this.props.onClose} fullWidth={true}>
               <FormattedMessage
-                id="forms-passphrase.close-button"
+                id="add-second-passphrase-dialog-content.close-button"
                 description="Label for close button."
                 defaultMessage="Close"
               />
@@ -200,4 +238,4 @@ class SettingsPassphraseForm extends React.Component<DecoratedProps, State> {
   }
 }
 
-export default injectIntl(SettingsPassphraseForm);
+export default stylesDecorator(injectIntl(AddSecondPassphraseDialogContent));

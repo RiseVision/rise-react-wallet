@@ -100,7 +100,10 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     if (step === 'vote') {
       onNavigateBack();
     } else {
-      this.setState({ step: 'vote' });
+      this.setState({
+        step: 'vote',
+        transaction: null,
+      });
     }
   }
 
