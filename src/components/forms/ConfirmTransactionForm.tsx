@@ -522,7 +522,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
                             '} form {delegates}.'
                           }
                           values={{
-                            delegateCount: data.add.length,
+                            delegateCount: data.remove.length,
                             delegates: renderDelegates(data.remove)
                           }}
                         />
@@ -697,6 +697,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             </Grid>
             <Grid item={true} xs={12}>
               <TextField
+                type="password"
                 label={
                   <FormattedMessage
                     id="forms-confirm-tx.mnemonic-input-label"
@@ -716,6 +717,7 @@ class ConfirmTransactionForm extends React.Component<DecoratedProps, State> {
             {isPassphraseSet && (
               <Grid item={true} xs={12}>
                 <TextField
+                  type="password"
                   label={
                     <FormattedMessage
                       id="forms-confirm-tx.passphrase-input-label"
