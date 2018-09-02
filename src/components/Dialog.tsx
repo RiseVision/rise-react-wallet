@@ -12,6 +12,14 @@ import autoId from '../utils/autoId';
 import { PropsOf } from '../utils/metaTypes';
 
 const styles = (theme: Theme) => createStyles({
+  paper: {
+    overflowY: 'initial',
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: 10,
+    marginRight: 10,
+    maxWidth: 500
+  },
 });
 
 type BaseProps = PropsOf<typeof MuiDialog>
@@ -46,7 +54,7 @@ class Dialog extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { onClose, onNavigateBack, children, ...others } = this.props;
+    const { classes, onClose, onNavigateBack, children, ...others } = this.props;
     const { title, childContentId } = this.state;
 
     return (
@@ -54,6 +62,10 @@ class Dialog extends React.PureComponent<Props, State> {
         aria-labelledby={this.dialogTitleId}
         aria-describedby={childContentId || this.dialogContentId}
         onClose={onClose}
+        classes={{
+          paper: classes.paper,
+        }}
+        maxWidth={false}
         {...others}
       >
         <ModalPaperHeader
