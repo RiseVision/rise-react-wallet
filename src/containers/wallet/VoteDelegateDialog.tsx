@@ -56,33 +56,37 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     transaction: null,
   };
 
-  searchDelegates = throttle(async (query: string) => {
-    const thisSearch = ++this.lastSearch;
-    const { walletStore } = this.injected;
-    query = query.trim();
+  searchDelegates = throttle(
+    async (query: string) => {
+      const thisSearch = ++this.lastSearch;
+      const { walletStore } = this.injected;
+      query = query.trim();
 
-    this.setState({
-      search: {
-        isLoading: true,
-        query,
-        delegates: []
+      this.setState({
+        search: {
+          isLoading: true,
+          query,
+          delegates: []
+        }
+      });
+
+      const result = await walletStore.searchDelegates(query);
+      // Make sure that the results are still something that the user is interested in
+      if (this.lastSearch !== thisSearch) {
+        return;
       }
-    });
 
-    const result = await walletStore.searchDelegates(query);
-    // Make sure that the results are still something that the user is interested in
-    if (this.lastSearch !== thisSearch) {
-      return;
-    }
-
-    this.setState({
-      search: {
-        isLoading: false,
-        query,
-        delegates: result.slice(0, 3)
-      }
-    });
-  });
+      this.setState({
+        search: {
+          isLoading: false,
+          query,
+          delegates: result.slice(0, 3)
+        }
+      });
+    },
+    500,
+    { leading: false, trailing: true }
+  );
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;
