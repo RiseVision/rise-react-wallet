@@ -1,14 +1,12 @@
-import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
 import { throttle, sampleSize } from 'lodash';
 import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
-import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
+import TransactionDialog, { Secrets } from './TransactionDialog';
 import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
-import Dialog, { DialogProps } from '../../components/Dialog';
 import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
@@ -26,28 +24,19 @@ interface State {
   activeDelegates: null | Delegate[];
   step:
     | 'vote'
-    | 'confirm'
-    | 'sending'
-    | 'failure'
-    | 'sent';
+    | 'transaction';
   query: string;
   search: {
     isLoading: boolean;
     query: string;
     delegates: Delegate[];
   };
-  selectedDelegate: null | Delegate;
-  secrets: {
-    mnemonic: string;
-    passphrase: null | string;
+  transaction: null | {
+    add: string[];
+    remove: string[];
+    delegate: Delegate;
   };
-  sendError: string;
 }
-
-const EMPTY_SECRETS = {
-  mnemonic: '',
-  passphrase: null,
-};
 
 @inject('routerStore')
 @inject('walletStore')
@@ -64,9 +53,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       query: '',
       delegates: [],
     },
-    selectedDelegate: null,
-    secrets: EMPTY_SECRETS,
-    sendError: '',
+    transaction: null,
   };
 
   searchDelegates = throttle(async (query: string) => {
@@ -101,15 +88,20 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     return this.props as PropsInjected;
   }
 
-  handleClose = () => {
+  handleClose = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
-
-    // Clear secrets from state when closing
-    this.setState({
-      secrets: EMPTY_SECRETS,
-    });
-
     onNavigateBack();
+  }
+
+  handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
+    const { onNavigateBack } = this.injected;
+    const { step } = this.state;
+
+    if (step === 'vote') {
+      onNavigateBack();
+    } else {
+      this.setState({ step: 'vote' });
+    }
   }
 
   handleQueryChange = (query: string) => {
@@ -122,25 +114,29 @@ class VoteDelegateDialog extends React.Component<Props, State> {
   }
 
   handleSelectDelegate = (delegate: Delegate) => {
+    const { account } = this.injected;
+    const { votedDelegate } = account;
+
+    let removeNames = [];
+    let addNames = [];
+
+    const isRemoveTx =
+      votedDelegate && votedDelegate.publicKey === delegate.publicKey;
+    if (votedDelegate) {
+      removeNames.push(votedDelegate.username);
+    }
+    if (!isRemoveTx) {
+      addNames.push(delegate.username);
+    }
+
     this.setState({
-      step: 'confirm',
-      selectedDelegate: delegate,
+      step: 'transaction',
+      transaction: {
+        add: addNames,
+        remove: removeNames,
+        delegate,
+      },
     });
-  }
-
-  handleBackFromConfirm = () => {
-    this.setState({
-      step: 'vote',
-    });
-  }
-
-  handleConfirmTransaction = (secrets: State['secrets']) => {
-    this.sendTransaction(secrets);
-  }
-
-  handleRetryTransaction = () => {
-    const { secrets } = this.state;
-    this.sendTransaction(secrets);
   }
 
   async suggestDelegates() {
@@ -174,55 +170,19 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     });
   }
 
-  async sendTransaction(secrets: State['secrets']) {
+  handleSendTransaction = (secrets: Secrets) => {
     const { account, walletStore } = this.injected;
-    const { selectedDelegate } = this.state;
+    const { step, transaction } = this.state;
 
-    assert(selectedDelegate, 'Delegate selection required');
-
-    this.setState({ step: 'sending' });
-
-    let success = false;
-    let errorSummary = '';
-    let canRetry = false;
-    try {
-      const tx = await walletStore.voteTransaction(
-        selectedDelegate!.publicKey,
+    if (step === 'transaction' && transaction !== null) {
+      return walletStore.voteTransaction(
+        transaction.delegate.publicKey,
         secrets.mnemonic,
         secrets.passphrase,
         account.id
       );
-      success = tx.success;
-      // TODO error msg
-      errorSummary = '';
-      // If the node rejected the transaction there's no point in retrying
-      canRetry = false;
-    } catch (e) {
-      success = false;
-      // TODO: Network errors should be safe to retry. But we cannot do that because
-      //       there's a failure case where it isn't safe currently - when the request
-      //       goes through, but network is cut out mid-response. Sending the transaction
-      //       again currently means we generate and sign a new transaction and that can
-      //       potentially cause loss of funds. Retry will be safe if we resend the same
-      //       data blob that we produced on first signing.
-      canRetry = false;
-      errorSummary = e.toString();
-    }
-
-    if (success) {
-      this.setState({
-        step: 'sent',
-        secrets: EMPTY_SECRETS,
-      });
     } else {
-      // TODO: Really wish we would not store the secrets in memory for extended periods of time,
-      //       instead the transaction should be prepared and then if retry is required just sent
-      //       again.
-      this.setState({
-        step: 'failure',
-        secrets: canRetry ? secrets : EMPTY_SECRETS,
-        sendError: errorSummary,
-      });
+      throw new Error('Invalid internal state');
     }
   }
 
@@ -230,9 +190,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     this.setState({
       query: '',
       step: 'vote',
-      selectedDelegate: null,
-      secrets: EMPTY_SECRETS,
-      sendError: '',
+      transaction: null,
     });
     this.suggestDelegates();
 
@@ -265,66 +223,35 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     return routerStore.currentView === accountSettingsVoteRoute;
   }
 
-  get voteFee() {
-    const { walletStore } = this.injected;
-    return  walletStore.fees.get('vote')!;
-  }
-
   render() {
-    const { onClose, onNavigateBack, content } = this.renderStep();
+    const { account } = this.injected;
+    const { step, transaction } = this.state;
+
+    const canGoBack = step !== 'vote';
 
     return (
-      <Dialog
+      <TransactionDialog
         open={this.isOpen}
-        onClose={onClose}
-        onNavigateBack={onNavigateBack}
-        children={content}
+        account={account}
+        transaction={transaction ? {
+          kind: 'vote',
+          add: transaction.add,
+          remove: transaction.remove,
+        } : null}
+        onSendTransaction={this.handleSendTransaction}
+        onClose={this.handleClose}
+        onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
+        children={this.renderVoteContent()}
       />
     );
   }
 
-  renderStep(): {
-    onClose?: DialogProps['onClose'],
-    onNavigateBack?: DialogProps['onNavigateBack'],
-    content: DialogProps['children'],
-  } {
-    const { step } = this.state;
-
-    switch (step) {
-      default:
-        return {
-          onClose: this.handleClose,
-          content: this.renderVoteContent(),
-        };
-      case 'confirm':
-        return {
-          onClose: this.handleClose,
-          onNavigateBack: this.handleBackFromConfirm,
-          content: this.renderConfirmTxContent(),
-        };
-      case 'sending':
-        return {
-          content: this.renderSendingTxContent(),
-        };
-      case 'failure':
-        return {
-          onClose: this.handleClose,
-          content: this.renderFailedTxContent(),
-        };
-      case 'sent':
-        return {
-          onClose: this.handleClose,
-          content: this.renderSentTxContent(),
-        };
-    }
-  }
-
   renderVoteContent() {
-    const { account } = this.injected;
+    const { account, walletStore } = this.injected;
     const { votedDelegate, balance } = account;
     const { query, search } = this.state;
 
-    const fee = this.voteFee;
+    const fee = walletStore.fees.get('vote')!;
     const hasInsufficientFunds = balance.lt(fee);
 
     const showSuggestions = search.query === '';
@@ -352,103 +279,6 @@ class VoteDelegateDialog extends React.Component<Props, State> {
             delegates: search.delegates,
           }
         }
-      />
-    );
-  }
-
-  confirmDialogData() {
-    const { account } = this.injected;
-    const { votedDelegate } = account;
-    const { selectedDelegate } = this.state;
-
-    let removeNames = [];
-    let addNames = [];
-
-    const isRemoveTx =
-      votedDelegate && selectedDelegate && votedDelegate.publicKey === selectedDelegate.publicKey;
-    if (votedDelegate) {
-      removeNames.push(votedDelegate.username);
-    }
-    if (!isRemoveTx && selectedDelegate) {
-      addNames.push(selectedDelegate.username);
-    }
-    return {
-      kind: 'vote' as 'vote',
-      remove: removeNames,
-      add: addNames,
-    };
-  }
-
-  renderConfirmTxContent() {
-    const { account } = this.injected;
-
-    return (
-      <ConfirmTransactionDialogContent
-        data={this.confirmDialogData()}
-        fee={this.voteFee}
-        senderName={account.name}
-        senderAddress={account.id}
-        step={{
-          kind: 'confirm',
-          publicKey: account.publicKey,
-          secondPublicKey: account.secondPublicKey,
-          onConfirm: this.handleConfirmTransaction
-        }}
-      />
-    );
-  }
-
-  renderSendingTxContent() {
-    const { account } = this.injected;
-
-    return (
-      <ConfirmTransactionDialogContent
-        data={this.confirmDialogData()}
-        fee={this.voteFee}
-        senderName={account.name}
-        senderAddress={account.id}
-        step={{
-          kind: 'in-progress'
-        }}
-      />
-    );
-  }
-
-  renderFailedTxContent() {
-    const { account } = this.injected;
-    const { secrets, sendError } = this.state;
-
-    const canRetry = !!secrets.mnemonic;
-
-    return (
-      <ConfirmTransactionDialogContent
-        data={this.confirmDialogData()}
-        fee={this.voteFee}
-        senderName={account.name}
-        senderAddress={account.id}
-        step={{
-          kind: 'failure',
-          reason: sendError,
-          onRetry: canRetry ? this.handleRetryTransaction : undefined,
-          onClose: this.handleClose,
-        }}
-      />
-    );
-  }
-
-  renderSentTxContent() {
-    const { account } = this.injected;
-
-    return (
-      <ConfirmTransactionDialogContent
-        data={this.confirmDialogData()}
-        fee={this.voteFee}
-        senderName={account.name}
-        senderAddress={account.id}
-        step={{
-          kind: 'success',
-          onClose: this.handleClose,
-        }}
       />
     );
   }

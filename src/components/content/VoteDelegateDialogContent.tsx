@@ -162,6 +162,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
           <React.Fragment>
             <Grid item={true} xs={12}>
               <TextField
+                autoFocus={true}
                 label={
                   <FormattedMessage
                     id="vote-delegate-dialog-content.search-box-label"

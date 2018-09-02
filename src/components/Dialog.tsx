@@ -1,6 +1,4 @@
-import MuiDialog, {
-  DialogProps as MuiDialogProps
-} from '@material-ui/core/Dialog';
+import MuiDialog from '@material-ui/core/Dialog';
 import {
   createStyles,
   Theme,
@@ -11,14 +9,15 @@ import * as React from 'react';
 import { ReactElement, ReactEventHandler } from 'react';
 import ModalPaperHeader from './ModalPaperHeader';
 import autoId from '../utils/autoId';
+import { PropsOf } from '../utils/metaTypes';
 
 const styles = (theme: Theme) => createStyles({
 });
 
-type BaseProps = MuiDialogProps
+type BaseProps = PropsOf<typeof MuiDialog>
   & WithStyles<typeof styles>;
 
-export interface DialogProps extends BaseProps {
+interface Props extends BaseProps {
   onNavigateBack?: ReactEventHandler<{}>;
   children: ReactElement<DialogContentProps>;
 }
@@ -30,7 +29,7 @@ interface State {
 
 const stylesDecorator = withStyles(styles);
 
-class Dialog extends React.PureComponent<DialogProps, State> {
+class Dialog extends React.PureComponent<Props, State> {
   @autoId dialogTitleId: string;
   @autoId dialogContentId: string;
 
