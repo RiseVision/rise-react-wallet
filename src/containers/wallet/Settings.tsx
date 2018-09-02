@@ -12,7 +12,7 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-import { runInAction, action } from 'mobx';
+import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
@@ -24,9 +24,6 @@ import {
   injectIntl
 } from 'react-intl';
 import Dialog, { LegacyContent } from '../../components/Dialog';
-import FiatForm, {
-  State as FiatState
-} from '../../components/forms/SettingsFiat';
 import RemoveAccountForm from '../../components/forms/SettingsRemoveAccountForm';
 import {
   accountOverviewRoute,
@@ -46,6 +43,7 @@ import SettingsPassphrase from './SettingsPassphrase';
 import RegisterDelegate from './RegisterDelegate';
 import VoteDelegateDialog from './VoteDelegateDialog';
 import AccountNameDialog from './AccountNameDialog';
+import ChooseFiatDialog from './ChooseFiatDialog';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -275,23 +273,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     }
   }
 
-  @action
-  onSubmitFiat = (state: FiatState) => {
-    // TODO validate state.fiat
-    const wallet = this.injected.walletStore;
-    if (global) {
-      for (const account of [...wallet.accounts.values()]) {
-        account.fiatCurrency = state.fiat!;
-      }
-    } else {
-      this.account.fiatCurrency = state.fiat!;
-    }
-    this.onDialogClose();
-  }
-
   getDialog: () => ReactElement<HTMLElement> | null = () => {
     let form, title;
-    const config = this.injected.walletStore.config;
     const { dialogField } = this.state;
 
     switch (dialogField) {
@@ -313,21 +296,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             onSubmit={this.onSubmitRemoveAccount}
           />
         );
-        break;
-      case 'fiat':
-        (title = (
-          <FormattedMessage
-            id="settings-dialog-title"
-            defaultMessage={'Displayed FIAT currency'}
-          />
-        )),
-          (form = (
-            <FiatForm
-              fiat={this.account.fiatCurrency}
-              options={config.fiat_currencies}
-              onSubmit={this.onSubmitFiat}
-            />
-          ));
         break;
       default:
         return null;
@@ -387,6 +355,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           onNavigateBack={this.onDialogClose}
         />
         <VoteDelegateDialog
+          account={this.account}
+          onNavigateBack={this.onDialogClose}
+        />
+        <ChooseFiatDialog
           account={this.account}
           onNavigateBack={this.onDialogClose}
         />
