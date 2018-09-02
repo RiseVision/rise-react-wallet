@@ -16,18 +16,12 @@ import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
-import { ReactElement } from 'react';
 import {
   defineMessages,
-  FormattedMessage,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import Dialog, { LegacyContent } from '../../components/Dialog';
-import RemoveAccountForm from '../../components/forms/SettingsRemoveAccountForm';
 import {
-  accountOverviewRoute,
-  onboardingAddAccountRoute,
   accountSettingsNameRoute,
   accountSettingsRoute,
   accountSettingsPassphraseRoute,
@@ -44,6 +38,7 @@ import VoteDelegateDialog from './VoteDelegateDialog';
 import AccountNameDialog from './AccountNameDialog';
 import ChooseFiatDialog from './ChooseFiatDialog';
 import AddSecondPassphraseDialog from './AddSecondPassphraseDialog';
+import RemoveAccountDialog from './RemoveAccountDialog';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -257,59 +252,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   // DIALOG ACTIONS
-
-  onSubmitRemoveAccount = () => {
-    let { routerStore, walletStore } = this.injected;
-
-    walletStore.removeAccount(this.account.id);
-    this.onDialogClose();
-
-    if (!walletStore.selectedAccount) {
-      routerStore.goTo(onboardingAddAccountRoute);
-    } else {
-      routerStore.goTo(accountOverviewRoute, {
-        id: walletStore.selectedAccount.id
-      });
-    }
-  }
-
-  getDialog: () => ReactElement<HTMLElement> | null = () => {
-    let form, title;
-    const { dialogField } = this.state;
-
-    switch (dialogField) {
-      case 'removeAccount':
-        title = (
-          <FormattedMessage
-            id="settings-dialog-title"
-            defaultMessage={'Remove account?'}
-          />
-        );
-        form = (
-          <RemoveAccountForm
-            name={this.account.name}
-            address={this.account.id}
-            onSubmit={this.onSubmitRemoveAccount}
-          />
-        );
-        break;
-      default:
-        return null;
-    }
-
-    return (
-      <Dialog
-        open={this.state.dialogOpen}
-        onClose={this.onDialogClose}
-      >
-        <LegacyContent
-          title={title}
-          children={form}
-        />
-      </Dialog>
-    );
-  }
-
   onDialogClose = () => {
     this.injected.routerStore.goTo(accountSettingsRoute, {
       id: this.account.id
@@ -366,7 +308,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           account={this.account}
           onNavigateBack={this.onDialogClose}
         />
-        {this.getDialog()}
+        <RemoveAccountDialog
+          account={this.account}
+          onNavigateBack={this.onDialogClose}
+        />
         <div className={classes.content}>
           <List>
             <ListItem button={true} onClick={this.handleNameClicked}>
