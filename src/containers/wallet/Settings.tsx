@@ -56,18 +56,8 @@ const styles = (theme: Theme) =>
     }
   });
 
-export enum DialogField {
-  NAME = 'name',
-  DELEGATE_VOTE = 'delegate',
-  FIAT = 'fiat',
-  PASSPHRASE = 'passphrase',
-  DELEGATE_REGISTRATION = 'delegateRegistration',
-  REMOVE_ACCOUNT = 'removeAccount'
-}
-
 interface Props extends WithStyles<typeof styles> {
   account?: AccountStore;
-  openDialog?: DialogField;
 }
 
 interface PropsInjected extends Props {
@@ -79,8 +69,6 @@ interface PropsInjected extends Props {
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface State {
-  dialogOpen: boolean;
-  dialogField: DialogField | null;
   delegateLoaded: boolean;
   registeredLoaded: boolean;
 }
@@ -166,29 +154,9 @@ const messages = defineMessages({
 @observer
 class AccountSettings extends React.Component<DecoratedProps, State> {
   state: State = {
-    dialogOpen: false,
-    dialogField: null,
     delegateLoaded: false,
     registeredLoaded: false
   };
-
-  static getDerivedStateFromProps(
-    nextProps: Props,
-    prevState: State
-  ): Partial<State> | null {
-    if (
-      nextProps.openDialog &&
-      prevState.dialogField !== nextProps.openDialog
-    ) {
-      // open a dialog
-      return { dialogField: nextProps.openDialog, dialogOpen: true };
-    } else if (!nextProps.openDialog) {
-      // close a dialog
-      return { dialogOpen: false, dialogField: null };
-    } else {
-      return null;
-    }
-  }
 
   get injected(): PropsInjected & DecoratedProps {
     // @ts-ignore
@@ -197,14 +165,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   get account() {
     return this.injected.account || this.injected.accountStore;
-  }
-
-  constructor(props: DecoratedProps) {
-    super(props);
-    if (props.openDialog) {
-      this.state.dialogField = props.openDialog;
-      this.state.dialogOpen = true;
-    }
   }
 
   // CLICK HANDLERS

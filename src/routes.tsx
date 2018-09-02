@@ -3,7 +3,6 @@ import * as React from 'react';
 import * as lstore from 'store';
 import AsyncComponent from './components/AsyncComponent';
 import LoadingIndicator from './components/LoadingIndicator';
-import { DialogField } from './containers/wallet/Settings';
 import RootStore from './stores/root';
 import { TStoredAccount } from './stores/wallet';
 
@@ -290,7 +289,7 @@ export const accountSettingsNameRoute = new Route({
       loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
-          <components.AccountSettings openDialog={DialogField.NAME} />
+          <components.AccountSettings />
         </components.Wallet>
       )}
     />
@@ -314,7 +313,7 @@ export const accountSettingsVoteRoute = new Route({
       loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
-          <components.AccountSettings openDialog={DialogField.DELEGATE_VOTE} />
+          <components.AccountSettings />
         </components.Wallet>
       )}
     />
@@ -338,7 +337,7 @@ export const accountSettingsFiatRoute = new Route({
       loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
-          <components.AccountSettings openDialog={DialogField.FIAT} />
+          <components.AccountSettings />
         </components.Wallet>
       )}
     />
@@ -362,7 +361,7 @@ export const accountSettingsPassphraseRoute = new Route({
       loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
-          <components.AccountSettings openDialog={DialogField.PASSPHRASE} />
+          <components.AccountSettings />
         </components.Wallet>
       )}
     />
@@ -386,9 +385,7 @@ export const accountSettingsDelegateRoute = new Route({
       loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
-          <components.AccountSettings
-            openDialog={DialogField.DELEGATE_REGISTRATION}
-          />
+          <components.AccountSettings />
         </components.Wallet>
       )}
     />
@@ -412,7 +409,7 @@ export const accountSettingsRemoveRoute = new Route({
       loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
-          <components.AccountSettings openDialog={DialogField.REMOVE_ACCOUNT} />
+          <components.AccountSettings />
         </components.Wallet>
       )}
     />
