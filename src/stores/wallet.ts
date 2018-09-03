@@ -65,6 +65,7 @@ export default class WalletStore {
       // login, merge local data and select the last selected one
       this.login(account.id, account);
     }
+    this.observeSelectedAccount();
     // select the last selected one
     if (this.accounts.has(lastSelectedID)) {
       this.selectAccount(lastSelectedID);
@@ -72,7 +73,10 @@ export default class WalletStore {
       // or the first one
       this.selectAccount([...this.accounts.keys()][0]);
     }
-    // observe this.selectedAccount
+    this.updateFees();
+  }
+
+  observeSelectedAccount() {
     observe(
       this,
       'selectedAccount',
@@ -83,7 +87,6 @@ export default class WalletStore {
         lstore.set('lastSelectedAccount', change.newValue.id);
       }
     );
-    this.updateFees();
   }
 
   @action
