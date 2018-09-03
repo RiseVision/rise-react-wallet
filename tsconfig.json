@@ -18,11 +18,13 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",
     "tmp",
+    "cypress",
     "build",
     "scripts",
     "acceptance-tests",
