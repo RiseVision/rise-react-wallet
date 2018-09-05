@@ -146,6 +146,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     });
   }
 
+  // TODO not async
   async suggestDelegates() {
     const thisSearch = ++this.lastSearch;
     const { walletStore } = this.injected;
@@ -159,6 +160,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
           delegates: []
         }
       });
+      // TODO keep queries in the store
       const response = await walletStore.dposAPI.delegates.getList();
       activeDelegates = response.delegates;
     }
