@@ -33,6 +33,7 @@ import {
 import AccountStore, { LoadingState } from './account';
 import { TConfig } from './index';
 import * as moment from 'moment-timezone';
+import * as queryString from 'query-string';
 
 class DelegateCache {
   private cached: {
@@ -360,12 +361,13 @@ export default class WalletStore {
     const params = {
       q: query
     };
-    const url = new URL(`${this.api}/api/delegates/search`);
-    // @ts-ignore
-    url.search = new URLSearchParams(params);
-    // @ts-ignore
+    const url =
+      `${this.api}/api/delegates/search?` + queryString.stringify(params);
     const res = await fetch(url);
     const json = await res.json();
+    if (!json.success) {
+      throw new Error(json.error);
+    }
     return json.delegates || [];
   }
 
@@ -699,10 +701,9 @@ export default class WalletStore {
       // TODO switch to dposAPI once it supports params for
       //   unconfirmed transactions
       const path = confirmed ? '' : '/unconfirmed';
-      const url = new URL(`${this.api}/api/transactions${path}`);
-      // @ts-ignore
-      url.search = new URLSearchParams(params);
-      // @ts-ignore
+      const url = `${this.api}/api/transactions${path}?${queryString.stringify(
+        params
+      )}`;
       const res = await fetch(url);
       const json: TTransactionsResponse | TErrorResponse = await res.json();
       if (!json.success) {
