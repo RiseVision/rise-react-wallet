@@ -96,7 +96,6 @@ beforeEach(() => {
   cy.visit('http://localhost:3000/').then(() => {
     lstore.set('accounts', [fixtures.account]);
     lstore.set('lastSelectedAccount', fixtures.account.id);
-    // localStorage.setItem('lastSelectedAccount')
     cy.visit('http://localhost:3000/');
   });
 });
@@ -115,7 +114,7 @@ context('Wallet', () => {
     // type in the recipient address
     fillDialogInput(0, fixtures2.id);
     // type in the amount
-    fillDialogInput(1, '1');
+    fillDialogInput(1, '0.1');
     // click submit
     clickDialogSubmit();
     // type in the mnemonic
@@ -156,16 +155,21 @@ context('Settings', () => {
     // type in the query
     const newName = 'new name ' + Math.random();
     fillDialogInput(0, newName);
-    clickDialogButton(1).then(_ => {
-      expect(lstore.get('accounts')[0].name).to.eql(newName);
-    });
+    clickDialogButton(1)
+      .then(_ => cy.wait(1000))
+      .then(_ => {
+        expect(lstore.get('accounts')[0].name).to.eql(newName);
+      });
   });
 
   it('pinned', () => {
     goToSettings();
-    clickSettingsRow('Pinned').then(_ => {
-      expect(lstore.get('accounts')[0].pinned).to.eql(true);
-    });
+    clickSettingsRow('Pinned')
+      .then(_ => cy.wait(1000))
+      .then(_ => {
+        console.log(lstore.get('accounts')[0])
+        expect(lstore.get('accounts')[0].pinned).to.eql(true);
+      });
   });
 
   it('FIAT', () => {
@@ -174,9 +178,11 @@ context('Settings', () => {
     getDialog()
       .find('select')
       .select('EUR');
-    clickDialogButton(2).then(_ => {
-      expect(lstore.get('accounts')[0].fiatCurrency).to.eql('EUR');
-    });
+    clickDialogButton(2)
+      .then(_ => cy.wait(1000))
+      .then(_ => {
+        expect(lstore.get('accounts')[0].fiatCurrency).to.eql('EUR');
+      });
   });
 });
 
