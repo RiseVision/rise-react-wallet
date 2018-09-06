@@ -105,6 +105,12 @@ function getStorageAccount(id) {
   return lstore.get('accounts').find(a => a.id === id);
 }
 
+function assertSuccessfulDialog() {
+  getDialog()
+    .contains('span', 'successfully')
+    .should('have.length', 1);
+}
+
 beforeEach(() => {
   cy.visit('http://localhost:3000/').then(() => {
     lstore.set('accounts', [fixtures.account, fixtures.account2]);
@@ -137,9 +143,7 @@ context('Wallet', () => {
     fillDialogInput(0, fixtures.mnemonic);
     // type in the passphrase and the Enter key
     fillDialogInput(1, fixtures.passphrase + '{enter}');
-    getDialog()
-      .contains('span', 'successfully')
-      .should('have.length', 1);
+    assertSuccessfulDialog();
     // assert the request
     cy.wait('@postTransaction')
       .its('status')
@@ -165,6 +169,39 @@ context('Settings', () => {
     goToSettings();
   });
 
+  it('register delegate', () => {
+    // stab the route
+    cy.route({
+      method: 'POST',
+      url: '**/peer/transactions',
+      response: {
+        success: true,
+        transactionId: '42323498723942398'
+      }
+    }).as('postTransaction');
+    cy.get('main')
+      .find('p')
+      .should('contain', 'Not registered');
+    clickSettingsRow('Delegate registration');
+    assertAutofocus();
+    // type in the name
+    fillDialogInput(0, 'test');
+    clickDialogSubmit();
+    fillConfirmationDialog(fixtures.mnemonic, fixtures.passphrase);
+    assertSuccessfulDialog();
+    // assert the request
+    cy.get('@postTransaction').should(xhr => {
+      expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
+        'username',
+        'test'
+      );
+      expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
+        'publicKey',
+        fixtures.account.publicKey
+      );
+    });
+  });
+
   it('vote delegate', () => {
     clickSettingsRow('Voted delegate');
     assertAutofocus();
@@ -178,6 +215,7 @@ context('Settings', () => {
     // pick the first result (2nd button)
     clickDialogButton(1);
     fillConfirmationDialog(fixtures.mnemonic, fixtures.passphrase);
+    assertSuccessfulDialog();
     // assert the request
     cy.wait('@postTransaction')
       .its('status')
@@ -222,7 +260,7 @@ context('Settings', () => {
   });
 });
 
-context('Wallet errors', () => {
+context('Form validation', () => {
   it('confirmation passphrase', () => {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
@@ -266,7 +304,7 @@ context('Wallet errors', () => {
   });
 });
 
-context('Dialog title buttons', () => {
+context('Dialog navigation', () => {
   it('go back to the first form', () => {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
