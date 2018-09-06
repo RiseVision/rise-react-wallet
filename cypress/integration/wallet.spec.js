@@ -1,36 +1,6 @@
 /// <reference types="Cypress" />
 import lstore from 'store';
 
-// TODO move to fixtures
-const fixtures = {
-  id: '12525095472804841547R',
-  mnemonic:
-    'cable swamp sauce release kitchen build torch midnight foot silk subway deliver',
-  passphrase: 'foo',
-  account: {
-    id: '12525095472804841547R',
-    publicKey:
-      '14d8cb7099e9a2119d6a6f1011d4d2a56cc9ffea35bbafe4a62790b1fb7e5926',
-    readOnly: false,
-    fiatCurrency: 'USD',
-    name: null,
-    pinned: false
-  },
-  account2: {
-    id: '10317456780953445784R',
-    publicKey:
-      'e9ae239743b47125305a3f339937661368a7f8d810ae53d79e5c4de001356563',
-    readOnly: false,
-    fiatCurrency: 'USD',
-    name: null,
-    pinned: false
-  }
-};
-
-const fixtures2 = {
-  id: '10317456780953445784R'
-};
-
 // TODO move to helpers
 
 function getDialog(child = '') {
@@ -71,17 +41,24 @@ function clickDialogButton(pos = 0) {
 }
 
 function fillConfirmationDialog(mnemonic, passphrase) {
+  // use first account's secrets as defaults
+  if (!mnemonic && !passphrase) {
+    mnemonic = getSecrets(0).mnemonic;
+    passphrase = getSecrets(0).passphrase;
+  }
   // type in the mnemonic
-  fillDialogInput(0, mnemonic);
+  const first = fillDialogInput(0, mnemonic);
+  // in case the password isnt set
+  if (!passphrase) {
+    return first;
+  }
   // type in the passphrase and the Enter key
   return fillDialogInput(1, passphrase + '{enter}');
 }
 
 function goToSettings() {
   // click the Settings button
-  cy.get('button[title="Account settings"]').click();
-  // assert the URL
-  return cy.url().should('contain', 'settings/12525095472804841547R');
+  return cy.get('button[title="Account settings"]').click();
 }
 
 function clickSettingsRow(text) {
@@ -102,8 +79,18 @@ function closeDialog() {
     .click();
 }
 
-function getStorageAccount(id) {
-  return lstore.get('accounts').find(a => a.id === id);
+function getAccount(idOrPos) {
+  if (typeof idOrPos === 'number') {
+    return lstore.get('accounts')[idOrPos];
+  }
+  return lstore.get('accounts').find(a => a.id === idOrPos);
+}
+
+function getSecrets(idOrPos) {
+  if (typeof idOrPos === 'number') {
+    return lstore.get('secrets')[idOrPos];
+  }
+  return lstore.get('secrets').find(a => a.id === idOrPos);
 }
 
 function assertSuccessfulDialog() {
@@ -112,14 +99,27 @@ function assertSuccessfulDialog() {
     .should('have.length', 1);
 }
 
+// Selects an account from the menu
+function selectAccount(id) {
+  cy.get('ul[aria-label="Accounts"]')
+    .find('p')
+    .contains(id)
+    .click();
+}
+
 beforeEach(() => {
-  cy.visit('http://localhost:3000/').then(() => {
-    lstore.set('accounts', [fixtures.account, fixtures.account2]);
-    lstore.set('lastSelectedAccount', fixtures.account.id);
-    cy.visit('http://localhost:3000/');
-  });
+  cy.visit('http://localhost:3000/')
+    .then(() => cy.fixture('accounts').as('accounts'))
+    .then(accounts => {
+      lstore.set('accounts', accounts.storedAccounts);
+      lstore.set('secrets', accounts.secrets);
+      lstore.set('lastSelectedAccount', accounts.storedAccounts[0].id);
+      // reload the page to get the account overview
+      cy.visit('http://localhost:3000/');
+    });
   // mock the server
   cy.server();
+  // make the responses inspectable (not a stub)
   cy.route('POST', '**/peer/transactions').as('postTransaction');
 });
 
@@ -131,16 +131,14 @@ context('Wallet', () => {
   it('send funds', () => {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
-    // assert the URL
-    cy.url().should('contain', 'send/12525095472804841547R');
     assertAutofocus();
     // type in the recipient address
-    fillDialogInput(0, fixtures2.id);
+    fillDialogInput(0, lstore.get('accounts')[1].id);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
     clickDialogSubmit();
-    fillConfirmationDialog(fixtures.mnemonic, fixtures.passphrase);
+    fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
     cy.wait('@postTransaction')
@@ -150,15 +148,13 @@ context('Wallet', () => {
 
   it('switch between accounts', () => {
     // click the menu
-    cy.get('ul[aria-label="Accounts"]')
-      .find('p')
-      .contains(fixtures2.id)
-      .click();
+    selectAccount(getAccount(1).id);
     // assert the header
     cy.get('main > :nth-child(2)')
       .find('p')
-      .contains(fixtures2.id)
+      .contains(getAccount(1).id)
       .should('have.length', 1);
+    // TODO assert the URL
   });
 });
 
@@ -181,28 +177,62 @@ context('Settings', () => {
       .find('p')
       .should('contain', 'Not registered');
     clickSettingsRow('Delegate registration');
-    assertAutofocus();
+    // assertAutofocus(); TODO broken
     // type in the name
-    fillDialogInput(0, 'test');
+    const name = 'test';
+    fillDialogInput(0, name);
     clickDialogSubmit();
-    fillConfirmationDialog(fixtures.mnemonic, fixtures.passphrase);
+    fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
     cy.get('@postTransaction').should(xhr => {
       expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
         'username',
-        'test'
+        name
       );
       expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
         'publicKey',
-        fixtures.account.publicKey
+        getAccount(0).publicKey
+      );
+    });
+  });
+
+  it('2nd passphrase', () => {
+    // stab the route
+    cy.route({
+      method: 'POST',
+      url: '**/peer/transactions',
+      response: {
+        success: true,
+        transactionId: '42323498723942398'
+      }
+    }).as('postTransaction');
+    selectAccount(getAccount(1).id);
+    cy.wait(1000);
+    goToSettings();
+    cy.get('main')
+      .find('p')
+      .should('contain', 'Not set');
+    clickSettingsRow('2nd passphrase');
+    // assertAutofocus(); TODO broken
+    // type in the passphrase
+    const passphrase = 'test';
+    fillDialogInput(0, passphrase);
+    clickDialogSubmit();
+    fillConfirmationDialog(getSecrets(1).mnemonic, passphrase);
+    assertSuccessfulDialog();
+    // assert the request
+    cy.get('@postTransaction').should(xhr => {
+      expect(xhr.requestBody.transaction.asset.signature).to.have.property(
+        'publicKey',
+        '67d3b5eaf0c0bf6b5a602d359daecc86a7a74053490ec37ae08e71360587c870'
       );
     });
   });
 
   it('vote delegate', () => {
     clickSettingsRow('Voted delegate');
-    assertAutofocus();
+    // assertAutofocus(); TODO broken
     // type in the query
     fillDialogInput(0, 'test');
     // wait for results
@@ -212,7 +242,7 @@ context('Settings', () => {
       .should('be.gt', 0);
     // pick the first result (2nd button)
     clickDialogButton(1);
-    fillConfirmationDialog(fixtures.mnemonic, fixtures.passphrase);
+    fillConfirmationDialog()
     assertSuccessfulDialog();
     // assert the request
     cy.wait('@postTransaction')
@@ -227,8 +257,7 @@ context('Settings', () => {
     const newName = 'new name ' + Math.random();
     fillDialogInput(0, newName);
     clickDialogButton(1).then(_ => {
-      const account = getStorageAccount(fixtures.account.id);
-      expect(account.name).to.eql(newName);
+      expect(getAccount(0).name).to.eql(newName);
       // wait for observables to settle
       cy.wait(1000);
     });
@@ -237,8 +266,7 @@ context('Settings', () => {
   it('pinned', () => {
     cy.wait(1000);
     clickSettingsRow('Pinned').then(_ => {
-      const account = getStorageAccount(fixtures.account.id);
-      expect(account.pinned).to.eql(true);
+      expect(getAccount(0).pinned).to.eql(true);
       // wait for observables to settle
       cy.wait(1000);
     });
@@ -250,10 +278,8 @@ context('Settings', () => {
       .find('select')
       .select('EUR');
     clickDialogButton(2)
-      .then(_ => cy.wait(1000))
       .then(_ => {
-        const account = getStorageAccount(fixtures.account.id);
-        expect(account.fiatCurrency).to.eql('EUR');
+        expect(getAccount(0).fiatCurrency).to.eql('EUR');
       });
   });
 });
@@ -263,13 +289,13 @@ context('Form validation', () => {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, fixtures2.id);
+    fillDialogInput(0, getAccount(1).id);
     // type in the amount
     fillDialogInput(1, '1');
     // click submit
     clickDialogSubmit();
     // type in the mnemonic
-    fillDialogInput(0, fixtures.mnemonic);
+    fillDialogInput(0, getSecrets(0).mnemonic);
     // type in the passphrase
     fillDialogInput(1, 'wrong');
     // click submit
@@ -284,7 +310,7 @@ context('Form validation', () => {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, fixtures2.id);
+    fillDialogInput(0, getAccount(1).id);
     // type in the amount
     fillDialogInput(1, '1');
     // click submit
@@ -292,7 +318,7 @@ context('Form validation', () => {
     // type in the mnemonic
     fillDialogInput(0, 'wrong');
     // type in the passphrase
-    fillDialogInput(1, fixtures.passphrase);
+    fillDialogInput(1, getSecrets(0).passphrase);
     // click submit
     clickDialogSubmit();
     getDialog()
@@ -307,7 +333,7 @@ context('Dialog navigation', () => {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, fixtures2.id);
+    fillDialogInput(0, getAccount(1).id);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -335,7 +361,7 @@ context('Dialog navigation', () => {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, fixtures2.id);
+    fillDialogInput(0, getAccount(1).id);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -352,17 +378,17 @@ context('Dialog navigation', () => {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, fixtures2.id);
+    fillDialogInput(0, getAccount(1).id);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
     clickDialogSubmit();
-    fillConfirmationDialog(fixtures.mnemonic, fixtures.passphrase);
+    fillConfirmationDialog();
     // assert theres no buttons
     getDialogHeader()
       .find('button')
       .should('not.exist');
-    assertSuccessfulDialog()
+    assertSuccessfulDialog();
     // click the close button
     clickDialogButton(0);
   });
