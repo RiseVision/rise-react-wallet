@@ -42,6 +42,10 @@ function getDialogContent() {
   return getDialog('> div:nth-child(2) > div:nth-child(2)');
 }
 
+function getDialogHeader() {
+  return getDialog('> div:nth-child(2) > div:nth-child(1)');
+}
+
 function getDialogInput(pos = 0) {
   return getDialog()
     .find('input')
@@ -70,10 +74,7 @@ function fillConfirmationDialog(mnemonic, passphrase) {
   // type in the mnemonic
   fillDialogInput(0, mnemonic);
   // type in the passphrase and the Enter key
-  fillDialogInput(1, passphrase + '{enter}');
-  return getDialog()
-    .contains('span', 'successfully')
-    .should('have.length', 1);
+  return fillDialogInput(1, passphrase + '{enter}');
 }
 
 function goToSettings() {
@@ -136,13 +137,10 @@ context('Wallet', () => {
     // type in the recipient address
     fillDialogInput(0, fixtures2.id);
     // type in the amount
-    fillDialogInput(1, '0.1');
+    fillDialogInput(1, '0.001');
     // click submit
     clickDialogSubmit();
-    // type in the mnemonic
-    fillDialogInput(0, fixtures.mnemonic);
-    // type in the passphrase and the Enter key
-    fillDialogInput(1, fixtures.passphrase + '{enter}');
+    fillConfirmationDialog(fixtures.mnemonic, fixtures.passphrase);
     assertSuccessfulDialog();
     // assert the request
     cy.wait('@postTransaction')
@@ -311,7 +309,7 @@ context('Dialog navigation', () => {
     // type in the recipient address
     fillDialogInput(0, fixtures2.id);
     // type in the amount
-    fillDialogInput(1, '1');
+    fillDialogInput(1, '0.001');
     // click submit
     clickDialogSubmit();
     // click the back button
@@ -339,7 +337,7 @@ context('Dialog navigation', () => {
     // type in the recipient address
     fillDialogInput(0, fixtures2.id);
     // type in the amount
-    fillDialogInput(1, '1');
+    fillDialogInput(1, '0.001');
     // click submit
     clickDialogSubmit();
     // click the close button
@@ -348,5 +346,24 @@ context('Dialog navigation', () => {
     cy.get('body')
       .find('div[role="dialog"]')
       .should('not.exist');
+  });
+
+  it('no navigation buttons during a submission', () => {
+    // click the Send RISE button
+    cy.get('button[title="Send RISE"]').click();
+    // type in the recipient address
+    fillDialogInput(0, fixtures2.id);
+    // type in the amount
+    fillDialogInput(1, '0.001');
+    // click submit
+    clickDialogSubmit();
+    fillConfirmationDialog(fixtures.mnemonic, fixtures.passphrase);
+    // assert theres no buttons
+    getDialogHeader()
+      .find('button')
+      .should('not.exist');
+    assertSuccessfulDialog()
+    // click the close button
+    clickDialogButton(0);
   });
 });
