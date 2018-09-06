@@ -163,7 +163,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
           data
         );
       }
-      amount = tx.amountFee;
+      amount = tx.amount;
     } else {
       if (tx.type !== TransactionType.SEND) {
         // network service (eg 2nd passphrase)
