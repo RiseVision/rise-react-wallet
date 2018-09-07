@@ -1,127 +1,22 @@
 /// <reference types="Cypress" />
 import lstore from 'store';
-
-// TODO move to helpers
-
-function getDialog(child = '') {
-  return cy.get(`div[role="dialog"] ${child}`);
-}
-
-function getDialogContent() {
-  // TODO should query a form element
-  return getDialog('> div:nth-child(2) > div:nth-child(2)');
-}
-
-function getDialogHeader() {
-  return getDialog('> div:nth-child(2) > div:nth-child(1)');
-}
-
-function getDialogInput(pos = 0) {
-  return getDialog()
-    .find('input')
-    .eq(pos);
-}
-
-function fillDialogInput(pos, text) {
-  return getDialogInput(pos).type(text);
-}
-
-function clickDialogSubmit() {
-  return getDialog()
-    .find('button[type="submit"]')
-    .click();
-}
-
-// TODO support clicking by text
-function clickDialogButton(pos = 0) {
-  return getDialog()
-    .find('button')
-    .eq(pos)
-    .click();
-}
-
-function fillConfirmationDialog(mnemonic, passphrase) {
-  // use first account's secrets as defaults
-  if (!mnemonic && !passphrase) {
-    mnemonic = getSecrets(0).mnemonic;
-    passphrase = getSecrets(0).passphrase;
-  }
-  // type in the mnemonic
-  const first = fillDialogInput(0, mnemonic);
-  // in case the password isnt set
-  if (!passphrase) {
-    return first;
-  }
-  // type in the passphrase and the Enter key
-  return fillDialogInput(1, passphrase + '{enter}');
-}
-
-function goToSettings() {
-  // click the Settings button
-  return cy.get('button[title="Account settings"]').click();
-}
-
-function clickSettingsRow(text) {
-  return cy
-    .get('main')
-    .find('span')
-    .contains(text)
-    .click();
-}
-
-function assertAutofocus() {
-  return cy.focused().should('match', 'input');
-}
-
-function closeDialog() {
-  return getDialog()
-    .find('button[aria-label="Close dialog"]')
-    .click();
-}
-
-/**
- * Returns an account object from localStorage.
- * @param idOrPos Account ID or position in JSON (changes on every save).
- *   No parameter return the currently selected account.
- */
-function getAccount(idOrPos) {
-  if (!idOrPos) {
-    idOrPos = lstore.get('lastSelectedAccount');
-  }
-  if (typeof idOrPos === 'number') {
-    return lstore.get('accounts')[idOrPos];
-  }
-  return lstore.get('accounts').find(a => a.id === idOrPos);
-}
-
-/**
- * Returns a secrets object from fixtures.
- * @param idOrPos Account ID or position on JSON (doesn't change).
- *   No parameter return secrets for the currently selected account.
- */
-function getSecrets(idOrPos) {
-  if (!idOrPos) {
-    idOrPos = lstore.get('lastSelectedAccount');
-  }
-  if (typeof idOrPos === 'number') {
-    return lstore.get('secrets')[idOrPos];
-  }
-  return lstore.get('secrets').find(a => a.id === idOrPos);
-}
-
-function assertSuccessfulDialog() {
-  getDialog()
-    .contains('span', 'successfully')
-    .should('have.length', 1);
-}
-
-// Selects an account from the menu
-function selectAccount(id) {
-  cy.get('ul[aria-label="Accounts"]')
-    .find('p')
-    .contains(id)
-    .click();
-}
+import {
+  selectAccount,
+  assertSuccessfulDialog,
+  getSecrets,
+  getAccount,
+  closeDialog,
+  assertAutofocus,
+  clickSettingsRow,
+  goToSettings,
+  fillConfirmationDialog,
+  clickDialogButton,
+  clickDialogSubmit,
+  fillDialogInput,
+  getDialogHeader,
+  getDialogContent,
+  getDialog
+} from '../plugins/helpers';
 
 beforeEach(function() {
   cy.visit('http://localhost:3000/')
