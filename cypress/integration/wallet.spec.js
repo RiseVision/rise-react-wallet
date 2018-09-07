@@ -142,7 +142,16 @@ context('Settings', () => {
     });
   });
 
-  it('vote delegate', () => {
+  it('vote delegate (when already voted)', () => {
+    // stab the route
+    cy.route({
+      method: 'POST',
+      url: '**/peer/transactions',
+      response: {
+        success: true,
+        transactionId: '42323498723942398'
+      }
+    }).as('postTransaction');
     clickSettingsRow('Voted delegate');
     // assertAutofocus(); TODO broken
     // type in the query
@@ -157,9 +166,16 @@ context('Settings', () => {
     fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
-    cy.wait('@postTransaction')
-      .its('status')
-      .should('eq', 200);
+    cy.get('@postTransaction').should(xhr => {
+      // assert the prev vote reverted
+      expect(xhr.requestBody.transaction.asset.votes[0]).to.match(
+        /^-[\d\w]{10,}/
+      );
+      // assert the new vote sent
+      expect(xhr.requestBody.transaction.asset.votes[1]).to.match(
+        /^\+[\d\w]{10,}/
+      );
+    });
   });
 
   it('account name', () => {
