@@ -35,9 +35,9 @@ beforeEach(function() {
   cy.route('POST', '**/peer/transactions').as('postTransaction');
 });
 
-// afterEach(() => {
-//   lstore.clearAll();
-// });
+afterEach(() => {
+  lstore.clearAll();
+});
 
 context('Wallet', () => {
   it('send funds', () => {
@@ -208,6 +208,15 @@ context('Settings', () => {
     clickDialogButton(2).then(_ => {
       expect(getAccount().fiatCurrency).to.eql('EUR');
     });
+  });
+
+  it('remove account', () => {
+    clickSettingsRow('Remove account');
+    assertAutofocus();
+    fillDialogInput(0, getAccount().id);
+    clickDialogSubmit().then(() => {
+      expect(lstore.get('accounts')).to.have.length(1)
+    })
   });
 });
 
