@@ -1,0 +1,34 @@
+{
+  // rename to accounts.json
+  // positions are significant (secret[0].id === storedAccounts[0].id)
+  "secrets": [
+    {
+      "id": "FILL_IN",
+      "mnemonic": "FILL_IN",
+      "passphrase": "FILL_IN"
+    },
+    {
+      "id": "FILL_IN",
+      "mnemonic": "FILL_IN"
+      // this account cant have a passphrase set
+    }
+  ],
+  "storedAccounts": [
+    {
+      "id": "FILL_IN",
+      "publicKey": "FILL_IN",
+      "readOnly": false,
+      "fiatCurrency": "USD",
+      "name": null,
+      "pinned": false
+    },
+    {
+      "id": "FILL_IN",
+      "publicKey": "FILL_IN",
+      "readOnly": false,
+      "fiatCurrency": "USD",
+      "name": null,
+      "pinned": false
+    }
+  ]
+}
