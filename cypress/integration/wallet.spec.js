@@ -19,7 +19,13 @@ import {
 } from '../plugins/helpers';
 
 beforeEach(function() {
-  cy.visit('http://localhost:3000/')
+  const url = 'http://localhost:3000';
+  cy.location()
+    .then(location => {
+      if (!location.toString().includes(url)) {
+        return cy.visit(url);
+      }
+    })
     .then(() => cy.fixture('accounts').as('accounts'))
     .then(accounts => {
       this.accounts = accounts;
@@ -66,7 +72,34 @@ context('Wallet', () => {
       .find('p')
       .contains(getAccount(1).id)
       .should('have.length', 1);
-    // TODO assert the URL
+    cy.location('pathname').then(location => {
+      expect(location).to.contain(`/account/${getAccount().id}`);
+    });
+  });
+
+  it('navigate back from settings', () => {
+    goToSettings();
+    cy.get('header')
+      .find('button')
+      .click();
+    // click the menu
+    selectAccount(getAccount().id);
+    // assert the header
+    cy.get('main > :nth-child(2)')
+      .find('p')
+      .contains(getAccount().id)
+      .should('have.length', 1);
+  });
+
+  it('sign out', () => {
+    cy.get('ul[aria-label="Navigation"]')
+      .find('span')
+      .contains('Sign out')
+      .click()
+      .then(_ => {
+        expect(lstore.get('accounts')).to.eql(undefined);
+        expect(lstore.get('lastSelectedAccount')).to.eql(undefined);
+      });
   });
 });
 
@@ -162,7 +195,7 @@ context('Settings', () => {
       .its('length')
       .should('be.gt', 0);
     // pick the first result (2nd button)
-    clickDialogButton(1);
+    clickDialogButton(1, true);
     fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
@@ -215,8 +248,8 @@ context('Settings', () => {
     assertAutofocus();
     fillDialogInput(0, getAccount().id);
     clickDialogSubmit().then(() => {
-      expect(lstore.get('accounts')).to.have.length(1)
-    })
+      expect(lstore.get('accounts')).to.have.length(1);
+    });
   });
 });
 
