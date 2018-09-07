@@ -79,14 +79,30 @@ function closeDialog() {
     .click();
 }
 
+/**
+ * Returns an account object from localStorage.
+ * @param idOrPos Account ID or position in JSON (changes on every save).
+ *   No parameter return the currently selected account.
+ */
 function getAccount(idOrPos) {
+  if (!idOrPos) {
+    idOrPos = lstore.get('lastSelectedAccount');
+  }
   if (typeof idOrPos === 'number') {
     return lstore.get('accounts')[idOrPos];
   }
   return lstore.get('accounts').find(a => a.id === idOrPos);
 }
 
+/**
+ * Returns a secrets object from fixtures.
+ * @param idOrPos Account ID or position on JSON (doesn't change).
+ *   No parameter return secrets for the currently selected account.
+ */
 function getSecrets(idOrPos) {
+  if (!idOrPos) {
+    idOrPos = lstore.get('lastSelectedAccount');
+  }
   if (typeof idOrPos === 'number') {
     return lstore.get('secrets')[idOrPos];
   }
@@ -107,10 +123,11 @@ function selectAccount(id) {
     .click();
 }
 
-beforeEach(() => {
+beforeEach(function() {
   cy.visit('http://localhost:3000/')
     .then(() => cy.fixture('accounts').as('accounts'))
     .then(accounts => {
+      this.accounts = accounts;
       lstore.set('accounts', accounts.storedAccounts);
       lstore.set('secrets', accounts.secrets);
       lstore.set('lastSelectedAccount', accounts.storedAccounts[0].id);
@@ -123,9 +140,9 @@ beforeEach(() => {
   cy.route('POST', '**/peer/transactions').as('postTransaction');
 });
 
-afterEach(() => {
-  lstore.clearAll();
-});
+// afterEach(() => {
+//   lstore.clearAll();
+// });
 
 context('Wallet', () => {
   it('send funds', () => {
@@ -242,7 +259,7 @@ context('Settings', () => {
       .should('be.gt', 0);
     // pick the first result (2nd button)
     clickDialogButton(1);
-    fillConfirmationDialog()
+    fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
     cy.wait('@postTransaction')
@@ -257,7 +274,7 @@ context('Settings', () => {
     const newName = 'new name ' + Math.random();
     fillDialogInput(0, newName);
     clickDialogButton(1).then(_ => {
-      expect(getAccount(0).name).to.eql(newName);
+      expect(getAccount().name).to.eql(newName);
       // wait for observables to settle
       cy.wait(1000);
     });
@@ -266,7 +283,7 @@ context('Settings', () => {
   it('pinned', () => {
     cy.wait(1000);
     clickSettingsRow('Pinned').then(_ => {
-      expect(getAccount(0).pinned).to.eql(true);
+      expect(getAccount().pinned).to.eql(true);
       // wait for observables to settle
       cy.wait(1000);
     });
@@ -277,25 +294,24 @@ context('Settings', () => {
     getDialog()
       .find('select')
       .select('EUR');
-    clickDialogButton(2)
-      .then(_ => {
-        expect(getAccount(0).fiatCurrency).to.eql('EUR');
-      });
+    clickDialogButton(2).then(_ => {
+      expect(getAccount().fiatCurrency).to.eql('EUR');
+    });
   });
 });
 
-context('Form validation', () => {
-  it('confirmation passphrase', () => {
+context('Form validation', function() {
+  it('confirmation passphrase', function() {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, getAccount(1).id);
+    fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
     fillDialogInput(1, '1');
     // click submit
     clickDialogSubmit();
     // type in the mnemonic
-    fillDialogInput(0, getSecrets(0).mnemonic);
+    fillDialogInput(0, getSecrets().mnemonic);
     // type in the passphrase
     fillDialogInput(1, 'wrong');
     // click submit
@@ -306,11 +322,11 @@ context('Form validation', () => {
     closeDialog();
   });
 
-  it('confirmation mnemonic', () => {
+  it('confirmation mnemonic', function() {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, getAccount(1).id);
+    fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
     fillDialogInput(1, '1');
     // click submit
@@ -318,7 +334,7 @@ context('Form validation', () => {
     // type in the mnemonic
     fillDialogInput(0, 'wrong');
     // type in the passphrase
-    fillDialogInput(1, getSecrets(0).passphrase);
+    fillDialogInput(1, getSecrets().passphrase);
     // click submit
     clickDialogSubmit();
     getDialog()
@@ -328,12 +344,12 @@ context('Form validation', () => {
   });
 });
 
-context('Dialog navigation', () => {
-  it('go back to the first form', () => {
+context('Dialog navigation', function() {
+  it('go back to the first form', function() {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, getAccount(1).id);
+    fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -357,11 +373,11 @@ context('Dialog navigation', () => {
       .should('not.exist');
   });
 
-  it('close button on the second form', () => {
+  it('close button on the second form', function() {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, getAccount(1).id);
+    fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -374,11 +390,11 @@ context('Dialog navigation', () => {
       .should('not.exist');
   });
 
-  it('no navigation buttons during a submission', () => {
+  it('no navigation buttons during a submission', function() {
     // click the Send RISE button
     cy.get('button[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, getAccount(1).id);
+    fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
