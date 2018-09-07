@@ -33,11 +33,11 @@ export function clickDialogSubmit() {
  * TODO support clicking by text
  * @param pos
  */
-export function clickDialogButton(pos = 0) {
+export function clickDialogButton(pos = 0, force = false) {
   return getDialog()
     .find('button')
     .eq(pos)
-    .click();
+    .click({ force });
 }
 
 export function fillConfirmationDialog(mnemonic, passphrase) {
