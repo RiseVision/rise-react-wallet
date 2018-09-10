@@ -108,7 +108,7 @@ context('Settings', () => {
     goToSettings();
   });
 
-  it('register delegate', () => {
+  it('register delegate (stabbed)', () => {
     // stab the route
     cy.route({
       method: 'POST',
@@ -142,7 +142,7 @@ context('Settings', () => {
     });
   });
 
-  it('2nd passphrase', () => {
+  it('2nd passphrase (stabbed)', () => {
     // stab the route
     cy.route({
       method: 'POST',
@@ -175,7 +175,7 @@ context('Settings', () => {
     });
   });
 
-  it('vote delegate (when already voted)', () => {
+  it('vote delegate when already voted (stabbed)', () => {
     // stab the route
     cy.route({
       method: 'POST',
