@@ -1,6 +1,6 @@
 import lstore from 'store';
 
-const SEC = 1000
+const SEC = 1000;
 
 export function getDialog(child = '', timeout = undefined) {
   return cy.get(`div[role="dialog"] ${child}`, { timeout });
@@ -87,7 +87,7 @@ export function closeDialog() {
  *   No parameter return the currently selected account.
  */
 export function getAccount(idOrPos) {
-  if (!idOrPos) {
+  if (idOrPos === undefined) {
     idOrPos = lstore.get('lastSelectedAccount');
   }
   if (typeof idOrPos === 'number') {
@@ -113,7 +113,7 @@ export function getSecrets(idOrPos) {
 
 export function assertSuccessfulDialog() {
   // wait 10 secs for the successful dialog
-  getDialog('', 10*SEC)
+  getDialog('', 10 * SEC)
     .contains('span', 'successfully')
     .should('have.length', 1);
 }
@@ -127,4 +127,12 @@ export function selectAccount(id) {
     .find('p')
     .contains(id)
     .click();
+}
+
+export function openRegisterDelegateDialog() {
+  // wait for loading to complete
+  cy.get('main')
+    .find('p')
+    .should('contain', 'Not registered');
+  clickSettingsRow('Delegate registration');
 }

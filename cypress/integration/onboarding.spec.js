@@ -1,53 +1,45 @@
 /// <reference types="Cypress" />
-import delay from 'delay';
+import lstore from 'store';
+import { getAccount } from '../plugins/helpers';
 
-// TODO move to fixtures
-const fixtures = {
-  id: '12525095472804841547R',
-  mnemonic:
-    'cable swamp sauce release kitchen build torch midnight foot silk subway deliver',
-  account: {
-    id: '12525095472804841547R',
-    publicKey:
-      '14d8cb7099e9a2119d6a6f1011d4d2a56cc9ffea35bbafe4a62790b1fb7e5926',
-    readOnly: false,
-    fiatCurrency: 'USD',
-    name: null,
-    pinned: false
-  }
-};
+beforeEach(function() {
+  cy.visit('http://localhost:3000/');
+  cy.fixture('accounts')
+    .as('accounts')
+    .then(accounts => {
+      this.accounts = accounts;
+    });
+});
 
-context('Onboarding', () => {
-  beforeEach(() => {
-    cy.visit('http://localhost:3000/');
-  });
+afterEach(() => {
+  lstore.clearAll();
+});
 
-  afterEach( () => {
-    // TODO clean local storage
-  })
-
-  it('add an existing account', async () => {
+context('Onboarding', function() {
+  it('add an existing account', function() {
+    // save the fixtures
+    const storedAccounts = this.accounts.storedAccounts;
     // check the url
-    cy.url().should('contain', 'onboarding/add-account');
+    cy.url().should('contain', '/onboarding/add-account');
     // click "Existing account"
     cy.get('body')
       .find('div')
       .contains('Existing account')
       .click();
     // enter the ID
-    cy.get('input').type('12525095472804841547R');
+    cy.get('input').type(storedAccounts[0].id);
     // submit
     cy.get('button[type="submit"]').click();
     // choose Full access and wait for the wallet page
-    await new Promise(then => {
-      cy.get('body')
-        .find('div')
-        .contains('Full access account')
-        .click()
-        .then(then);
-    });
+    cy.get('body')
+      .find('div')
+      .contains('Full access account')
+      .click();
     // wait for the recent transaction list
-    await delay(2000);
-    expect(JSON.parse(localStorage.accounts)[0]).to.deep.eq(fixtures.account);
+    cy.wait(2000).then(() => {
+      const newAccount = getAccount(0);
+      expect(newAccount.id).to.deep.eq(storedAccounts[0].id);
+      cy.url().should('contain', `/account/${newAccount.id}`);
+    });
   });
 });
