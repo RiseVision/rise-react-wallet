@@ -71,8 +71,8 @@ export function clickSettingsRow(text) {
     .click();
 }
 
-export function assertAutofocus() {
-  return cy.focused().should('match', 'input');
+export function assertAutofocus(tagName = 'input', timeout = 100) {
+  return cy.focused({ timeout }).should('match', tagName);
 }
 
 export function closeDialog() {
