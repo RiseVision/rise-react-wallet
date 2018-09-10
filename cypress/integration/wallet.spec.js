@@ -120,7 +120,6 @@ context('Settings', () => {
       }
     }).as('postTransaction');
     openRegisterDelegateDialog();
-    // assertAutofocus(); TODO broken
     // type in the name
     const name = 'test';
     fillDialogInput(0, name);
@@ -157,7 +156,6 @@ context('Settings', () => {
       .find('p')
       .should('contain', 'Not set');
     clickSettingsRow('2nd passphrase');
-    // assertAutofocus(); TODO broken
     // type in the passphrase
     const passphrase = 'test';
     fillDialogInput(0, passphrase);
@@ -184,8 +182,6 @@ context('Settings', () => {
       }
     }).as('postTransaction');
     clickSettingsRow('Voted delegate');
-    // assertAutofocus(); TODO broken
-    // type in the query
     fillDialogInput(0, 'test');
     // wait for results
     getDialogContent()
@@ -211,7 +207,6 @@ context('Settings', () => {
 
   it('account name', () => {
     clickSettingsRow('Account name');
-    assertAutofocus();
     // type in the query
     const newName = 'new name ' + Math.random();
     fillDialogInput(0, newName);
@@ -243,11 +238,50 @@ context('Settings', () => {
 
   it('remove account', () => {
     clickSettingsRow('Remove account');
-    assertAutofocus();
     fillDialogInput(0, getAccount().id);
     clickDialogSubmit().then(() => {
       expect(lstore.get('accounts')).to.have.length(1);
     });
+  });
+});
+
+context('Settings dialogs autofocus', () => {
+  beforeEach(() => {
+    goToSettings();
+  });
+
+  it('register delegate', () => {
+    openRegisterDelegateDialog();
+    assertAutofocus();
+  });
+
+  it('2nd passphrase', () => {
+    // use the second account
+    selectAccount(getAccount(1).id);
+    cy.wait(1000);
+    // go to the settings of the second account
+    goToSettings();
+    clickSettingsRow('2nd passphrase');
+    assertAutofocus();
+  });
+
+  it('vote delegate', () => {
+    clickSettingsRow('Voted delegate');
+    assertAutofocus();
+  });
+  it('account name', () => {
+    clickSettingsRow('Account name');
+    assertAutofocus();
+  });
+
+  it('FIAT', () => {
+    clickSettingsRow('FIAT');
+    assertAutofocus('select');
+  });
+
+  it('remove account', () => {
+    clickSettingsRow('Remove account');
+    assertAutofocus();
   });
 });
 
@@ -402,7 +436,6 @@ context('URLs', () => {
   });
 
   context('auto fill the last account ID', () => {
-
     it('main settings page', () => {
       cy.visit(`${url}/settings`);
       cy.url().should('contain', `/settings/${getAccount().id}`);
