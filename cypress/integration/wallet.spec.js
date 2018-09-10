@@ -15,11 +15,12 @@ import {
   fillDialogInput,
   getDialogHeader,
   getDialogContent,
-  getDialog
+  getDialog,
+  openRegisterDelegateDialog
 } from '../plugins/helpers';
 
+const url = 'http://localhost:3000';
 beforeEach(function() {
-  const url = 'http://localhost:3000';
   cy.location()
     .then(location => {
       if (!location.toString().includes(url)) {
@@ -118,10 +119,7 @@ context('Settings', () => {
         transactionId: '42323498723942398'
       }
     }).as('postTransaction');
-    cy.get('main')
-      .find('p')
-      .should('contain', 'Not registered');
-    clickSettingsRow('Delegate registration');
+    openRegisterDelegateDialog();
     // assertAutofocus(); TODO broken
     // type in the name
     const name = 'test';
@@ -360,5 +358,83 @@ context('Dialog navigation', function() {
     assertSuccessfulDialog();
     // click the close button
     clickDialogButton(0);
+  });
+});
+
+context('URLs', () => {
+  context('settings', () => {
+    beforeEach(() => {
+      goToSettings();
+    });
+
+    it('main settings page', () => {
+      cy.url().should('contain', `/settings/${getAccount().id}`);
+    });
+
+    it('register delegate', () => {
+      openRegisterDelegateDialog();
+      cy.url().should('contain', `/settings/delegate/${getAccount().id}`);
+    });
+
+    it('2nd passphrase', () => {
+      clickSettingsRow('2nd passphrase');
+      cy.url().should('contain', `/settings/passphrase/${getAccount().id}`);
+    });
+
+    it('vote delegate', () => {
+      clickSettingsRow('Voted delegate');
+      cy.url().should('contain', `/settings/vote/${getAccount().id}`);
+    });
+    it('account name', () => {
+      clickSettingsRow('Account name');
+      cy.url().should('contain', `/settings/name/${getAccount().id}`);
+    });
+
+    it('FIAT', () => {
+      clickSettingsRow('FIAT');
+      cy.url().should('contain', `/settings/fiat/${getAccount().id}`);
+    });
+
+    it('remove account', () => {
+      clickSettingsRow('Remove account');
+      cy.url().should('contain', `/settings/remove/${getAccount().id}`);
+    });
+  });
+
+  context('auto fill the last account ID', () => {
+
+    it('main settings page', () => {
+      cy.visit(`${url}/settings`);
+      cy.url().should('contain', `/settings/${getAccount().id}`);
+    });
+
+    it('register delegate', () => {
+      cy.visit(`${url}/settings/delegate`);
+      cy.url().should('contain', `/settings/delegate/${getAccount().id}`);
+    });
+
+    it('2nd passphrase', () => {
+      cy.visit(`${url}/settings/passphrase`);
+      cy.url().should('contain', `/settings/passphrase/${getAccount().id}`);
+    });
+
+    it('vote delegate', () => {
+      cy.visit(`${url}/settings/vote`);
+      cy.url().should('contain', `/settings/vote/${getAccount().id}`);
+    });
+    it('account name', () => {
+      cy.visit(`${url}/settings/name`);
+      cy.url().should('contain', `/settings/name/${getAccount().id}`);
+    });
+
+    it('FIAT', () => {
+      cy.visit(`${url}/settings/fiat`);
+      cy.url().should('contain', `/settings/fiat/${getAccount().id}`);
+    });
+
+    it('remove account', () => {
+      cy.visit(`${url}/settings/remove`);
+      cy.url().should('contain', `/settings/remove/${getAccount().id}`);
+    });
   });
 });
