@@ -1,7 +1,9 @@
 import lstore from 'store';
 
-export function getDialog(child = '') {
-  return cy.get(`div[role="dialog"] ${child}`);
+const SEC = 1000
+
+export function getDialog(child = '', timeout = undefined) {
+  return cy.get(`div[role="dialog"] ${child}`, { timeout });
 }
 
 export function getDialogContent() {
@@ -110,7 +112,8 @@ export function getSecrets(idOrPos) {
 }
 
 export function assertSuccessfulDialog() {
-  getDialog()
+  // wait 10 secs for the successful dialog
+  getDialog('', 10*SEC)
     .contains('span', 'successfully')
     .should('have.length', 1);
 }
