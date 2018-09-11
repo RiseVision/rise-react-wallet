@@ -1,6 +1,10 @@
 /// <reference types="Cypress" />
 import lstore from 'store';
-import { getAccount } from '../plugins/helpers';
+import {
+  getAccount,
+  clickDialogButton,
+  fillDialogInput
+} from '../plugins/helpers';
 
 beforeEach(function() {
   cy.visit('http://localhost:3000/');
@@ -41,5 +45,78 @@ context('Onboarding', function() {
       expect(newAccount.id).to.deep.eq(storedAccounts[0].id);
       cy.url().should('contain', `/account/${newAccount.id}`);
     });
+  });
+
+  it('add a new account using a secret', function() {
+    // check the url
+    cy.url().should('contain', '/onboarding/add-account');
+    // click "New account"
+    cy.get('body')
+      .find('div')
+      .contains('New account')
+      .click();
+    cy.get('body')
+      .find('span')
+      .contains('Create an account using a secret')
+      .click();
+    // click 5 dialog "tip" buttons
+    for (const _ of Array(5)) {
+      clickDialogButton(1);
+    }
+    let mnemonic;
+    // find the mnemonic on the page (TODO should be easier)
+    cy.get('body')
+      .find('span')
+      .contains('This is your new 12-word mnemonic secret')
+      .parentsUntil('div')
+      .parent()
+      .next()
+      .then(div => {
+        mnemonic = div
+          .text()
+          .trim()
+          .split(' ');
+      });
+    let id;
+    clickDialogButton(1)
+      .then(_ => {
+        // log to the console
+        console.log(mnemonic);
+        // loop over all the words and paste them to the input
+        for (const _ of mnemonic) {
+          cy.get('body')
+            .find('span')
+            .contains('?')
+            .prev()
+            .then(span => {
+              let index = span.text().replace('#', '');
+              index = parseInt(index, 10);
+              // array is 0-indexed
+              index--;
+              fillDialogInput(0, mnemonic[index]);
+              clickDialogButton(1);
+            });
+        }
+      })
+      .then(_ => {
+        // find the generated ID
+        cy.get('body')
+          .find('span')
+          .contains(
+            'A new acccount has been generated, with the following address'
+          )
+          .parentsUntil('div')
+          .parent()
+          .next()
+          .contains('R')
+          .then(p => {
+            id = p.text();
+            expect(lstore.get('accounts')[0].id).eql(id);
+          });
+      })
+      .then(_ => {
+        clickDialogButton(0);
+        cy.url().should('contain', `/account/${id}`);
+      });
   });
 });

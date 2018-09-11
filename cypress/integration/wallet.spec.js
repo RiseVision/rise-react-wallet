@@ -16,7 +16,8 @@ import {
   getDialogHeader,
   getDialogContent,
   getDialog,
-  openRegisterDelegateDialog
+  openRegisterDelegateDialog,
+  getDialogInput
 } from '../plugins/helpers';
 
 const url = 'http://localhost:3000';
@@ -101,6 +102,20 @@ context('Wallet', () => {
         expect(lstore.get('accounts')).to.eql(undefined);
         expect(lstore.get('lastSelectedAccount')).to.eql(undefined);
       });
+  });
+
+  it('create a 2nd account', () => {
+    cy.get('ul[aria-label="Accounts"]')
+      .find('span')
+      .contains('Add an account')
+      .click();
+    // assert the url
+    cy.url().should('contain', '/onboarding/add-account');
+    // assert the new account type
+    cy.get('body')
+      .find('span')
+      .contains('Existing account')
+      .should('have.length', 1);
   });
 });
 
@@ -327,6 +342,54 @@ context('Form validation', function() {
       .should('have.length', 1);
     closeDialog();
   });
+
+  it('passphrase when setting it', () => {
+    selectAccount(getSecrets(1).id);
+    goToSettings();
+    clickSettingsRow('2nd passphrase');
+    // type in the new passphrase
+    fillDialogInput(0, 'test');
+    clickDialogSubmit();
+    // type in the mnemonic
+    fillDialogInput(0, getSecrets(1).mnemonic);
+    // type in a wrong passphrase
+    fillDialogInput(1, 'wrong');
+    // click submit
+    clickDialogSubmit();
+    getDialog()
+      .contains('p', 'Incorrect passphrase')
+      .should('have.length', 1);
+    closeDialog();
+  });
+
+  it('send dialog', () => {
+    // click the Send RISE button
+    cy.get('button[title="Send RISE"]').click();
+    // type in the recipient address
+    fillDialogInput(0, 'wrong address');
+    // type in the amount
+    fillDialogInput(1, '0wer0.056');
+    // click submit
+    clickDialogSubmit();
+    getDialog()
+      .contains('p', 'Invalid RISE address')
+      .should('have.length', 1);
+    getDialog()
+      .contains('p', 'Invalid amount')
+      .should('have.length', 1);
+    closeDialog();
+  });
+
+  it('vote delegate, uppercase query', () => {
+    goToSettings();
+    clickSettingsRow('Voted delegate');
+    // type an uppercase query
+    fillDialogInput(0, 'TEST');
+    getDialog()
+      .contains('p', 'Delegate username query must be all lowercase')
+      .should('have.length', 1);
+    closeDialog();
+  });
 });
 
 context('Dialog navigation', function() {
@@ -392,6 +455,40 @@ context('Dialog navigation', function() {
     assertSuccessfulDialog();
     // click the close button
     clickDialogButton(0);
+  });
+
+  context('preserves inputted data', () => {
+    beforeEach(() => {
+      goToSettings();
+    });
+
+    it('register delegate', () => {
+      const name = 'test';
+      openRegisterDelegateDialog();
+      fillDialogInput(0, name);
+      clickDialogSubmit();
+      clickDialogButton(0).then(_ => {
+        getDialogInput(0).should('have.value', name);
+      });
+    });
+
+    it('vote delegate', () => {
+      const query = 'test';
+      clickSettingsRow('Voted delegate');
+      fillDialogInput(0, query);
+      // wait for results
+      getDialogContent()
+        .find('button:visible')
+        .its('length')
+        .should('be.gt', 0);
+      // pick the first result (2nd button)
+      clickDialogButton(1, true);
+      // go back
+      clickDialogButton(0);
+      clickDialogButton(0).then(_ => {
+        getDialogInput(0).should('have.value', query);
+      });
+    });
   });
 });
 
