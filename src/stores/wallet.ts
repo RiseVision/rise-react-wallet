@@ -628,15 +628,6 @@ export default class WalletStore {
     switch (type) {
       case types.SEND:
         return this.idToName(recipientID);
-      case types.VOTE:
-        // TODO translate
-        return 'Cast Vote';
-      case types.SIGNATURE:
-        // TODO translate
-        return 'Second Passphrase';
-      case types.DELEGATE:
-        // TODO translate
-        return 'Register Delegate';
       default:
         return null;
     }
@@ -766,6 +757,9 @@ type APITransaction = {
   asset: {
     signature?: {};
     votes?: string[];
+    delegate?: {
+      username: string;
+    };
   };
   blockId: string;
   confirmations: number;
