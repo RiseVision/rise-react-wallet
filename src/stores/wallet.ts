@@ -640,9 +640,7 @@ export default class WalletStore {
       id: wallet.address,
       publicKey: wallet.publicKey
     };
-    this.login(account.id, account).then(() => {
-      this.selectedAccount = this.accounts.get(account.id) as AccountStore;
-    });
+    this.login(account.id, account, true);
     return account.id;
   }
 
