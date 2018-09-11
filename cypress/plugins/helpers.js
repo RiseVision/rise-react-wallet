@@ -15,7 +15,7 @@ export function getDialogHeader() {
   return getDialog('> div:nth-child(2) > div:nth-child(1)');
 }
 
-function getDialogInput(pos = 0) {
+export function getDialogInput(pos = 0) {
   return getDialog()
     .find('input')
     .eq(pos);
