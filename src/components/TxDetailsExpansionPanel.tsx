@@ -89,6 +89,28 @@ const stylesDecorator = withStyles(styles, { name: 'TxDetailsExpansionPanel' });
 
 const messages = defineMessages({
   // receive
+  summaryUnconfirmedReceiveAliasLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-receive-alias-long',
+    description: 'Summary text for unconfirmed receive operation with an alias',
+    defaultMessage: 'Pending transfer from {alias} ({address})'
+  },
+  summaryUnconfirmedReceiveAliasShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-receive-alias-short',
+    description:
+      'Summary text for unconfirmed receive operation with an alias (short version)',
+    defaultMessage: 'Pending from {alias} ({address})'
+  },
+  summaryUnconfirmedReceiveLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-receive-long',
+    description: 'Summary text for unconfirmed receive operation without an alias',
+    defaultMessage: 'Pending transfer from {address}'
+  },
+  summaryUnconfirmedReceiveShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-receive-short',
+    description:
+      'Summary text for unconfirmed receive operation without an alias (short version)',
+    defaultMessage: 'Pending from {address}'
+  },
   summaryReceiveAliasLong: {
     id: 'tx-details-expansion-panel.summary-receive-alias-long',
     description: 'Summary text for receive operation with an alias',
@@ -112,6 +134,28 @@ const messages = defineMessages({
     defaultMessage: 'From {address}'
   },
   // send
+  summaryUnconfirmedSendAliasLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-send-alias-long',
+    description: 'Summary text for unconfirmed send operation with an alias',
+    defaultMessage: 'Pending transfer to {alias} ({address})'
+  },
+  summaryUnconfirmedSendAliasShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-send-alias-short',
+    description:
+      'Summary text for unconfirmed send operation with an alias (short version)',
+    defaultMessage: 'Pending to {alias} ({address})'
+  },
+  summaryUnconfirmedSendLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-send-long',
+    description: 'Summary text for unconfirmed send operation without an alias',
+    defaultMessage: 'Pending transfer to {address}'
+  },
+  summaryUnconfirmedSendShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-send-short',
+    description:
+      'Summary text for unconfirmed send operation without an alias (short version)',
+    defaultMessage: 'Pending to {address}'
+  },
   summarySendAliasLong: {
     id: 'tx-details-expansion-panel.summary-send-alias-long',
     description: 'Summary text for send operation with an alias',
@@ -133,7 +177,152 @@ const messages = defineMessages({
     description:
       'Summary text for send operation without an alias (short version)',
     defaultMessage: 'To {address}'
-  }
+  },
+  // passphrase
+  summaryUnconfirmedPassphraseLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-passphrase-long',
+    description: 'Summary text for unconfirmed passphrase tx',
+    defaultMessage: 'Pending 2nd passphrase setup for the account'
+  },
+  summaryUnconfirmedPassphraseShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-passphrase-short',
+    description: 'Summary text for unconfirmed passphrase tx (short version)',
+    defaultMessage: 'Pending 2nd passphrase setup'
+  },
+  summaryPassphraseLong: {
+    id: 'tx-details-expansion-panel.summary-passphrase-long',
+    description: 'Summary text for passphrase tx',
+    defaultMessage: 'Setup 2nd passphrase for the account'
+  },
+  summaryPassphraseShort: {
+    id: 'tx-details-expansion-panel.summary-passphrase-short',
+    description: 'Summary text for passphrase tx (short version)',
+    defaultMessage: 'Setup 2nd passphrase'
+  },
+  // delegate
+  summaryUnconfirmedDelegateLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-delegate-long',
+    description: 'Summary text for unconfirmed delegate tx',
+    defaultMessage: 'Pending delegate registration as {username}'
+  },
+  summaryUnconfirmedDelegateShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-delegate-short',
+    description: 'Summary text for unconfirmed delegate tx (short version)',
+    defaultMessage: 'Pending delegate reg. as {username}'
+  },
+  summaryUnconfirmedDelegateGenericLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-delegate-generic-long',
+    description: 'Summary text for unconfirmed delegate tx (generic)',
+    defaultMessage: 'Pending delegate registration transaction'
+  },
+  summaryUnconfirmedDelegateGenericShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-delegate-generic-short',
+    description: 'Summary text for unconfirmed delegate tx (generic) (short version)',
+    defaultMessage: 'Pending delegate reg. transaction'
+  },
+  summaryDelegateLong: {
+    id: 'tx-details-expansion-panel.summary-delegate-long',
+    description: 'Summary text for delegate tx',
+    defaultMessage: 'Register as delegate {username}'
+  },
+  summaryDelegateShort: {
+    id: 'tx-details-expansion-panel.summary-delegate-short',
+    description: 'Summary text for delegate tx (short version)',
+    defaultMessage: 'Register delegate {username}'
+  },
+  summaryDelegateGenericLong: {
+    id: 'tx-details-expansion-panel.summary-delegate-generic-long',
+    description: 'Summary text for delegate tx (generic)',
+    defaultMessage: 'Register as a delegate transaction'
+  },
+  summaryDelegateGenericShort: {
+    id: 'tx-details-expansion-panel.summary-delegate-generic-short',
+    description:
+      'Summary text for delegate tx (generic) (short version)',
+    defaultMessage: 'Register delegate transaction'
+  },
+  // vote
+  summaryUnconfirmedVoteCastLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-vote-cast-long',
+    description: 'Summary text for unconfirmed cast vote tx',
+    defaultMessage: 'Pending cast vote for {username} ({address})'
+  },
+  summaryUnconfirmedVoteCastShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-vote-cast-short',
+    description: 'Summary text for unconfirmed cast vote tx (short version)',
+    defaultMessage: 'Pending vote for {username} ({address})'
+  },
+  summaryUnconfirmedVoteRemoveLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-vote-remove-long',
+    description: 'Summary text for unconfirmed remove vote tx',
+    defaultMessage: 'Pending vote removal from {username} ({address})'
+  },
+  summaryUnconfirmedVoteRemoveShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-vote-remove-short',
+    description: 'Summary text for unconfirmed remove vote tx (short version)',
+    defaultMessage: 'Pending vote removal form {username} ({address})'
+  },
+  summaryUnconfirmedVoteGenericLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-vote-generic-long',
+    description: 'Summary text for unconfirmed generic vote tx',
+    defaultMessage: 'Pending vote transaction'
+  },
+  summaryUnconfirmedVoteGenericShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-vote-generic-short',
+    description: 'Summary text for unconfirmed generic vote tx (short version)',
+    defaultMessage: 'Pending vote transaction'
+  },
+  summaryVoteCastLong: {
+    id: 'tx-details-expansion-panel.summary-vote-cast-long',
+    description: 'Summary text for cast vote tx',
+    defaultMessage: 'Cast vote for {username} ({address})'
+  },
+  summaryVoteCastShort: {
+    id: 'tx-details-expansion-panel.summary-vote-cast-short',
+    description: 'Summary text for cast vote tx (short version)',
+    defaultMessage: 'Vote for {username} ({address})'
+  },
+  summaryVoteRemoveLong: {
+    id: 'tx-details-expansion-panel.summary-vote-remove-long',
+    description: 'Summary text for remove vote tx',
+    defaultMessage: 'Remove vote from {username} ({address})'
+  },
+  summaryVoteRemoveShort: {
+    id: 'tx-details-expansion-panel.summary-vote-remove-short',
+    description: 'Summary text for remove vote tx (short version)',
+    defaultMessage: 'Remove vote form {username} ({address})'
+  },
+  summaryVoteGenericLong: {
+    id: 'tx-details-expansion-panel.summary-vote-generic-long',
+    description: 'Summary text for generic vote tx',
+    defaultMessage: 'Vote transaction'
+  },
+  summaryVoteGenericShort: {
+    id: 'tx-details-expansion-panel.summary-vote-generic-short',
+    description: 'Summary text for generic vote tx (short version)',
+    defaultMessage: 'Vote transaction'
+  },
+  // unknown
+  summaryUnconfirmedUnknownLong: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-unknown-long',
+    description: 'Summary text for unconfirmed unknown tx',
+    defaultMessage: 'Pending unknown transaction'
+  },
+  summaryUnconfirmedUnknownShort: {
+    id: 'tx-details-expansion-panel.summary-unconfirmed-unknown-short',
+    description: 'Summary text for unconfirmed unknown tx (short version)',
+    defaultMessage: 'Pending unknown transaction'
+  },
+  summaryUnknownLong: {
+    id: 'tx-details-expansion-panel.summary-unknown-long',
+    description: 'Summary text for unknown tx',
+    defaultMessage: 'Unknown transaction',
+  },
+  summaryUnknownShort: {
+    id: 'tx-details-expansion-panel.summary-unknown-short',
+    description: 'Summary text for unknown tx (short version)',
+    defaultMessage: 'Unknown transaction'
+  },
 });
 
 class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
@@ -144,49 +333,74 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
       summaryLong = '';
     let amount = RawAmount.ZERO;
 
-    if (tx.isIncoming) {
-      if (!tx.senderName) {
-        const data = { address: tx.recipientId };
-        summaryLong = intl.formatMessage(messages.summaryReceiveLong, data);
-        summaryShort = intl.formatMessage(messages.summaryReceiveShort, data);
-      } else {
+    const msgStatus = tx.confirmations < 1 ? 'Unconfirmed' : '';
+
+    if (tx.type === TransactionType.SEND) {
+      const data = tx.isIncoming ? {
+        address: tx.senderId,
+        alias: tx.senderName,
+      } : {
+        address: tx.recipientId,
+        alias: tx.recipientName,
+      };
+      const msgAction = tx.isIncoming ? 'Receive' : 'Send';
+      const msgAlias = !!data.alias ? 'Alias' : '';
+
+      summaryLong = intl.formatMessage(messages[`summary${msgStatus}${msgAction}${msgAlias}Long`], data);
+      summaryShort = intl.formatMessage(messages[`summary${msgStatus}${msgAction}${msgAlias}Short`], data);
+    } else if (tx.type === TransactionType.SIGNATURE) {
+      summaryLong = intl.formatMessage(messages[`summary${msgStatus}PassphraseLong`]);
+      summaryShort = intl.formatMessage(messages[`summary${msgStatus}PassphraseShort`]);
+    } else if (tx.type === TransactionType.DELEGATE) {
+      const delegate = tx.asset && tx.asset.delegate;
+      const username = delegate ? delegate.username : null;
+      if (username) {
         const data = {
-          alias: tx.senderName,
-          address: tx.senderId
+          username,
         };
-        summaryLong = intl.formatMessage(
-          messages.summaryReceiveAliasLong,
-          data
-        );
-        summaryShort = intl.formatMessage(
-          messages.summaryReceiveAliasShort,
-          data
-        );
+        summaryLong = intl.formatMessage(messages[`summary${msgStatus}DelegateLong`], data);
+        summaryShort = intl.formatMessage(messages[`summary${msgStatus}DelegateShort`], data);
+      } else {
+        summaryLong = intl.formatMessage(messages[`summary${msgStatus}PassphraseGenericLong`]);
+        summaryShort = intl.formatMessage(messages[`summary${msgStatus}PassphraseGenericShort`]);
       }
-      amount = tx.amountFee;
+    } else if (tx.type === TransactionType.VOTE) {
+      const removedVotes = tx.votes
+        .filter(({ op }) => op === 'remove')
+        .map(({ delegate }) => delegate);
+      const addedVotes = tx.votes
+        .filter(({ op }) => op === 'add')
+        .map(({ delegate }) => delegate);
+
+      if (addedVotes.length > 0) {
+        const data = {
+          address: addedVotes[0].address,
+          username: addedVotes[0].username,
+        };
+        summaryLong = intl.formatMessage(messages[`summary${msgStatus}VoteCastLong`], data);
+        summaryShort = intl.formatMessage(messages[`summary${msgStatus}VoteCastShort`], data);
+      } else if (removedVotes.length > 0) {
+        const data = {
+          address: removedVotes[0].address,
+          username: removedVotes[0].username,
+        };
+        summaryLong = intl.formatMessage(messages[`summary${msgStatus}VoteRemoveLong`], data);
+        summaryShort = intl.formatMessage(messages[`summary${msgStatus}VoteRemoveShort`], data);
+      } else {
+        summaryLong = intl.formatMessage(messages[`summary${msgStatus}VoteGenericLong`]);
+        summaryShort = intl.formatMessage(messages[`summary${msgStatus}VoteGenericShort`]);
+      }
     } else {
-      if (tx.type !== TransactionType.SEND) {
-        // network service (eg 2nd passphrase)
-        const data = { address: tx.recipientName };
-        summaryLong = intl.formatMessage(messages.summarySendLong, data);
-        summaryShort = intl.formatMessage(messages.summarySendShort, data);
-      } else if (!tx.recipientName) {
-        // regular send
-        const data = { address: tx.recipientId };
-        summaryLong = intl.formatMessage(messages.summarySendLong, data);
-        summaryShort = intl.formatMessage(messages.summarySendShort, data);
-      } else {
-        // regular send
-        const data = {
-          alias: tx.recipientName,
-          address: tx.recipientId
-        };
-        summaryLong = intl.formatMessage(messages.summarySendAliasLong, data);
-        summaryShort = intl.formatMessage(messages.summarySendAliasShort, data);
-      }
-      amount = RawAmount.ZERO.minus(tx.amountFee);
+      summaryLong = intl.formatMessage(messages[`summary${msgStatus}UnknownLong`]);
+      summaryShort = intl.formatMessage(messages[`summary${msgStatus}UnknownShort`]);
     }
 
+    // Format amount
+    if (tx.isIncoming) {
+      amount = tx.amountFee;
+    } else {
+      amount = RawAmount.ZERO.minus(tx.amountFee);
+    }
     let amountSign = '';
     if (amount.gt(RawAmount.ZERO)) {
       amountSign = '+';
