@@ -487,8 +487,7 @@ export default class WalletStore {
     account.balanceFiat = null;
     // TODO calculate
     runInAction(() => {
-      // TODO check if the same account is still selected
-      account.balanceFiat = '~??? ' + this.selectedAccount.fiatCurrency;
+      account.balanceFiat = '~??? ' + account.fiatCurrency;
     });
   }
 
