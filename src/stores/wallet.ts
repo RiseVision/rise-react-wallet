@@ -34,9 +34,59 @@ import AccountStore, { LoadingState } from './account';
 import { TConfig } from './index';
 import * as moment from 'moment-timezone';
 
+class DelegateCache {
+  private cached: {
+    [key: string]: {
+      state: 'loading';
+      promise: Promise<Delegate | null>;
+    } | {
+      state: 'loaded';
+      delegate: Delegate | null;
+    };
+  } = {};
+
+  constructor(private api: typeof dposAPI) {
+  }
+
+  async get(publicKey: string, opts: { reload?: boolean } = {}): Promise<Delegate | null> {
+    const reload = opts.reload !== undefined ? opts.reload : false;
+
+    let entry = this.cached[publicKey];
+    if (reload || !entry) {
+      const promise = this.fetchAndUpdate(publicKey);
+      entry = {
+        state: 'loading',
+        promise,
+      };
+      this.cached[publicKey] = entry;
+    }
+
+    if (entry.state === 'loading') {
+      return await entry.promise;
+    } else {
+      return entry.delegate;
+    }
+  }
+
+  set(publicKey: string, delegate: Delegate) {
+    this.cached[publicKey] = {
+      state: 'loaded',
+      delegate: delegate,
+    };
+  }
+
+  private async fetchAndUpdate(publicKey: string): Promise<Delegate> {
+    const res = await this.api.delegates.getByPublicKey(publicKey);
+    const delegate = res.delegate || null;
+    this.set(publicKey, delegate);
+    return delegate;
+  }
+}
+
 export default class WalletStore {
   api: string;
   dposAPI: typeof dposAPI;
+  delegateCache: DelegateCache;
 
   // TODO type as not null
   @observable
@@ -54,6 +104,7 @@ export default class WalletStore {
     dposAPI.nodeAddress = config.api_url;
     this.api = config.api_url;
     this.dposAPI = dposAPI;
+    this.delegateCache = new DelegateCache(this.dposAPI);
     const accounts = this.storedAccounts();
     if (!accounts.length) {
       router.goTo(onboardingAddAccountRoute);
@@ -386,10 +437,10 @@ export default class WalletStore {
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADING;
     });
-    const res = await this.dposAPI.delegates.getByPublicKey(account.publicKey);
+    const delegate = await this.delegateCache.get(account.publicKey, { reload: true });
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADED;
-      account.registeredDelegate = res.delegate || null;
+      account.registeredDelegate = delegate;
     });
   }
 
@@ -496,14 +547,14 @@ export default class WalletStore {
       orderBy: 'timestamp:desc',
       recipientId: account.id,
       senderPublicKey: account.publicKey
-    });
+    }).then(tx => this.parseTransactionsReponse(accountID, tx));
     const unconfirmedPromise = this.loadTransactions(
       {
         address: account.id,
         senderPublicKey: account.publicKey
       },
       false
-    );
+    ).then(tx => this.parseTransactionsReponse(accountID, tx));
     const [recent, unconfirmed] = await Promise.all([
       recentPromise,
       unconfirmedPromise
@@ -511,19 +562,44 @@ export default class WalletStore {
     runInAction(() => {
       account.recentTransactions.items.length = 0;
       account.recentTransactions.items.push(
-        ...this.parseTransactionsReponse(accountID, unconfirmed),
-        ...this.parseTransactionsReponse(accountID, recent)
+        ...unconfirmed,
+        ...recent,
       );
     });
     return true;
   }
 
+  parseTransactionVotes(votes: string[]): Promise<TTransactionVote[]> {
+    return Promise.all(votes.map(async (vote) => {
+      const op = vote.startsWith('-') ? 'remove' : 'add';
+      const publicKey = vote.substring(1);
+
+      // We assume that the delegate exists since we're dealing with
+      // validated transactions. If the node reports that the delegate
+      // doesn't exists, we have bigger problems than a null-ref in wallet.
+      const delegate = (await this.delegateCache.get(publicKey))!;
+
+      return {
+        op,
+        delegate,
+      } as TTransactionVote;
+    }));
+  }
+
   // TODO dont depend on this.selectedAccount
-  parseTransactionsReponse(
+  async parseTransactionsReponse(
     accountID: string,
     res: TTransactionsResponse
-  ): TTransaction[] {
-    return res.transactions.map(raw => {
+  ): Promise<TTransaction[]> {
+    let txs = await Promise.all(res.transactions.map(async (raw) => {
+      const rawVotes = raw.asset && raw.asset.votes || [];
+      return {
+        raw,
+        votes: await this.parseTransactionVotes(rawVotes),
+      };
+    }));
+
+    return txs.map(({ raw, votes }) => {
       const amount = new RawAmount(raw.amount || 0);
       const fee = new RawAmount(raw.fee);
       return {
@@ -537,7 +613,8 @@ export default class WalletStore {
         recipientName: this.getRecipientName(raw.type, raw.recipientId),
         time: moment(timestampToUnix(raw.timestamp)).format(
           this.config.date_format
-        )
+        ),
+        votes,
       } as TTransaction;
     });
   }
@@ -685,7 +762,10 @@ export type TGroupedTransactions = {
 
 type APITransaction = {
   amount: null | number | string;
-  asset: { signature?: {} };
+  asset: {
+    signature?: {};
+    votes?: string[];
+  };
   blockId: string;
   confirmations: number;
   fee: number | string;
@@ -703,6 +783,11 @@ type APITransaction = {
   type: TransactionType;
 };
 
+export type TTransactionVote = {
+  op: 'add' | 'remove';
+  delegate: Delegate;
+};
+
 export type TTransaction = APITransaction & {
   amount: RawAmount;
   amountFee: RawAmount;
@@ -711,6 +796,7 @@ export type TTransaction = APITransaction & {
   senderName: string | null;
   recipientName: string | null;
   time: string;
+  votes: TTransactionVote[];
 };
 
 export type TTransactionsRequest = {
