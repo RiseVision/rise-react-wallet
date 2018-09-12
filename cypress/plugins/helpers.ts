@@ -2,7 +2,22 @@ import lstore from 'store';
 
 const SEC = 1000;
 
-export function getDialog(child = '', timeout = undefined) {
+export type TSecret = {
+  id: string;
+  mnemonic: string;
+  passphrase?: string;
+};
+
+export type TStoredAccount = {
+  id: string;
+  publicKey: string;
+  readOnly: boolean;
+  fiatCurrency: string;
+  name: string | null;
+  pinned: boolean;
+};
+
+export function getDialog(child: string = '', timeout?: number) {
   return cy.get(`div[role="dialog"] ${child}`, { timeout });
 }
 
@@ -15,13 +30,13 @@ export function getDialogHeader() {
   return getDialog('> div:nth-child(2) > div:nth-child(1)');
 }
 
-export function getDialogInput(pos = 0) {
+export function getDialogInput(pos: number = 0) {
   return getDialog()
     .find('input')
     .eq(pos);
 }
 
-export function fillDialogInput(pos, text) {
+export function fillDialogInput(pos: number = 0, text: string) {
   return getDialogInput(pos).type(text);
 }
 
@@ -35,21 +50,21 @@ export function clickDialogSubmit() {
  * TODO support clicking by text
  * @param pos
  */
-export function clickDialogButton(pos = 0, force = false) {
+export function clickDialogButton(pos: number = 0, force = false) {
   return getDialog()
     .find('button')
     .eq(pos)
     .click({ force });
 }
 
-export function fillConfirmationDialog(mnemonic, passphrase) {
+export function fillConfirmationDialog(mnemonic?: string, passphrase?: string) {
   // use first account's secrets as defaults
   if (!mnemonic && !passphrase) {
     mnemonic = getSecrets(0).mnemonic;
     passphrase = getSecrets(0).passphrase;
   }
   // type in the mnemonic
-  const first = fillDialogInput(0, mnemonic);
+  const first = fillDialogInput(0, mnemonic!);
   // in case the password isnt set
   if (!passphrase) {
     return first;
@@ -63,7 +78,7 @@ export function goToSettings() {
   return cy.get('button[title="Account settings"]').click();
 }
 
-export function clickSettingsRow(text) {
+export function clickSettingsRow(text: string) {
   return cy
     .get('main')
     .find('span')
@@ -71,7 +86,10 @@ export function clickSettingsRow(text) {
     .click();
 }
 
-export function assertAutofocus(tagName = 'input', timeout = 100) {
+export function assertAutofocus(
+  tagName: string = 'input',
+  timeout: number = 100
+) {
   return cy.focused({ timeout }).should('match', tagName);
 }
 
@@ -86,14 +104,14 @@ export function closeDialog() {
  * @param idOrPos Account ID or position in JSON (changes on every save).
  *   No parameter return the currently selected account.
  */
-export function getAccount(idOrPos) {
+export function getAccount(idOrPos?: string | number) {
   if (idOrPos === undefined) {
     idOrPos = lstore.get('lastSelectedAccount');
   }
   if (typeof idOrPos === 'number') {
     return lstore.get('accounts')[idOrPos];
   }
-  return lstore.get('accounts').find(a => a.id === idOrPos);
+  return lstore.get('accounts').find((a: TStoredAccount) => a.id === idOrPos);
 }
 
 /**
@@ -101,14 +119,14 @@ export function getAccount(idOrPos) {
  * @param idOrPos Account ID or position on JSON (doesn't change).
  *   No parameter return secrets for the currently selected account.
  */
-export function getSecrets(idOrPos) {
+export function getSecrets(idOrPos?: string | number) {
   if (!idOrPos) {
     idOrPos = lstore.get('lastSelectedAccount');
   }
   if (typeof idOrPos === 'number') {
     return lstore.get('secrets')[idOrPos];
   }
-  return lstore.get('secrets').find(a => a.id === idOrPos);
+  return lstore.get('secrets').find((a: TSecret) => a.id === idOrPos);
 }
 
 export function assertSuccessfulDialog() {
@@ -122,7 +140,7 @@ export function assertSuccessfulDialog() {
  * Selects an account from the menu
  * @param id
  */
-export function selectAccount(id) {
+export function selectAccount(id: string) {
   cy.get('ul[aria-label="Accounts"]')
     .find('p')
     .contains(id)

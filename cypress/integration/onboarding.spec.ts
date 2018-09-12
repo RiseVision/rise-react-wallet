@@ -63,7 +63,7 @@ context('Onboarding', function() {
     for (const _ of Array(5)) {
       clickDialogButton(1);
     }
-    let mnemonic;
+    let mnemonic: string[];
     // find the mnemonic on the page (TODO should be easier)
     cy.get('body')
       .find('span')
@@ -77,7 +77,7 @@ context('Onboarding', function() {
           .trim()
           .split(' ');
       });
-    let id;
+    let id: string;
     clickDialogButton(1)
       .then(_ => {
         // log to the console
@@ -89,8 +89,7 @@ context('Onboarding', function() {
             .contains('?')
             .prev()
             .then(span => {
-              let index = span.text().replace('#', '');
-              index = parseInt(index, 10);
+              let index = parseInt(span.text().replace('#', ''), 10);
               // array is 0-indexed
               index--;
               fillDialogInput(0, mnemonic[index]);
