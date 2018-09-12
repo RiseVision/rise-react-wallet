@@ -11,6 +11,7 @@ import SendIcon from '@material-ui/icons/Send';
 import { toPairs } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
+import * as classNames from 'classnames';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import SendCoinsDialog from './SendCoinsDialog';
@@ -23,8 +24,30 @@ import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
   createStyles({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      // Override the overflow setting from `.Wallet-content > :last-child`
+      overflow: 'visible !important',
+    },
+    header: {
+      zIndex: 100,
+    },
+    headerFixed: {
+      flexShrink: 0,
+      [theme.breakpoints.down('xs')]: {
+        display: 'none',
+      },
+    },
+    headerInline: {
+      [theme.breakpoints.up('sm')]: {
+        display: 'none',
+      },
+    },
     content: {
-      padding: theme.spacing.unit * 2
+      padding: theme.spacing.unit * 2,
+      overflow: 'auto',
+      zIndex: 50,
     },
     fab: {
       position: 'fixed',
@@ -96,14 +119,21 @@ class AccountOverview extends React.Component<DecoratedProps> {
     );
 
     const readOnly = this.account && this.account.readOnly;
+    const headerProps = {
+      address: this.account.id,
+      alias: this.account.name || unnamedAccountLabel,
+      balance: this.account.balance,
+      balance_in_fiat: this.account.balanceFiat || '',
+    };
 
     return (
-      <React.Fragment>
+      <div className={classes.container}>
         <AccountOverviewHeader
-          address={this.account.id}
-          alias={this.account.name || unnamedAccountLabel}
-          balance={this.account.balance}
-          balance_in_fiat={this.account.balanceFiat || ''}
+          className={classNames(
+            classes.header,
+            classes.headerFixed,
+          )}
+          {...headerProps}
         />
         {!readOnly && (
           <Tooltip
@@ -125,6 +155,14 @@ class AccountOverview extends React.Component<DecoratedProps> {
           onNavigateBack={this.handleNavigateBack}
         />
         <div className={classes.content}>
+          <AccountOverviewHeader
+            key="__header__"
+            className={classNames(
+              classes.header,
+              classes.headerInline,
+            )}
+            {...headerProps}
+          />
           {toPairs(this.account.recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
               <React.Fragment key={group}>
@@ -147,7 +185,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
             )
           )}
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }

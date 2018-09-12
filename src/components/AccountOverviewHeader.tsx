@@ -88,6 +88,7 @@ interface Props extends WithStyles<typeof styles> {
   alias: string | null;
   balance: RawAmount;
   balance_in_fiat: string;
+  className?: string;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -119,6 +120,7 @@ const AccountOverviewHeader = stylesDecorator(
         const {
           intl,
           classes,
+          className,
           address,
           alias,
           balance,
@@ -129,7 +131,13 @@ const AccountOverviewHeader = stylesDecorator(
           `${intl.formatNumber(value.unit.toNumber())} RISE`;
 
         return (
-          <Paper square={true} className={classes.container}>
+          <Paper
+            square={true}
+            className={classNames(
+              classes.container,
+              className,
+            )}
+          >
             <div className={classes.icon} aria-hidden={true}>
               <AccountIcon size={64} address={address} />
             </div>
