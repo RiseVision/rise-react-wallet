@@ -390,7 +390,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
       summaryLong = '';
     let amount = RawAmount.ZERO;
 
-    const msgStatus = tx.confirmations < 1 ? 'Unconfirmed' : '';
+    const msgStatus = tx.confirmations >= 1 ? '' : 'Unconfirmed';
 
     if (tx.type === TransactionType.SEND) {
       const data = tx.isIncoming ? {
