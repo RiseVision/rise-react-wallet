@@ -91,10 +91,8 @@ const styles = (theme: Theme) => {
       paddingRight: theme.spacing.unit * 2,
       [theme.breakpoints.down('xs')]: {
         paddingLeft: theme.spacing.unit * 2,
-      paddingRight: theme.spacing.unit,
-      },
-      '& > * + *': {
-        marginLeft: theme.spacing.unit,
+        paddingRight: theme.spacing.unit * 2,
+        flexWrap: 'wrap',
       },
       '&:nth-child(even)': {
         backgroundColor: '#fafafa',
@@ -102,15 +100,33 @@ const styles = (theme: Theme) => {
     },
     detailsRowLabel: {
       ...theme.typography.body2,
+      order: 1,
       lineHeight: '28px',
+      [theme.breakpoints.down('xs')]: {
+        flex: 1,
+      }
     },
     detailsRowValue: {
+      order: 2,
       flex: 1,
       textAlign: 'right',
       lineHeight: '28px',
+      marginLeft: theme.spacing.unit,
+      [theme.breakpoints.down('xs')]: {
+        order: 3,
+        flex: 'none',
+        width: '100%',
+        textAlign: 'left',
+        marginLeft: 0,
+      }
     },
     detailsRowActions: {
+      order: 3,
       minWidth: 2 * 28,
+      marginLeft: theme.spacing.unit,
+      [theme.breakpoints.down('xs')]: {
+        order: 2,
+      }
     },
     detailsRowAction: {
       width: 28,
