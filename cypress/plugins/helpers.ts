@@ -1,4 +1,4 @@
-import lstore from 'store';
+import * as lstore from 'store';
 
 const SEC = 1000;
 
