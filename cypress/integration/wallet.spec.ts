@@ -1,5 +1,5 @@
 /// <reference types="Cypress" />
-import lstore from 'store';
+import * as lstore from 'store';
 import {
   selectAccount,
   assertSuccessfulDialog,
