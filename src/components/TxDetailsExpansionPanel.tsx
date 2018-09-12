@@ -2,6 +2,7 @@ import green from '@material-ui/core/colors/green';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import {
   createStyles,
   Theme,
@@ -9,13 +10,22 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import PersonIcon from '@material-ui/icons/Person';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import LinkIcon from '@material-ui/icons/Link';
+import ContentCopyIcon from 'mdi-material-ui/ContentCopy';
 import * as classNames from 'classnames';
 import { TransactionType } from 'dpos-api-wrapper';
+import * as moment from 'moment-timezone';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import { TTransaction } from '../stores/wallet';
 import { RawAmount } from '../utils/amounts';
+import { copyToClipboard } from '../utils/clipboard';
 
 const styles = (theme: Theme) => {
   return createStyles({
@@ -58,14 +68,6 @@ const styles = (theme: Theme) => {
     summaryIncomingAmount: {
       color: green[800]
     },
-    detailsRoot: {
-      padding: `${theme.spacing.unit}px ${theme.spacing.unit * 3}px ${theme
-        .spacing.unit * 3}px`,
-      [theme.breakpoints.down('xs')]: {
-        padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px ${theme
-          .spacing.unit * 2}px`
-      }
-    },
     shortText: {
       [theme.breakpoints.up('sm')]: {
         display: 'none'
@@ -75,7 +77,46 @@ const styles = (theme: Theme) => {
       [theme.breakpoints.down('xs')]: {
         display: 'none'
       }
-    }
+    },
+    detailsRoot: {
+      flexDirection: 'column',
+      padding: `${theme.spacing.unit}px 0 0`,
+      [theme.breakpoints.down('xs')]: {
+        padding: `${theme.spacing.unit}px 0 0`
+      }
+    },
+    detailsRow: {
+      display: 'flex',
+      paddingLeft: theme.spacing.unit * 3,
+      paddingRight: theme.spacing.unit * 2,
+      [theme.breakpoints.down('xs')]: {
+        paddingLeft: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit,
+      },
+      '& > * + *': {
+        marginLeft: theme.spacing.unit,
+      },
+      '&:nth-child(even)': {
+        backgroundColor: '#fafafa',
+      },
+    },
+    detailsRowLabel: {
+      ...theme.typography.body2,
+      lineHeight: '28px',
+    },
+    detailsRowValue: {
+      flex: 1,
+      textAlign: 'right',
+      lineHeight: '28px',
+    },
+    detailsRowActions: {
+      minWidth: 2 * 28,
+    },
+    detailsRowAction: {
+      width: 28,
+      height: 28,
+      fontSize: theme.typography.pxToRem(14),
+    },
   });
 };
 
@@ -427,6 +468,8 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
       amountShort
     } = this.getSummary();
 
+    const timestamp = moment(tx.timestamp).toDate();
+
     return (
       <ExpansionPanel>
         <ExpansionPanelSummary
@@ -476,29 +519,196 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             root: classes.detailsRoot
           }}
         >
-          <Typography>
-            <ul>
-              <li>ID: {tx.id}</li>
-              <li>Confirmations: {tx.confirmations}</li>
-              <li>
-                Amount:{' '}
-                {intl.formatNumber(tx.amount.toNumber(), {
-                  style: 'decimal'
-                })}
-              </li>
-              <li>
-                Fee:{' '}
-                {intl.formatNumber(tx.fee.toNumber(), {
-                  style: 'decimal'
-                })}
-              </li>
-              <li>Fiat: TODO</li>
-              <li>Time: {tx.time}</li>
-            </ul>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Status:</span>
+            <span className={classes.detailsRowValue}>
+              {tx.confirmations === 0 ? 'Unconfirmed'
+                : tx.confirmations < 101 ? 'Confirmed (settling - n/101)'
+                : 'Confirmed (settled)'}
+            </span>
+            <span className={classes.detailsRowActions} />
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Timestamp:</span>
+            <time
+              className={classes.detailsRowValue}
+              dateTime={timestamp.toISOString()}
+            >
+              {intl.formatDate(timestamp)} {intl.formatTime(timestamp)}
+            </time>
+            <span className={classes.detailsRowActions} />
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Transaction ID:</span>
+            <span className={classes.detailsRowValue}>{tx.id}</span>
+            <span className={classes.detailsRowActions}>
+              <Tooltip title="Copy ID">
+                <IconButton
+                  className={classes.detailsRowAction}
+                  aria-label="Copy transaction ID"
+                  onClick={this.handleCopyTxId}
+                >
+                  <ContentCopyIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="View in explorer">
+                <IconButton
+                  className={classes.detailsRowAction}
+                  aria-label="View transaction in explorer"
+                >
+                  <LinkIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+            </span>
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Block ID:</span>
+            <span className={classes.detailsRowValue}>
+              {tx.blockId}
+            </span>
+            <span className={classes.detailsRowActions}>
+              <Tooltip title="Copy ID">
+                <IconButton
+                  className={classes.detailsRowAction}
+                  aria-label="Copy block ID"
+                  onClick={this.handleCopyBlockId}
+                >
+                  <ContentCopyIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="View in explorer">
+                <IconButton
+                  className={classes.detailsRowAction}
+                  aria-label="View block in explorer"
+                >
+                  <LinkIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+            </span>
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Transaction type:</span>
+            <span className={classes.detailsRowValue}>
+              TODO
+            </span>
+            <span className={classes.detailsRowActions} />
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Sender:</span>
+            <span className={classes.detailsRowValue}>
+              {tx.senderName} ({tx.senderId})
+            </span>
+            <span className={classes.detailsRowActions}>
+              <Tooltip title="Copy address">
+                <IconButton
+                  className={classes.detailsRowAction}
+                  aria-label="Copy sender address"
+                  onClick={this.handleCopySenderAddress}
+                >
+                  <ContentCopyIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Edit contact">
+                <IconButton
+                  className={classes.detailsRowAction}
+                  aria-label="Edit sender contact card"
+                >
+                  <PersonIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+            </span>
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Recipient:</span>
+            <span className={classes.detailsRowValue}>
+              {tx.recipientName} ({tx.recipientId})
+            </span>
+            <span className={classes.detailsRowActions}>
+              <Tooltip title="Copy address">
+                <IconButton
+                  className={classes.detailsRowAction}
+                  aria-label="Copy recipient address"
+                  onClick={this.handleCopyRecipientAddress}
+                >
+                  <ContentCopyIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Add contact">
+                <IconButton
+                  className={classes.detailsRowAction}
+                  aria-label="Add recipient to contacts"
+                >
+                  <PersonAddIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+            </span>
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Send amount:</span>
+            <span className={classes.detailsRowValue}>
+              {intl.formatNumber(tx.amount.unit.toNumber(), {
+                style: 'decimal'
+              })} RISE
+            </span>
+            <span className={classes.detailsRowActions} />
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Registered username:</span>
+            <span className={classes.detailsRowValue}>
+              TODO
+            </span>
+            <span className={classes.detailsRowActions} />
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Vote(s) removed:</span>
+            <span className={classes.detailsRowValue}>
+              TODO
+            </span>
+            <span className={classes.detailsRowActions} />
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Vote(s) added:</span>
+            <span className={classes.detailsRowValue}>
+              TODO
+            </span>
+            <span className={classes.detailsRowActions} />
+          </Typography>
+          <Typography className={classes.detailsRow}>
+            <span className={classes.detailsRowLabel}>Network fee:</span>
+            <span className={classes.detailsRowValue}>
+              {intl.formatNumber(tx.fee.unit.toNumber(), {
+                style: 'decimal'
+              })} RISE
+            </span>
+            <span className={classes.detailsRowActions} />
           </Typography>
         </ExpansionPanelDetails>
+        <ExpansionPanelActions>
+          {true && <Button size="small">Return funds</Button>}
+          {false && <Button size="small">Send again</Button>}
+        </ExpansionPanelActions>
       </ExpansionPanel>
     );
+  }
+
+  handleCopyTxId = () => {
+    const { tx } = this.props;
+    copyToClipboard(tx.id);
+  }
+
+  handleCopyBlockId = () => {
+    const { tx } = this.props;
+    copyToClipboard(tx.blockId);
+  }
+
+  handleCopySenderAddress = () => {
+    const { tx } = this.props;
+    copyToClipboard(tx.senderId);
+  }
+
+  handleCopyRecipientAddress = () => {
+    const { tx } = this.props;
+    copyToClipboard(tx.recipientId);
   }
 }
 
