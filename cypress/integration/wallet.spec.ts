@@ -142,11 +142,14 @@ context('Settings', () => {
     fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
-    cy.get('@postTransaction').should(xhr => {
+    // @ts-ignore TODO wrong defs
+    cy.get('@postTransaction').should((xhr: Cypress.WaitXHR) => {
+      // @ts-ignore TODO wrong defs
       expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
         'username',
         name
       );
+      // @ts-ignore TODO wrong defs
       expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
         'publicKey',
         getAccount(0).publicKey
@@ -178,7 +181,9 @@ context('Settings', () => {
     fillConfirmationDialog(getSecrets(1).mnemonic, passphrase);
     assertSuccessfulDialog();
     // assert the request
+    // @ts-ignore TODO wrong defs
     cy.get('@postTransaction').should(xhr => {
+      // @ts-ignore TODO wrong defs
       expect(xhr.requestBody.transaction.asset.signature).to.have.property(
         'publicKey',
         '67d3b5eaf0c0bf6b5a602d359daecc86a7a74053490ec37ae08e71360587c870'
@@ -208,12 +213,15 @@ context('Settings', () => {
     fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
+    // @ts-ignore TODO wrong defs
     cy.get('@postTransaction').should(xhr => {
       // assert the prev vote reverted
+      // @ts-ignore TODO wrong defs
       expect(xhr.requestBody.transaction.asset.votes[0]).to.match(
         /^-[\d\w]{10,}/
       );
       // assert the new vote sent
+      // @ts-ignore TODO wrong defs
       expect(xhr.requestBody.transaction.asset.votes[1]).to.match(
         /^\+[\d\w]{10,}/
       );

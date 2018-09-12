@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": "../node_modules",
+    "target": "es5",
+    "lib": ["es6", "dom", "es7", "es2017.object"],
+    "types": ["cypress"],
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "skipLibCheck": true
+  },
+  "include": [
+    "../src/utils/missing.d.ts",
+    "**/*.ts"
+  ]
+}

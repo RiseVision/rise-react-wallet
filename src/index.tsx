@@ -1,6 +1,6 @@
+/// <reference path="utils/missing.d.ts"/>
 import { Provider } from 'mobx-react';
 import { startRouter } from 'mobx-router';
-/// <reference path="utils/missing.d.ts"/>
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as config from './config.json';
