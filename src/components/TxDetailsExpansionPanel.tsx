@@ -454,7 +454,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
 
     // Format amount
     if (tx.isIncoming) {
-      amount = tx.amountFee;
+      amount = tx.amount;
     } else {
       amount = RawAmount.ZERO.minus(tx.amountFee);
     }
