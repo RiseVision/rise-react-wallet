@@ -11,6 +11,7 @@ import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   accountOverviewRoute,
   onboardingExistingAccountRoute,
+  onboardingNoMnemonicNoticeRoute,
   onboardingAddAccountRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
@@ -51,8 +52,21 @@ class ExistingAccountTypePage extends React.Component<Props> {
   handleFullAccessClick = async () => {
     const { routerStore, onboardingStore, walletStore } = this.injected;
     const address = onboardingStore.address!;
+
+    let hasFullAccessAccounts = false;
+    for (const account of walletStore.accounts.values()) {
+      if (!account.readOnly) {
+        hasFullAccessAccounts = true;
+        break;
+      }
+    }
+
     walletStore.login(address, { readOnly: false }, true);
-    routerStore.goTo(accountOverviewRoute, { id: address });
+    if (hasFullAccessAccounts) {
+      routerStore.goTo(accountOverviewRoute, { id: address });
+    } else {
+      routerStore.goTo(onboardingNoMnemonicNoticeRoute);
+    }
   }
 
   handleReadOnlyClick = () => {
