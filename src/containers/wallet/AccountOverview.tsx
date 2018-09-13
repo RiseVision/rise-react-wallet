@@ -165,7 +165,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
           />
           {toPairs(this.account.recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
-              <React.Fragment key={group}>
+              <React.Fragment key={`${this.account.id}-${group}`}>
                 <Typography
                   className={classes.dateGroupTitle}
                   variant="body2"
