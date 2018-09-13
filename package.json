@@ -29,7 +29,7 @@
   },
   "scripts": {
     "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
+    "build": "npm test && react-scripts-ts build",
     "test": "cypress run",
     "eject": "react-scripts-ts eject",
     "riw:prepare": "rm -r tmp/transpiled/; tsc -p . --target ES6 --module esnext --jsx preserve --outDir tmp/transpiled",
