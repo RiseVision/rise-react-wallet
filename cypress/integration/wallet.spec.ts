@@ -124,7 +124,7 @@ context('Wallet', () => {
     function getDetails() {
       return (
         cy
-          .get('main > div:nth-child(2)')
+          .get('main aside + div > div:nth-child(2)')
           .find('div[aria-expanded="true"][role="button"]')
           .eq(0)
           // move to the expanded panel
@@ -132,8 +132,8 @@ context('Wallet', () => {
       );
     }
 
-    // click the first transaction entry
-    cy.get('main > div:nth-child(2)')
+    // click the second transaction row (the first one isn't confirmed yet)
+    cy.get('main aside + div > div:nth-child(2)')
       .find('div[aria-expanded="false"][role="button"]')
       .eq(0)
       .click()
@@ -160,7 +160,7 @@ context('Wallet', () => {
 
     // check for the "Return funds" button
     getDetails()
-      .contains('Return funds')
+      .contains('Send again')
       .should('have.length', 1);
   });
 });
