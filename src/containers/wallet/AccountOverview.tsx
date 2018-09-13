@@ -178,6 +178,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
                     <TxDetailsExpansionPanel
                       key={transaction.id}
                       tx={transaction}
+                      explorerUrl={this.account.config.explorer_url}
                     />
                   ))}
                 </div>

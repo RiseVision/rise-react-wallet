@@ -138,6 +138,7 @@ const styles = (theme: Theme) => {
 
 interface Props extends WithStyles<typeof styles> {
   tx: TTransaction;
+  explorerUrl: string;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -474,7 +475,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { classes, tx, intl } = this.props;
+    const { intl, classes, tx, explorerUrl } = this.props;
 
     const {
       summaryShort,
@@ -570,6 +571,9 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               <Tooltip title="View in explorer">
                 <IconButton
                   className={classes.detailsRowAction}
+                  component="a"
+                  href={`${explorerUrl}/tx/${tx.id}`}
+                  target="_blank"
                   aria-label="View transaction in explorer"
                 >
                   <LinkIcon fontSize="inherit" />
@@ -595,6 +599,9 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               <Tooltip title="View in explorer">
                 <IconButton
                   className={classes.detailsRowAction}
+                  component="a"
+                  href={`${explorerUrl}/block/${tx.blockId}`}
+                  target="_blank"
                   aria-label="View block in explorer"
                 >
                   <LinkIcon fontSize="inherit" />
