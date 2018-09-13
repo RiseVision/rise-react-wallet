@@ -30,3 +30,7 @@ yarn-error.log*
 /notes.md
 
 /cypress/fixtures/accounts.json
+/cypress/archive
+/cypress/examples
+/cypress/screenshots
+/cypress/videos
