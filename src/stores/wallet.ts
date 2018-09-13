@@ -35,55 +35,6 @@ import { TConfig } from './index';
 import * as moment from 'moment-timezone';
 import * as queryString from 'query-string';
 
-class DelegateCache {
-  private cached: {
-    [key: string]: {
-      state: 'loading';
-      promise: Promise<Delegate | null>;
-    } | {
-      state: 'loaded';
-      delegate: Delegate | null;
-    };
-  } = {};
-
-  constructor(private api: typeof dposAPI) {
-  }
-
-  async get(publicKey: string, opts: { reload?: boolean } = {}): Promise<Delegate | null> {
-    const reload = opts.reload !== undefined ? opts.reload : false;
-
-    let entry = this.cached[publicKey];
-    if (reload || !entry) {
-      const promise = this.fetchAndUpdate(publicKey);
-      entry = {
-        state: 'loading',
-        promise,
-      };
-      this.cached[publicKey] = entry;
-    }
-
-    if (entry.state === 'loading') {
-      return await entry.promise;
-    } else {
-      return entry.delegate;
-    }
-  }
-
-  set(publicKey: string, delegate: Delegate) {
-    this.cached[publicKey] = {
-      state: 'loaded',
-      delegate: delegate,
-    };
-  }
-
-  private async fetchAndUpdate(publicKey: string): Promise<Delegate> {
-    const res = await this.api.delegates.getByPublicKey(publicKey);
-    const delegate = res.delegate || null;
-    this.set(publicKey, delegate);
-    return delegate;
-  }
-}
-
 export default class WalletStore {
   api: string;
   dposAPI: typeof dposAPI;
@@ -708,6 +659,55 @@ export default class WalletStore {
       }
       return json;
     }
+  }
+}
+
+class DelegateCache {
+  private cached: {
+    [key: string]: {
+      state: 'loading';
+      promise: Promise<Delegate | null>;
+    } | {
+      state: 'loaded';
+      delegate: Delegate | null;
+    };
+  } = {};
+
+  constructor(private api: typeof dposAPI) {
+  }
+
+  async get(publicKey: string, opts: { reload?: boolean } = {}): Promise<Delegate | null> {
+    const reload = opts.reload !== undefined ? opts.reload : false;
+
+    let entry = this.cached[publicKey];
+    if (reload || !entry) {
+      const promise = this.fetchAndUpdate(publicKey);
+      entry = {
+        state: 'loading',
+        promise,
+      };
+      this.cached[publicKey] = entry;
+    }
+
+    if (entry.state === 'loading') {
+      return await entry.promise;
+    } else {
+      return entry.delegate;
+    }
+  }
+
+  set(publicKey: string, delegate: Delegate) {
+    this.cached[publicKey] = {
+      state: 'loaded',
+      delegate: delegate,
+    };
+  }
+
+  private async fetchAndUpdate(publicKey: string): Promise<Delegate> {
+    const res = await this.api.delegates.getByPublicKey(publicKey);
+    const delegate = res.delegate || null;
+    this.set(publicKey, delegate);
+    return delegate;
   }
 }
 
