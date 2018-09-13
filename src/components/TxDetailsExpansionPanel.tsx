@@ -381,6 +381,248 @@ const messages = defineMessages({
     description: 'Summary text for unknown tx (short version)',
     defaultMessage: 'Unknown transaction'
   },
+  /// details
+  detailsStatusLabel: {
+    id: 'tx-details-expansion-panel.details-status-label',
+    description: 'Tx details status row label',
+    defaultMessage: 'Status:',
+  },
+  detailsStatusUnconfirmed: {
+    id: 'tx-details-expansion-panel.details-status-unconfirmed',
+    description: 'Tx details unconfirmed status value',
+    defaultMessage: 'Unconfirmed',
+  },
+  detailsStatusUnconfirmedTooltip: {
+    id: 'tx-details-expansion-panel.details-status-unconfirmed-tooltip',
+    description: 'Tx details unconfirmed status tooltip',
+    defaultMessage: 'Not included in a block yet',
+  },
+  detailsStatusUnsettled: {
+    id: 'tx-details-expansion-panel.details-status-unsettled',
+    description: 'Tx details confirmed but unsettled status value',
+    defaultMessage: 'Confirmed (settling - {confirmations}/{needed})',
+  },
+  detailsStatusUnsettledTooltip: {
+    id: 'tx-details-expansion-panel.details-status-unsettled-tooltip',
+    description: 'Tx details confirmed but unsettled status tooltip',
+    defaultMessage: 'With low number of confirmations',
+  },
+  detailsStatusSettled: {
+    id: 'tx-details-expansion-panel.details-status-settled',
+    description: 'Tx details confirmed and settled status value',
+    defaultMessage: 'Confirmed (settled)',
+  },
+  detailsStatusSettledTooltip: {
+    id: 'tx-details-expansion-panel.details-status-settled-tooltip',
+    description: 'Tx details confirmed and settled status tooltip',
+    defaultMessage: 'With high number of confirmations',
+  },
+  detailsTimestampLabel: {
+    id: 'tx-details-expansion-panel.details-timestamp-label',
+    description: 'Tx details timestamp row label',
+    defaultMessage: 'Timestamp:',
+  },
+  detailsTxIdLabel: {
+    id: 'tx-details-expansion-panel.details-txid-label',
+    description: 'Tx details transaction id row label',
+    defaultMessage: 'Transaction ID:',
+  },
+  detailsTxIdCopyTooltip: {
+    id: 'tx-details-expansion-panel.details-txid-copy-tooltip',
+    description: 'Tx details transaction id copy tooltip',
+    defaultMessage: 'Copy ID',
+  },
+  detailsTxIdCopyAria: {
+    id: 'tx-details-expansion-panel.details-txid-copy-aria',
+    description: 'Tx details transaction id copy aria label',
+    defaultMessage: 'Copy transaction ID',
+  },
+  detailsTxIdExplorerTooltip: {
+    id: 'tx-details-expansion-panel.details-txid-explorer-tooltip',
+    description: 'Tx details transaction id open explorer tooltip',
+    defaultMessage: 'View in explorer',
+  },
+  detailsTxIdExplorerAria: {
+    id: 'tx-details-expansion-panel.details-txid-explorer-aria',
+    description: 'Tx details transaction id open explorer aria label',
+    defaultMessage: 'View transaction in explorer',
+  },
+  detailsBlockIdLabel: {
+    id: 'tx-details-expansion-panel.details-blockid-label',
+    description: 'Tx details transaction block id row label',
+    defaultMessage: 'Block ID:',
+  },
+  detailsBlockIdCopyTooltip: {
+    id: 'tx-details-expansion-panel.details-blockid-copy-tooltip',
+    description: 'Tx details transaction block id copy tooltip',
+    defaultMessage: 'Copy ID',
+  },
+  detailsBlockIdCopyAria: {
+    id: 'tx-details-expansion-panel.details-blockid-copy-aria',
+    description: 'Tx details transaction block id copy aria label',
+    defaultMessage: 'Copy block ID',
+  },
+  detailsBlockIdExplorerTooltip: {
+    id: 'tx-details-expansion-panel.details-blockid-explorer-tooltip',
+    description: 'Tx details transaction block id open explorer tooltip',
+    defaultMessage: 'View in explorer',
+  },
+  detailsBlockIdExplorerAria: {
+    id: 'tx-details-expansion-panel.details-blockid-explorer-aria',
+    description: 'Tx details transaction block id open explorer aria label',
+    defaultMessage: 'View block in explorer',
+  },
+  detailsTxTypeLabel: {
+    id: 'tx-details-expansion-panel.details-txtype-label',
+    description: 'Tx details transaction type row label',
+    defaultMessage: 'Transaction type:',
+  },
+  detailsTxTypeSend: {
+    id: 'tx-details-expansion-panel.details-txtype-send',
+    description: 'Tx details transaction type send value',
+    defaultMessage: 'Send',
+  },
+  detailsTxTypeVote: {
+    id: 'tx-details-expansion-panel.details-txtype-vote',
+    description: 'Tx details transaction type vote value',
+    defaultMessage: 'Vote',
+  },
+  detailsTxTypePassphrase: {
+    id: 'tx-details-expansion-panel.details-txtype-passphrase',
+    description: 'Tx details transaction type passphrase value',
+    defaultMessage: '2nd passphrase',
+  },
+  detailsTxTypeDelegate: {
+    id: 'tx-details-expansion-panel.details-txtype-delegate',
+    description: 'Tx details transaction type delegate value',
+    defaultMessage: 'Delegate registration',
+  },
+  detailsTxTypeUnknown: {
+    id: 'tx-details-expansion-panel.details-txtype-unknown',
+    description: 'Tx details transaction type unknown value',
+    defaultMessage: 'Unknown',
+  },
+  detailsAddressAlias: {
+    id: 'tx-details-expansion-panel.details-address-alias-format',
+    description: 'Tx details address with alias format',
+    defaultMessage: '{alias} ({address})',
+  },
+  detailsAddress: {
+    id: 'tx-details-expansion-panel.details-address-format',
+    description: 'Tx details address without alias format',
+    defaultMessage: '{address}',
+  },
+  detailsSenderLabel: {
+    id: 'tx-details-expansion-panel.details-sender-label',
+    description: 'Tx details sender row label',
+    defaultMessage: 'Sender:',
+  },
+  detailsSenderCopyTooltip: {
+    id: 'tx-details-expansion-panel.details-blockid-copy-tooltip',
+    description: 'Tx details sender copy tooltip',
+    defaultMessage: 'Copy address',
+  },
+  detailsSenderCopyAria: {
+    id: 'tx-details-expansion-panel.details-blockid-copy-aria',
+    description: 'Tx details sender copy aria label',
+    defaultMessage: 'Copy sender address',
+  },
+  detailsSenderAddTooltip: {
+    id: 'tx-details-expansion-panel.details-blockid-add-tooltip',
+    description: 'Tx details sender open explorer tooltip',
+    defaultMessage: 'Add contact',
+  },
+  detailsSenderAddAria: {
+    id: 'tx-details-expansion-panel.details-blockid-add-aria',
+    description: 'Tx details sender open explorer aria label',
+    defaultMessage: 'Add sender to contacts',
+  },
+  detailsSenderEditTooltip: {
+    id: 'tx-details-expansion-panel.details-blockid-edit-tooltip',
+    description: 'Tx details sender open explorer tooltip',
+    defaultMessage: 'Edit contact',
+  },
+  detailsSenderEditAria: {
+    id: 'tx-details-expansion-panel.details-blockid-edit-aria',
+    description: 'Tx details sender open explorer aria label',
+    defaultMessage: 'Edit sender contact card',
+  },
+  detailsRecipientLabel: {
+    id: 'tx-details-expansion-panel.details-recipient-label',
+    description: 'Tx details recipient row label',
+    defaultMessage: 'Recipient:',
+  },
+  detailsRecipientCopyTooltip: {
+    id: 'tx-details-expansion-panel.details-blockid-copy-tooltip',
+    description: 'Tx details recipient copy tooltip',
+    defaultMessage: 'Copy address',
+  },
+  detailsRecipientCopyAria: {
+    id: 'tx-details-expansion-panel.details-blockid-copy-aria',
+    description: 'Tx details recipient copy aria label',
+    defaultMessage: 'Copy recipient address',
+  },
+  detailsRecipientAddTooltip: {
+    id: 'tx-details-expansion-panel.details-blockid-add-tooltip',
+    description: 'Tx details recipient open explorer tooltip',
+    defaultMessage: 'Add contact',
+  },
+  detailsRecipientAddAria: {
+    id: 'tx-details-expansion-panel.details-blockid-add-aria',
+    description: 'Tx details recipient open explorer aria label',
+    defaultMessage: 'Add recipient to contacts',
+  },
+  detailsRecipientEditTooltip: {
+    id: 'tx-details-expansion-panel.details-blockid-edit-tooltip',
+    description: 'Tx details recipient open explorer tooltip',
+    defaultMessage: 'Edit contact',
+  },
+  detailsRecipientEditAria: {
+    id: 'tx-details-expansion-panel.details-blockid-edit-aria',
+    description: 'Tx details recipient open explorer aria label',
+    defaultMessage: 'Edit recipient contact card',
+  },
+  detailsSendAmountLabel: {
+    id: 'tx-details-expansion-panel.details-send-amount-label',
+    description: 'Tx details send amount row label',
+    defaultMessage: 'Send amount:',
+  },
+  detailsDelegateUsernameLabel: {
+    id: 'tx-details-expansion-panel.details-delegate-username-label',
+    description: 'Tx details delegate username row label',
+    defaultMessage: 'Registered username:',
+  },
+  detailsVotesAddedLabel: {
+    id: 'tx-details-expansion-panel.details-votes-added-label',
+    description: 'Tx details votes added row label',
+    defaultMessage: '{voteCount, plural,' +
+      '  one {Vote}' +
+      '  other {Votes}' +
+      '} added:',
+  },
+  detailsVotesRemovedLabel: {
+    id: 'tx-details-expansion-panel.details-votes-removed-label',
+    description: 'Tx details votes removed row label',
+    defaultMessage: '{voteCount, plural,' +
+      '  one {Vote}' +
+      '  other {Votes}' +
+      '} removed:',
+  },
+  detailsNetworkFeeLabel: {
+    id: 'tx-details-expansion-panel.details-network-fee-label',
+    description: 'Tx details network fee row label',
+    defaultMessage: 'Network fee:',
+  },
+  detailsReturnFundsLabel: {
+    id: 'tx-details-expansion-panel.details-return-funds-label',
+    description: 'Tx details return funds button label',
+    defaultMessage: 'Return funds',
+  },
+  detailsSendAgainLabel: {
+    id: 'tx-details-expansion-panel.details-send-again-label',
+    description: 'Tx details send again button label',
+    defaultMessage: 'Send again',
+  },
 });
 
 class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
@@ -487,6 +729,13 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
 
     const timestamp = moment(tx.timestamp).toDate();
 
+    const removedVotes = (tx.votes || [])
+      .filter(({ op }) => op === 'remove')
+      .map(({ delegate }) => delegate);
+    const addedVotes = (tx.votes || [])
+      .filter(({ op }) => op === 'add')
+      .map(({ delegate }) => delegate);
+
     return (
       <ExpansionPanel>
         <ExpansionPanelSummary
@@ -537,44 +786,71 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
           }}
         >
           <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Status:</span>
+            <span
+              className={classes.detailsRowLabel}
+              children={intl.formatMessage(messages.detailsStatusLabel)}
+            />
             <span className={classes.detailsRowValue}>
-              {tx.confirmations === 0 ? 'Unconfirmed'
-                : tx.confirmations < 101 ? 'Confirmed (settling - n/101)'
-                : 'Confirmed (settled)'}
+              {tx.confirmations >= 101 ? (
+                <Tooltip title={intl.formatMessage(messages.detailsStatusSettledTooltip)}>
+                  <span children={intl.formatMessage(messages.detailsStatusSettled)} />
+                </Tooltip>
+              ) : tx.confirmations >= 1 ? (
+                <Tooltip title={intl.formatMessage(messages.detailsStatusUnsettledTooltip)}>
+                  <span
+                    children={intl.formatMessage(messages.detailsStatusUnsettled, {
+                      confirmations: tx.confirmations,
+                      needed: 101,
+                    })}
+                  />
+                </Tooltip>
+              ) : (
+                <Tooltip title={intl.formatMessage(messages.detailsStatusUnconfirmedTooltip)}>
+                  <span children={intl.formatMessage(messages.detailsStatusUnconfirmed)} />
+                </Tooltip>
+              )}
             </span>
             <span className={classes.detailsRowActions} />
           </Typography>
           <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Timestamp:</span>
+            <span
+              className={classes.detailsRowLabel}
+              children={intl.formatMessage(messages.detailsTimestampLabel)}
+            />
             <time
               className={classes.detailsRowValue}
               dateTime={timestamp.toISOString()}
             >
-              {intl.formatDate(timestamp)} {intl.formatTime(timestamp)}
+              {`${intl.formatDate(timestamp)} ${intl.formatTime(timestamp)}`}
             </time>
             <span className={classes.detailsRowActions} />
           </Typography>
           <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Transaction ID:</span>
-            <span className={classes.detailsRowValue}>{tx.id}</span>
+            <span
+              className={classes.detailsRowLabel}
+              children={intl.formatMessage(messages.detailsTxIdLabel)}
+            />
+            <span
+              className={classes.detailsRowValue}
+              children={tx.id}
+            />
             <span className={classes.detailsRowActions}>
-              <Tooltip title="Copy ID">
+              <Tooltip title={intl.formatMessage(messages.detailsTxIdCopyTooltip)}>
                 <IconButton
                   className={classes.detailsRowAction}
-                  aria-label="Copy transaction ID"
+                  aria-label={intl.formatMessage(messages.detailsTxIdCopyAria)}
                   onClick={this.handleCopyTxId}
                 >
                   <ContentCopyIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="View in explorer">
+              <Tooltip title={intl.formatMessage(messages.detailsTxIdExplorerTooltip)}>
                 <IconButton
                   className={classes.detailsRowAction}
                   component="a"
                   href={`${explorerUrl}/tx/${tx.id}`}
                   target="_blank"
-                  aria-label="View transaction in explorer"
+                  aria-label={intl.formatMessage(messages.detailsTxIdExplorerAria)}
                 >
                   <LinkIcon fontSize="inherit" />
                 </IconButton>
@@ -582,27 +858,31 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             </span>
           </Typography>
           <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Block ID:</span>
-            <span className={classes.detailsRowValue}>
-              {tx.blockId}
-            </span>
+            <span
+              className={classes.detailsRowLabel}
+              children={intl.formatMessage(messages.detailsBlockIdLabel)}
+            />
+            <span
+              className={classes.detailsRowValue}
+              children={tx.blockId}
+            />
             <span className={classes.detailsRowActions}>
-              <Tooltip title="Copy ID">
+              <Tooltip title={intl.formatMessage(messages.detailsBlockIdCopyTooltip)}>
                 <IconButton
                   className={classes.detailsRowAction}
-                  aria-label="Copy block ID"
+                  aria-label={intl.formatMessage(messages.detailsBlockIdCopyAria)}
                   onClick={this.handleCopyBlockId}
                 >
                   <ContentCopyIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="View in explorer">
+              <Tooltip title={intl.formatMessage(messages.detailsBlockIdExplorerTooltip)}>
                 <IconButton
                   className={classes.detailsRowAction}
                   component="a"
                   href={`${explorerUrl}/block/${tx.blockId}`}
                   target="_blank"
-                  aria-label="View block in explorer"
+                  aria-label={intl.formatMessage(messages.detailsBlockIdExplorerAria)}
                 >
                   <LinkIcon fontSize="inherit" />
                 </IconButton>
@@ -610,94 +890,186 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             </span>
           </Typography>
           <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Transaction type:</span>
-            <span className={classes.detailsRowValue}>
-              TODO
-            </span>
+            <span
+              className={classes.detailsRowLabel}
+              children={intl.formatMessage(messages.detailsTxTypeLabel)}
+            />
+            <span
+              className={classes.detailsRowValue}
+              children={intl.formatMessage(
+                tx.type === TransactionType.SEND ? messages.detailsTxTypeSend
+                : tx.type === TransactionType.VOTE ? messages.detailsTxTypeVote
+                : tx.type === TransactionType.SIGNATURE ? messages.detailsTxTypePassphrase
+                : tx.type === TransactionType.DELEGATE ? messages.detailsTxTypeDelegate
+                : messages.detailsTxTypeUnknown
+              )}
+            />
             <span className={classes.detailsRowActions} />
           </Typography>
+          {tx.type === TransactionType.SEND && (
+            <Typography className={classes.detailsRow}>
+              <span
+                className={classes.detailsRowLabel}
+                children={intl.formatMessage(messages.detailsSenderLabel)}
+              />
+              <span
+                className={classes.detailsRowValue}
+                children={intl.formatMessage(
+                  !!tx.senderName ? messages.detailsAddressAlias : messages.detailsAddress,
+                  {
+                    alias: tx.senderName,
+                    address: tx.senderId,
+                  }
+                )}
+              />
+              <span className={classes.detailsRowActions}>
+                <Tooltip title={intl.formatMessage(messages.detailsSenderCopyTooltip)}>
+                  <IconButton
+                    className={classes.detailsRowAction}
+                    aria-label={intl.formatMessage(messages.detailsSenderCopyAria)}
+                    onClick={this.handleCopySenderAddress}
+                  >
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+                {!tx.senderName ? (
+                  <Tooltip title={intl.formatMessage(messages.detailsSenderAddTooltip)}>
+                    <IconButton
+                      className={classes.detailsRowAction}
+                      aria-label={intl.formatMessage(messages.detailsSenderAddAria)}
+                    >
+                      <PersonAddIcon fontSize="inherit" />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title={intl.formatMessage(messages.detailsSenderEditTooltip)}>
+                    <IconButton
+                      className={classes.detailsRowAction}
+                      aria-label={intl.formatMessage(messages.detailsSenderEditAria)}
+                    >
+                      <PersonIcon fontSize="inherit" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </span>
+            </Typography>
+          )}
+          {tx.type === TransactionType.SEND && (
+            <Typography className={classes.detailsRow}>
+              <span
+                className={classes.detailsRowLabel}
+                children={intl.formatMessage(messages.detailsRecipientLabel)}
+              />
+              <span
+                className={classes.detailsRowValue}
+                children={intl.formatMessage(
+                  !!tx.recipientName ? messages.detailsAddressAlias : messages.detailsAddress,
+                  {
+                    alias: tx.recipientName,
+                    address: tx.recipientId,
+                  }
+                )}
+              />
+              <span className={classes.detailsRowActions}>
+                <Tooltip title={intl.formatMessage(messages.detailsRecipientCopyTooltip)}>
+                  <IconButton
+                    className={classes.detailsRowAction}
+                    aria-label={intl.formatMessage(messages.detailsRecipientCopyAria)}
+                    onClick={this.handleCopyRecipientAddress}
+                  >
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+                {!tx.recipientName ? (
+                  <Tooltip title={intl.formatMessage(messages.detailsRecipientAddTooltip)}>
+                    <IconButton
+                      className={classes.detailsRowAction}
+                      aria-label={intl.formatMessage(messages.detailsRecipientAddAria)}
+                    >
+                      <PersonAddIcon fontSize="inherit" />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title={intl.formatMessage(messages.detailsRecipientEditTooltip)}>
+                    <IconButton
+                      className={classes.detailsRowAction}
+                      aria-label={intl.formatMessage(messages.detailsRecipientEditAria)}
+                    >
+                      <PersonIcon fontSize="inherit" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </span>
+            </Typography>
+          )}
+          {tx.type === TransactionType.SEND && (
+            <Typography className={classes.detailsRow}>
+              <span
+                className={classes.detailsRowLabel}
+                children={intl.formatMessage(messages.detailsSendAmountLabel)}
+              />
+              <span className={classes.detailsRowValue}>
+                {intl.formatNumber(tx.amount.unit.toNumber(), {
+                  style: 'decimal'
+                })} RISE
+              </span>
+              <span className={classes.detailsRowActions} />
+            </Typography>
+          )}
+          {tx.type === TransactionType.DELEGATE && (
+            <Typography className={classes.detailsRow}>
+              <span
+                className={classes.detailsRowLabel}
+                children={intl.formatMessage(messages.detailsDelegateUsernameLabel)}
+              />
+              <span
+                className={classes.detailsRowValue}
+                children={tx.asset.delegate ? tx.asset.delegate.username : ''}
+              />
+              <span className={classes.detailsRowActions} />
+            </Typography>
+          )}
+          {removedVotes.length > 0 && (
+            <Typography className={classes.detailsRow}>
+              <span
+                className={classes.detailsRowLabel}
+                children={intl.formatMessage(messages.detailsVotesRemovedLabel, {
+                  voteCount: removedVotes.length,
+                })}
+              />
+              <span
+                className={classes.detailsRowValue}
+                children={removedVotes
+                  .map(d => d.username)
+                  .reduce((a, u) => a.concat(a.length ? ', ' : null, u),
+                          [] as Array<null | string>)}
+              />
+              <span className={classes.detailsRowActions} />
+            </Typography>
+          )}
+          {addedVotes.length > 0 && (
+            <Typography className={classes.detailsRow}>
+              <span
+                className={classes.detailsRowLabel}
+                children={intl.formatMessage(messages.detailsVotesAddedLabel, {
+                  voteCount: addedVotes.length,
+                })}
+              />
+              <span
+                className={classes.detailsRowValue}
+                children={addedVotes
+                  .map(d => d.username)
+                  .reduce((a, u) => a.concat(a.length ? ', ' : null, u),
+                          [] as Array<null | string>)}
+              />
+              <span className={classes.detailsRowActions} />
+            </Typography>
+          )}
           <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Sender:</span>
-            <span className={classes.detailsRowValue}>
-              {tx.senderName} ({tx.senderId})
-            </span>
-            <span className={classes.detailsRowActions}>
-              <Tooltip title="Copy address">
-                <IconButton
-                  className={classes.detailsRowAction}
-                  aria-label="Copy sender address"
-                  onClick={this.handleCopySenderAddress}
-                >
-                  <ContentCopyIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Edit contact">
-                <IconButton
-                  className={classes.detailsRowAction}
-                  aria-label="Edit sender contact card"
-                >
-                  <PersonIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-            </span>
-          </Typography>
-          <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Recipient:</span>
-            <span className={classes.detailsRowValue}>
-              {tx.recipientName} ({tx.recipientId})
-            </span>
-            <span className={classes.detailsRowActions}>
-              <Tooltip title="Copy address">
-                <IconButton
-                  className={classes.detailsRowAction}
-                  aria-label="Copy recipient address"
-                  onClick={this.handleCopyRecipientAddress}
-                >
-                  <ContentCopyIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Add contact">
-                <IconButton
-                  className={classes.detailsRowAction}
-                  aria-label="Add recipient to contacts"
-                >
-                  <PersonAddIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-            </span>
-          </Typography>
-          <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Send amount:</span>
-            <span className={classes.detailsRowValue}>
-              {intl.formatNumber(tx.amount.unit.toNumber(), {
-                style: 'decimal'
-              })} RISE
-            </span>
-            <span className={classes.detailsRowActions} />
-          </Typography>
-          <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Registered username:</span>
-            <span className={classes.detailsRowValue}>
-              TODO
-            </span>
-            <span className={classes.detailsRowActions} />
-          </Typography>
-          <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Vote(s) removed:</span>
-            <span className={classes.detailsRowValue}>
-              TODO
-            </span>
-            <span className={classes.detailsRowActions} />
-          </Typography>
-          <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Vote(s) added:</span>
-            <span className={classes.detailsRowValue}>
-              TODO
-            </span>
-            <span className={classes.detailsRowActions} />
-          </Typography>
-          <Typography className={classes.detailsRow}>
-            <span className={classes.detailsRowLabel}>Network fee:</span>
+            <span
+              className={classes.detailsRowLabel}
+              children={intl.formatMessage(messages.detailsNetworkFeeLabel)}
+            />
             <span className={classes.detailsRowValue}>
               {intl.formatNumber(tx.fee.unit.toNumber(), {
                 style: 'decimal'
@@ -707,8 +1079,18 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
           </Typography>
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          {true && <Button size="small">Return funds</Button>}
-          {false && <Button size="small">Send again</Button>}
+          {tx.type === TransactionType.SEND && tx.isIncoming && (
+            <Button
+              size="small"
+              children={intl.formatMessage(messages.detailsReturnFundsLabel)}
+            />
+          )}
+          {tx.type === TransactionType.SEND && !tx.isIncoming && (
+            <Button
+              size="small"
+              children={intl.formatMessage(messages.detailsSendAgainLabel)}
+            />
+          )}
         </ExpansionPanelActions>
       </ExpansionPanel>
     );
