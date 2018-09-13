@@ -117,6 +117,52 @@ context('Wallet', () => {
       .contains('Existing account')
       .should('have.length', 1);
   });
+
+  it('transaction details', () => {
+    // re-querying for the details panel shouldn't be necessary
+    // but the .end() method doesn't seems to work (selection == null)
+    function getDetails() {
+      return (
+        cy
+          .get('main > div:nth-child(2)')
+          .find('div[aria-expanded="true"][role="button"]')
+          .eq(0)
+          // move to the expanded panel
+          .next()
+      );
+    }
+
+    // click the first transaction entry
+    cy.get('main > div:nth-child(2)')
+      .find('div[aria-expanded="false"][role="button"]')
+      .eq(0)
+      .click()
+      // check if opened
+      .should('have.attr', 'aria-expanded', 'true')
+      // move to the expanded panel
+      .next()
+      // check if visible
+      .should('be.visible');
+
+    // check for "confirmed"
+    getDetails()
+      .find('span')
+      .contains('Confirmed')
+      .should('have.length', 1)
+      .end()
+      .end();
+
+    // check for "Timestamp"
+    getDetails()
+      .find('span')
+      .contains('Timestamp')
+      .should('have.length', 1);
+
+    // check for the "Return funds" button
+    getDetails()
+      .contains('Return funds')
+      .should('have.length', 1);
+  });
 });
 
 context('Settings', () => {
