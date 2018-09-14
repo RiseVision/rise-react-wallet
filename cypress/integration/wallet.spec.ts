@@ -274,6 +274,15 @@ context('Settings', () => {
     });
   });
 
+  it('vote delegate, uppercase query', () => {
+    clickSettingsRow('Voted delegate');
+    // type an uppercase query
+    fillDialogInput(0, 'TEsT');
+    getDialog()
+      .contains('p', 'Search results for "test"')
+      .should('have.length', 1);
+  });
+
   it('account name', () => {
     clickSettingsRow('Account name');
     // type in the query
@@ -430,17 +439,6 @@ context('Form validation', function() {
       .should('have.length', 1);
     getDialog()
       .contains('p', 'Invalid amount')
-      .should('have.length', 1);
-    closeDialog();
-  });
-
-  it('vote delegate, uppercase query', () => {
-    goToSettings();
-    clickSettingsRow('Voted delegate');
-    // type an uppercase query
-    fillDialogInput(0, 'TEST');
-    getDialog()
-      .contains('p', 'Delegate username query must be all lowercase')
       .should('have.length', 1);
     closeDialog();
   });

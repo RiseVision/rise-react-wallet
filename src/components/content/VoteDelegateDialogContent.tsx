@@ -176,7 +176,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
               />
             </Grid>
             <Grid item={true} xs={12}>
-              <Typography variant="body2" color="textSecondary" align="left">
+              <Typography variant="body2" color="textSecondary" align="left" component="p">
                 {content.kind === 'search-results' ? (
                   <FormattedMessage
                     id="vote-delegate-dialog-content.results-subtitle"
