@@ -28,26 +28,26 @@ const styles = (theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
       // Override the overflow setting from `.Wallet-content > :last-child`
-      overflow: 'visible !important',
+      overflow: 'visible !important'
     },
     header: {
-      zIndex: 100,
+      zIndex: 100
     },
     headerFixed: {
       flexShrink: 0,
       [theme.breakpoints.down('xs')]: {
-        display: 'none',
-      },
+        display: 'none'
+      }
     },
     headerInline: {
       [theme.breakpoints.up('sm')]: {
-        display: 'none',
-      },
+        display: 'none'
+      }
     },
     content: {
       padding: theme.spacing.unit * 2,
       overflow: 'auto',
-      zIndex: 50,
+      zIndex: 50
     },
     fab: {
       position: 'fixed',
@@ -91,8 +91,9 @@ const messages = defineMessages({
   }
 });
 
-@inject('routerStore')
 @inject(accountStore)
+@inject('routerStore')
+@inject('walletStore')
 @observer
 class AccountOverview extends React.Component<DecoratedProps> {
   get injected(): PropsInjected & DecoratedProps {
@@ -109,11 +110,13 @@ class AccountOverview extends React.Component<DecoratedProps> {
   }
 
   handleNavigateBack = () => {
-    this.injected.routerStore.goTo(accountOverviewRoute, { id: this.account.id });
+    this.injected.routerStore.goTo(accountOverviewRoute, {
+      id: this.account.id
+    });
   }
 
   render() {
-    const { intl, classes } = this.injected;
+    const { intl, classes, walletStore } = this.injected;
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );
@@ -123,16 +126,13 @@ class AccountOverview extends React.Component<DecoratedProps> {
       address: this.account.id,
       alias: this.account.name || unnamedAccountLabel,
       balance: this.account.balance,
-      balance_in_fiat: this.account.balanceFiat || '',
+      balance_in_fiat: this.account.balanceFiat || ''
     };
 
     return (
       <div className={classes.container}>
         <AccountOverviewHeader
-          className={classNames(
-            classes.header,
-            classes.headerFixed,
-          )}
+          className={classNames(classes.header, classes.headerFixed)}
           {...headerProps}
         />
         {!readOnly && (
@@ -157,10 +157,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
         <div className={classes.content}>
           <AccountOverviewHeader
             key="__header__"
-            className={classNames(
-              classes.header,
-              classes.headerInline,
-            )}
+            className={classNames(classes.header, classes.headerInline)}
             {...headerProps}
           />
           {toPairs(this.account.recentTransactions.groupedByDay).map(
@@ -174,13 +171,24 @@ class AccountOverview extends React.Component<DecoratedProps> {
                   {group}
                 </Typography>
                 <div>
-                  {transactions.map(transaction => (
-                    <TxDetailsExpansionPanel
-                      key={transaction.id}
-                      tx={transaction}
-                      explorerUrl={this.account.config.explorer_url}
-                    />
-                  ))}
+                  {transactions.map(transaction => {
+                    // make sure the transaction data has up to dane names
+                    // TODO move this to a getter (create a Transaction class)
+                    transaction.senderName = walletStore.idToName(
+                      transaction.senderId
+                    );
+                    transaction.recipientName = walletStore.getRecipientName(
+                      transaction.type,
+                      transaction.recipientId
+                    );
+                    return (
+                      <TxDetailsExpansionPanel
+                        key={transaction.id}
+                        tx={transaction}
+                        explorerUrl={this.account.config.explorer_url}
+                      />
+                    );
+                  })}
                 </div>
               </React.Fragment>
             )
