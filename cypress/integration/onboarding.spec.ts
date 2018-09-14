@@ -39,6 +39,12 @@ context('Onboarding', function() {
       .find('div')
       .contains('Full access account')
       .click();
+    // TODO: NoMnemonicNotice shows up only for the frist fullAccess account added
+    // dismiss no mnemonic notice
+    cy.get('body')
+      .find('button')
+      .contains('Go to account overview')
+      .click();
     // wait for the recent transaction list
     cy.wait(2000).then(() => {
       const newAccount = getAccount(0);
