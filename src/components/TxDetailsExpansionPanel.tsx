@@ -857,38 +857,40 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               </Tooltip>
             </span>
           </Typography>
-          <Typography className={classes.detailsRow}>
-            <span
-              className={classes.detailsRowLabel}
-              children={intl.formatMessage(messages.detailsBlockIdLabel)}
-            />
-            <span
-              className={classes.detailsRowValue}
-              children={tx.blockId}
-            />
-            <span className={classes.detailsRowActions}>
-              <Tooltip title={intl.formatMessage(messages.detailsBlockIdCopyTooltip)}>
-                <IconButton
-                  className={classes.detailsRowAction}
-                  aria-label={intl.formatMessage(messages.detailsBlockIdCopyAria)}
-                  onClick={this.handleCopyBlockId}
-                >
-                  <ContentCopyIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={intl.formatMessage(messages.detailsBlockIdExplorerTooltip)}>
-                <IconButton
-                  className={classes.detailsRowAction}
-                  component="a"
-                  href={`${explorerUrl}/block/${tx.blockId}`}
-                  target="_blank"
-                  aria-label={intl.formatMessage(messages.detailsBlockIdExplorerAria)}
-                >
-                  <LinkIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-            </span>
-          </Typography>
+          {tx.confirmations >= 1 && (
+            <Typography className={classes.detailsRow}>
+              <span
+                className={classes.detailsRowLabel}
+                children={intl.formatMessage(messages.detailsBlockIdLabel)}
+              />
+              <span
+                className={classes.detailsRowValue}
+                children={tx.blockId}
+              />
+              <span className={classes.detailsRowActions}>
+                <Tooltip title={intl.formatMessage(messages.detailsBlockIdCopyTooltip)}>
+                  <IconButton
+                    className={classes.detailsRowAction}
+                    aria-label={intl.formatMessage(messages.detailsBlockIdCopyAria)}
+                    onClick={this.handleCopyBlockId}
+                  >
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={intl.formatMessage(messages.detailsBlockIdExplorerTooltip)}>
+                  <IconButton
+                    className={classes.detailsRowAction}
+                    component="a"
+                    href={`${explorerUrl}/block/${tx.blockId}`}
+                    target="_blank"
+                    aria-label={intl.formatMessage(messages.detailsBlockIdExplorerAria)}
+                  >
+                    <LinkIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </span>
+            </Typography>
+          )}
           <Typography className={classes.detailsRow}>
             <span
               className={classes.detailsRowLabel}
