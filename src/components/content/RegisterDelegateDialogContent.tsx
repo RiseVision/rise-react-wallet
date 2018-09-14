@@ -226,6 +226,7 @@ class RegisterDelegateDialogContent extends React.Component<DecoratedProps, Stat
         {!error && (
           <Grid item={true} xs={12}>
             <TextField
+              autoFocus={true}
               label={
                 <FormattedMessage
                   id="forms-register-delegate.username-input-label"

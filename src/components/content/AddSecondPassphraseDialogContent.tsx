@@ -192,6 +192,7 @@ class AddSecondPassphraseDialogContent extends React.Component<DecoratedProps, S
         {!error && (
           <Grid item={true} xs={12}>
             <TextField
+              autoFocus={true}
               type="password"
               label={
                 <FormattedMessage

@@ -121,6 +121,7 @@ class ChooseFiatDialogContent extends React.Component<DecoratedProps, State> {
         </Grid>
         <Grid item={true} xs={12}>
           <NativeSelect
+            autoFocus={true}
             value={this.state.fiat}
             onChange={this.handleFiatChange}
             fullWidth={true}
