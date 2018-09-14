@@ -65,7 +65,9 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface Props extends WithStyles<typeof styles> {}
+interface Props extends WithStyles<typeof styles> {
+  onSignOutClick: () => void;
+}
 
 interface PropsInjected extends Props {
   store: RootStore;
@@ -109,13 +111,15 @@ class DrawerContent extends React.Component<DecoratedProps> {
     store.router.goTo(accountOverviewRoute, { id });
   }
 
-  handleSignoutCliecked = () => {
-    this.injected.walletStore.signout();
-    this.injected.store.router.goTo(onboardingAddAccountRoute);
-  }
-
   render() {
-    const { intl, classes, store, walletStore } = this.injected;
+    const {
+      intl,
+      classes,
+      store,
+      walletStore,
+      onSignOutClick,
+    } = this.injected;
+
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );
@@ -217,7 +221,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
               />
             </ListItemText>
           </ListItem>
-          <ListItem button={true} onClick={this.handleSignoutCliecked}>
+          <ListItem button={true} onClick={onSignOutClick}>
             <ListItemIcon className={classes.listIcon}>
               <ExitToAppIcon />
             </ListItemIcon>

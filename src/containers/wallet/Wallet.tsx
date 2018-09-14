@@ -8,10 +8,16 @@ import {
   withTheme,
   WithTheme
 } from '@material-ui/core/styles';
-import { observer } from 'mobx-react';
+import { reaction, IReactionDisposer } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';
+import Dialog from '../../components/Dialog';
+import SignOutDialogContent from '../../components/content/SignOutDialogContent';
+import { onboardingAddAccountRoute } from '../../routes';
+import WalletStore from '../../stores/wallet';
 
 const drawerWidth = 280;
 
@@ -58,26 +64,66 @@ interface Props extends WithStyles<typeof styles> {}
 
 interface State {
   mobileDrawerOpen: boolean;
+  signOutOpen: boolean;
 }
 
 type DecoratedProps = Props & WithTheme;
 
+interface PropsInjected extends DecoratedProps {
+  routerStore: RouterStore;
+  walletStore: WalletStore;
+}
+
 const stylesDecorator = withStyles(styles, { name: 'Wallet' });
 const themeDecorator = withTheme();
 
+@inject('walletStore')
+@inject('routerStore')
 @observer
 class Wallet extends React.Component<DecoratedProps, State> {
+  disposeRouteMonitor: null | IReactionDisposer = null;
+
   constructor(props: DecoratedProps) {
     super(props);
     this.state = {
-      mobileDrawerOpen: false
+      mobileDrawerOpen: false,
+      signOutOpen: false
     };
   }
 
-  render(): React.ReactElement<HTMLDivElement> {
-    const { classes, theme } = this.props;
+  get injected(): PropsInjected {
+    return this.props as PropsInjected;
+  }
 
-    const drawer = <DrawerContent />;
+  componentWillMount() {
+    // Automatically close signOut prompt on route change
+    this.disposeRouteMonitor = reaction(
+      () => {
+        const { routerStore } = this.injected;
+        return routerStore.currentView;
+      },
+      () => {
+        this.setState({ signOutOpen: false });
+      }
+    );
+  }
+
+  componentWillUnmount() {
+    if (this.disposeRouteMonitor) {
+      this.disposeRouteMonitor();
+      this.disposeRouteMonitor = null;
+    }
+  }
+
+  render(): React.ReactElement<HTMLDivElement> {
+    const { classes, theme } = this.injected;
+    const { mobileDrawerOpen, signOutOpen } = this.state;
+
+    const drawer = (
+      <DrawerContent
+        onSignOutClick={this.handleOpenSignOutPrompt}
+      />
+    );
 
     return (
       <div className={classes.root}>
@@ -85,7 +131,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
           <Drawer
             variant="temporary"
             anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-            open={this.state.mobileDrawerOpen}
+            open={mobileDrawerOpen}
             onClose={this.handleDrawerToggle}
             classes={{
               paper: classes.drawerPaper
@@ -114,6 +160,15 @@ class Wallet extends React.Component<DecoratedProps, State> {
           <div className={classes.toolbar} />
           {this.props.children}
         </main>
+        <Dialog
+          open={signOutOpen}
+          onClose={this.handleCancelSignOutPrompt}
+        >
+          <SignOutDialogContent
+            onConfirm={this.handleConfirmSignOut}
+            onCancel={this.handleCancelSignOutPrompt}
+          />
+        </Dialog>
       </div>
     );
   }
@@ -121,6 +176,29 @@ class Wallet extends React.Component<DecoratedProps, State> {
   handleDrawerToggle = () => {
     this.setState({
       mobileDrawerOpen: !this.state.mobileDrawerOpen
+    });
+  }
+
+  handleConfirmSignOut = () => {
+    const { walletStore, routerStore } = this.injected;
+
+    this.setState({
+      signOutOpen: false,
+    });
+
+    walletStore.signout();
+    routerStore.goTo(onboardingAddAccountRoute);
+  }
+
+  handleCancelSignOutPrompt = () => {
+    this.setState({
+      signOutOpen: false,
+    });
+  }
+
+  handleOpenSignOutPrompt = () => {
+    this.setState({
+      signOutOpen: true,
     });
   }
 }

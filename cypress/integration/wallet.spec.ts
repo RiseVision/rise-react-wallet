@@ -97,6 +97,10 @@ context('Wallet', () => {
     cy.get('ul[aria-label="Navigation"]')
       .find('span')
       .contains('Sign out')
+      .click();
+
+    getDialog()
+      .contains('button', 'Sign out')
       .click()
       .then(_ => {
         expect(lstore.get('accounts')).to.eql(undefined);
