@@ -60,7 +60,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     async (query: string) => {
       const thisSearch = ++this.lastSearch;
       const { walletStore } = this.injected;
-      query = query.trim();
+      query = query.trim().toLowerCase();
 
       this.setState({
         search: {
