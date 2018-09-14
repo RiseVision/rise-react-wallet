@@ -56,6 +56,7 @@ export default class WalletStore {
     dposAPI.nodeAddress = config.api_url;
     this.api = config.api_url;
     this.dposAPI = dposAPI;
+    // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
     const accounts = this.storedAccounts();
     if (!accounts.length) {
@@ -404,6 +405,7 @@ export default class WalletStore {
    *
    * @param id
    * @param local Optional, omitted on the first login.
+   * @param select Should the account become the selected one.
    */
   @action
   async login(
