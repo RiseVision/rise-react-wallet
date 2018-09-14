@@ -30,6 +30,8 @@
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "npm test && react-scripts-ts build",
+    "build-no-tests": "react-scripts-ts build",
+    "make-nightly": "npm run build-no-tests && rm -R gh-pages/* && mv build/* gh-pages && cd gh-pages && git add . && git commit -am \"Updated the nightly build\" && git push",
     "test": "cypress run",
     "eject": "react-scripts-ts eject",
     "riw:prepare": "rm -r tmp/transpiled/; tsc -p . --target ES6 --module esnext --jsx preserve --outDir tmp/transpiled",
