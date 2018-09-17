@@ -108,6 +108,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
   handleAccountClicked = (id: string) => () => {
     const { store, walletStore } = this.injected;
     walletStore.selectAccount(id);
+    walletStore.refreshAccount(id)
     store.router.goTo(accountOverviewRoute, { id });
   }
 
