@@ -1,6 +1,0 @@
-[submodule "build/gh-pages"]
-	path = build/gh-pages
-	url = git@github.com:RiseVision/rise-react-wallet.git
-[submodule "gh-pages"]
-	path = gh-pages
-	url = git@github.com:RiseVision/rise-react-wallet.git

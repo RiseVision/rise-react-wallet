@@ -27,11 +27,12 @@
     "svg-country-flags": "^1.2.1",
     "unique-random": "^2.0.0"
   },
+  "homepage": "https://risevision.github.io/rise-react-wallet",
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "npm test && react-scripts-ts build",
     "build-no-tests": "react-scripts-ts build",
-    "make-nightly": "npm run build-no-tests && rm -R gh-pages/* && mv build/* gh-pages && cd gh-pages && git add . && git commit -am \"Updated the nightly build\" && git push",
+    "deploy-nightly": "npm run build-no-tests && gh-pages -d build -m \"Updated the nightly\"",
     "test": "cypress run",
     "eject": "react-scripts-ts eject",
     "riw:prepare": "rm -r tmp/transpiled/; tsc -p . --target ES6 --module esnext --jsx preserve --outDir tmp/transpiled",
@@ -93,6 +94,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "cypress": "^3.1.0",
+    "gh-pages": "^2.0.0",
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.2",
     "riw": "^0.8.0",
