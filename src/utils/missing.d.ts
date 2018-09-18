@@ -46,6 +46,11 @@ declare module '*.json' {
   export default value;
 }
 
+declare module 'rise-js' {
+  const value: any;
+  export = value;
+}
+
 declare module 'store' {
   const value: any;
   export = value;
