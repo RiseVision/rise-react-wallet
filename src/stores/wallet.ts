@@ -1,6 +1,5 @@
 import * as assert from 'assert';
-import { Delegate, dposAPI, TransactionType } from 'dpos-api-wrapper';
-import * as riseJS from 'rise-js';
+import { Delegate, rise as dposAPI, TransactionType } from 'risejs';
 import {
   BaseTx,
   CreateSignatureTx,
@@ -8,6 +7,7 @@ import {
   IDelegateTxAsset,
   IVoteAsset,
   LiskWallet,
+  SendTx,
   VoteTx
 } from 'dpos-offline';
 import { pick } from 'lodash';
@@ -191,38 +191,14 @@ export default class WalletStore {
     assert(account, 'Account required');
     assert(!account.secondSignature || passphrase, 'Passphrase required');
 
-    const tx = riseJS.transaction.createTransaction(
-      recipientId,
-      amount.toNumber(),
-      mnemonic,
-      passphrase
-    );
-    // const unsigned = new SendTx()
-    //   .set('timestamp', getTimestamp())
-    //   .set('fee', this.fees.get('send')!.toNumber())
-    //   .set('amount', amount.toNumber())
-    //   .set('recipientId', recipientId);
-    //
-    // const res = await this.singAndSend(unsigned, mnemonic, passphrase);
-    class HTTPError extends Error {}
+    const unsigned = new SendTx()
+      .set('timestamp', getTimestamp())
+      .set('fee', this.fees.get('send')!.toNumber())
+      .set('amount', amount.toNumber())
+      .set('recipientId', recipientId);
 
-    // debugger
-
-    const res = await fetch(this.api + '/api/', {
-      method: 'POST',
-      body: JSON.stringify({ transaction: tx }),
-      headers: {
-        'content-type': 'application/json'
-      }
-    });
-
-    // console.log(res);
-    if (!res.ok) {
-      // @ts-ignore
-      throw new HTTPError('Fetch error:', response.statusText);
-    }
+    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account!.id, recipientId);
-    // @ts-ignore
     return res;
   }
 
