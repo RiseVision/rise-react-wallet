@@ -136,6 +136,13 @@ export function assertSuccessfulDialog() {
     .should('have.length', 1);
 }
 
+export function assertUnsuccessfulDialog(msg: string) {
+  // wait 10 secs for the successful dialog
+  getDialog('', 10 * SEC)
+    .contains('span', msg)
+    .should('have.length', 1);
+}
+
 /**
  * Selects an account from the menu
  * @param id

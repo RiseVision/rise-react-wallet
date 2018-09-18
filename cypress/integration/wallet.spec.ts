@@ -17,7 +17,7 @@ import {
   getDialogContent,
   getDialog,
   openRegisterDelegateDialog,
-  getDialogInput
+  getDialogInput, assertUnsuccessfulDialog
 } from '../plugins/helpers';
 
 const url = 'http://localhost:3000';
@@ -166,6 +166,31 @@ context('Wallet', () => {
     getDetails()
       .contains('Send again')
       .should('have.length', 1);
+  });
+});
+
+context('Server errors', () => {
+  it.only('send funds', () => {
+    // stab the route
+    cy.route({
+      method: 'PUT',
+      url: '**/api/transactions',
+      response: {
+        success: true,
+        invalid: [{ id: '42323498723942398', reason: 'test reason' }]
+      }
+    }).as('postTransaction');
+    // click the Send RISE button
+    cy.get('button[title="Send RISE"]').click();
+    assertAutofocus();
+    // type in the recipient address
+    fillDialogInput(0, lstore.get('accounts')[1].id);
+    // type in the amount
+    fillDialogInput(1, '0.001');
+    // click submit
+    clickDialogSubmit();
+    fillConfirmationDialog();
+    assertUnsuccessfulDialog('test reason');
   });
 });
 

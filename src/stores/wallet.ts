@@ -54,8 +54,8 @@ export default class WalletStore {
 
   constructor(public config: TConfig, public router: RouterStore) {
     dposAPI.nodeAddress = config.api_url;
-    this.api = config.api_url;
     this.dposAPI = dposAPI;
+    this.api = config.api_url;
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
     const accounts = this.storedAccounts();
@@ -174,7 +174,6 @@ export default class WalletStore {
     const transport = await dposAPI.buildTransport();
     const ret = await transport.postTransaction(tx);
     await this.refreshAccount(account.id);
-    // TODO return also the error msg
     return ret;
   }
 
@@ -197,7 +196,7 @@ export default class WalletStore {
       .set('amount', amount.toNumber())
       .set('recipientId', recipientId);
 
-    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account!.id, recipientId);
     return res;
   }
@@ -251,7 +250,7 @@ export default class WalletStore {
       account.votedDelegateState = LoadingState.NOT_LOADED;
     });
 
-    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account.id);
     return res;
   }
@@ -288,20 +287,20 @@ export default class WalletStore {
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
 
-    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account.id);
     return res;
   }
 
-  async singAndSend(
+  async signAndSend(
     unsigned: BaseTx,
     mnemonic: string,
     passphrase: string | null
   ): Promise<TTransactionResult> {
     const wallet = new LiskWallet(mnemonic, 'R');
     const tx = wallet.signTransaction(unsigned, this.secondWallet(passphrase));
-    const transport = await dposAPI.buildTransport();
-    return await transport.postTransaction(tx);
+    // @ts-ignore TODO array
+    return await this.dposAPI.transactions.put(tx);
   }
 
   // TODO missing in dposAPI
@@ -752,8 +751,9 @@ export function parseAccountReponse(
 }
 
 export type TTransactionResult = {
-  transactionId?: string;
   success: boolean;
+  accepted?: string[];
+  invalid?: { id: string; reason: string }[];
 };
 
 export type TGroupedTransactions = {

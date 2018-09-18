@@ -93,23 +93,23 @@ class TransactionDialog extends React.Component<Props, State> {
     if (onClose) {
       onClose(ev);
     }
-  }
+  };
 
   handleBackFromConfirm = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
     if (onNavigateBack) {
       onNavigateBack(ev);
     }
-  }
+  };
 
   handleConfirmTransaction = (secrets: Secrets) => {
     this.sendTransaction(secrets);
-  }
+  };
 
   handleRetryTransaction = () => {
     const { secrets } = this.state;
     this.sendTransaction(secrets);
-  }
+  };
 
   async sendTransaction(secrets: Secrets) {
     const { onSendTransaction } = this.props;
@@ -121,10 +121,13 @@ class TransactionDialog extends React.Component<Props, State> {
     let canRetry = false;
     try {
       const tx = await onSendTransaction(secrets);
-      success = tx.success;
-      // TODO error msg
-      errorSummary = '';
-      // If the node rejected the transaction there's no point in retrying
+      // this supports only a single transaction per request
+      success = Boolean(tx.accepted && tx.accepted.length);
+      if (!success) {
+        // get the error
+        errorSummary = tx.invalid![0].reason.slice(0, 30)
+      }
+      // If the node accepted the transaction there's no point in retrying
       canRetry = false;
     } catch (e) {
       success = false;
