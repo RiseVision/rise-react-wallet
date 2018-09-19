@@ -151,7 +151,7 @@ context('Wallet', () => {
     // check for "confirmed"
     getDetails()
       .find('span')
-      .contains('Confirmed')
+      .contains('Send')
       .should('have.length', 1)
       .end()
       .end();
