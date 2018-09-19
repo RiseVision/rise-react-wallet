@@ -3,7 +3,10 @@ import * as React from 'react';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog from '../../components/Dialog';
 import AccountStore from '../../stores/account';
-import WalletStore, { TFeeTypes, TTransactionResult } from '../../stores/wallet';
+import WalletStore, {
+  TFeeTypes,
+  TTransactionResult
+} from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import { PropsOf } from '../../utils/metaTypes';
 
@@ -14,11 +17,13 @@ export type Secrets = {
 
 const EMPTY_SECRETS: Secrets = {
   mnemonic: '',
-  passphrase: null,
+  passphrase: null
 };
 
 type DialogProps = PropsOf<typeof Dialog>;
-type ConfirmTransactionDialogContentProps = PropsOf<typeof ConfirmTransactionDialogContent>;
+type ConfirmTransactionDialogContentProps = PropsOf<
+  typeof ConfirmTransactionDialogContent
+>;
 
 type Transaction = ConfirmTransactionDialogContentProps['data'];
 
@@ -35,11 +40,7 @@ interface PropsInjected extends Props {
 
 interface State {
   transaction: Props['transaction'];
-  step:
-    | 'confirm'
-    | 'sending'
-    | 'failure'
-    | 'sent';
+  step: 'confirm' | 'sending' | 'failure' | 'sent';
   secrets: Secrets;
   sendError: string;
 }
@@ -51,10 +52,13 @@ class TransactionDialog extends React.Component<Props, State> {
     transaction: null,
     step: 'confirm',
     secrets: EMPTY_SECRETS,
-    sendError: '',
+    sendError: ''
   };
 
-  static getDerivedStateFromProps(nextProps: Readonly<Props>, prevState: State): State {
+  static getDerivedStateFromProps(
+    nextProps: Readonly<Props>,
+    prevState: State
+  ): State {
     const hadTx = !!prevState.transaction;
     const hasTx = !!nextProps.transaction;
 
@@ -64,12 +68,12 @@ class TransactionDialog extends React.Component<Props, State> {
         transaction: nextProps.transaction,
         step: 'confirm',
         secrets: EMPTY_SECRETS,
-        sendError: '',
+        sendError: ''
       };
     } else {
       return {
         ...prevState,
-        transaction: nextProps.transaction,
+        transaction: nextProps.transaction
       };
     }
   }
@@ -83,7 +87,7 @@ class TransactionDialog extends React.Component<Props, State> {
 
     // Clear secrets from state when closing
     this.setState({
-      secrets: EMPTY_SECRETS,
+      secrets: EMPTY_SECRETS
     });
 
     if (onClose) {
@@ -117,11 +121,13 @@ class TransactionDialog extends React.Component<Props, State> {
     let canRetry = false;
     try {
       const tx = await onSendTransaction(secrets);
-      success = tx.success;
-      // TODO error msg
-      errorSummary = '';
-      // If the node rejected the transaction there's no point in retrying
-      canRetry = false;
+      // this supports only a single transaction per request
+      success = Boolean(tx.accepted && tx.accepted.length);
+      if (!success) {
+        // get the error
+        errorSummary = tx.invalid![0].reason.slice(0, 30);
+        canRetry = true;
+      }
     } catch (e) {
       success = false;
       // TODO: Network errors should be safe to retry. But we cannot do that because
@@ -137,7 +143,7 @@ class TransactionDialog extends React.Component<Props, State> {
     if (success) {
       this.setState({
         step: 'sent',
-        secrets: EMPTY_SECRETS,
+        secrets: EMPTY_SECRETS
       });
     } else {
       // TODO: Really wish we would not store the secrets in memory for extended periods of time,
@@ -146,7 +152,7 @@ class TransactionDialog extends React.Component<Props, State> {
       this.setState({
         step: 'failure',
         secrets: canRetry ? secrets : EMPTY_SECRETS,
-        sendError: errorSummary,
+        sendError: errorSummary
       });
     }
   }
@@ -159,13 +165,11 @@ class TransactionDialog extends React.Component<Props, State> {
       return RawAmount.ZERO;
     }
 
-    const feeMap: {
-      [K in Transaction['kind']]: TFeeTypes;
-    } = {
-      'vote': 'vote',
-      'passphrase': 'secondsignature',
-      'delegate': 'delegate',
-      'send': 'send',
+    const feeMap: { [K in Transaction['kind']]: TFeeTypes } = {
+      vote: 'vote',
+      passphrase: 'secondsignature',
+      delegate: 'delegate',
+      send: 'send'
     };
 
     return walletStore.fees.get(feeMap[transaction.kind])!;
@@ -174,12 +178,13 @@ class TransactionDialog extends React.Component<Props, State> {
   render() {
     const { open } = this.injected;
 
-    return (
-      <Dialog open={open} {...this.dialogProps} />
-    );
+    return <Dialog open={open} {...this.dialogProps} />;
   }
 
-  get dialogProps(): Pick<DialogProps, 'onClose' | 'onNavigateBack' | 'children'> {
+  get dialogProps(): Pick<
+    DialogProps,
+    'onClose' | 'onNavigateBack' | 'children'
+  > {
     const { transaction, step } = this.state;
 
     if (!transaction) {
@@ -192,21 +197,21 @@ class TransactionDialog extends React.Component<Props, State> {
         return {
           onClose: this.handleClose,
           onNavigateBack: this.handleBackFromConfirm,
-          children: this.renderConfirmTxContent(),
+          children: this.renderConfirmTxContent()
         };
       case 'sending':
         return {
-          children: this.renderSendingTxContent(),
+          children: this.renderSendingTxContent()
         };
       case 'failure':
         return {
           onClose: this.handleClose,
-          children: this.renderFailedTxContent(),
+          children: this.renderFailedTxContent()
         };
       case 'sent':
         return {
           onClose: this.handleClose,
-          children: this.renderSentTxContent(),
+          children: this.renderSentTxContent()
         };
     }
   }
@@ -264,7 +269,7 @@ class TransactionDialog extends React.Component<Props, State> {
           kind: 'failure',
           reason: sendError,
           onRetry: canRetry ? this.handleRetryTransaction : undefined,
-          onClose: this.handleClose,
+          onClose: this.handleClose
         }}
       />
     );
@@ -282,7 +287,7 @@ class TransactionDialog extends React.Component<Props, State> {
         senderAddress={account.id}
         step={{
           kind: 'success',
-          onClose: this.handleClose,
+          onClose: this.handleClose
         }}
       />
     );

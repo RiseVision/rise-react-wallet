@@ -87,7 +87,7 @@ context('Onboarding', function() {
     clickDialogButton(1)
       .then(_ => {
         // log to the console
-        console.log(mnemonic);
+        console.log(mnemonic.join(' '));
         // loop over all the words and paste them to the input
         for (const _ of mnemonic) {
           cy.get('body')
@@ -116,7 +116,12 @@ context('Onboarding', function() {
           .contains('R')
           .then(p => {
             id = p.text();
+            // log to the console
+            console.log(id);
             expect(lstore.get('accounts')[0].id).eql(id);
+            expect(lstore.get('accounts')[0].publicKey).to.not.eql(null);
+            // log to the console
+            console.log(lstore.get('accounts')[0].publicKey);
           });
       })
       .then(_ => {

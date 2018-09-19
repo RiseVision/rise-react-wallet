@@ -396,7 +396,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps, St
     }
 
     // The derivation takes some CPU cycles, so only do it after the empty check
-    const isValid = derivePublicKey(mnemonic) === publicKey;
+    const isValid = !publicKey || derivePublicKey(mnemonic) === publicKey;
 
     if (isValid) {
       return null;

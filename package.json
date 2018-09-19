@@ -23,6 +23,7 @@
     "react-helmet": "^5.2.0",
     "react-intl": "^2.4.0",
     "react-scripts-ts": "2.16.0",
+    "risejs": "^1.4.0",
     "store": "^2.0.12",
     "svg-country-flags": "^1.2.1",
     "unique-random": "^2.0.0"

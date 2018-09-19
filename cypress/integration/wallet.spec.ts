@@ -17,7 +17,8 @@ import {
   getDialogContent,
   getDialog,
   openRegisterDelegateDialog,
-  getDialogInput
+  getDialogInput,
+  assertUnsuccessfulDialog
 } from '../plugins/helpers';
 
 const url = 'http://localhost:3000';
@@ -40,7 +41,7 @@ beforeEach(function() {
   // mock the server
   cy.server();
   // make the responses inspectable (not a stub)
-  cy.route('POST', '**/peer/transactions').as('postTransaction');
+  cy.route('PUT', '**/api/transactions').as('putTransaction');
 });
 
 afterEach(() => {
@@ -61,7 +62,7 @@ context('Wallet', () => {
     fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
-    cy.wait('@postTransaction')
+    cy.wait('@putTransaction')
       .its('status')
       .should('eq', 200);
   });
@@ -151,7 +152,7 @@ context('Wallet', () => {
     // check for "confirmed"
     getDetails()
       .find('span')
-      .contains('Confirmed')
+      .contains('Send')
       .should('have.length', 1)
       .end()
       .end();
@@ -169,6 +170,72 @@ context('Wallet', () => {
   });
 });
 
+context('Server errors', () => {
+
+  it('error messages', () => {
+    // stab the route
+    cy.route({
+      method: 'PUT',
+      url: '**/api/transactions',
+      response: {
+        success: true,
+        invalid: [{ id: '42323498723942398', reason: 'test reason' }]
+      }
+    }).as('putTransaction');
+    // click the Send RISE button
+    cy.get('button[title="Send RISE"]').click();
+    // type in the recipient address
+    fillDialogInput(0, lstore.get('accounts')[1].id);
+    // type in the amount
+    fillDialogInput(1, '0.001');
+    // click submit
+    clickDialogSubmit();
+    fillConfirmationDialog();
+    assertUnsuccessfulDialog('test reason');
+  });
+
+  it('retry', () => {
+    // stab the route
+    cy.route({
+      method: 'PUT',
+      url: '**/api/transactions',
+      response: {
+        success: true,
+        invalid: [{ id: '42323498723942398', reason: 'test reason' }]
+      }
+    }).as('putTransaction');
+    // click the Send RISE button
+    cy.get('button[title="Send RISE"]').click();
+    // type in the recipient address
+    fillDialogInput(0, lstore.get('accounts')[1].id);
+    // type in the amount
+    fillDialogInput(1, '0.001');
+    // click submit
+    clickDialogSubmit();
+    fillConfirmationDialog();
+    // assert the retry button
+    getDialog('button')
+      .contains('Try again')
+      .should('have.length', 1)
+      .then(_ => {
+        // click 'Try again'
+        clickDialogButton(1)
+        // make a new stab to assert the retry hit
+        // TODO doesnt work
+        cy.route({
+          method: 'PUT',
+          url: '/api/transactions',
+          response: {
+            success: true,
+            invalid: [{ id: '11111111111', reason: 'retry reason' }]
+          }
+        }).as('putTransaction');
+        // TODO should asserts 'retry reason'
+        assertUnsuccessfulDialog('test reason');
+      });
+  });
+});
+
 context('Settings', () => {
   beforeEach(() => {
     goToSettings();
@@ -177,13 +244,13 @@ context('Settings', () => {
   it('register delegate (stabbed)', () => {
     // stab the route
     cy.route({
-      method: 'POST',
-      url: '**/peer/transactions',
+      method: 'PUT',
+      url: '**/api/transactions',
       response: {
         success: true,
-        transactionId: '42323498723942398'
+        accepted: ['42323498723942398']
       }
-    }).as('postTransaction');
+    }).as('putTransaction');
     openRegisterDelegateDialog();
     // type in the name
     const name = 'test';
@@ -193,7 +260,7 @@ context('Settings', () => {
     assertSuccessfulDialog();
     // assert the request
     // @ts-ignore TODO wrong defs
-    cy.get('@postTransaction').should((xhr: Cypress.WaitXHR) => {
+    cy.get('@putTransaction').should((xhr: Cypress.WaitXHR) => {
       // @ts-ignore TODO wrong defs
       expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
         'username',
@@ -210,13 +277,13 @@ context('Settings', () => {
   it('2nd passphrase (stabbed)', () => {
     // stab the route
     cy.route({
-      method: 'POST',
-      url: '**/peer/transactions',
+      method: 'PUT',
+      url: '**/api/transactions',
       response: {
         success: true,
-        transactionId: '42323498723942398'
+        accepted: ['42323498723942398']
       }
-    }).as('postTransaction');
+    }).as('putTransaction');
     selectAccount(getAccount(1).id);
     cy.wait(1000);
     goToSettings();
@@ -232,7 +299,7 @@ context('Settings', () => {
     assertSuccessfulDialog();
     // assert the request
     // @ts-ignore TODO wrong defs
-    cy.get('@postTransaction').should(xhr => {
+    cy.get('@putTransaction').should(xhr => {
       // @ts-ignore TODO wrong defs
       expect(xhr.requestBody.transaction.asset.signature).to.have.property(
         'publicKey',
@@ -244,13 +311,13 @@ context('Settings', () => {
   it('vote delegate when already voted (stabbed)', () => {
     // stab the route
     cy.route({
-      method: 'POST',
-      url: '**/peer/transactions',
+      method: 'PUT',
+      url: '**/api/transactions',
       response: {
         success: true,
-        transactionId: '42323498723942398'
+        accepted: ['42323498723942398']
       }
-    }).as('postTransaction');
+    }).as('putTransaction');
     clickSettingsRow('Voted delegate');
     fillDialogInput(0, 'test');
     // wait for results
@@ -264,7 +331,7 @@ context('Settings', () => {
     assertSuccessfulDialog();
     // assert the request
     // @ts-ignore TODO wrong defs
-    cy.get('@postTransaction').should(xhr => {
+    cy.get('@putTransaction').should(xhr => {
       // assert the prev vote reverted
       // @ts-ignore TODO wrong defs
       expect(xhr.requestBody.transaction.asset.votes[0]).to.match(

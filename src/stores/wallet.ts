@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Delegate, dposAPI, TransactionType } from 'dpos-api-wrapper';
+import { Delegate, rise as dposAPI, TransactionType } from 'risejs';
 import {
   BaseTx,
   CreateSignatureTx,
@@ -54,8 +54,8 @@ export default class WalletStore {
 
   constructor(public config: TConfig, public router: RouterStore) {
     dposAPI.nodeAddress = config.api_url;
-    this.api = config.api_url;
     this.dposAPI = dposAPI;
+    this.api = config.api_url;
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
     const accounts = this.storedAccounts();
@@ -163,19 +163,16 @@ export default class WalletStore {
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
-    const wallet = new LiskWallet(mnemonic, 'R');
     const wallet2 = new LiskWallet(passphrase, 'R');
     let unsigned = new CreateSignatureTx({
       signature: { publicKey: wallet2.publicKey }
     })
       .set('timestamp', getTimestamp())
       .set('fee', this.fees.get('secondsignature')!.toNumber());
-    const tx = wallet.signTransaction(unsigned);
-    const transport = await dposAPI.buildTransport();
-    const ret = await transport.postTransaction(tx);
+
+    const res = await this.signAndSend(unsigned, mnemonic);
     await this.refreshAccount(account.id);
-    // TODO return also the error msg
-    return ret;
+    return res;
   }
 
   async sendTransaction(
@@ -197,7 +194,7 @@ export default class WalletStore {
       .set('amount', amount.toNumber())
       .set('recipientId', recipientId);
 
-    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account!.id, recipientId);
     return res;
   }
@@ -251,7 +248,7 @@ export default class WalletStore {
       account.votedDelegateState = LoadingState.NOT_LOADED;
     });
 
-    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account.id);
     return res;
   }
@@ -288,20 +285,20 @@ export default class WalletStore {
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
 
-    const res = await this.singAndSend(unsigned, mnemonic, passphrase);
+    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
     await this.refreshAccount(account.id);
     return res;
   }
 
-  async singAndSend(
+  async signAndSend(
     unsigned: BaseTx,
     mnemonic: string,
-    passphrase: string | null
+    passphrase: string | null = null
   ): Promise<TTransactionResult> {
     const wallet = new LiskWallet(mnemonic, 'R');
     const tx = wallet.signTransaction(unsigned, this.secondWallet(passphrase));
-    const transport = await dposAPI.buildTransport();
-    return await transport.postTransaction(tx);
+    // @ts-ignore TODO array
+    return await this.dposAPI.transactions.put(tx);
   }
 
   // TODO missing in dposAPI
@@ -394,7 +391,9 @@ export default class WalletStore {
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADING;
     });
-    const delegate = await this.delegateCache.get(account.publicKey, { reload: true });
+    const delegate = await this.delegateCache.get(account.publicKey, {
+      reload: true
+    });
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADED;
       account.registeredDelegate = delegate;
@@ -518,43 +517,43 @@ export default class WalletStore {
     ]);
     runInAction(() => {
       account.recentTransactions.items.length = 0;
-      account.recentTransactions.items.push(
-        ...unconfirmed,
-        ...recent,
-      );
+      account.recentTransactions.items.push(...unconfirmed, ...recent);
     });
     return true;
   }
 
   parseTransactionVotes(votes: string[]): Promise<TTransactionVote[]> {
-    return Promise.all(votes.map(async (vote) => {
-      const op = vote.startsWith('-') ? 'remove' : 'add';
-      const publicKey = vote.substring(1);
+    return Promise.all(
+      votes.map(async vote => {
+        const op = vote.startsWith('-') ? 'remove' : 'add';
+        const publicKey = vote.substring(1);
 
-      // We assume that the delegate exists since we're dealing with
-      // validated transactions. If the node reports that the delegate
-      // doesn't exists, we have bigger problems than a null-ref in wallet.
-      const delegate = (await this.delegateCache.get(publicKey))!;
+        // We assume that the delegate exists since we're dealing with
+        // validated transactions. If the node reports that the delegate
+        // doesn't exists, we have bigger problems than a null-ref in wallet.
+        const delegate = (await this.delegateCache.get(publicKey))!;
 
-      return {
-        op,
-        delegate,
-      } as TTransactionVote;
-    }));
+        return {
+          op,
+          delegate
+        } as TTransactionVote;
+      })
+    );
   }
 
-  // TODO dont depend on this.selectedAccount
   async parseTransactionsReponse(
     accountID: string,
     res: TTransactionsResponse
   ): Promise<TTransaction[]> {
-    let txs = await Promise.all(res.transactions.map(async (raw) => {
-      const rawVotes = raw.asset && raw.asset.votes || [];
-      return {
-        raw,
-        votes: await this.parseTransactionVotes(rawVotes),
-      };
-    }));
+    let txs = await Promise.all(
+      res.transactions.map(async raw => {
+        const rawVotes = (raw.asset && raw.asset.votes) || [];
+        return {
+          raw,
+          votes: await this.parseTransactionVotes(rawVotes)
+        };
+      })
+    );
 
     return txs.map(({ raw, votes }) => {
       const amount = new RawAmount(raw.amount || 0);
@@ -571,7 +570,7 @@ export default class WalletStore {
         time: moment(timestampToUnix(raw.timestamp)).format(
           this.config.date_format
         ),
-        votes,
+        votes
       } as TTransaction;
     });
   }
@@ -666,19 +665,23 @@ export default class WalletStore {
 
 class DelegateCache {
   private cached: {
-    [key: string]: {
-      state: 'loading';
-      promise: Promise<Delegate | null>;
-    } | {
-      state: 'loaded';
-      delegate: Delegate | null;
-    };
+    [key: string]:
+      | {
+          state: 'loading';
+          promise: Promise<Delegate | null>;
+        }
+      | {
+          state: 'loaded';
+          delegate: Delegate | null;
+        };
   } = {};
 
-  constructor(private api: typeof dposAPI) {
-  }
+  constructor(private api: typeof dposAPI) {}
 
-  async get(publicKey: string, opts: { reload?: boolean } = {}): Promise<Delegate | null> {
+  async get(
+    publicKey: string,
+    opts: { reload?: boolean } = {}
+  ): Promise<Delegate | null> {
     const reload = opts.reload !== undefined ? opts.reload : false;
 
     let entry = this.cached[publicKey];
@@ -686,7 +689,7 @@ class DelegateCache {
       const promise = this.fetchAndUpdate(publicKey);
       entry = {
         state: 'loading',
-        promise,
+        promise
       };
       this.cached[publicKey] = entry;
     }
@@ -701,7 +704,7 @@ class DelegateCache {
   set(publicKey: string, delegate: Delegate) {
     this.cached[publicKey] = {
       state: 'loaded',
-      delegate: delegate,
+      delegate: delegate
     };
   }
 
@@ -746,8 +749,9 @@ export function parseAccountReponse(
 }
 
 export type TTransactionResult = {
-  transactionId?: string;
   success: boolean;
+  accepted?: string[];
+  invalid?: { id: string; reason: string }[];
 };
 
 export type TGroupedTransactions = {
