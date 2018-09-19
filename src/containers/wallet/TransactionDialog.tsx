@@ -93,23 +93,23 @@ class TransactionDialog extends React.Component<Props, State> {
     if (onClose) {
       onClose(ev);
     }
-  };
+  }
 
   handleBackFromConfirm = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
     if (onNavigateBack) {
       onNavigateBack(ev);
     }
-  };
+  }
 
   handleConfirmTransaction = (secrets: Secrets) => {
     this.sendTransaction(secrets);
-  };
+  }
 
   handleRetryTransaction = () => {
     const { secrets } = this.state;
     this.sendTransaction(secrets);
-  };
+  }
 
   async sendTransaction(secrets: Secrets) {
     const { onSendTransaction } = this.props;
@@ -125,10 +125,9 @@ class TransactionDialog extends React.Component<Props, State> {
       success = Boolean(tx.accepted && tx.accepted.length);
       if (!success) {
         // get the error
-        errorSummary = tx.invalid![0].reason.slice(0, 30)
+        errorSummary = tx.invalid![0].reason.slice(0, 30);
+        canRetry = true;
       }
-      // If the node accepted the transaction there's no point in retrying
-      canRetry = false;
     } catch (e) {
       success = false;
       // TODO: Network errors should be safe to retry. But we cannot do that because

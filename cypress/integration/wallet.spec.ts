@@ -192,6 +192,47 @@ context('Server errors', () => {
     fillConfirmationDialog();
     assertUnsuccessfulDialog('test reason');
   });
+
+  it('retry', () => {
+    // stab the route
+    cy.route({
+      method: 'PUT',
+      url: '**/api/transactions',
+      response: {
+        success: true,
+        invalid: [{ id: '42323498723942398', reason: 'test reason' }]
+      }
+    }).as('putTransaction');
+    // click the Send RISE button
+    cy.get('button[title="Send RISE"]').click();
+    // type in the recipient address
+    fillDialogInput(0, lstore.get('accounts')[1].id);
+    // type in the amount
+    fillDialogInput(1, '0.001');
+    // click submit
+    clickDialogSubmit();
+    fillConfirmationDialog();
+    // assert the retry button
+    getDialog('button')
+      .contains('Try again')
+      .should('have.length', 1)
+      .then(_ => {
+        // click 'Try again'
+        clickDialogButton(1)
+        // make a new stab to assert the retry hit
+        // TODO doesnt work
+        cy.route({
+          method: 'PUT',
+          url: '/api/transactions',
+          response: {
+            success: true,
+            invalid: [{ id: '11111111111', reason: 'retry reason' }]
+          }
+        }).as('putTransaction');
+        // TODO should asserts 'retry reason'
+        assertUnsuccessfulDialog('test reason');
+      });
+  });
 });
 
 context('Settings', () => {
