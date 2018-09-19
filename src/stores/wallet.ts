@@ -163,18 +163,16 @@ export default class WalletStore {
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
-    const wallet = new LiskWallet(mnemonic, 'R');
     const wallet2 = new LiskWallet(passphrase, 'R');
     let unsigned = new CreateSignatureTx({
       signature: { publicKey: wallet2.publicKey }
     })
       .set('timestamp', getTimestamp())
       .set('fee', this.fees.get('secondsignature')!.toNumber());
-    const tx = wallet.signTransaction(unsigned);
-    const transport = await dposAPI.buildTransport();
-    const ret = await transport.postTransaction(tx);
+
+    const res = await this.signAndSend(unsigned, mnemonic);
     await this.refreshAccount(account.id);
-    return ret;
+    return res;
   }
 
   async sendTransaction(
@@ -295,7 +293,7 @@ export default class WalletStore {
   async signAndSend(
     unsigned: BaseTx,
     mnemonic: string,
-    passphrase: string | null
+    passphrase: string | null = null
   ): Promise<TTransactionResult> {
     const wallet = new LiskWallet(mnemonic, 'R');
     const tx = wallet.signTransaction(unsigned, this.secondWallet(passphrase));
