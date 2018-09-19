@@ -6,12 +6,16 @@
       "id": "FILL_IN",
       "mnemonic": "FILL_IN",
       "passphrase": "FILL_IN"
-      // this account is supposed to have an already voted delegate
+      // Account requirements:
+      // - already voted delegate
+      // - at least one transaction
+      // - last transaction is an incoming one
     },
     {
       "id": "FILL_IN",
       "mnemonic": "FILL_IN"
-      // this account cant have a passphrase set
+      // Account requirements:
+      // - no passphrase set
     }
   ],
   "storedAccounts": [
