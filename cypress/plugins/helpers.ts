@@ -161,3 +161,31 @@ export function openRegisterDelegateDialog() {
     .should('contain', 'Not registered');
   clickSettingsRow('Delegate registration');
 }
+
+/**
+ * Returns the node with contains expanded transaction details on the account
+ * overview page.
+ */
+export function getTransactionDetails() {
+  return (
+    cy
+      .get('main aside + div > div:nth-child(2)')
+      .find('div[aria-expanded="true"][role="button"]')
+      .eq(0)
+      // move to the expanded panel
+      .next()
+  );
+}
+
+/**
+ * Click on a transaction row on the account overview page.
+ *
+ * @param index 1-based index.
+ */
+export function expandTransactionDetails(index = 1) {
+  return cy
+    .get(`main aside + div > div:nth-child(${index})`)
+    .find('div[aria-expanded="false"][role="button"]')
+    .eq(0)
+    .click();
+}

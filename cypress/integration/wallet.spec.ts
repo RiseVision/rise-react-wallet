@@ -18,7 +18,9 @@ import {
   getDialog,
   openRegisterDelegateDialog,
   getDialogInput,
-  assertUnsuccessfulDialog
+  assertUnsuccessfulDialog,
+  getTransactionDetails,
+  expandTransactionDetails
 } from '../plugins/helpers';
 
 const url = 'http://localhost:3000';
@@ -124,24 +126,8 @@ context('Wallet', () => {
   });
 
   it('transaction details', () => {
-    // re-querying for the details panel shouldn't be necessary
-    // but the .end() method doesn't seems to work (selection == null)
-    function getDetails() {
-      return (
-        cy
-          .get('main aside + div > div:nth-child(2)')
-          .find('div[aria-expanded="true"][role="button"]')
-          .eq(0)
-          // move to the expanded panel
-          .next()
-      );
-    }
-
-    // click the second transaction row (the first one isn't confirmed yet)
-    cy.get('main aside + div > div:nth-child(2)')
-      .find('div[aria-expanded="false"][role="button"]')
-      .eq(0)
-      .click()
+    // click the second transaction row
+    expandTransactionDetails(2)
       // check if opened
       .should('have.attr', 'aria-expanded', 'true')
       // move to the expanded panel
@@ -150,7 +136,9 @@ context('Wallet', () => {
       .should('be.visible');
 
     // check for "confirmed"
-    getDetails()
+    // re-querying for the details panel shouldn't be necessary
+    // but the .end() method doesn't seems to work (selection == null)
+    getTransactionDetails()
       .find('span')
       .contains('Send')
       .should('have.length', 1)
@@ -158,20 +146,37 @@ context('Wallet', () => {
       .end();
 
     // check for "Timestamp"
-    getDetails()
+    getTransactionDetails()
       .find('span')
       .contains('Timestamp')
       .should('have.length', 1);
 
     // check for the "Return funds" button
-    getDetails()
+    getTransactionDetails()
       .contains('Send again')
       .should('have.length', 1);
+  });
+
+  it('transaction - Send Again button', () => {
+    // click the second transaction row
+    expandTransactionDetails(2)
+    getTransactionDetails()
+      .contains('Send again')
+      .click();
+    // TODO assert with read address and amount
+    cy.url().should('contain', `/send/${getAccount().id}`);
+    getDialogInput(0).then(input => {
+      // TODO assert with a real address
+      expect(input.val()).have.length.above(1);
+    });
+    getDialogInput(1).then(input => {
+      // TODO assert with a real amount
+      expect(input.val()).have.length.above(0);
+    });
   });
 });
 
 context('Server errors', () => {
-
   it('error messages', () => {
     // stab the route
     cy.route({
@@ -219,7 +224,7 @@ context('Server errors', () => {
       .should('have.length', 1)
       .then(_ => {
         // click 'Try again'
-        clickDialogButton(1)
+        clickDialogButton(1);
         // make a new stab to assert the retry hit
         // TODO doesnt work
         cy.route({
