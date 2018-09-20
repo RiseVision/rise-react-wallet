@@ -301,7 +301,6 @@ export default class WalletStore {
     return await this.dposAPI.transactions.put(tx);
   }
 
-  // TODO missing in dposAPI
   async searchDelegates(query: string): Promise<Delegate[]> {
     assert(
       query === query.toLowerCase(),
@@ -310,14 +309,9 @@ export default class WalletStore {
     const params = {
       q: query
     };
-    const url =
-      `${this.api}/api/delegates/search?` + queryString.stringify(params);
-    const res = await fetch(url);
-    const json = await res.json();
-    if (!json.success) {
-      throw new Error(json.error);
-    }
-    return json.delegates || [];
+    // @ts-ignore wrong types in dpos-api-wrapper
+    const res = await this.dposAPI.delegates.getList(params);
+    return res.delegates || [];
   }
 
   /**
