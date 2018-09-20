@@ -18,11 +18,12 @@ function createNoIDRoute(
     onEnter: function(
       route: Route<RootStore>,
       params: { id?: string },
-      store: RootStore
+      store: RootStore,
+      queryParams: {}
     ) {
       if (!redirWhenNoAccounts(route, params, store)) {
         const id = store.wallet.selectedAccount.id;
-        store.router.goTo(target, { id });
+        store.router.goTo(target, { id }, store, queryParams);
       }
     }
   });
@@ -248,7 +249,8 @@ function redirWhenNoAccounts(
 function idFromURL(
   route: Route<RootStore>,
   params: { id: string },
-  store: RootStore
+  store: RootStore,
+  urlParams: {}
 ) {
   const id = params.id;
   const accounts = lstore.get('accounts');
@@ -259,19 +261,25 @@ function idFromURL(
     store.wallet.selectAccount(id);
   } else {
     // or redirect to the last selected to update the URL
-    store.router.goTo(accountOverviewRoute, {
-      id: lstore.get('lastSelectedAccount')
-    });
+    store.router.goTo(
+      accountOverviewRoute,
+      {
+        id: lstore.get('lastSelectedAccount')
+      },
+      null,
+      urlParams
+    );
   }
 }
 
 function onEnterID(
   route: Route<RootStore>,
   params: { id: string },
-  store: RootStore
+  store: RootStore,
+  queryParams: {}
 ) {
   if (!redirWhenNoAccounts(route, params, store)) {
-    idFromURL(route, params, store);
+    idFromURL(route, params, store, queryParams);
   }
 }
 
