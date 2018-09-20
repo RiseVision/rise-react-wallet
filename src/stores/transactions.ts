@@ -5,6 +5,9 @@ import { TConfig } from './index';
 import { TGroupedTransactions, TTransaction } from './wallet';
 
 export default class TransactionsStore {
+  // transactions has been fetched at least once
+  fetched: boolean = false
+
   @observable items = observable.array<TTransaction>();
 
   @computed

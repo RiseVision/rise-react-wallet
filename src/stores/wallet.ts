@@ -17,7 +17,8 @@ import {
   runInAction,
   autorun,
   observe,
-  IValueWillChange
+  IValueWillChange,
+  IValueDidChange
 } from 'mobx';
 import { RouterStore } from 'mobx-router';
 import * as lstore from 'store';
@@ -426,27 +427,39 @@ export default class WalletStore {
   }
 
   observeAccount(id: string) {
-    const account = this.accounts.get(id);
+    const account = this.accounts.get(id) as AccountStore;
     assert(account, `Account ${id} doesn't exist`);
     autorun(reaction => {
       if (!this.accounts.has(id)) {
         return reaction.dispose();
       }
-      this.saveAccount(account!);
+      this.saveAccount(account);
     });
     const calculateFiat = () => {
       if (this.accounts.has(id)) {
         this.calculateFiat(id);
       }
     };
-    // @ts-ignore issue with mobx d.ts
-    const disposeBalance = observe(account, 'balance', calculateFiat);
-    // @ts-ignore issue with mobx d.ts
-    const disposeTransactions = observe(account, 'balance', () => {
+    const balanceChanged = (change: IValueDidChange<RawAmount>) => {
+      // refresh only when balance changes, but only if downloaded at least once
+      if (
+        change.oldValue!.toNumber() === change.newValue.toNumber() &&
+        account.recentTransactions.fetched
+      ) {
+        return;
+      }
+      // refresh only for viewed accounts (don't pre-fetch)
+      if (!account.viewed) {
+        return;
+      }
+      calculateFiat();
       this.loadRecentTransactions(id);
-    });
+    };
+    const disposers: Array<() => void> = [];
     // @ts-ignore issue with mobx d.ts
-    const disposeFiat = observe(account, 'fiatCurrency', calculateFiat);
+    disposers.push(observe(account, 'balance', balanceChanged));
+    // @ts-ignore issue with mobx d.ts
+    disposers.push(observe(account, 'fiatCurrency', calculateFiat));
     this.accounts.observe(change => {
       // only deletions
       if (change.type !== 'delete') {
@@ -457,9 +470,10 @@ export default class WalletStore {
         return;
       }
       // dispose the observers
-      disposeBalance();
-      disposeFiat();
-      disposeTransactions();
+      let dispose;
+      while ((dispose = disposers.pop())) {
+        dispose();
+      }
     });
   }
 
@@ -510,8 +524,10 @@ export default class WalletStore {
       unconfirmedPromise
     ]);
     runInAction(() => {
-      account.recentTransactions.items.length = 0;
-      account.recentTransactions.items.push(...unconfirmed, ...recent);
+      let transactions = account.recentTransactions;
+      transactions.fetched = true;
+      transactions.items.length = 0;
+      transactions.items.push(...unconfirmed, ...recent);
     });
     return true;
   }

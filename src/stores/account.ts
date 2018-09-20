@@ -15,6 +15,9 @@ export enum LoadingState {
 export default class AccountStore {
   config: TConfig;
 
+  // account overview has been viewed at least once
+  @observable viewed: boolean = false
+
   @observable id: string;
   @observable publicKey: string;
   @observable readOnly: boolean = false;

@@ -116,6 +116,8 @@ class AccountOverview extends React.Component<DecoratedProps> {
   }
 
   render() {
+    // mark the current account as viewed
+    this.account.viewed = true
     const { intl, classes, walletStore } = this.injected;
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
