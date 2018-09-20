@@ -14,6 +14,7 @@ import { RouterStore } from 'mobx-router';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import { RawAmount } from '../../utils/amounts';
 import SendCoinsDialog from './SendCoinsDialog';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
@@ -115,9 +116,23 @@ class AccountOverview extends React.Component<DecoratedProps> {
     });
   }
 
+  goToSendCoins = (address: string, amount: RawAmount) => {
+    this.injected.routerStore.goTo(
+      accountSendRoute,
+      {
+        id: this.account.id
+      },
+      null,
+      {
+        address,
+        amount: amount.unit.toString()
+      }
+    );
+  }
+
   render() {
     // mark the current account as viewed
-    this.account.viewed = true
+    this.account.viewed = true;
     const { intl, classes, walletStore } = this.injected;
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
@@ -185,6 +200,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
                     );
                     return (
                       <TxDetailsExpansionPanel
+                        goToSendCoins={this.goToSendCoins}
                         key={transaction.id}
                         tx={transaction}
                         explorerUrl={this.account.config.explorer_url}

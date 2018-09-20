@@ -6,8 +6,8 @@ import LoadingIndicator from './components/LoadingIndicator';
 import RootStore from './stores/root';
 import { TStoredAccount } from './stores/wallet';
 
-type TOnboardingComponents = typeof import('./containers/onboarding');
-type TWalletComponents = typeof import('./containers/wallet');
+type TOnboardingComponents = typeof import ('./containers/onboarding');
+type TWalletComponents = typeof import ('./containers/wallet');
 
 function createNoIDRoute(
   path: string,

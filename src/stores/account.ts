@@ -16,7 +16,7 @@ export default class AccountStore {
   config: TConfig;
 
   // account overview has been viewed at least once
-  @observable viewed: boolean = false
+  @observable viewed: boolean = false;
 
   @observable id: string;
   @observable publicKey: string;

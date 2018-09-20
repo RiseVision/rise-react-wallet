@@ -139,6 +139,7 @@ const styles = (theme: Theme) => {
 interface Props extends WithStyles<typeof styles> {
   tx: TTransaction;
   explorerUrl: string;
+  goToSendCoins: (address: string, amount: RawAmount) => void;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -1083,12 +1084,14 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
         <ExpansionPanelActions>
           {tx.type === TransactionType.SEND && tx.isIncoming && (
             <Button
+              onClick={() => this.handleReturnFunds(tx)}
               size="small"
               children={intl.formatMessage(messages.detailsReturnFundsLabel)}
             />
           )}
           {tx.type === TransactionType.SEND && !tx.isIncoming && (
             <Button
+              onClick={() => this.handleSendAgain(tx)}
               size="small"
               children={intl.formatMessage(messages.detailsSendAgainLabel)}
             />
@@ -1116,6 +1119,14 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
   handleCopyRecipientAddress = () => {
     const { tx } = this.props;
     copyToClipboard(tx.recipientId);
+  }
+
+  handleReturnFunds = (tx: TTransaction) => {
+    this.props.goToSendCoins(tx.senderId, tx.amount);
+  }
+
+  handleSendAgain = (tx: TTransaction) => {
+    this.props.goToSendCoins(tx.recipientId, tx.amount);
   }
 }
 

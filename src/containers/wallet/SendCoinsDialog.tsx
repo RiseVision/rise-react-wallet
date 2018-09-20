@@ -50,7 +50,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
     onNavigateBack();
-  };
+  }
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
@@ -64,7 +64,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
         transaction: null
       });
     }
-  };
+  }
 
   handleSubmit = (data: { recipientID: string; amount: RawAmount }) => {
     const { recipientID, amount } = data;
@@ -78,7 +78,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
         amount
       }
     });
-  };
+  }
 
   handleSendTransaction = (secrets: Secrets) => {
     const { account, walletStore } = this.injected;
@@ -95,7 +95,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
     } else {
       throw new Error('Invalid internal state');
     }
-  };
+  }
 
   resetState() {
     const { recipientID, amount } = this.props;
