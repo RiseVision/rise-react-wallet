@@ -1,5 +1,5 @@
 /// <reference path="utils/missing.d.ts"/>
-import './polyfills'
+import './polyfills';
 import { Provider } from 'mobx-react';
 import { startRouter } from 'mobx-router';
 import * as React from 'react';
