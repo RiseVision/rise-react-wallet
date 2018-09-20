@@ -62,6 +62,10 @@ const styles = (theme: Theme) =>
       ['&:first-child']: {
         marginTop: 0
       }
+    },
+    loadMore: {
+      textAlign: 'center',
+      marginTop: 10
     }
   });
 
@@ -116,6 +120,10 @@ class AccountOverview extends React.Component<DecoratedProps> {
     });
   }
 
+  handleLoadMore = () => {
+    this.account.recentTransactions.loadMore(this.injected.walletStore);
+  }
+
   goToSendCoins = (address: string, amount: RawAmount) => {
     this.injected.routerStore.goTo(
       accountSendRoute,
@@ -145,6 +153,8 @@ class AccountOverview extends React.Component<DecoratedProps> {
       balance: this.account.balance,
       balance_in_fiat: this.account.balanceFiat || ''
     };
+
+    const recentTransactions = this.account.recentTransactions;
 
     return (
       <div className={classes.container}>
@@ -177,7 +187,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
             className={classNames(classes.header, classes.headerInline)}
             {...headerProps}
           />
-          {toPairs(this.account.recentTransactions.groupedByDay).map(
+          {toPairs(recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
               <React.Fragment key={`${this.account.id}-${group}`}>
                 <Typography
@@ -210,6 +220,16 @@ class AccountOverview extends React.Component<DecoratedProps> {
                 </div>
               </React.Fragment>
             )
+          )}
+          {recentTransactions.items.length >= 8 && (
+            <div className={classes.loadMore}>
+              <Button
+                disabled={recentTransactions.isLoading}
+                onClick={this.handleLoadMore}
+              >
+                Load more
+              </Button>
+            </div>
           )}
         </div>
       </div>

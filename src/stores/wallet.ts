@@ -506,12 +506,18 @@ export default class WalletStore {
   async loadRecentTransactions(accountID: string, amount: number = 8) {
     const account = this.accounts.get(accountID) as AccountStore;
     assert(account, `Account ${accountID} doesn't exist`);
+    let transactions = account.recentTransactions;
+    runInAction(() => {
+      transactions.isLoading = true;
+    });
+
     const recentPromise = this.loadTransactions({
       limit: amount,
       orderBy: 'timestamp:desc',
       recipientId: account.id,
       senderPublicKey: account.publicKey
     }).then(tx => this.parseTransactionsReponse(accountID, tx));
+
     const unconfirmedPromise = this.loadTransactions(
       {
         address: account.id,
@@ -519,12 +525,15 @@ export default class WalletStore {
       },
       false
     ).then(tx => this.parseTransactionsReponse(accountID, tx));
+
+    // request
     const [recent, unconfirmed] = await Promise.all([
       recentPromise,
       unconfirmedPromise
     ]);
+
     runInAction(() => {
-      let transactions = account.recentTransactions;
+      transactions.isLoading = false;
       transactions.fetched = true;
       transactions.items.length = 0;
       transactions.items.push(...unconfirmed, ...recent);

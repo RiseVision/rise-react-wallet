@@ -44,7 +44,7 @@ export default class AccountStore {
     assert(account.id, 'Account ID is missing');
     this.importData(account);
     this.config = config;
-    this.recentTransactions = new TransactionsStore(this.config);
+    this.recentTransactions = new TransactionsStore(this.config, account.id!);
   }
 
   @action
