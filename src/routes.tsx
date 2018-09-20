@@ -6,8 +6,8 @@ import LoadingIndicator from './components/LoadingIndicator';
 import RootStore from './stores/root';
 import { TStoredAccount } from './stores/wallet';
 
-type TOnboardingComponents = typeof import ('./containers/onboarding');
-type TWalletComponents = typeof import ('./containers/wallet');
+type TOnboardingComponents = typeof import('./containers/onboarding');
+type TWalletComponents = typeof import('./containers/wallet');
 
 function createNoIDRoute(
   path: string,
@@ -447,8 +447,7 @@ export const accountSettingsNoIDRoute = createNoIDRoute(
 
 // send form
 
-// TODO support From and To as query params
-//   ?from=123R&to=456R
+// accepts &to=1232R&amount=0.1
 export const accountSendRoute = new Route({
   path: '/send/:id',
   onEnter: onEnterID,

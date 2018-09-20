@@ -30,8 +30,8 @@ declare module 'mobx-router' {
       queryParamsObj?: object
     ): void;
     currentView: Route<any>;
-    queryParams: Map<string, string>;
-    params: Map<string, string>;
+    queryParams: object;
+    params: object;
   }
   export class MobxRouter extends React.Component {}
   export function startRouter(

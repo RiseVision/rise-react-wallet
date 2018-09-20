@@ -12,7 +12,7 @@ import { RawAmount } from '../../utils/amounts';
 interface Props {
   account: AccountStore;
   amount?: RawAmount;
-  recipient?: string;
+  recipientID?: string;
   onNavigateBack: () => void;
 }
 
@@ -23,12 +23,10 @@ interface PropsInjected extends Props {
 
 interface State {
   amount: null | RawAmount;
-  recipient: string;
-  step:
-    | 'form'
-    | 'transaction';
+  recipientID: string;
+  step: 'form' | 'transaction';
   transaction: null | {
-    recipient: string;
+    recipientID: string;
     amount: RawAmount;
   };
 }
@@ -39,10 +37,10 @@ interface State {
 class SendCoinsDialog extends React.Component<Props, State> {
   disposeOpenMonitor: null | IReactionDisposer = null;
   state: State = {
-    recipient: '',
+    recipientID: '',
     amount: null,
     step: 'form',
-    transaction: null,
+    transaction: null
   };
 
   get injected(): PropsInjected {
@@ -52,7 +50,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
     onNavigateBack();
-  }
+  };
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
@@ -63,24 +61,24 @@ class SendCoinsDialog extends React.Component<Props, State> {
     } else {
       this.setState({
         step: 'form',
-        transaction: null,
+        transaction: null
       });
     }
-  }
+  };
 
   handleSubmit = (data: { recipientID: string; amount: RawAmount }) => {
-    const { recipientID: recipient, amount } = data;
+    const { recipientID, amount } = data;
 
     this.setState({
-      recipient,
+      recipientID,
       amount,
       step: 'transaction',
       transaction: {
-        recipient,
-        amount,
-      },
+        recipientID,
+        amount
+      }
     });
-  }
+  };
 
   handleSendTransaction = (secrets: Secrets) => {
     const { account, walletStore } = this.injected;
@@ -88,36 +86,54 @@ class SendCoinsDialog extends React.Component<Props, State> {
 
     if (step === 'transaction' && transaction !== null) {
       return walletStore.sendTransaction(
-        transaction.recipient,
+        transaction.recipientID,
         transaction.amount,
         secrets.mnemonic,
         secrets.passphrase!,
-        account.id,
+        account.id
       );
     } else {
       throw new Error('Invalid internal state');
     }
-  }
+  };
 
   resetState() {
-    const { recipient, amount } = this.props;
+    const { recipientID, amount } = this.props;
 
     this.setState({
-      recipient: recipient || '',
+      recipientID: recipientID || '',
       amount: amount || null,
       step: 'form',
-      transaction: null,
+      transaction: null
     });
   }
 
   componentWillMount() {
-    this.disposeOpenMonitor = reaction(() => this.isOpen, (isOpen) => {
-      if (isOpen) {
-        this.resetState();
+    this.disposeOpenMonitor = reaction(
+      () => this.isOpen,
+      isOpen => {
+        if (isOpen) {
+          // TODO explain in a comment
+          this.resetState();
+        }
       }
-    });
+    );
 
+    // TODO explain in a comment
     this.resetState();
+
+    const params = this.injected.routerStore.queryParams as {
+      address?: string;
+      amount: string;
+    } || {};
+    if (params.address) {
+      this.setState({ recipientID: params.address });
+    }
+    if (params.amount) {
+      this.setState({
+        amount: RawAmount.fromUnit(params.amount)
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -142,12 +158,16 @@ class SendCoinsDialog extends React.Component<Props, State> {
       <TransactionDialog
         open={this.isOpen}
         account={account}
-        transaction={transaction ? {
-          kind: 'send',
-          recipientAddress: transaction.recipient,
-          recipientName: walletStore.idToName(transaction.recipient),
-          amount: transaction.amount,
-        } : null}
+        transaction={
+          transaction
+            ? {
+                kind: 'send',
+                recipientAddress: transaction.recipientID,
+                recipientName: walletStore.idToName(transaction.recipientID),
+                amount: transaction.amount
+              }
+            : null
+        }
         onSendTransaction={this.handleSendTransaction}
         onClose={this.handleClose}
         onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
@@ -158,13 +178,13 @@ class SendCoinsDialog extends React.Component<Props, State> {
 
   renderSendCoins() {
     const { account, walletStore } = this.injected;
-    const { recipient, amount } = this.state;
+    const { recipientID, amount } = this.state;
     const fee = walletStore.fees.get('send')!;
 
     return (
       <SendCoinsDialogContent
         onSubmit={this.handleSubmit}
-        recipientID={recipient}
+        recipientID={recipientID}
         amount={amount}
         sendFee={fee}
         balance={account.balance}
