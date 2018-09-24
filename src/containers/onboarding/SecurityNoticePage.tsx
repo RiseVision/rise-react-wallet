@@ -193,7 +193,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
               in={idx <= currentTip}
               aria-hidden={idx > currentTip}
             >
-              <div tabIndex={idx + 1} ref={this.tipRefs[idx]}>
+              <div tabIndex={idx <= currentTip ? 0 : -1} ref={this.tipRefs[idx]}>
                 <Typography
                   className={classNames(
                     classes.tipText,
@@ -207,7 +207,6 @@ class SecurityNoticePage extends React.Component<Props, State> {
           {currentTip + 1 < tips.length ? (
             <Button
               className={classes.button}
-              tabIndex={currentTip + 1}
               onClick={this.handleNextTipClick}
               fullWidth={true}
             >
@@ -220,7 +219,6 @@ class SecurityNoticePage extends React.Component<Props, State> {
           ) : (
             <Button
               className={classes.button}
-              tabIndex={tips.length + 1}
               onClick={this.handleContinueClick}
               fullWidth={true}
             >
