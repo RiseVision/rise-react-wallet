@@ -6,6 +6,18 @@ This repository contains a _Work-In-Progress_ web wallet for the **RISE** PoS bl
 
 There's a **[nightly build](http://risevision.github.io/rise-react-wallet/index.html)** in case you'd like to give it a spin.
 
+### Status
+
+- [x] Onboarding
+- [x] Account page
+- [x] Settings
+- [x] Sending Coins
+- [ ] Calculate Fiat
+- [ ] Block explorer
+- [ ] Address book
+- [x] End-to-end tests
+- [ ] Unit tests
+
 ### Contributing
 
 Run the app:
