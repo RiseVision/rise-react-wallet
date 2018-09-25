@@ -1,3 +1,4 @@
+import { BaseTx } from 'dpos-offline';
 import { inject, observer } from 'mobx-react';
 import { Route, RouteParams } from 'mobx-router';
 import * as React from 'react';
@@ -33,7 +34,7 @@ interface Props extends DialogProps {
   account: AccountStore;
   transaction: null | Transaction;
   passphrasePublicKey?: string;
-  onSendTransaction: (secrets: Secrets) => Promise<TTransactionResult>;
+  onCreateTransaction: () => Promise<BaseTx>;
 }
 
 interface PropsInjected extends Props {
@@ -123,36 +124,47 @@ class TransactionDialog extends React.Component<Props, State> {
     if (onNavigateBack) {
       onNavigateBack(ev);
     }
-  }
+  };
 
   handleConfirmTransaction = (secrets: Secrets) => {
-    this.sendTransaction(secrets);
-  }
+    this.broadcastTransaction(secrets);
+  };
 
   handleRetryTransaction = () => {
     const { secrets } = this.state;
-    this.sendTransaction(secrets);
-  }
+    this.broadcastTransaction(secrets);
+  };
 
-  async sendTransaction(secrets: Secrets) {
-    const { onSendTransaction } = this.props;
+  async broadcastTransaction(secrets: Secrets) {
+    const { walletStore, onCreateTransaction } = this.injected;
 
     this.setState({ step: 'sending' });
 
     let success = false;
     let errorSummary = '';
     let canRetry = false;
+    const tx = await onCreateTransaction();
+    debugger;
     try {
-      const tx = await onSendTransaction(secrets);
+      const result = await walletStore.signAndSend(
+        tx,
+        secrets.mnemonic,
+        secrets.passphrase
+      );
       // this supports only a single transaction per request
-      success = Boolean(tx.accepted && tx.accepted.length);
+      success = Boolean(result.accepted && result.accepted.length);
+      console.log('success', success);
       if (!success) {
         // get the error
-        errorSummary = tx.invalid![0].reason.slice(0, 30);
+        errorSummary = result.invalid![0].reason.slice(0, 30);
         canRetry = true;
       }
     } catch (e) {
+      // ECONNABORTED
+      console.log('catch', e);
+      debugger;
       success = false;
+
       // TODO: Network errors should be safe to retry. But we cannot do that because
       //       there's a failure case where it isn't safe currently - when the request
       //       goes through, but network is cut out mid-response. Sending the transaction
