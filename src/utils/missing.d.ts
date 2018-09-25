@@ -1,37 +1,40 @@
 /* tslint:disable */
 declare module 'mobx-router' {
   import * as React from 'react';
+  export type RouteParams = {
+    [name: string]: string;
+  };
   export type TRouteDef<GStore> = {
     path: string;
     component?: React.ReactElement<any>;
     onEnter?: (
       route: Route<GStore>,
-      params: {},
+      params: RouteParams,
       store: GStore,
-      queryParams: {}
+      queryParams: RouteParams
     ) => void;
   };
   export class Route<S> {
     constructor(routeDef: TRouteDef<S>);
     component: React.ReactElement<any>;
-    getParamsObject(): { [name: string]: string };
+    getParamsObject(): RouteParams;
     getRootPath(): string;
     goTo(route: Route<any>): void;
     originalPath: string;
     path: string;
-    replaceUrlParams(values: { [name: string]: string }): string;
+    replaceUrlParams(params: RouteParams, queryParams: RouteParams): string;
     rootPath: string;
   }
   export class RouterStore {
     goTo(
       route: Route<any>,
-      params?: object,
+      params?: RouteParams,
       store?: any,
-      queryParamsObj?: object
+      queryParamsObj?: RouteParams
     ): void;
     currentView: Route<any>;
-    queryParams: object;
-    params: object;
+    queryParams: RouteParams;
+    params: RouteParams;
   }
   export class MobxRouter extends React.Component {}
   export function startRouter(
