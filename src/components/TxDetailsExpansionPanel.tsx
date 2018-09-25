@@ -1,3 +1,4 @@
+import { Omit } from '@material-ui/core';
 import green from '@material-ui/core/colors/green';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -23,9 +24,13 @@ import { TransactionType } from 'dpos-api-wrapper';
 import * as moment from 'moment-timezone';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import Link from './Link';
 import { TTransaction } from '../stores/wallet';
 import { RawAmount } from '../utils/amounts';
 import { copyToClipboard } from '../utils/clipboard';
+import { PropsOf } from '../utils/metaTypes';
+
+type LinkProps = Omit<PropsOf<typeof Link>, 'children'>;
 
 const styles = (theme: Theme) => {
   return createStyles({
@@ -139,7 +144,7 @@ const styles = (theme: Theme) => {
 interface Props extends WithStyles<typeof styles> {
   tx: TTransaction;
   explorerUrl: string;
-  goToSendCoins: (address: string, amount: RawAmount) => void;
+  getSendLinkProps: (address: string, amount: RawAmount) => LinkProps;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -718,7 +723,13 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { intl, classes, tx, explorerUrl } = this.props;
+    const {
+      intl,
+      classes,
+      tx,
+      explorerUrl,
+      getSendLinkProps
+    } = this.props;
 
     const {
       summaryShort,
@@ -1083,18 +1094,20 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
           {tx.type === TransactionType.SEND && tx.isIncoming && (
-            <Button
-              onClick={() => this.handleReturnFunds(tx)}
-              size="small"
-              children={intl.formatMessage(messages.detailsReturnFundsLabel)}
-            />
+            <Link {...getSendLinkProps(tx.senderId, tx.amount)}>
+              <Button
+                size="small"
+                children={intl.formatMessage(messages.detailsReturnFundsLabel)}
+              />
+            </Link>
           )}
           {tx.type === TransactionType.SEND && !tx.isIncoming && (
-            <Button
-              onClick={() => this.handleSendAgain(tx)}
-              size="small"
-              children={intl.formatMessage(messages.detailsSendAgainLabel)}
-            />
+            <Link {...getSendLinkProps(tx.recipientId, tx.amount)}>
+              <Button
+                size="small"
+                children={intl.formatMessage(messages.detailsSendAgainLabel)}
+              />
+            </Link>
           )}
         </ExpansionPanelActions>
       </ExpansionPanel>
@@ -1119,14 +1132,6 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
   handleCopyRecipientAddress = () => {
     const { tx } = this.props;
     copyToClipboard(tx.recipientId);
-  }
-
-  handleReturnFunds = (tx: TTransaction) => {
-    this.props.goToSendCoins(tx.senderId, tx.amount);
-  }
-
-  handleSendAgain = (tx: TTransaction) => {
-    this.props.goToSendCoins(tx.recipientId, tx.amount);
   }
 }
 
