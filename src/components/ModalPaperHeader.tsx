@@ -1,3 +1,4 @@
+import { Omit } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import {
   createStyles,
@@ -10,8 +11,12 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import Close from '@material-ui/icons/Close';
 import * as classNames from 'classnames';
 import * as React from 'react';
-import { ReactEventHandler, MouseEvent } from 'react';
+import { ReactEventHandler } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import Link from './Link';
+import { PropsOf } from '../utils/metaTypes';
+
+type LinkProps = Omit<PropsOf<typeof Link>, 'children'>;
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -45,10 +50,10 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   titleId?: string;
-  backButton?: boolean;
   onBackClick?: ReactEventHandler<{}>;
-  closeButton?: boolean;
+  backLinkProps?: LinkProps;
   onCloseClick?: ReactEventHandler<{}>;
+  closeLinkProps?: LinkProps;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -69,62 +74,60 @@ const messages = defineMessages({
 });
 
 class ModalPaperHeader extends React.Component<DecoratedProps> {
-  handleBackClick = (ev: MouseEvent<HTMLElement>) => {
-    if (this.props.onBackClick) {
-      this.props.onBackClick(ev);
-    }
-  }
-
-  handleCloseClick = (ev: MouseEvent<HTMLElement>) => {
-    if (this.props.onCloseClick) {
-      this.props.onCloseClick(ev);
-    }
-  }
-
   render() {
     const {
       intl,
       classes,
       titleId,
-      backButton,
-      closeButton,
+      onBackClick,
+      backLinkProps,
+      onCloseClick,
+      closeLinkProps,
       children
     } = this.props;
+
+    const showBack = !!backLinkProps || !!onBackClick;
+    const showClose = !!closeLinkProps || !!onCloseClick;
+
     return (
       <div className={classes.root}>
-        {backButton && (
-          <Button
-            className={classes.backButton}
-            aria-label={intl.formatMessage(messages.backAriaLabel)}
-            onClick={this.handleBackClick}
-            size="small"
-            tabIndex={-1}
-          >
-            <ChevronLeft />
-          </Button>
+        {showBack && (
+          <Link {...backLinkProps}>
+            <Button
+              className={classes.backButton}
+              aria-label={intl.formatMessage(messages.backAriaLabel)}
+              onClick={onBackClick}
+              size="small"
+              tabIndex={-1}
+            >
+              <ChevronLeft />
+            </Button>
+          </Link>
         )}
         <Typography
           id={titleId}
           className={classNames(
             classes.content,
-            !backButton && !!closeButton && classes.withoutBack,
-            !!backButton && !closeButton && classes.withoutClose
+            !showBack && showClose && classes.withoutBack,
+            showBack && !showClose && classes.withoutClose
           )}
           variant="headline"
           align="center"
         >
           {children}
         </Typography>
-        {closeButton && (
-          <Button
-            className={classes.closeButton}
-            aria-label={intl.formatMessage(messages.closeAriaLabel)}
-            onClick={this.handleCloseClick}
-            size="small"
-            tabIndex={-1}
-          >
-            <Close />
-          </Button>
+        {showClose && (
+          <Link {...closeLinkProps}>
+            <Button
+              className={classes.closeButton}
+              aria-label={intl.formatMessage(messages.closeAriaLabel)}
+              onClick={onCloseClick}
+              size="small"
+              tabIndex={-1}
+            >
+              <Close />
+            </Button>
+          </Link>
         )}
       </div>
     );

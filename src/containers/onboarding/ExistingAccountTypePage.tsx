@@ -79,7 +79,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
   render() {
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
+        <ModalPaperHeader onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-existing-account-type.title"
             description="Existing account type screen title"

@@ -221,10 +221,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader
-          closeButton={true}
-          onCloseClick={this.handleCloseClick}
-        >
+        <ModalPaperHeader onCloseClick={this.handleCloseClick}>
           <FormattedMessage
             id="onboarding-verify-mnemonic.title"
             description="Verify mnemonic screen title"

@@ -168,10 +168,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader
-          closeButton={true}
-          onCloseClick={this.handleCloseClick}
-        >
+        <ModalPaperHeader onCloseClick={this.handleCloseClick}>
           <FormattedMessage
             id="onboarding-security-notice.title"
             description="Security notice screen title"

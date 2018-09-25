@@ -4,7 +4,7 @@ import * as React from 'react';
 import RootStore from '../stores/root';
 
 interface Props {
-  view: Route<{}>;
+  view?: Route<{}>;
   params?: RouteParams;
   queryParams?: RouteParams;
   onBeforeNavigate?: (view: Route<{}>, params: RouteParams, queryParams: RouteParams) => void;
@@ -42,7 +42,7 @@ class Link extends React.Component<Props> {
     const openNewTab = isMiddleMouse || isMetaOrCtrl;
     const isBrowserNavigation = openNewTab;
 
-    if (!isBrowserNavigation) {
+    if (!isBrowserNavigation && view) {
       ev.preventDefault();
       if (onBeforeNavigate) {
         onBeforeNavigate(view, params, queryParams);
@@ -63,11 +63,18 @@ class Link extends React.Component<Props> {
       ...passthroughProps
     } = this.injected;
 
+    let overrideProps = {};
+    if (view) {
+      overrideProps = {
+        component: 'a',
+        href: view.replaceUrlParams(params || {}, queryParams || {}),
+        onClick: this.handleClick,
+      };
+    }
+
     return React.cloneElement(children, {
       ...passthroughProps,
-      component: 'a',
-      href: view.replaceUrlParams(params || {}, queryParams || {}),
-      onClick: this.handleClick,
+      ...overrideProps,
     });
   }
 }

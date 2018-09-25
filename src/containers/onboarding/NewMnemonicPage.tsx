@@ -132,10 +132,7 @@ class NewMnemonicPage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader
-          closeButton={true}
-          onCloseClick={this.handleCloseClick}
-        >
+        <ModalPaperHeader onCloseClick={this.handleCloseClick}>
           <FormattedMessage
             id="onboarding-new-mnemonic.title"
             description="New mnemonic screen title"

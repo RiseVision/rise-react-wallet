@@ -79,12 +79,12 @@ class AddAccountPage extends React.Component<Props> {
 
   render() {
     const { classes, appStore, walletStore } = this.injected;
+    const showClose = [...walletStore.accounts.keys()].length > 0;
 
     return (
       <ModalPaper open={true}>
         <ModalPaperHeader
-          closeButton={[...walletStore.accounts.keys()].length > 0}
-          onCloseClick={this.handleCloseClicked}
+          onCloseClick={showClose ? this.handleCloseClicked : undefined}
         >
           <FormattedMessage
             id="onboarding-add-account.title"

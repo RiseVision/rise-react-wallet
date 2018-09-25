@@ -65,10 +65,7 @@ class NoMnemonicNoticePage extends React.Component<Props> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader
-          closeButton={true}
-          onCloseClick={this.handleCloseClick}
-        >
+        <ModalPaperHeader onCloseClick={this.handleCloseClick}>
           <FormattedMessage
             id="onboarding-no-mnemonic-notice.title"
             description="No passphrase notice screen title"

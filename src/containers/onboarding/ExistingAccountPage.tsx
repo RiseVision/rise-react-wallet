@@ -151,7 +151,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
+        <ModalPaperHeader onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-existing-account.title"
             description="Existing account screen title"

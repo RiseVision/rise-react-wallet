@@ -40,7 +40,7 @@ class NewAccountPage extends React.Component<Props> {
   render() {
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
+        <ModalPaperHeader onBackClick={this.handleBackClick}>
           <FormattedMessage
             id="onboarding-new-account.title"
             description="New account screen title"
