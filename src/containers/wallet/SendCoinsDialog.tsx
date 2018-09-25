@@ -122,10 +122,10 @@ class SendCoinsDialog extends React.Component<Props, State> {
     // TODO explain in a comment
     this.resetState();
 
-    const params = this.injected.routerStore.queryParams as {
+    const params = (this.injected.routerStore.queryParams || {}) as {
       address?: string;
-      amount: string;
-    } || {};
+      amount?: string;
+    };
     if (params.address) {
       this.setState({ recipientID: params.address });
     }

@@ -190,11 +190,16 @@ class DrawerContent extends React.Component<DecoratedProps> {
           >
             <ListItemAvatar>
               <Avatar>
-                {/* TODO correct the icon, FUT - mocks */}
                 <AddIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary="Add an account" />
+            <ListItemText>
+              <FormattedMessage
+                id="drawer-content.add-an-account"
+                description="Add account drawer item"
+                defaultMessage="Add an account"
+              />
+            </ListItemText>
           </ListItem>
         </List>
         <Divider aria-hidden={true} />

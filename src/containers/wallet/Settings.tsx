@@ -51,6 +51,9 @@ const styles = (theme: Theme) =>
     groupTitle: {
       backgroundColor: theme.palette.background.paper
     },
+    toggleSecondary: {
+      pointerEvents: 'none',
+    },
     removeAccount: {
       color: red[500]
     }
@@ -95,6 +98,16 @@ const messages = defineMessages({
     id: 'account-settings.pinned-account',
     description: 'Label for pinned account setting',
     defaultMessage: 'Pinned account'
+  },
+  pinnedAccountOnAria: {
+    id: 'account-settings.pinned-account-on-aria',
+    description: 'Accessibility label for pinned account setting',
+    defaultMessage: 'Pinned account (press to unpin)'
+  },
+  pinnedAccountOffAria: {
+    id: 'account-settings.pinned-account-off-aria',
+    description: 'Accessibility label for pinned account setting',
+    defaultMessage: 'Unpinned account (press to pin)'
   },
   votedDelegate: {
     id: 'account-settings.voted-delegate',
@@ -283,11 +296,21 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 }
               />
             </ListItem>
-            <ListItem button={true} onClick={this.handlePinnedClicked}>
+            <ListItem
+              button={true}
+              onClick={this.handlePinnedClicked}
+              aria-label={intl.formatMessage(
+                account.pinned ? messages.pinnedAccountOnAria
+                : messages.pinnedAccountOffAria,
+              )}
+            >
               <ListItemText
                 primary={intl.formatMessage(messages.pinnedAccount)}
               />
-              <ListItemSecondaryAction>
+              <ListItemSecondaryAction
+                className={classes.toggleSecondary}
+                aria-hidden={true}
+              >
                 <Switch
                   onClick={this.handlePinnedClicked}
                   checked={account.pinned}

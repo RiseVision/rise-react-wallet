@@ -18,6 +18,7 @@ import { RawAmount } from '../../utils/amounts';
 import SendCoinsDialog from './SendCoinsDialog';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
+import LoadingIndicator from '../../components/LoadingIndicator';
 import { accountOverviewRoute, accountSendRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
@@ -26,6 +27,7 @@ import WalletStore from '../../stores/wallet';
 const styles = (theme: Theme) =>
   createStyles({
     container: {
+      position: 'relative',
       display: 'flex',
       flexDirection: 'column',
       // Override the overflow setting from `.Wallet-content > :last-child`
@@ -187,6 +189,9 @@ class AccountOverview extends React.Component<DecoratedProps> {
             className={classNames(classes.header, classes.headerInline)}
             {...headerProps}
           />
+          {recentTransactions.items.length === 0 && recentTransactions.isLoading && (
+            <LoadingIndicator />
+          )}
           {toPairs(recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
               <React.Fragment key={`${this.account.id}-${group}`}>

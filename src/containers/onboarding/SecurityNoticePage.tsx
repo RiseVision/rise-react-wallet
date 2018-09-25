@@ -62,6 +62,8 @@ const stylesDecorator = withStyles(styles, {
 @inject('routerStore')
 @observer
 class SecurityNoticePage extends React.Component<Props, State> {
+  tipRefs: React.RefObject<HTMLDivElement>[];
+
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -69,9 +71,17 @@ class SecurityNoticePage extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+
     this.state = {
       currentTip: 0
     };
+    this.tipRefs = [
+      React.createRef(),
+      React.createRef(),
+      React.createRef(),
+      React.createRef(),
+      React.createRef(),
+    ];
   }
 
   handleCloseClick = () => {
@@ -82,6 +92,13 @@ class SecurityNoticePage extends React.Component<Props, State> {
   handleNextTipClick = () => {
     this.setState(prevState => {
       return { currentTip: prevState.currentTip + 1 };
+    },            () => {
+      // Focus the revealed tip (mainly for screen readers)
+      const { currentTip } = this.state;
+      const el = this.tipRefs[currentTip].current;
+      if (el) {
+        el.focus();
+      }
     });
   }
 
@@ -92,6 +109,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.injected;
+    const { currentTip } = this.state;
 
     const tips = [];
     tips.push(
@@ -172,18 +190,21 @@ class SecurityNoticePage extends React.Component<Props, State> {
             <Collapse
               key={idx}
               className={classes.tipContainer}
-              in={idx <= this.state.currentTip}
+              in={idx <= currentTip}
+              aria-hidden={idx > currentTip}
             >
-              <Typography
-                className={classNames(
-                  classes.tipText,
-                  idx !== this.state.currentTip && classes.inactiveTipText
-                )}
-                children={tip}
-              />
+              <div tabIndex={idx <= currentTip ? 0 : -1} ref={this.tipRefs[idx]}>
+                <Typography
+                  className={classNames(
+                    classes.tipText,
+                    idx !== currentTip && classes.inactiveTipText
+                  )}
+                  children={tip}
+                />
+              </div>
             </Collapse>
           ))}
-          {this.state.currentTip + 1 < tips.length ? (
+          {currentTip + 1 < tips.length ? (
             <Button
               className={classes.button}
               onClick={this.handleNextTipClick}
