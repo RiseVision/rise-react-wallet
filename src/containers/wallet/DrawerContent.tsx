@@ -158,7 +158,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
           ).map((account: AccountStore) => (
             <Link
               key={account.id}
-              view={accountOverviewRoute}
+              route={accountOverviewRoute}
               params={{
                 id: account.id,
               }}
@@ -190,7 +190,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
           ))}
           <Link
             key="add-account"
-            view={onboardingAddAccountRoute}
+            route={onboardingAddAccountRoute}
           >
             <ListItem button={true}>
               <ListItemAvatar>

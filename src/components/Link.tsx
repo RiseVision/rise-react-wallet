@@ -1,13 +1,13 @@
+import { Overwrite } from '@material-ui/core';
 import { inject, observer } from 'mobx-react';
-import { Route, RouteParams, RouterStore } from 'mobx-router';
 import * as React from 'react';
-import RootStore from '../stores/root';
+import RootStore, { RouteLink } from '../stores/root';
 
-interface Props {
-  view?: Route<{}>;
-  params?: RouteParams;
-  queryParams?: RouteParams;
-  onBeforeNavigate?: (view: Route<{}>, params: RouteParams, queryParams: RouteParams) => void;
+type BaseProps = Overwrite<RouteLink, {
+  route?: RouteLink['route'];
+}>;
+
+interface Props extends BaseProps {
   children: React.ReactElement<React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     component: React.ReactType;
   }>;
@@ -15,7 +15,6 @@ interface Props {
 
 interface PropsInjected extends Props {
   store: RootStore;
-  routerStore: RouterStore;
 }
 
 /**
@@ -25,49 +24,60 @@ interface PropsInjected extends Props {
  * href attribute.
  */
 @inject('store')
-@inject('routerStore')
 @observer
 class Link extends React.Component<Props> {
   get injected(): PropsInjected {
     return this.props as PropsInjected;
   }
 
+  get routeLink(): RouteLink | null {
+    const { route, params, queryParams, onBeforeNavigate } = this.injected;
+
+    if (route) {
+      return {
+        route,
+        params,
+        queryParams,
+        onBeforeNavigate,
+      };
+    } else {
+      return null;
+    }
+  }
+
   handleClick = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-    const { store, routerStore, view, onBeforeNavigate } = this.injected;
-    const params = this.injected.params || {};
-    const queryParams = this.injected.queryParams || {};
+    const { store } = this.injected;
+    const routeLink = this.routeLink;
 
     const isMiddleMouse = ev.button === 2;
     const isMetaOrCtrl = ev.metaKey || ev.ctrlKey;
     const openNewTab = isMiddleMouse || isMetaOrCtrl;
     const isBrowserNavigation = openNewTab;
 
-    if (!isBrowserNavigation && view) {
+    if (!isBrowserNavigation && routeLink) {
       ev.preventDefault();
-      if (onBeforeNavigate) {
-        onBeforeNavigate(view, params, queryParams);
-      }
-      routerStore.goTo(view, params, store, queryParams);
+      store.navigateTo(routeLink);
     }
   }
 
   render() {
     const {
-      view,
+      route,
       params,
       queryParams,
-      children,
       onBeforeNavigate,
+      children,
       store,
-      routerStore,
       ...passthroughProps
     } = this.injected;
 
+    const routeLink = this.routeLink;
+
     let overrideProps = {};
-    if (view) {
+    if (routeLink) {
       overrideProps = {
         component: 'a',
-        href: view.replaceUrlParams(params || {}, queryParams || {}),
+        href: store.linkUrl(routeLink),
         onClick: this.handleClick,
       };
     }

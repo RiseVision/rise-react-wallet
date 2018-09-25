@@ -98,17 +98,17 @@ class WalletAppBar extends React.Component<DecoratedProps> {
     return this.injected.account || this.injected.accountStore;
   }
 
-  backLinkProps() {
+  backLink() {
     const state = this.appBarState();
     if (state === 'accountSettings') {
       return {
-        view: accountOverviewRoute,
+        route: accountOverviewRoute,
         params: {
           id: this.account.id,
         },
       };
     } else {
-      throw new Error('Invalid state for backLinkProps');
+      throw new Error('Invalid state for backLink');
     }
   }
 
@@ -129,7 +129,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               <MenuIcon />
             </IconButton>
           ) : (
-            <Link {...this.backLinkProps()}>
+            <Link {...this.backLink()}>
               <IconButton
                 aria-label={intl.formatMessage(messages.navigateBackAriaLabel)}
                 color="inherit"
@@ -164,7 +164,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               title={intl.formatMessage(messages.accountSettingsTooltip)}
             >
               <Link
-                view={accountSettingsRoute}
+                route={accountSettingsRoute}
                 params={{
                   id: this.account.id,
                 }}

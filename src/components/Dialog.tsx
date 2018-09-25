@@ -1,4 +1,3 @@
-import { Omit } from '@material-ui/core';
 import MuiDialog from '@material-ui/core/Dialog';
 import {
   createStyles,
@@ -9,14 +8,10 @@ import {
 import * as React from 'react';
 import { ReactElement, ReactEventHandler } from 'react';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
 import ModalPaperHeader from './ModalPaperHeader';
-import Link from './Link';
 import autoId from '../utils/autoId';
-import RootStore from '../stores/root';
 import { PropsOf } from '../utils/metaTypes';
-
-type LinkProps = Omit<PropsOf<typeof Link>, 'children'>;
+import RootStore, { RouteLink } from '../stores/root';
 
 const styles = (theme: Theme) => createStyles({
   paper: {
@@ -33,15 +28,14 @@ type BaseProps = PropsOf<typeof MuiDialog>
   & WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
-  closeLinkProps?: LinkProps;
+  closeLink?: RouteLink;
   onNavigateBack?: ReactEventHandler<{}>;
-  navigateBackLinkProps?: LinkProps;
+  navigateBackLink?: RouteLink;
   children: ReactElement<DialogContentProps>;
 }
 
 interface PropsInjected extends Props {
   store: RootStore;
-  routerStore: RouterStore;
 }
 
 interface State {
@@ -52,7 +46,6 @@ interface State {
 const stylesDecorator = withStyles(styles);
 
 @inject('store')
-@inject('routerStore')
 @observer
 class Dialog extends React.Component<Props, State> {
   @autoId dialogTitleId: string;
@@ -75,18 +68,10 @@ class Dialog extends React.Component<Props, State> {
   }
 
   handleCloseDialog = (ev: React.SyntheticEvent<{}>) => {
-    const { onClose, closeLinkProps, store, routerStore } = this.injected;
+    const { onClose, closeLink, store } = this.injected;
 
-    // If the linkProps are used instead of an event handler,
-    // use the data from the props to direct the user to the
-    // correct location
-    if (closeLinkProps && closeLinkProps.view) {
-      routerStore.goTo(
-        closeLinkProps.view,
-        closeLinkProps.params || {},
-        store,
-        closeLinkProps.queryParams || {}
-      );
+    if (closeLink) {
+      store.navigateTo(closeLink);
     } else if (onClose) {
       onClose(ev);
     }
@@ -96,9 +81,9 @@ class Dialog extends React.Component<Props, State> {
     const {
       classes,
       onClose,
-      closeLinkProps,
+      closeLink,
       onNavigateBack,
-      navigateBackLinkProps,
+      navigateBackLink,
       children,
       ...others
     } = this.injected;
@@ -108,7 +93,7 @@ class Dialog extends React.Component<Props, State> {
       <MuiDialog
         aria-labelledby={this.dialogTitleId}
         aria-describedby={childContentId || this.dialogContentId}
-        onClose={onClose || closeLinkProps ? this.handleCloseDialog : undefined}
+        onClose={onClose || closeLink ? this.handleCloseDialog : undefined}
         classes={{
           paper: classes.paper,
         }}
@@ -116,9 +101,9 @@ class Dialog extends React.Component<Props, State> {
         {...others}
       >
         <ModalPaperHeader
-          closeLinkProps={closeLinkProps}
+          closeLink={closeLink}
           onCloseClick={onClose}
-          backLinkProps={navigateBackLinkProps}
+          backLink={navigateBackLink}
           onBackClick={onNavigateBack}
           children={title}
         />

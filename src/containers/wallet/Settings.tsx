@@ -255,7 +255,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
         <div className={classes.content}>
           <List>
             <Link
-              view={accountSettingsNameRoute}
+              route={accountSettingsNameRoute}
               params={{
                 id: this.account.id,
               }}
@@ -293,7 +293,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             </ListItem>
             {!readOnly && (
               <Link
-                view={accountSettingsVoteRoute}
+                route={accountSettingsVoteRoute}
                 params={{
                   id: this.account.id,
                 }}
@@ -313,7 +313,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               </Link>
             )}
             <Link
-              view={accountSettingsFiatRoute}
+              route={accountSettingsFiatRoute}
               params={{
                 id: this.account.id,
               }}
@@ -335,7 +335,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           >
             {!readOnly && (
               <Link
-                view={accountSettingsPassphraseRoute}
+                route={accountSettingsPassphraseRoute}
                 params={{
                   id: this.account.id,
                 }}
@@ -354,7 +354,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             )}
             {!readOnly && (
               <Link
-                view={accountSettingsDelegateRoute}
+                route={accountSettingsDelegateRoute}
                 params={{
                   id: this.account.id,
                 }}
@@ -376,7 +376,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               </Link>
             )}
             <Link
-              view={accountSettingsRemoveRoute}
+              route={accountSettingsRemoveRoute}
               params={{
                 id: this.account.id,
               }}

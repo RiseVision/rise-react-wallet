@@ -1,4 +1,3 @@
-import { Omit } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import {
   createStyles,
@@ -14,9 +13,7 @@ import * as React from 'react';
 import { ReactEventHandler } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import Link from './Link';
-import { PropsOf } from '../utils/metaTypes';
-
-type LinkProps = Omit<PropsOf<typeof Link>, 'children'>;
+import { RouteLink } from '../stores/root';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -51,9 +48,9 @@ const styles = (theme: Theme) =>
 interface Props extends WithStyles<typeof styles> {
   titleId?: string;
   onBackClick?: ReactEventHandler<{}>;
-  backLinkProps?: LinkProps;
+  backLink?: RouteLink;
   onCloseClick?: ReactEventHandler<{}>;
-  closeLinkProps?: LinkProps;
+  closeLink?: RouteLink;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -80,19 +77,19 @@ class ModalPaperHeader extends React.Component<DecoratedProps> {
       classes,
       titleId,
       onBackClick,
-      backLinkProps,
+      backLink,
       onCloseClick,
-      closeLinkProps,
+      closeLink,
       children
     } = this.props;
 
-    const showBack = !!backLinkProps || !!onBackClick;
-    const showClose = !!closeLinkProps || !!onCloseClick;
+    const showBack = !!backLink || !!onBackClick;
+    const showClose = !!closeLink || !!onCloseClick;
 
     return (
       <div className={classes.root}>
         {showBack && (
-          <Link {...backLinkProps}>
+          <Link {...backLink}>
             <Button
               className={classes.backButton}
               aria-label={intl.formatMessage(messages.backAriaLabel)}
@@ -117,7 +114,7 @@ class ModalPaperHeader extends React.Component<DecoratedProps> {
           {children}
         </Typography>
         {showClose && (
-          <Link {...closeLinkProps}>
+          <Link {...closeLink}>
             <Button
               className={classes.closeButton}
               aria-label={intl.formatMessage(messages.closeAriaLabel)}

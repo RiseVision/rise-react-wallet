@@ -125,7 +125,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
 
   getSendLinkProps = (address: string, amount: RawAmount) => {
     return {
-      view: accountSendRoute,
+      route: accountSendRoute,
       params: {
         id: this.account.id
       },
@@ -166,7 +166,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
             title={intl.formatMessage(messages.sendFabTooltip)}
           >
             <Link
-              view={accountSendRoute}
+              route={accountSendRoute}
               params={{
                 id: this.account.id,
               }}
