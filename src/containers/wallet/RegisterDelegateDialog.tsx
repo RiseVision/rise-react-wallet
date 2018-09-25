@@ -79,15 +79,13 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
     });
   }
 
-  handleSendTransaction = (secrets: Secrets) => {
+  handleCreateTransaction = () => {
     const { account, walletStore } = this.injected;
     const { step, transaction } = this.state;
 
     if (step === 'transaction' && transaction !== null) {
-      return walletStore.registerDelegateTransaction(
+      return walletStore.createRegisterDelegateTx(
         transaction.username,
-        secrets.mnemonic,
-        secrets.passphrase!,
         account.id,
       );
     } else {
@@ -133,16 +131,16 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
 
     return (
       <TransactionDialog
-        open={this.isOpen}
-        account={account}
-        transaction={transaction ? {
+          open={this.isOpen}
+          account={account}
+          transaction={transaction ? {
           kind: 'delegate',
           username: transaction.username,
         } : null}
-        onSendTransaction={this.handleSendTransaction}
-        onClose={this.handleClose}
-        onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
-        children={this.renderDelegateContent()}
+          onCreateTransaction={this.handleCreateTransaction}
+          onClose={this.handleClose}
+          onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
+          children={this.renderDelegateContent()}
       />
     );
   }

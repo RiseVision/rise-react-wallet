@@ -179,15 +179,13 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     });
   }
 
-  handleSendTransaction = (secrets: Secrets) => {
+  handleCreateTransaction = () => {
     const { account, walletStore } = this.injected;
     const { step, transaction } = this.state;
 
     if (step === 'transaction' && transaction !== null) {
-      return walletStore.voteTransaction(
+      return walletStore.createVoteTx(
         transaction.delegate.publicKey,
-        secrets.mnemonic,
-        secrets.passphrase,
         account.id
       );
     } else {
@@ -240,17 +238,17 @@ class VoteDelegateDialog extends React.Component<Props, State> {
 
     return (
       <TransactionDialog
-        open={this.isOpen}
-        account={account}
-        transaction={transaction ? {
+          open={this.isOpen}
+          account={account}
+          transaction={transaction ? {
           kind: 'vote',
           add: transaction.add,
           remove: transaction.remove,
         } : null}
-        onSendTransaction={this.handleSendTransaction}
-        onClose={this.handleClose}
-        onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
-        children={this.renderVoteContent()}
+          onCreateTransaction={this.handleCreateTransaction}
+          onClose={this.handleClose}
+          onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
+          children={this.renderVoteContent()}
       />
     );
   }

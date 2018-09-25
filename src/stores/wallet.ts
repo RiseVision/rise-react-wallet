@@ -153,51 +153,40 @@ export default class WalletStore {
     return res as TAccountResponse;
   }
 
-  async addPassphrase(
-    mnemonic: string,
+  async createPassphraseTx(
     passphrase: string,
     accountID?: string
-  ): Promise<TTransactionResult> {
-    assert(mnemonic);
+  ): Promise<CreateSignatureTx> {
     assert(passphrase);
     const account = accountID
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
     const wallet2 = new LiskWallet(passphrase, 'R');
-    let unsigned = new CreateSignatureTx({
+    const tx = new CreateSignatureTx({
       signature: { publicKey: wallet2.publicKey }
-    })
-      .set('timestamp', getTimestamp())
-      .set('fee', this.fees.get('secondsignature')!.toNumber());
+    });
+    tx.set('timestamp', getTimestamp());
+    tx.set('fee', this.fees.get('secondsignature')!.toNumber());
 
-    const res = await this.signAndSend(unsigned, mnemonic);
-    await this.refreshAccount(account.id);
-    return res;
+    return tx;
   }
 
-  async sendTransaction(
+  async createSendTx(
     recipientId: string,
     amount: RawAmount,
-    mnemonic: string,
-    passphrase: string | null,
     accountID?: string
-  ): Promise<TTransactionResult> {
+  ): Promise<SendTx> {
     const account = accountID
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
-    assert(!account.secondSignature || passphrase, 'Passphrase required');
 
-    const unsigned = new SendTx()
+    return new SendTx()
       .set('timestamp', getTimestamp())
       .set('fee', this.fees.get('send')!.toNumber())
       .set('amount', amount.toNumber())
       .set('recipientId', recipientId);
-
-    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
-    await this.refreshAccount(account!.id, recipientId);
-    return res;
   }
 
   /**
@@ -208,17 +197,14 @@ export default class WalletStore {
    * @param accountID Optional - the voter's account ID.
    *   Defaults to the currently selected one.
    */
-  async voteTransaction(
+  async createVoteTx(
     delegatePublicKey: string,
-    mnemonic: string,
-    passphrase: string | null,
     accountID?: string
-  ): Promise<TTransactionResult> {
+  ): Promise<VoteTx> {
     const account = accountID
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
-    assert(!account!.secondSignature || passphrase, 'Passphrase required');
 
     // make sure prev vote has been loaded
     if (account.votedDelegateState !== LoadingState.LOADED) {
@@ -239,32 +225,27 @@ export default class WalletStore {
     ) {
       assets.votes.push('+' + delegatePublicKey);
     }
-    const unsigned = new VoteTx(assets)
+    return new VoteTx(assets)
       .withFees(this.fees.get('vote')!.toNumber())
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
 
+    // TODO move to signAndSend()
     runInAction(() => {
       account.votedDelegate = null;
       account.votedDelegateState = LoadingState.NOT_LOADED;
-    });
-
-    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
-    await this.refreshAccount(account.id);
-    return res;
+    });shAccount(account.id);
+    // return res;
   }
 
-  async registerDelegateTransaction(
+  async createRegisterDelegateTx(
     username: string,
-    mnemonic: string,
-    passphrase: string | null,
     accountID?: string
-  ): Promise<TTransactionResult> {
+  ): Promise<DelegateTx> {
     const account = accountID
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
-    assert(!account.secondSignature || passphrase, 'Passphrase required');
 
     // make sure prev registration has been loaded
     if (account.registeredDelegateState !== LoadingState.LOADED) {
@@ -281,23 +262,26 @@ export default class WalletStore {
         username
       }
     };
-    const unsigned = new DelegateTx(assets)
+    return new DelegateTx(assets)
       .withFees(this.fees.get('delegate')!.toNumber())
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
 
-    const res = await this.signAndSend(unsigned, mnemonic, passphrase);
-    await this.refreshAccount(account.id);
-    return res;
+    // const res = await this.signAndSend(unsigned, mnemonic, passphrase);
+    // await this.refreshAccount(account.id);
+    // return res;
   }
 
   async signAndSend(
-    unsigned: BaseTx,
+    unsignedTx: BaseTx,
     mnemonic: string,
     passphrase: string | null = null
   ): Promise<TTransactionResult> {
     const wallet = new LiskWallet(mnemonic, 'R');
-    const tx = wallet.signTransaction(unsigned, this.secondWallet(passphrase));
+    const tx = wallet.signTransaction(
+      unsignedTx,
+      this.secondWallet(passphrase)
+    );
     // @ts-ignore TODO array
     return await this.dposAPI.transactions.put(tx);
   }
@@ -339,6 +323,7 @@ export default class WalletStore {
   @action
   /**
    * Refreshed specific accounts.
+   * TODO bind as an ovserver
    */
   async refreshAccount(...ids: string[]) {
     for (const id of ids) {

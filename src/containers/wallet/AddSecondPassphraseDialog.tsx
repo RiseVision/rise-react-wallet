@@ -20,9 +20,7 @@ interface PropsInjected extends Props {
 }
 
 interface State {
-  step:
-    | 'form'
-    | 'transaction';
+  step: 'form' | 'transaction';
   transaction: null | {
     passphrase: string;
     publicKey: string;
@@ -36,7 +34,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
   disposeOpenMonitor: null | IReactionDisposer = null;
   state: State = {
     step: 'form',
-    transaction: null,
+    transaction: null
   };
 
   get injected(): PropsInjected {
@@ -46,7 +44,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
     onNavigateBack();
-  }
+  };
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
@@ -57,49 +55,51 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
     } else {
       this.setState({
         step: 'form',
-        transaction: null,
+        transaction: null
       });
     }
-  }
+  };
 
   handleAddPassphrase = (passphrase: string) => {
     this.setState({
       step: 'transaction',
       transaction: {
         passphrase,
-        publicKey: derivePublicKey(passphrase),
-      },
+        publicKey: derivePublicKey(passphrase)
+      }
     });
-  }
+  };
 
-  handleSendTransaction = (secrets: Secrets) => {
+  createTransaction = () => {
     const { account, walletStore } = this.injected;
     const { step, transaction } = this.state;
 
-    if (step === 'transaction' && transaction !== null) {
-      return walletStore.addPassphrase(
-        secrets.mnemonic,
-        secrets.passphrase!,
-        account.id,
+    if (step === 'transaction') {
+      return walletStore.createPassphraseTx(
+        transaction.passphrase!,
+        account.id
       );
     } else {
       throw new Error('Invalid internal state');
     }
-  }
+  };
 
   resetState() {
     this.setState({
       step: 'form',
-      transaction: null,
+      transaction: null
     });
   }
 
   componentWillMount() {
-    this.disposeOpenMonitor = reaction(() => this.isOpen, (isOpen) => {
-      if (isOpen) {
-        this.resetState();
+    this.disposeOpenMonitor = reaction(
+      () => this.isOpen,
+      isOpen => {
+        if (isOpen) {
+          this.resetState();
+        }
       }
-    });
+    );
 
     this.resetState();
   }
@@ -126,11 +126,15 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
       <TransactionDialog
         open={this.isOpen}
         account={account}
-        transaction={transaction ? {
-          kind: 'passphrase',
-        } : null}
+        transaction={
+          transaction
+            ? {
+                kind: 'passphrase'
+              }
+            : null
+        }
         passphrasePublicKey={transaction ? transaction.publicKey : ''}
-        onSendTransaction={this.handleSendTransaction}
+        onCreateTransaction={this.createTransaction}
         onClose={this.handleClose}
         onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
         children={this.renderPassphraseContent()}
