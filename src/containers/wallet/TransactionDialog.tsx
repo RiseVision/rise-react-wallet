@@ -142,37 +142,33 @@ class TransactionDialog extends React.Component<Props, State> {
 
     let success = false;
     let errorSummary = '';
-    let canRetry = false;
+    let canRetry = true;
     const tx = await onCreateTransaction();
-    debugger;
+
     try {
-      const result = await walletStore.signAndSend(
+      const result = await walletStore.broadcastTransaction(
         tx,
         secrets.mnemonic,
         secrets.passphrase
       );
       // this supports only a single transaction per request
       success = Boolean(result.accepted && result.accepted.length);
-      console.log('success', success);
       if (!success) {
         // get the error
-        errorSummary = result.invalid![0].reason.slice(0, 30);
-        canRetry = true;
+        errorSummary = result.invalid![0].reason;
       }
     } catch (e) {
-      // ECONNABORTED
-      console.log('catch', e);
-      debugger;
       success = false;
-
-      // TODO: Network errors should be safe to retry. But we cannot do that because
-      //       there's a failure case where it isn't safe currently - when the request
-      //       goes through, but network is cut out mid-response. Sending the transaction
-      //       again currently means we generate and sign a new transaction and that can
-      //       potentially cause loss of funds. Retry will be safe if we resend the same
-      //       data blob that we produced on first signing.
-      canRetry = false;
-      errorSummary = e.toString();
+      // connection aborted after sending it
+      if (e && e.code === 'ECONNABORTED') {
+        // try to request the transaction
+        const testTx = await walletStore.dposAPI.transactions.get(tx.id);
+        // if successful, consider the whole dialog as error-less
+        success = testTx.success;
+      } else {
+        // all the other errors
+        errorSummary = e.toString();
+      }
     }
 
     if (success) {

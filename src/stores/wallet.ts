@@ -229,13 +229,6 @@ export default class WalletStore {
       .withFees(this.fees.get('vote')!.toNumber())
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
-
-    // TODO move to signAndSend()
-    runInAction(() => {
-      account.votedDelegate = null;
-      account.votedDelegateState = LoadingState.NOT_LOADED;
-    });shAccount(account.id);
-    // return res;
   }
 
   async createRegisterDelegateTx(
@@ -266,24 +259,37 @@ export default class WalletStore {
       .withFees(this.fees.get('delegate')!.toNumber())
       .set('timestamp', getTimestamp())
       .set('recipientId', account.id);
-
-    // const res = await this.signAndSend(unsigned, mnemonic, passphrase);
-    // await this.refreshAccount(account.id);
-    // return res;
   }
 
-  async signAndSend(
+  async broadcastTransaction(
     unsignedTx: BaseTx,
     mnemonic: string,
-    passphrase: string | null = null
+    passphrase: string | null = null,
+    accountID?: string
   ): Promise<TTransactionResult> {
+    const account = accountID
+      ? (this.accounts.get(accountID) as AccountStore)
+      : this.selectedAccount;
+    assert(account, 'Account required');
+
     const wallet = new LiskWallet(mnemonic, 'R');
     const tx = wallet.signTransaction(
       unsignedTx,
       this.secondWallet(passphrase)
     );
+
+    // refreshed the account's delegate
+    if (unsignedTx instanceof VoteTx) {
+      runInAction(() => {
+        account.votedDelegate = null;
+        account.votedDelegateState = LoadingState.NOT_LOADED;
+      });
+    }
+
     // @ts-ignore TODO array
-    return await this.dposAPI.transactions.put(tx);
+    const res = await this.dposAPI.transactions.put(tx);
+    await this.refreshAccount(account.id);
+    return res;
   }
 
   async searchDelegates(query: string): Promise<Delegate[]> {
