@@ -4,18 +4,21 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import { accountSettingsNameRoute } from '../../routes';
 import Dialog from '../../components/Dialog';
+import RootStore, { RouteLink } from '../../stores/root';
 import AccountStore from '../../stores/account';
 import AccountNameDialogContent from '../../components/content/AccountNameDialogContent';
 
 interface Props {
   account: AccountStore;
-  onNavigateBack: () => void;
+  navigateBackLink: RouteLink;
 }
 
 interface InjectedProps extends Props {
+  store: RootStore;
   routerStore: RouterStore;
 }
 
+@inject('store')
 @inject('routerStore')
 @observer
 class AccountNameDialog extends React.Component<Props> {
@@ -25,20 +28,20 @@ class AccountNameDialog extends React.Component<Props> {
 
   @action
   handleChange = (data: { name: string }) => {
-    const { account, onNavigateBack } = this.injected;
+    const { account, navigateBackLink, store } = this.injected;
     account.name = data.name;
-    onNavigateBack();
+    store.navigateTo(navigateBackLink);
   }
 
   render() {
-    const { account, onNavigateBack, routerStore } = this.injected;
+    const { account, navigateBackLink, routerStore } = this.injected;
 
     const isOpen = routerStore.currentView === accountSettingsNameRoute;
 
     return (
       <Dialog
         open={isOpen}
-        onClose={onNavigateBack}
+        closeLink={navigateBackLink}
       >
         <AccountNameDialogContent
           account={{

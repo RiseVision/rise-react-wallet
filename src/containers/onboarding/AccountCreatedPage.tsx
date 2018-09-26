@@ -6,6 +6,7 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import Link from '../../components/Link';
 import AccountIcon from '../../components/AccountIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
@@ -37,9 +38,12 @@ const stylesDecorator = withStyles(styles, {
 @inject('onboardingStore')
 @observer
 class AccountCreatedPage extends React.Component<Props, State> {
+  state = {
+    accountAddress: '',
+  };
+
   get injected(): PropsInjected {
-    // @ts-ignore
-    return this.props;
+    return this.props as PropsInjected;
   }
 
   constructor(props: Props) {
@@ -53,13 +57,6 @@ class AccountCreatedPage extends React.Component<Props, State> {
         accountAddress
       };
     }
-  }
-
-  handleOverviewClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(accountOverviewRoute, {
-      id: this.state.accountAddress
-    });
   }
 
   render() {
@@ -118,13 +115,20 @@ class AccountCreatedPage extends React.Component<Props, State> {
             </Typography>
           </Grid>
           <Grid item={true} xs={12}>
-            <Button fullWidth={true} onClick={this.handleOverviewClick}>
-              <FormattedMessage
-                id="onboarding-account-created.continue"
-                description="Continue button label"
-                defaultMessage="Go to account overview"
-              />
-            </Button>
+            <Link
+              route={accountOverviewRoute}
+              params={{
+                id: accountAddress,
+              }}
+            >
+              <Button fullWidth={true}>
+                <FormattedMessage
+                  id="onboarding-account-created.continue"
+                  description="Continue button label"
+                  defaultMessage="Go to account overview"
+                />
+              </Button>
+            </Link>
           </Grid>
         </Grid>
       </ModalPaper>

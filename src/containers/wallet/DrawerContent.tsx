@@ -19,6 +19,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';
+import { Route, RouteParams } from 'mobx-router';
 import * as React from 'react';
 import {
   defineMessages,
@@ -27,9 +28,9 @@ import {
   injectIntl
 } from 'react-intl';
 import AccountIcon from '../../components/AccountIcon';
+import Link from '../../components/Link';
 import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
 import AccountStore from '../../stores/account';
-import RootStore from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -70,7 +71,6 @@ interface Props extends WithStyles<typeof styles> {
 }
 
 interface PropsInjected extends Props {
-  store: RootStore;
   walletStore: WalletStore;
 }
 
@@ -96,7 +96,6 @@ const messages = defineMessages({
   }
 });
 
-@inject('store')
 @inject('walletStore')
 @observer
 class DrawerContent extends React.Component<DecoratedProps> {
@@ -105,19 +104,18 @@ class DrawerContent extends React.Component<DecoratedProps> {
     return this.props;
   }
 
-  handleAccountClicked = (id: string) => () => {
-    const { store, walletStore } = this.injected;
+  handleAccountNavigation = (view: Route<{}>, params: RouteParams) => {
+    const { id } = params;
+    const { walletStore } = this.injected;
     walletStore.selectAccount(id);
     // pass async
     walletStore.refreshAccount(id);
-    store.router.goTo(accountOverviewRoute, { id });
   }
 
   render() {
     const {
       intl,
       classes,
-      store,
       walletStore,
       onSignOutClick,
     } = this.injected;
@@ -158,49 +156,57 @@ class DrawerContent extends React.Component<DecoratedProps> {
             ['pinned', 'name'],
             ['desc', 'asc']
           ).map((account: AccountStore) => (
-            <ListItem
-              button={true}
-              className={classNames(
-                selected &&
-                  selected.id === account.id &&
-                  classes.selectedListItem
-              )}
-              onClick={this.handleAccountClicked(account.id)}
+            <Link
               key={account.id}
+              route={accountOverviewRoute}
+              params={{
+                id: account.id,
+              }}
+              onBeforeNavigate={this.handleAccountNavigation}
             >
+              <ListItem
+                className={classNames(
+                  selected &&
+                    selected.id === account.id &&
+                    classes.selectedListItem
+                )}
+                button={true}
+              >
+                <ListItemAvatar>
+                  <Avatar className={classes.accountAvatar}>
+                    <AccountIcon size={24} address={account.id} />
+                  </Avatar>
+                </ListItemAvatar>
+                {/* TODO this doesnt observe */}
+                <ListItemText
+                  classes={{
+                    primary: classes.accountName
+                  }}
+                  primary={account.name || unnamedAccountLabel}
+                  secondary={account.id}
+                />
+              </ListItem>
+            </Link>
+          ))}
+          <Link
+            key="add-account"
+            route={onboardingAddAccountRoute}
+          >
+            <ListItem button={true}>
               <ListItemAvatar>
-                <Avatar className={classes.accountAvatar}>
-                  <AccountIcon size={24} address={account.id} />
+                <Avatar>
+                  <AddIcon />
                 </Avatar>
               </ListItemAvatar>
-              {/* TODO this doesnt observe */}
-              <ListItemText
-                classes={{
-                  primary: classes.accountName
-                }}
-                primary={account.name || unnamedAccountLabel}
-                secondary={account.id}
-              />
+              <ListItemText>
+                <FormattedMessage
+                  id="drawer-content.add-an-account"
+                  description="Add account drawer item"
+                  defaultMessage="Add an account"
+                />
+              </ListItemText>
             </ListItem>
-          ))}
-          <ListItem
-            button={true}
-            key="add-account"
-            onClick={() => store.router.goTo(onboardingAddAccountRoute)}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <AddIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText>
-              <FormattedMessage
-                id="drawer-content.add-an-account"
-                description="Add account drawer item"
-                defaultMessage="Add an account"
-              />
-            </ListItemText>
-          </ListItem>
+          </Link>
         </List>
         <Divider aria-hidden={true} />
         <List aria-label={intl.formatMessage(messages.navigationListAriaLabel)}>

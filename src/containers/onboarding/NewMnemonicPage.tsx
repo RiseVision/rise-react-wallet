@@ -114,11 +114,6 @@ class NewMnemonicPage extends React.Component<Props, State> {
     };
   }
 
-  handleCloseClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(onboardingNewAccountRoute);
-  }
-
   handleContinueClick = () => {
     const { routerStore, onboardingStore } = this.injected;
     onboardingStore.mnemonic = this.state.mnemonic;
@@ -132,10 +127,7 @@ class NewMnemonicPage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader
-          closeButton={true}
-          onCloseClick={this.handleCloseClick}
-        >
+        <ModalPaperHeader closeLink={{ route: onboardingNewAccountRoute }}>
           <FormattedMessage
             id="onboarding-new-mnemonic.title"
             description="New mnemonic screen title"

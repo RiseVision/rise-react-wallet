@@ -21,6 +21,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import Link from '../../components/Link';
 import { accountOverviewRoute, accountSettingsRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
@@ -97,17 +98,18 @@ class WalletAppBar extends React.Component<DecoratedProps> {
     return this.injected.account || this.injected.accountStore;
   }
 
-  handleNavigateBackClick = () => {
+  backLink() {
     const state = this.appBarState();
     if (state === 'accountSettings') {
-      const id = this.account.id;
-      this.injected.routerStore.goTo(accountOverviewRoute, { id });
+      return {
+        route: accountOverviewRoute,
+        params: {
+          id: this.account.id,
+        },
+      };
+    } else {
+      throw new Error('Invalid state for backLink');
     }
-  }
-
-  handleSettingsClick = () => {
-    const id = this.account.id;
-    this.injected.routerStore.goTo(accountSettingsRoute, { id });
   }
 
   render() {
@@ -127,13 +129,14 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               <MenuIcon />
             </IconButton>
           ) : (
-            <IconButton
-              aria-label={intl.formatMessage(messages.navigateBackAriaLabel)}
-              color="inherit"
-              onClick={this.handleNavigateBackClick}
-            >
-              <ChevronLeftIcon />
-            </IconButton>
+            <Link {...this.backLink()}>
+              <IconButton
+                aria-label={intl.formatMessage(messages.navigateBackAriaLabel)}
+                color="inherit"
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+            </Link>
           )}
           <Typography
             className={classes.title}
@@ -160,13 +163,19 @@ class WalletAppBar extends React.Component<DecoratedProps> {
             <Tooltip
               title={intl.formatMessage(messages.accountSettingsTooltip)}
             >
-              <IconButton
-                aria-label={intl.formatMessage(messages.accountSettingsTooltip)}
-                color="inherit"
-                onClick={this.handleSettingsClick}
+              <Link
+                route={accountSettingsRoute}
+                params={{
+                  id: this.account.id,
+                }}
               >
-                <SettingsOutlinedIcon />
-              </IconButton>
+                <IconButton
+                  aria-label={intl.formatMessage(messages.accountSettingsTooltip)}
+                  color="inherit"
+                >
+                  <SettingsOutlinedIcon />
+                </IconButton>
+              </Link>
             </Tooltip>
           )}
         </Toolbar>

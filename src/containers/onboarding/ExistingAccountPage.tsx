@@ -94,11 +94,6 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
     };
   }
 
-  handleBackClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(onboardingAddAccountRoute);
-  }
-
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
@@ -151,7 +146,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader backButton={true} onBackClick={this.handleBackClick}>
+        <ModalPaperHeader backLink={{ route: onboardingAddAccountRoute }}>
           <FormattedMessage
             id="onboarding-existing-account.title"
             description="Existing account screen title"

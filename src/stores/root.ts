@@ -1,5 +1,5 @@
 import { configure } from 'mobx';
-import { RouterStore, Route } from 'mobx-router';
+import { RouterStore, Route, RouteParams } from 'mobx-router';
 import AccountStore from './account';
 import AppStore from './app';
 import { TConfig } from './index';
@@ -8,6 +8,13 @@ import WalletStore from './wallet';
 
 // make sure only actions modify the store
 configure({ enforceActions: true });
+
+export interface RouteLink {
+  route: Route<{}>;
+  params?: RouteParams;
+  queryParams?: RouteParams;
+  onBeforeNavigate?: (route: Route<{}>, params: RouteParams, queryParams: RouteParams) => void;
+}
 
 export default class RootStore {
   router = new RouterStore();
@@ -23,13 +30,29 @@ export default class RootStore {
     const oldGoTo = this.router.goTo;
     this.router.goTo = function(
       route: Route<RootStore>,
-      params?: object,
+      params?: RouteParams,
       store?: RootStore,
-      queryParamsObj?: object
+      queryParams?: RouteParams
     ) {
       // use the RootStore as a default store when changing routes
       // TODO create an issue for mobx-router
-      return oldGoTo.call(this, route, params, store || self, queryParamsObj);
+      return oldGoTo.call(this, route, params, store || self, queryParams);
     };
+  }
+
+  navigateTo(dest: RouteLink) {
+    const { route, onBeforeNavigate } = dest;
+    const params = dest.params || {};
+    const queryParams = dest.queryParams || {};
+
+    if (onBeforeNavigate) {
+      onBeforeNavigate(route, params, queryParams);
+    }
+    this.router.goTo(route, params, this, queryParams);
+  }
+
+  linkUrl(dest: RouteLink) {
+    const { route, params, queryParams } = dest;
+    return route.replaceUrlParams(params || {}, queryParams || {});
   }
 }

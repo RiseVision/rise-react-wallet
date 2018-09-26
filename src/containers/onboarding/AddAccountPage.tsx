@@ -4,9 +4,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import Link from '../../components/Link';
 import FlagIcon from '../../components/FlagIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
@@ -34,7 +34,6 @@ interface Props extends WithStyles<typeof styles> {}
 interface PropsInjected extends Props {
   appStore: AppStore;
   onboardingStore: OnboardingStore;
-  routerStore: RouterStore;
   walletStore: WalletStore;
 }
 
@@ -44,7 +43,6 @@ const stylesDecorator = withStyles(styles, {
 
 @inject('appStore')
 @inject('onboardingStore')
-@inject('routerStore')
 @inject('walletStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
@@ -53,38 +51,22 @@ class AddAccountPage extends React.Component<Props> {
     return this.props;
   }
 
-  handleCloseClicked = () => {
-    const { routerStore, onboardingStore } = this.injected;
+  handleBeforeNavigate = () => {
+    const { onboardingStore } = this.injected;
     onboardingStore.reset();
-    routerStore.goTo(accountOverviewNoIDRoute);
-  }
-
-  handleNewAccountClicked = () => {
-    const { routerStore, onboardingStore } = this.injected;
-    onboardingStore.reset();
-    routerStore.goTo(onboardingNewAccountRoute);
-  }
-
-  handleExistingAccountClicked = () => {
-    const { routerStore, onboardingStore } = this.injected;
-    onboardingStore.reset();
-    routerStore.goTo(onboardingExistingAccountRoute);
-  }
-
-  handleChooseLanguageClicked = () => {
-    const { routerStore, onboardingStore } = this.injected;
-    onboardingStore.reset();
-    routerStore.goTo(onboardingChooseLanguageRoute);
   }
 
   render() {
     const { classes, appStore, walletStore } = this.injected;
+    const showClose = [...walletStore.accounts.keys()].length > 0;
 
     return (
       <ModalPaper open={true}>
         <ModalPaperHeader
-          closeButton={[...walletStore.accounts.keys()].length > 0}
-          onCloseClick={this.handleCloseClicked}
+          closeLink={showClose ? {
+            route: accountOverviewNoIDRoute,
+            onBeforeNavigate: this.handleBeforeNavigate,
+          } : undefined}
         >
           <FormattedMessage
             id="onboarding-add-account.title"
@@ -103,55 +85,61 @@ class AddAccountPage extends React.Component<Props> {
           />
         </ModalPaperHeader>
         <List>
-          <ListItem button={true} onClick={this.handleNewAccountClicked}>
-            <ListItemText
-              primary={
-                <FormattedMessage
-                  id="onboarding-add-account.new-account"
-                  description="New account button title"
-                  defaultMessage="New account"
-                />
-              }
-              secondary={
-                <FormattedMessage
-                  id="onboarding-add-account.new-account-tip"
-                  description="New account button tip"
-                  defaultMessage="I want to create a new account on the RISE network"
-                />
-              }
-            />
-            <ChevronRight />
-          </ListItem>
-          <ListItem button={true} onClick={this.handleExistingAccountClicked}>
-            <ListItemText
-              primary={
-                <FormattedMessage
-                  id="onboarding-add-account.existing-account"
-                  description="Existing account button title"
-                  defaultMessage="Existing account"
-                />
-              }
-              secondary={
-                <FormattedMessage
-                  id="onboarding-add-account.existing-account-tip"
-                  description="Existing account button tip"
-                  defaultMessage="I want to access an existing account on the RISE network"
-                />
-              }
-            />
-            <ChevronRight />
-          </ListItem>
-          <ListItem button={true} onClick={this.handleChooseLanguageClicked}>
-            <FlagIcon countryCode={getMainCountryForLocale(appStore.locale)} />
-            <ListItemText>
-              <FormattedMessage
-                id="onboarding-add-account.change-language"
-                description="Change language button label"
-                defaultMessage="Change language"
+          <Link route={onboardingNewAccountRoute} onBeforeNavigate={this.handleBeforeNavigate}>
+            <ListItem button={true}>
+              <ListItemText
+                primary={
+                  <FormattedMessage
+                    id="onboarding-add-account.new-account"
+                    description="New account button title"
+                    defaultMessage="New account"
+                  />
+                }
+                secondary={
+                  <FormattedMessage
+                    id="onboarding-add-account.new-account-tip"
+                    description="New account button tip"
+                    defaultMessage="I want to create a new account on the RISE network"
+                  />
+                }
               />
-            </ListItemText>
-            <ChevronRight />
-          </ListItem>
+              <ChevronRight />
+            </ListItem>
+          </Link>
+          <Link route={onboardingExistingAccountRoute} onBeforeNavigate={this.handleBeforeNavigate}>
+            <ListItem button={true}>
+              <ListItemText
+                primary={
+                  <FormattedMessage
+                    id="onboarding-add-account.existing-account"
+                    description="Existing account button title"
+                    defaultMessage="Existing account"
+                  />
+                }
+                secondary={
+                  <FormattedMessage
+                    id="onboarding-add-account.existing-account-tip"
+                    description="Existing account button tip"
+                    defaultMessage="I want to access an existing account on the RISE network"
+                  />
+                }
+              />
+              <ChevronRight />
+            </ListItem>
+          </Link>
+          <Link route={onboardingChooseLanguageRoute} onBeforeNavigate={this.handleBeforeNavigate}>
+            <ListItem button={true}>
+              <FlagIcon countryCode={getMainCountryForLocale(appStore.locale)} />
+              <ListItemText>
+                <FormattedMessage
+                  id="onboarding-add-account.change-language"
+                  description="Change language button label"
+                  defaultMessage="Change language"
+                />
+              </ListItemText>
+              <ChevronRight />
+            </ListItem>
+          </Link>
         </List>
       </ModalPaper>
     );

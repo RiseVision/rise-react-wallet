@@ -19,6 +19,7 @@ import SendCoinsDialog from './SendCoinsDialog';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
 import LoadingIndicator from '../../components/LoadingIndicator';
+import Link from '../../components/Link';
 import { accountOverviewRoute, accountSendRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
@@ -112,10 +113,6 @@ class AccountOverview extends React.Component<DecoratedProps> {
     return this.injected.account || this.injected.accountStore;
   }
 
-  handleSendClick = () => {
-    this.injected.routerStore.goTo(accountSendRoute, { id: this.account.id });
-  }
-
   handleNavigateBack = () => {
     this.injected.routerStore.goTo(accountOverviewRoute, {
       id: this.account.id
@@ -126,18 +123,17 @@ class AccountOverview extends React.Component<DecoratedProps> {
     this.account.recentTransactions.loadMore(this.injected.walletStore);
   }
 
-  goToSendCoins = (address: string, amount: RawAmount) => {
-    this.injected.routerStore.goTo(
-      accountSendRoute,
-      {
+  getSendLinkProps = (address: string, amount: RawAmount) => {
+    return {
+      route: accountSendRoute,
+      params: {
         id: this.account.id
       },
-      null,
-      {
+      queryParams: {
         address,
         amount: amount.unit.toString()
       }
-    );
+    };
   }
 
   render() {
@@ -169,14 +165,20 @@ class AccountOverview extends React.Component<DecoratedProps> {
             placement="left"
             title={intl.formatMessage(messages.sendFabTooltip)}
           >
-            <Button
-              variant="fab"
-              className={classes.fab}
-              color="secondary"
-              onClick={this.handleSendClick}
+            <Link
+              route={accountSendRoute}
+              params={{
+                id: this.account.id,
+              }}
             >
-              <SendIcon />
-            </Button>
+              <Button
+                variant="fab"
+                className={classes.fab}
+                color="secondary"
+              >
+                <SendIcon />
+              </Button>
+            </Link>
           </Tooltip>
         )}
         <SendCoinsDialog
@@ -215,7 +217,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
                     );
                     return (
                       <TxDetailsExpansionPanel
-                        goToSendCoins={this.goToSendCoins}
+                        getSendLinkProps={this.getSendLinkProps}
                         key={transaction.id}
                         tx={transaction}
                         explorerUrl={this.account.config.explorer_url}

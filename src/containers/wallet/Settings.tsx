@@ -31,8 +31,10 @@ import {
   accountSettingsFiatRoute
 } from '../../routes';
 import { accountStore } from '../../stores';
+import { RouteLink } from '../../stores/root';
 import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
+import Link from '../../components/Link';
 import RegisterDelegateDialog from './RegisterDelegateDialog';
 import VoteDelegateDialog from './VoteDelegateDialog';
 import AccountNameDialog from './AccountNameDialog';
@@ -182,52 +184,11 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   // CLICK HANDLERS
 
-  handleNameClicked = () => {
-    const id = this.account.id;
-    this.injected.routerStore.goTo(accountSettingsNameRoute, { id });
-  }
-
   handlePinnedClicked = () => {
     runInAction(() => {
       const walletStore = this.injected.walletStore;
       const selectedAccount = walletStore.selectedAccount;
       selectedAccount.pinned = !selectedAccount.pinned;
-    });
-  }
-
-  handleVoteClicked = () => {
-    const id = this.account.id;
-    this.injected.routerStore.goTo(accountSettingsVoteRoute, { id });
-  }
-
-  handleFiatClicked = () => {
-    const id = this.account.id;
-    this.injected.routerStore.goTo(accountSettingsFiatRoute, { id });
-  }
-
-  handlePassphraseClicked = () => {
-    const id = this.account.id;
-    this.injected.routerStore.goTo(accountSettingsPassphraseRoute, { id });
-  }
-
-  handleDelegateClicked = () => {
-    // open only if the registered delegate info has been loaded
-    if (this.account.registeredDelegateState !== LoadingState.LOADED) {
-      return;
-    }
-    const id = this.account.id;
-    this.injected.routerStore.goTo(accountSettingsDelegateRoute, { id });
-  }
-
-  handleRemoveClicked = () => {
-    const id = this.account.id;
-    this.injected.routerStore.goTo(accountSettingsRemoveRoute, { id });
-  }
-
-  // DIALOG ACTIONS
-  onDialogClose = () => {
-    this.injected.routerStore.goTo(accountSettingsRoute, {
-      id: this.account.id
     });
   }
 
@@ -259,43 +220,57 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     const account = this.account;
     const { readOnly } = account;
 
+    const backLink: RouteLink = {
+      route: accountSettingsRoute,
+      params: {
+        id: this.account.id,
+      },
+    };
+
     return (
       <React.Fragment>
         <AccountNameDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <VoteDelegateDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <ChooseFiatDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <AddSecondPassphraseDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <RegisterDelegateDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <RemoveAccountDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <div className={classes.content}>
           <List>
-            <ListItem button={true} onClick={this.handleNameClicked}>
-              <ListItemText
-                primary={intl.formatMessage(messages.accountName)}
-                secondary={
-                  account.name ||
-                  intl.formatMessage(messages.unnamedAccountLabel)
-                }
-              />
-            </ListItem>
+            <Link
+              route={accountSettingsNameRoute}
+              params={{
+                id: this.account.id,
+              }}
+            >
+              <ListItem button={true}>
+                <ListItemText
+                  primary={intl.formatMessage(messages.accountName)}
+                  secondary={
+                    account.name ||
+                    intl.formatMessage(messages.unnamedAccountLabel)
+                  }
+                />
+              </ListItem>
+            </Link>
             <ListItem
               button={true}
               onClick={this.handlePinnedClicked}
@@ -318,25 +293,39 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               </ListItemSecondaryAction>
             </ListItem>
             {!readOnly && (
-              <ListItem button={true} onClick={this.handleVoteClicked}>
+              <Link
+                route={accountSettingsVoteRoute}
+                params={{
+                  id: this.account.id,
+                }}
+              >
+                <ListItem button={true}>
+                  <ListItemText
+                    primary={intl.formatMessage(messages.votedDelegate)}
+                    secondary={
+                      account.votedDelegateState === LoadingState.LOADING
+                        ? intl.formatMessage(messages.loadingLabel)
+                        : account.votedDelegate
+                          ? account.votedDelegate.username
+                          : intl.formatMessage(messages.votedDelegateUnsetLabel)
+                    }
+                  />
+                </ListItem>
+              </Link>
+            )}
+            <Link
+              route={accountSettingsFiatRoute}
+              params={{
+                id: this.account.id,
+              }}
+            >
+              <ListItem button={true}>
                 <ListItemText
-                  primary={intl.formatMessage(messages.votedDelegate)}
-                  secondary={
-                    account.votedDelegateState === LoadingState.LOADING
-                      ? intl.formatMessage(messages.loadingLabel)
-                      : account.votedDelegate
-                        ? account.votedDelegate.username
-                        : intl.formatMessage(messages.votedDelegateUnsetLabel)
-                  }
+                  primary={intl.formatMessage(messages.fiatCurrency)}
+                  secondary={account.fiatCurrency}
                 />
               </ListItem>
-            )}
-            <ListItem button={true} onClick={this.handleFiatClicked}>
-              <ListItemText
-                primary={intl.formatMessage(messages.fiatCurrency)}
-                secondary={account.fiatCurrency}
-              />
-            </ListItem>
+            </Link>
           </List>
           <Divider />
           <List
@@ -346,41 +335,62 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               </ListSubheader>}
           >
             {!readOnly && (
-              <ListItem button={true} onClick={this.handlePassphraseClicked}>
-                <ListItemText
-                  primary={intl.formatMessage(messages.passphrase)}
-                  secondary={
-                    account.secondSignature
-                      ? intl.formatMessage(messages.passphraseSetLabel)
-                      : intl.formatMessage(messages.passphraseUnsetLabel)
-                  }
-                />
-              </ListItem>
+              <Link
+                route={accountSettingsPassphraseRoute}
+                params={{
+                  id: this.account.id,
+                }}
+              >
+                <ListItem button={true}>
+                  <ListItemText
+                    primary={intl.formatMessage(messages.passphrase)}
+                    secondary={
+                      account.secondSignature
+                        ? intl.formatMessage(messages.passphraseSetLabel)
+                        : intl.formatMessage(messages.passphraseUnsetLabel)
+                    }
+                  />
+                </ListItem>
+              </Link>
             )}
             {!readOnly && (
-              <ListItem button={true} onClick={this.handleDelegateClicked}>
+              <Link
+                route={accountSettingsDelegateRoute}
+                params={{
+                  id: this.account.id,
+                }}
+              >
+                <ListItem button={true}>
+                  <ListItemText
+                    primary={intl.formatMessage(messages.delegateRegistration)}
+                    secondary={
+                      account.registeredDelegateState === LoadingState.LOADING
+                        ? intl.formatMessage(messages.loadingLabel)
+                        : account.registeredDelegate
+                          ? account.registeredDelegate.username
+                          : intl.formatMessage(
+                              messages.delegateRegistrationUnsetLabel
+                            )
+                    }
+                  />
+                </ListItem>
+              </Link>
+            )}
+            <Link
+              route={accountSettingsRemoveRoute}
+              params={{
+                id: this.account.id,
+              }}
+            >
+              <ListItem button={true}>
                 <ListItemText
-                  primary={intl.formatMessage(messages.delegateRegistration)}
-                  secondary={
-                    account.registeredDelegateState === LoadingState.LOADING
-                      ? intl.formatMessage(messages.loadingLabel)
-                      : account.registeredDelegate
-                        ? account.registeredDelegate.username
-                        : intl.formatMessage(
-                            messages.delegateRegistrationUnsetLabel
-                          )
-                  }
+                  classes={{
+                    primary: classes.removeAccount
+                  }}
+                  primary={intl.formatMessage(messages.removeAccount)}
                 />
               </ListItem>
-            )}
-            <ListItem button={true} onClick={this.handleRemoveClicked}>
-              <ListItemText
-                classes={{
-                  primary: classes.removeAccount
-                }}
-                primary={intl.formatMessage(messages.removeAccount)}
-              />
-            </ListItem>
+            </Link>
           </List>
         </div>
       </React.Fragment>

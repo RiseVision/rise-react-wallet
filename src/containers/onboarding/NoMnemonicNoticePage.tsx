@@ -10,6 +10,7 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import Link from '../../components/Link';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { accountOverviewNoIDRoute } from '../../routes';
@@ -50,25 +51,12 @@ class NoMnemonicNoticePage extends React.Component<Props> {
     return this.props;
   }
 
-  handleCloseClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(accountOverviewNoIDRoute);
-  }
-
-  handleContinueClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(accountOverviewNoIDRoute);
-  }
-
   render() {
     const { classes } = this.injected;
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader
-          closeButton={true}
-          onCloseClick={this.handleCloseClick}
-        >
+        <ModalPaperHeader closeLink={{ route: accountOverviewNoIDRoute }}>
           <FormattedMessage
             id="onboarding-no-mnemonic-notice.title"
             description="No passphrase notice screen title"
@@ -97,17 +85,18 @@ class NoMnemonicNoticePage extends React.Component<Props> {
               }
             />
           </Typography>
-          <Button
-            className={classes.button}
-            onClick={this.handleContinueClick}
-            fullWidth={true}
-          >
-            <FormattedMessage
-              id="onboarding-no-mnemonic-notice.continue"
-              description="Continue button label"
-              defaultMessage="Go to account overview"
-            />
-          </Button>
+          <Link route={accountOverviewNoIDRoute}>
+            <Button
+              className={classes.button}
+              fullWidth={true}
+            >
+              <FormattedMessage
+                id="onboarding-no-mnemonic-notice.continue"
+                description="Continue button label"
+                defaultMessage="Go to account overview"
+              />
+            </Button>
+          </Link>
         </div>
       </ModalPaper>
     );

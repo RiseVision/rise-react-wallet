@@ -7,15 +7,17 @@ import * as React from 'react';
 import TransactionDialog, { Secrets } from './TransactionDialog';
 import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
+import RootStore, { RouteLink } from '../../stores/root';
 import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
   account: AccountStore;
-  onNavigateBack: () => void;
+  navigateBackLink: RouteLink;
 }
 
 interface PropsInjected extends Props {
+  store: RootStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
 }
@@ -38,6 +40,7 @@ interface State {
   };
 }
 
+@inject('store')
 @inject('routerStore')
 @inject('walletStore')
 @observer
@@ -93,22 +96,15 @@ class VoteDelegateDialog extends React.Component<Props, State> {
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
-    const { onNavigateBack } = this.injected;
-    onNavigateBack();
+    const { store, navigateBackLink } = this.injected;
+    store.navigateTo(navigateBackLink);
   }
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
-    const { onNavigateBack } = this.injected;
-    const { step } = this.state;
-
-    if (step === 'vote') {
-      onNavigateBack();
-    } else {
-      this.setState({
-        step: 'vote',
-        transaction: null,
-      });
-    }
+    this.setState({
+      step: 'vote',
+      transaction: null,
+    });
   }
 
   handleQueryChange = (query: string) => {
@@ -233,7 +229,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
   }
 
   render() {
-    const { account } = this.injected;
+    const { account, navigateBackLink } = this.injected;
     const { step, transaction } = this.state;
 
     const canGoBack = step !== 'vote';
@@ -248,7 +244,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
           remove: transaction.remove,
         } : null}
         onSendTransaction={this.handleSendTransaction}
-        onClose={this.handleClose}
+        closeLink={navigateBackLink}
         onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
         children={this.renderVoteContent()}
       />

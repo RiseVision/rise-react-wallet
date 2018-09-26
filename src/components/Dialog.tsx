@@ -7,9 +7,11 @@ import {
 } from '@material-ui/core/styles';
 import * as React from 'react';
 import { ReactElement, ReactEventHandler } from 'react';
+import { inject, observer } from 'mobx-react';
 import ModalPaperHeader from './ModalPaperHeader';
 import autoId from '../utils/autoId';
 import { PropsOf } from '../utils/metaTypes';
+import RootStore, { RouteLink } from '../stores/root';
 
 const styles = (theme: Theme) => createStyles({
   paper: {
@@ -26,8 +28,14 @@ type BaseProps = PropsOf<typeof MuiDialog>
   & WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
+  closeLink?: RouteLink;
   onNavigateBack?: ReactEventHandler<{}>;
+  navigateBackLink?: RouteLink;
   children: ReactElement<DialogContentProps>;
+}
+
+interface PropsInjected extends Props {
+  store: RootStore;
 }
 
 interface State {
@@ -37,7 +45,9 @@ interface State {
 
 const stylesDecorator = withStyles(styles);
 
-class Dialog extends React.PureComponent<Props, State> {
+@inject('store')
+@observer
+class Dialog extends React.Component<Props, State> {
   @autoId dialogTitleId: string;
   @autoId dialogContentId: string;
 
@@ -46,6 +56,10 @@ class Dialog extends React.PureComponent<Props, State> {
     childContentId: null,
   };
 
+  get injected(): PropsInjected {
+    return this.props as PropsInjected;
+  }
+
   setDialogContent = (dc: DialogContent) => {
     this.setState({
       title: dc.title,
@@ -53,15 +67,33 @@ class Dialog extends React.PureComponent<Props, State> {
     });
   }
 
+  handleCloseDialog = (ev: React.SyntheticEvent<{}>) => {
+    const { onClose, closeLink, store } = this.injected;
+
+    if (closeLink) {
+      store.navigateTo(closeLink);
+    } else if (onClose) {
+      onClose(ev);
+    }
+  }
+
   render() {
-    const { classes, onClose, onNavigateBack, children, ...others } = this.props;
+    const {
+      classes,
+      onClose,
+      closeLink,
+      onNavigateBack,
+      navigateBackLink,
+      children,
+      ...others
+    } = this.injected;
     const { title, childContentId } = this.state;
 
     return (
       <MuiDialog
         aria-labelledby={this.dialogTitleId}
         aria-describedby={childContentId || this.dialogContentId}
-        onClose={onClose}
+        onClose={onClose || closeLink ? this.handleCloseDialog : undefined}
         classes={{
           paper: classes.paper,
         }}
@@ -69,9 +101,9 @@ class Dialog extends React.PureComponent<Props, State> {
         {...others}
       >
         <ModalPaperHeader
-          closeButton={!!onClose}
+          closeLink={closeLink}
           onCloseClick={onClose}
-          backButton={!!onNavigateBack}
+          backLink={navigateBackLink}
           onBackClick={onNavigateBack}
           children={title}
         />

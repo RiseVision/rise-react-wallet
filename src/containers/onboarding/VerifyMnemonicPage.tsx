@@ -135,11 +135,6 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     };
   }
 
-  handleCloseClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(onboardingNewAccountRoute);
-  }
-
   handlePlaceholderClick = (ev: React.MouseEvent<HTMLElement>) => {
     ev.preventDefault();
 
@@ -221,10 +216,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader
-          closeButton={true}
-          onCloseClick={this.handleCloseClick}
-        >
+        <ModalPaperHeader closeLink={{ route: onboardingNewAccountRoute }}>
           <FormattedMessage
             id="onboarding-verify-mnemonic.title"
             description="Verify mnemonic screen title"
