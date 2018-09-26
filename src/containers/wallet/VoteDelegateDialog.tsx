@@ -4,7 +4,7 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
-import TransactionDialog, { Secrets } from './TransactionDialog';
+import TransactionDialog from './TransactionDialog';
 import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';

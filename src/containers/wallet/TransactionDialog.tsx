@@ -6,10 +6,7 @@ import ConfirmTransactionDialogContent from '../../components/content/ConfirmTra
 import Dialog from '../../components/Dialog';
 import AccountStore from '../../stores/account';
 import RootStore, { RouteLink } from '../../stores/root';
-import WalletStore, {
-  TFeeTypes,
-  TTransactionResult
-} from '../../stores/wallet';
+import WalletStore, { TFeeTypes } from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import { PropsOf } from '../../utils/metaTypes';
 
@@ -124,16 +121,16 @@ class TransactionDialog extends React.Component<Props, State> {
     if (onNavigateBack) {
       onNavigateBack(ev);
     }
-  };
+  }
 
   handleConfirmTransaction = (secrets: Secrets) => {
     this.broadcastTransaction(secrets);
-  };
+  }
 
   handleRetryTransaction = () => {
     const { secrets } = this.state;
     this.broadcastTransaction(secrets);
-  };
+  }
 
   async broadcastTransaction(secrets: Secrets) {
     const { walletStore, onCreateTransaction } = this.injected;

@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
 import { LiskWallet } from 'dpos-offline';
-import TransactionDialog, { Secrets } from './TransactionDialog';
+import TransactionDialog from './TransactionDialog';
 import AddSecondPassphraseDialogContent from '../../components/content/AddSecondPassphraseDialogContent';
 import { accountSettingsPassphraseRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';
@@ -64,7 +64,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
         publicKey: derivePublicKey(passphrase)
       }
     });
-  };
+  }
 
   createTransaction = () => {
     const { account, walletStore } = this.injected;
@@ -72,13 +72,13 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
 
     if (step === 'transaction') {
       return walletStore.createPassphraseTx(
-        transaction.passphrase!,
+        transaction!.passphrase!,
         account.id
       );
     } else {
       throw new Error('Invalid internal state');
     }
-  };
+  }
 
   resetState() {
     this.setState({

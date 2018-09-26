@@ -2,7 +2,7 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router';
 import * as React from 'react';
-import TransactionDialog, { Secrets } from './TransactionDialog';
+import TransactionDialog from './TransactionDialog';
 import SendCoinsDialogContent from '../../components/content/SendCoinsDialogContent';
 import { accountSendRoute } from '../../routes';
 import AccountStore from '../../stores/account';
@@ -50,7 +50,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
     onNavigateBack();
-  };
+  }
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
@@ -64,7 +64,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
         transaction: null
       });
     }
-  };
+  }
 
   handleSubmit = (data: { recipientID: string; amount: RawAmount }) => {
     const { recipientID, amount } = data;
@@ -78,7 +78,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
         amount
       }
     });
-  };
+  }
 
   handleCreateTransaction = () => {
     const { account, walletStore } = this.injected;
@@ -93,7 +93,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
     } else {
       throw new Error('Invalid internal state');
     }
-  };
+  }
 
   resetState() {
     const { recipientID, amount } = this.props;
