@@ -61,8 +61,8 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
       step: 'transaction',
       transaction: {
         passphrase,
-        publicKey: derivePublicKey(passphrase)
-      }
+        publicKey: derivePublicKey(passphrase),
+      },
     });
   }
 

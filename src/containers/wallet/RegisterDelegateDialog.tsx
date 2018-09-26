@@ -133,7 +133,7 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
           kind: 'delegate',
           username: transaction.username,
         } : null}
-          onCreateTransaction={this.handleCreateTransaction}
+        onCreateTransaction={this.handleCreateTransaction}
         closeLink={navigateBackLink}
         onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
         children={this.renderDelegateContent()}
