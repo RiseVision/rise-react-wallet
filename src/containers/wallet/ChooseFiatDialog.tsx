@@ -5,19 +5,22 @@ import { RouterStore } from 'mobx-router';
 import { accountSettingsFiatRoute } from '../../routes';
 import Dialog from '../../components/Dialog';
 import AccountStore from '../../stores/account';
+import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import ChooseFiatDialogContent from '../../components/content/ChooseFiatDialogContent';
 
 interface Props {
   account: AccountStore;
-  onNavigateBack: () => void;
+  navigateBackLink: RouteLink;
 }
 
 interface InjectedProps extends Props {
+  store: RootStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
 }
 
+@inject('store')
 @inject('routerStore')
 @inject('walletStore')
 @observer
@@ -28,7 +31,7 @@ class ChooseFiatDialog extends React.Component<Props> {
 
   @action
   handleChange = (data: { fiat: string; global: boolean }) => {
-    const { account, onNavigateBack, walletStore } = this.injected;
+    const { account, navigateBackLink, store, walletStore } = this.injected;
 
     if (data.global) {
       for (const acc of walletStore.accounts.values()) {
@@ -38,13 +41,13 @@ class ChooseFiatDialog extends React.Component<Props> {
       account.fiatCurrency = data.fiat;
     }
 
-    onNavigateBack();
+    store.navigateTo(navigateBackLink);
   }
 
   render() {
     const {
       account,
-      onNavigateBack,
+      navigateBackLink,
       routerStore,
       walletStore,
     } = this.injected;
@@ -54,7 +57,7 @@ class ChooseFiatDialog extends React.Component<Props> {
     return (
       <Dialog
         open={isOpen}
-        onClose={onNavigateBack}
+        closeLink={navigateBackLink}
       >
         <ChooseFiatDialogContent
           key={account.id}

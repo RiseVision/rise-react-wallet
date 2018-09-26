@@ -31,6 +31,7 @@ import {
   accountSettingsFiatRoute
 } from '../../routes';
 import { accountStore } from '../../stores';
+import { RouteLink } from '../../stores/root';
 import AccountStore, { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 import Link from '../../components/Link';
@@ -191,13 +192,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     });
   }
 
-  // DIALOG ACTIONS
-  onDialogClose = () => {
-    this.injected.routerStore.goTo(accountSettingsRoute, {
-      id: this.account.id
-    });
-  }
-
   componentDidMount() {
     this.loadVotedDelegate();
     this.loadRegisteredDelegate();
@@ -226,31 +220,38 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     const account = this.account;
     const { readOnly } = account;
 
+    const backLink: RouteLink = {
+      route: accountSettingsRoute,
+      params: {
+        id: this.account.id,
+      },
+    };
+
     return (
       <React.Fragment>
         <AccountNameDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <VoteDelegateDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <ChooseFiatDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <AddSecondPassphraseDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <RegisterDelegateDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <RemoveAccountDialog
           account={this.account}
-          onNavigateBack={this.onDialogClose}
+          navigateBackLink={backLink}
         />
         <div className={classes.content}>
           <List>

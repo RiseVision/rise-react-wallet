@@ -1,8 +1,10 @@
 import { inject, observer } from 'mobx-react';
+import { Route, RouteParams } from 'mobx-router';
 import * as React from 'react';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog from '../../components/Dialog';
 import AccountStore from '../../stores/account';
+import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore, {
   TFeeTypes,
   TTransactionResult
@@ -35,6 +37,7 @@ interface Props extends DialogProps {
 }
 
 interface PropsInjected extends Props {
+  store: RootStore;
   walletStore: WalletStore;
 }
 
@@ -45,6 +48,7 @@ interface State {
   sendError: string;
 }
 
+@inject('store')
 @inject('walletStore')
 @observer
 class TransactionDialog extends React.Component<Props, State> {
@@ -83,16 +87,35 @@ class TransactionDialog extends React.Component<Props, State> {
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
-    const { onClose } = this.injected;
+    const { store, onClose, closeLink } = this.injected;
+    this.beforeClose();
+    if (onClose) {
+      onClose(ev);
+    } else if (closeLink) {
+      // Fallback to the closeLink as we use this event handler for the
+      // dialog content close buttons as well
+      store.navigateTo(closeLink);
+    }
+  }
 
+  wrapCloseLink(link: RouteLink): RouteLink {
+    return {
+      ...link,
+      onBeforeNavigate: (route: Route<{}>, params: RouteParams, queryParams: RouteParams) => {
+        this.beforeClose();
+        if (link.onBeforeNavigate) {
+          link.onBeforeNavigate(route, params, queryParams);
+        }
+      },
+    };
+  }
+
+  beforeClose() {
     // Clear secrets from state when closing
     this.setState({
       secrets: EMPTY_SECRETS
     });
 
-    if (onClose) {
-      onClose(ev);
-    }
   }
 
   handleBackFromConfirm = (ev: React.SyntheticEvent<{}>) => {
@@ -183,20 +206,35 @@ class TransactionDialog extends React.Component<Props, State> {
 
   get dialogProps(): Pick<
     DialogProps,
-    'onClose' | 'onNavigateBack' | 'children'
+    'onClose' | 'closeLink' | 'onNavigateBack' | 'navigateBackLink' | 'children'
   > {
     const { transaction, step } = this.state;
+    const { onClose, closeLink, onNavigateBack, navigateBackLink } = this.injected;
 
     if (!transaction) {
-      const { onClose, onNavigateBack, children } = this.injected;
-      return { onClose, onNavigateBack, children };
+      const { children } = this.injected;
+      return { onClose, closeLink, onNavigateBack, navigateBackLink, children };
+    }
+
+    const closeProps: Pick<DialogProps, 'onClose' | 'closeLink'> = {};
+    if (closeLink) {
+      closeProps.closeLink = this.wrapCloseLink(closeLink);
+    } else {
+      closeProps.onClose = this.handleClose;
+    }
+
+    const backProps: Pick<DialogProps, 'onNavigateBack' | 'navigateBackLink'> = {};
+    if (navigateBackLink) {
+      backProps.navigateBackLink = navigateBackLink;
+    } else {
+      backProps.onNavigateBack = onNavigateBack;
     }
 
     switch (step) {
       default:
         return {
-          onClose: this.handleClose,
-          onNavigateBack: this.handleBackFromConfirm,
+          ...closeProps,
+          ...backProps,
           children: this.renderConfirmTxContent()
         };
       case 'sending':
@@ -205,12 +243,12 @@ class TransactionDialog extends React.Component<Props, State> {
         };
       case 'failure':
         return {
-          onClose: this.handleClose,
+          ...closeProps,
           children: this.renderFailedTxContent()
         };
       case 'sent':
         return {
-          onClose: this.handleClose,
+          ...closeProps,
           children: this.renderSentTxContent()
         };
     }
