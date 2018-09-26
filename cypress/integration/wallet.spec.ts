@@ -53,7 +53,7 @@ afterEach(() => {
 context('Wallet', () => {
   it('send funds', () => {
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     assertAutofocus();
     // type in the recipient address
     fillDialogInput(0, lstore.get('accounts')[1].id);
@@ -85,7 +85,7 @@ context('Wallet', () => {
   it('navigate back from settings', () => {
     goToSettings();
     cy.get('header')
-      .find('button')
+      .find('a[aria-label="Navigate back"]')
       .click();
     // click the menu
     selectAccount(getAccount().id);
@@ -188,7 +188,7 @@ context('Server errors', () => {
       }
     }).as('putTransaction');
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
     fillDialogInput(0, lstore.get('accounts')[1].id);
     // type in the amount
@@ -210,7 +210,7 @@ context('Server errors', () => {
       }
     }).as('putTransaction');
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
     fillDialogInput(0, lstore.get('accounts')[1].id);
     // type in the amount
@@ -331,6 +331,7 @@ context('Settings', () => {
       .its('length')
       .should('be.gt', 0);
     // pick the first result (2nd button)
+    cy.wait(1000)
     clickDialogButton(1, true);
     fillConfirmationDialog();
     assertSuccessfulDialog();
@@ -364,7 +365,7 @@ context('Settings', () => {
     // type in the query
     const newName = 'new name ' + Math.random();
     fillDialogInput(0, newName);
-    clickDialogButton(1).then(_ => {
+    clickDialogButton(0).then(_ => {
       expect(getAccount().name).to.eql(newName);
       // wait for observables to settle
       cy.wait(1000);
@@ -385,7 +386,7 @@ context('Settings', () => {
     getDialog()
       .find('select')
       .select('EUR');
-    clickDialogButton(2).then(_ => {
+    clickDialogButton(1).then(_ => {
       expect(getAccount().fiatCurrency).to.eql('EUR');
     });
   });
@@ -442,7 +443,7 @@ context('Settings dialogs autofocus', () => {
 context('Form validation', function() {
   it('confirmation passphrase', function() {
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
     fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
@@ -463,7 +464,7 @@ context('Form validation', function() {
 
   it('confirmation mnemonic', function() {
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
     fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
@@ -503,7 +504,7 @@ context('Form validation', function() {
 
   it('send dialog', () => {
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
     fillDialogInput(0, 'wrong address');
     // type in the amount
@@ -523,7 +524,7 @@ context('Form validation', function() {
 context('Dialog navigation', function() {
   it('go back to the first form', function() {
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
     fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
@@ -531,6 +532,7 @@ context('Dialog navigation', function() {
     // click submit
     clickDialogSubmit();
     // click the back button
+    // TODO create a dedicated method
     clickDialogButton(0);
     getDialog()
       .contains('h1', 'Send RISE')
@@ -540,9 +542,9 @@ context('Dialog navigation', function() {
 
   it('close button on the first form', () => {
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // click the close button
-    clickDialogButton(0);
+    closeDialog()
     // assert that the dialog is gone
     cy.get('body')
       .find('div[role="dialog"]')
@@ -551,7 +553,7 @@ context('Dialog navigation', function() {
 
   it('close button on the second form', function() {
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
     fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
@@ -559,7 +561,7 @@ context('Dialog navigation', function() {
     // click submit
     clickDialogSubmit();
     // click the close button
-    clickDialogButton(1);
+    closeDialog()
     // assert that the dialog is gone
     cy.get('body')
       .find('div[role="dialog"]')
@@ -568,7 +570,7 @@ context('Dialog navigation', function() {
 
   it('no navigation buttons during a submission', function() {
     // click the Send RISE button
-    cy.get('button[title="Send RISE"]').click();
+    cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
     fillDialogInput(0, this.accounts.storedAccounts[1].id);
     // type in the amount
@@ -577,6 +579,7 @@ context('Dialog navigation', function() {
     clickDialogSubmit();
     fillConfirmationDialog();
     // assert theres no buttons
+    // TODO assert anchors
     getDialogHeader()
       .find('button')
       .should('not.exist');
@@ -612,7 +615,6 @@ context('Dialog navigation', function() {
       // pick the first result (2nd button)
       clickDialogButton(1, true);
       // go back
-      clickDialogButton(0);
       clickDialogButton(0).then(_ => {
         getDialogInput(0).should('have.value', query);
       });

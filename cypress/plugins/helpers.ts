@@ -75,7 +75,7 @@ export function fillConfirmationDialog(mnemonic?: string, passphrase?: string) {
 
 export function goToSettings() {
   // click the Settings button
-  return cy.get('button[title="Account settings"]').click();
+  return cy.get('a[title="Account settings"]').click();
 }
 
 export function clickSettingsRow(text: string) {
@@ -95,7 +95,7 @@ export function assertAutofocus(
 
 export function closeDialog() {
   return getDialog()
-    .find('button[aria-label="Close dialog"]')
+    .find('[aria-label="Close dialog"]')
     .click();
 }
 
