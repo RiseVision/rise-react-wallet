@@ -4,7 +4,7 @@ This repository contains a _Work-In-Progress_ web wallet for the **RISE** PoS bl
 
 ### Nightly build
 
-There's a **[nightly build](http://risevision.github.io/rise-react-wallet/index.html)** in case you'd like to give it a spin.
+There's a **[nightly build (testnet)](http://risevision.github.io/rise-react-wallet/index.html)** in case you'd like to give it a spin.
 
 ### Status
 
