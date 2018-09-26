@@ -8,10 +8,10 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import * as classNames from 'classnames';
-import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
+import { observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import Link from '../../components/Link';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
@@ -47,10 +47,6 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {}
 
-interface PropsInjected extends Props {
-  routerStore: RouterStore;
-}
-
 interface State {
   currentTip: number;
 }
@@ -59,15 +55,9 @@ const stylesDecorator = withStyles(styles, {
   name: 'OnboardingSecurityNoticePage'
 });
 
-@inject('routerStore')
 @observer
 class SecurityNoticePage extends React.Component<Props, State> {
   tipRefs: React.RefObject<HTMLDivElement>[];
-
-  get injected(): PropsInjected {
-    // @ts-ignore
-    return this.props;
-  }
 
   constructor(props: Props) {
     super(props);
@@ -84,11 +74,6 @@ class SecurityNoticePage extends React.Component<Props, State> {
     ];
   }
 
-  handleCloseClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(onboardingNewAccountRoute);
-  }
-
   handleNextTipClick = () => {
     this.setState(prevState => {
       return { currentTip: prevState.currentTip + 1 };
@@ -102,13 +87,8 @@ class SecurityNoticePage extends React.Component<Props, State> {
     });
   }
 
-  handleContinueClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(onboardingNewMnemonicRoute);
-  }
-
   render() {
-    const { classes } = this.injected;
+    const { classes } = this.props;
     const { currentTip } = this.state;
 
     const tips = [];
@@ -168,7 +148,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader onCloseClick={this.handleCloseClick}>
+        <ModalPaperHeader closeLink={{ route: onboardingNewAccountRoute }}>
           <FormattedMessage
             id="onboarding-security-notice.title"
             description="Security notice screen title"
@@ -214,17 +194,18 @@ class SecurityNoticePage extends React.Component<Props, State> {
               />
             </Button>
           ) : (
-            <Button
-              className={classes.button}
-              onClick={this.handleContinueClick}
-              fullWidth={true}
-            >
-              <FormattedMessage
-                id="onboarding-security-notice.continue"
-                description="Button label for when all of the tips have been seen"
-                defaultMessage="Continue"
-              />
-            </Button>
+            <Link route={onboardingNewMnemonicRoute}>
+              <Button
+                className={classes.button}
+                fullWidth={true}
+              >
+                <FormattedMessage
+                  id="onboarding-security-notice.continue"
+                  description="Button label for when all of the tips have been seen"
+                  defaultMessage="Continue"
+                />
+              </Button>
+            </Link>
           )}
         </div>
       </ModalPaper>

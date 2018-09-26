@@ -32,8 +32,7 @@ interface PropsInjected extends Props {
 // TODO handle missing onboardingStore.address using a redir
 class ExistingAccountTypePage extends React.Component<Props> {
   get injected(): PropsInjected {
-    // @ts-ignore
-    return this.props;
+    return this.props as PropsInjected;
   }
 
   constructor(props: Props) {
@@ -42,11 +41,6 @@ class ExistingAccountTypePage extends React.Component<Props> {
     if (!onboardingStore.address) {
       routerStore.goTo(onboardingAddAccountRoute);
     }
-  }
-
-  handleBackClick = () => {
-    const { routerStore } = this.injected;
-    routerStore.goTo(onboardingExistingAccountRoute);
   }
 
   handleFullAccessClick = async () => {
@@ -79,7 +73,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
   render() {
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader onBackClick={this.handleBackClick}>
+        <ModalPaperHeader backLink={{ route: onboardingExistingAccountRoute }}>
           <FormattedMessage
             id="onboarding-existing-account-type.title"
             description="Existing account type screen title"
