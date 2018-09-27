@@ -477,6 +477,23 @@ export const accountSendRoute = new Route({
 
 export const accountSendNoIDRoute = createNoIDRoute('/send', accountSendRoute);
 
+export const addressBookRoute = new Route({
+  path: '/address-book',
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      loading={<LoadingIndicator />}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          {/* TODO */}
+        </components.Wallet>
+      )}
+    />
+  )
+});
 export const homeRoute = new Route<RootStore>({
   path: '/',
   onEnter: (route: Route<RootStore>, params: {}, store: RootStore) => {

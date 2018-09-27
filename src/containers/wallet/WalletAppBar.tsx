@@ -71,7 +71,7 @@ const messages = defineMessages({
   }
 });
 
-type AppBarState = null | 'accountOverview' | 'accountSettings';
+type AppBarState = null | 'accountOverview' | 'accountSettings' | 'addressBook';
 
 @inject('routerStore')
 @inject(accountStore)
@@ -85,6 +85,8 @@ class WalletAppBar extends React.Component<DecoratedProps> {
       state = 'accountOverview';
     } else if (path.startsWith('/settings')) {
       state = 'accountSettings';
+    } else if (path.startsWith('/address-book')) {
+      state = 'addressBook';
     }
     return state;
   }
@@ -116,10 +118,12 @@ class WalletAppBar extends React.Component<DecoratedProps> {
     const { intl, classes } = this.injected;
     const state = this.appBarState();
 
+    const isTopRoute = state === 'accountOverview' || state === 'addressBook';
+
     return (
       <AppBar className={this.injected.className} color="default">
         <Toolbar>
-          {state === 'accountOverview' ? (
+          {isTopRoute ? (
             <IconButton
               className={classes.drawerIcon}
               aria-label={intl.formatMessage(messages.openDrawerAriaLabel)}
@@ -156,6 +160,13 @@ class WalletAppBar extends React.Component<DecoratedProps> {
                 id="wallet-appbar.account-settings-title"
                 description="Account settings title"
                 defaultMessage="Account settings"
+              />
+            )}
+            {state === 'addressBook' && (
+              <FormattedMessage
+                id="wallet-appbar.address-book-title"
+                description="Address book title"
+                defaultMessage="Address book"
               />
             )}
           </Typography>
