@@ -5,8 +5,13 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
@@ -43,6 +48,16 @@ const messages = defineMessages({
     id: 'wallet-address-book.new-contact-fab-tooltip',
     description: 'Tooltip for new contact floating action button',
     defaultMessage: 'New contact'
+  },
+  nameColumnHeader: {
+    id: 'wallet-address-book.name-column-header',
+    description: 'Label for the name column in address book',
+    defaultMessage: 'Contact name'
+  },
+  addressColumnHeader: {
+    id: 'wallet-address-book.address-column-header',
+    description: 'Label for the address column in address book',
+    defaultMessage: 'Address'
   }
 });
 
@@ -54,7 +69,16 @@ class AddressBook extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { intl, classes } = this.injected;
+    const { intl, classes, walletStore } = this.injected;
+
+    // Fake contacts from the current account list
+    const contacts = [];
+    for (const acc of walletStore.accounts.values()) {
+      contacts.push({
+        name: acc.name,
+        address: acc.id,
+      });
+    }
 
     return (
       <div className={classes.content}>
@@ -72,7 +96,28 @@ class AddressBook extends React.Component<DecoratedProps> {
             </Button>
           </Link>
         </Tooltip>
-        <Typography>Hello!</Typography>
+        <Paper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  {intl.formatMessage(messages.nameColumnHeader)}
+                </TableCell>
+                <TableCell>
+                  {intl.formatMessage(messages.addressColumnHeader)}
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {contacts.map((entry) => (
+                <TableRow>
+                  <TableCell children={entry.name} />
+                  <TableCell children={entry.address} />
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Paper>
       </div>
     );
   }
