@@ -20,7 +20,7 @@ import {
   IValueWillChange,
   IValueDidChange
 } from 'mobx';
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import * as lstore from 'store';
 import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
 import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';

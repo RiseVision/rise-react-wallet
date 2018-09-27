@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import { accountSettingsRemoveRoute } from '../../routes';
 import Dialog from '../../components/Dialog';
 import RootStore, { RouteLink } from '../../stores/root';

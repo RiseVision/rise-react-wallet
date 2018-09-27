@@ -19,7 +19,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { RouterStore, Route, RouteParams } from 'mobx-router';
+import { RouterStore, Route, RouteParams } from 'mobx-router-rise';
 import * as React from 'react';
 import {
   defineMessages,

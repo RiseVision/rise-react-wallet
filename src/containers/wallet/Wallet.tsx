@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core/styles';
 import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';

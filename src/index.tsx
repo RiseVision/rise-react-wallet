@@ -1,7 +1,7 @@
 /// <reference path="utils/missing.d.ts"/>
 import './polyfills';
 import { Provider } from 'mobx-react';
-import { startRouter } from 'mobx-router';
+import { startRouter } from 'mobx-router-rise';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as config from './config.json';

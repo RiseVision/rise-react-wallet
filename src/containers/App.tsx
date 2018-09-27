@@ -1,5 +1,5 @@
 import { inject, observer } from 'mobx-react';
-import { MobxRouter } from 'mobx-router';
+import { MobxRouter } from 'mobx-router-rise';
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 import { Helmet } from 'react-helmet';

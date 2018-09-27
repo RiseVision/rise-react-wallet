@@ -1,5 +1,5 @@
 /* tslint:disable */
-declare module 'mobx-router' {
+declare module 'mobx-router-rise' {
   import * as React from 'react';
   export type RouteParams = {
     [name: string]: string;
