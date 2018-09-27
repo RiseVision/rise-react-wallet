@@ -11,7 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';

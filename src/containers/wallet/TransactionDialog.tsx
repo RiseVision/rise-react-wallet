@@ -1,6 +1,6 @@
 import { BaseTx } from 'dpos-offline';
 import { inject, observer } from 'mobx-react';
-import { Route, RouteParams } from 'mobx-router';
+import { Route, RouteParams } from 'mobx-router-rise';
 import * as React from 'react';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog from '../../components/Dialog';

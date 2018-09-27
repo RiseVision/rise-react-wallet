@@ -1,4 +1,4 @@
-import { Route } from 'mobx-router';
+import { Route } from 'mobx-router-rise';
 import * as React from 'react';
 import * as lstore from 'store';
 import AsyncComponent from './components/AsyncComponent';

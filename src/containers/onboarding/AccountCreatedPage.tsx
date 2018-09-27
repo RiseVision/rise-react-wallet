@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import Link from '../../components/Link';

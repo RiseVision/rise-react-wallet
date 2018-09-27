@@ -5534,9 +5534,9 @@ mobx-react@^5.2.3:
     hoist-non-react-statics "^2.5.0"
     react-lifecycles-compat "^3.0.2"
 
-mobx-router@^0.0.13:
+mobx-router-rise@^0.0.13:
   version "0.0.13"
-  resolved "https://registry.yarnpkg.com/mobx-router/-/mobx-router-0.0.13.tgz#30657171ea05e0393dd62847a512ef31c24a3114"
+  resolved "https://registry.yarnpkg.com/mobx-router-rise/-/mobx-router-rise-0.0.13.tgz#3900474226551d43f288cefc2b97fd04c9b98ae6"
   dependencies:
     babel-runtime "^6.11.6"
     director "1.2.8"

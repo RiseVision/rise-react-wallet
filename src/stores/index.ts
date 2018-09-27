@@ -1,4 +1,4 @@
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import AccountStore from './account';
 import AppStore from './app';
 import OnboardingStore from './onboarding';

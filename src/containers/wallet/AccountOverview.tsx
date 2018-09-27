@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import SendIcon from '@material-ui/icons/Send';
 import { toPairs } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';

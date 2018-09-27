@@ -15,7 +15,7 @@
     "mdi-material-ui": "^5.4.0",
     "mobx": "^5.0.3",
     "mobx-react": "^5.2.3",
-    "mobx-router": "^0.0.13",
+    "mobx-router-rise": "^0.0.13",
     "moment-timezone": "^0.5.21",
     "query-string": "^6.1.0",
     "react": "^16.4.0",

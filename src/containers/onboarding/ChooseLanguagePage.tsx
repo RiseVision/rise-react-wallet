@@ -4,7 +4,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import FlagIcon from '../../components/FlagIcon';

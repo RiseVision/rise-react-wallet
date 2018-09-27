@@ -1,5 +1,5 @@
 import { configure } from 'mobx';
-import { RouterStore, Route, RouteParams } from 'mobx-router';
+import { RouterStore, Route, RouteParams } from 'mobx-router-rise';
 import AccountStore from './account';
 import AppStore from './app';
 import { TConfig } from './index';
@@ -35,7 +35,7 @@ export default class RootStore {
       queryParams?: RouteParams
     ) {
       // use the RootStore as a default store when changing routes
-      // TODO create an issue for mobx-router
+      // TODO create an issue for mobx-router-rise
       return oldGoTo.call(this, route, params, store || self, queryParams);
     };
   }
