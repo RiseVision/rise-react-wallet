@@ -229,7 +229,7 @@ export const accountOverviewRoute = new Route({
 });
 
 export const accountOverviewNoIDRoute = createNoIDRoute(
-  '/account/',
+  '/account',
   accountOverviewRoute
 );
 
@@ -305,7 +305,7 @@ export const accountSettingsNameRoute = new Route({
 });
 
 export const accountSettingsNameNoIDRoute = createNoIDRoute(
-  '/settings/name/',
+  '/settings/name',
   accountSettingsNameRoute
 );
 
@@ -329,7 +329,7 @@ export const accountSettingsVoteRoute = new Route({
 });
 
 export const accountSettingsVoteNoIDRoute = createNoIDRoute(
-  '/settings/vote/',
+  '/settings/vote',
   accountSettingsVoteRoute
 );
 
@@ -353,7 +353,7 @@ export const accountSettingsFiatRoute = new Route({
 });
 
 export const accountSettingsFiatNoIDRoute = createNoIDRoute(
-  '/settings/fiat/',
+  '/settings/fiat',
   accountSettingsFiatRoute
 );
 
@@ -377,7 +377,7 @@ export const accountSettingsPassphraseRoute = new Route({
 });
 
 export const accountSettingsPassphraseNoIDRoute = createNoIDRoute(
-  '/settings/passphrase/',
+  '/settings/passphrase',
   accountSettingsPassphraseRoute
 );
 
@@ -401,7 +401,7 @@ export const accountSettingsDelegateRoute = new Route({
 });
 
 export const accountSettingsDelegateNoIDRoute = createNoIDRoute(
-  '/settings/delegate/',
+  '/settings/delegate',
   accountSettingsDelegateRoute
 );
 
@@ -425,7 +425,7 @@ export const accountSettingsRemoveRoute = new Route({
 });
 
 export const accountSettingsRemoveNoIDRoute = createNoIDRoute(
-  '/settings/remove/',
+  '/settings/remove',
   accountSettingsRemoveRoute
 );
 
@@ -449,7 +449,7 @@ export const accountSettingsRoute = new Route({
 });
 
 export const accountSettingsNoIDRoute = createNoIDRoute(
-  '/settings/',
+  '/settings',
   accountSettingsRoute
 );
 
