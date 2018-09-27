@@ -17,6 +17,20 @@ export type TStoredAccount = {
   pinned: boolean;
 };
 
+export function clickOnboardingButton(pos: number = 0) {
+  return getDialog()
+    .find('button, a[role="button"]')
+    .eq(pos)
+    .click();
+}
+
+export function fillOnboardingInput(pos: number = 0, text: string) {
+  return getDialog()
+    .find('input')
+    .eq(pos)
+    .type(text);
+}
+
 export function getDialog(child: string = '', timeout?: number) {
   return cy.get(`div[role="dialog"] ${child}`, { timeout });
 }
@@ -31,7 +45,7 @@ export function getDialogHeader() {
 }
 
 export function getDialogInput(pos: number = 0) {
-  return getDialog()
+  return getDialogContent()
     .find('input')
     .eq(pos);
 }
@@ -41,7 +55,7 @@ export function fillDialogInput(pos: number = 0, text: string) {
 }
 
 export function clickDialogSubmit() {
-  return getDialog()
+  return getDialogContent()
     .find('button[type="submit"]')
     .click();
 }
@@ -51,10 +65,17 @@ export function clickDialogSubmit() {
  * @param pos
  */
 export function clickDialogButton(pos: number = 0, force = false) {
-  return getDialog()
-    .find('button')
+  return getDialogContent()
+    .find('button, a[role="button"]')
     .eq(pos)
     .click({ force });
+}
+
+export function clickDialogBackButton() {
+  return getDialogHeader()
+    .find('button, a[role="button"]')
+    .filter('[aria-label="Go back"]')
+    .click();
 }
 
 export function fillConfirmationDialog(mnemonic?: string, passphrase?: string) {
@@ -94,8 +115,9 @@ export function assertAutofocus(
 }
 
 export function closeDialog() {
-  return getDialog()
-    .find('[aria-label="Close dialog"]')
+  return getDialogHeader()
+    .find('button, a[role="button"]')
+    .filter('[aria-label="Close dialog"]')
     .click();
 }
 

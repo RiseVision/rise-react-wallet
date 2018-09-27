@@ -11,6 +11,7 @@ import {
   goToSettings,
   fillConfirmationDialog,
   clickDialogButton,
+  clickDialogBackButton,
   clickDialogSubmit,
   fillDialogInput,
   getDialogHeader,
@@ -102,7 +103,7 @@ context('Wallet', () => {
       .contains('Sign out')
       .click();
 
-    getDialog()
+    getDialogContent()
       .contains('button', 'Sign out')
       .click()
       .then(_ => {
@@ -224,7 +225,7 @@ context('Server errors', () => {
       .should('have.length', 1)
       .then(_ => {
         // click 'Try again'
-        clickDialogButton(1);
+        clickDialogButton(0);
         // make a new stab to assert the retry hit
         // TODO doesnt work
         cy.route({
@@ -531,9 +532,7 @@ context('Dialog navigation', function() {
     fillDialogInput(1, '0.001');
     // click submit
     clickDialogSubmit();
-    // click the back button
-    // TODO create a dedicated method
-    clickDialogButton(0);
+    clickDialogBackButton();
     getDialog()
       .contains('h1', 'Send RISE')
       .should('have.length', 1);
@@ -585,7 +584,7 @@ context('Dialog navigation', function() {
       .should('not.exist');
     assertSuccessfulDialog();
     // click the close button
-    clickDialogButton(0);
+    closeDialog();
   });
 
   context('preserves inputted data', () => {
@@ -598,7 +597,7 @@ context('Dialog navigation', function() {
       openRegisterDelegateDialog();
       fillDialogInput(0, name);
       clickDialogSubmit();
-      clickDialogButton(0).then(_ => {
+      clickDialogBackButton().then(_ => {
         getDialogInput(0).should('have.value', name);
       });
     });
@@ -615,7 +614,7 @@ context('Dialog navigation', function() {
       // pick the first result (2nd button)
       clickDialogButton(1, true);
       // go back
-      clickDialogButton(0).then(_ => {
+      clickDialogBackButton().then(_ => {
         getDialogInput(0).should('have.value', query);
       });
     });

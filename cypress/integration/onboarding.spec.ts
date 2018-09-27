@@ -2,8 +2,8 @@
 import * as lstore from 'store';
 import {
   getAccount,
-  clickDialogButton,
-  fillDialogInput
+  clickOnboardingButton,
+  fillOnboardingInput
 } from '../plugins/helpers';
 
 beforeEach(function() {
@@ -42,7 +42,7 @@ context('Onboarding', function() {
     // TODO: NoMnemonicNotice shows up only for the frist fullAccess account added
     // dismiss no mnemonic notice
     cy.get('body')
-      .find('button')
+      .find('a[role="button"]')
       .contains('Go to account overview')
       .click();
     // wait for the recent transaction list
@@ -67,7 +67,7 @@ context('Onboarding', function() {
       .click();
     // click 5 dialog "tip" buttons
     for (const _ of Array(5)) {
-      clickDialogButton(1);
+      clickOnboardingButton(1);
     }
     let mnemonic: string[];
     // find the mnemonic on the page (TODO should be easier)
@@ -84,7 +84,7 @@ context('Onboarding', function() {
           .split(' ');
       });
     let id: string;
-    clickDialogButton(1)
+    clickOnboardingButton(1)
       .then(_ => {
         // log to the console
         console.log(mnemonic.join(' '));
@@ -98,8 +98,8 @@ context('Onboarding', function() {
               let index = parseInt(span.text().replace('#', ''), 10);
               // array is 0-indexed
               index--;
-              fillDialogInput(0, mnemonic[index]);
-              clickDialogButton(1);
+              fillOnboardingInput(0, mnemonic[index]);
+              clickOnboardingButton(1);
             });
         }
       })
@@ -125,7 +125,7 @@ context('Onboarding', function() {
           });
       })
       .then(_ => {
-        clickDialogButton(0);
+        clickOnboardingButton(0);
         cy.url().should('contain', `/account/${id}`);
       });
   });
