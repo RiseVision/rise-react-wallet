@@ -16,6 +16,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import { addressBookCreateRoute } from '../../routes';
 import Link from '../../components/Link';
 import WalletStore from '../../stores/wallet';
 
@@ -86,7 +87,7 @@ class AddressBook extends React.Component<DecoratedProps> {
           placement="left"
           title={intl.formatMessage(messages.newContactFabTooltip)}
         >
-          <Link>
+          <Link route={addressBookCreateRoute}>
             <Button
               variant="fab"
               className={classes.fab}

@@ -74,12 +74,12 @@ interface Props extends WithStyles<typeof styles> {
   onSignOutClick: () => void;
 }
 
-interface PropsInjected extends Props {
+type DecoratedProps = Props & InjectedIntlProps;
+
+interface PropsInjected extends DecoratedProps {
   routerStore: RouterStore;
   walletStore: WalletStore;
 }
-
-type DecoratedProps = Props & InjectedIntlProps;
 
 const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 
@@ -105,9 +105,8 @@ const messages = defineMessages({
 @inject('walletStore')
 @observer
 class DrawerContent extends React.Component<DecoratedProps> {
-  get injected(): PropsInjected & DecoratedProps {
-    // @ts-ignore
-    return this.props;
+  get injected(): PropsInjected {
+    return this.props as PropsInjected;
   }
 
   handleAccountNavigation = (view: Route<{}>, params: RouteParams) => {
@@ -133,7 +132,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
     const { selectedAccount }  = walletStore;
 
     let selection: 'addressBook' | 'account' = 'account';
-    if (routerStore.currentView === addressBookRoute) {
+    if (routerStore.currentView.path.startsWith('/address-book')) {
       selection = 'addressBook';
     }
 
