@@ -21,7 +21,8 @@ import {
   getDialogInput,
   assertUnsuccessfulDialog,
   getTransactionDetails,
-  expandTransactionDetails
+  expandTransactionDetails,
+  getDialogButtons
 } from '../plugins/helpers';
 
 const url = 'http://localhost:3000';
@@ -160,7 +161,7 @@ context('Wallet', () => {
 
   it('transaction - Send Again button', () => {
     // click the second transaction row
-    expandTransactionDetails(2)
+    expandTransactionDetails(2);
     getTransactionDetails()
       .contains('Send again')
       .click();
@@ -315,6 +316,7 @@ context('Settings', () => {
   });
 
   it('vote delegate when already voted (stabbed)', () => {
+    const query = 'test';
     // stab the route
     cy.route({
       method: 'PUT',
@@ -325,15 +327,25 @@ context('Settings', () => {
       }
     }).as('putTransaction');
     clickSettingsRow('Voted delegate');
-    fillDialogInput(0, 'test');
+    fillDialogInput(0, query);
     // wait for results
     getDialogContent()
       .find('button:visible')
       .its('length')
       .should('be.gt', 0);
-    // pick the first result (2nd button)
-    cy.wait(1000)
-    clickDialogButton(1, true);
+    cy.wait(1000);
+    // check if all the results contain the search query
+    getDialogButtons()
+      .prev()
+      .each(el => {
+        const name = el
+          .find('p')
+          .eq(0)
+          .text();
+        expect(name).to.contain(query);
+      });
+    // pick the first result
+    clickDialogButton(0, true);
     fillConfirmationDialog();
     assertSuccessfulDialog();
     // assert the request
@@ -387,7 +399,7 @@ context('Settings', () => {
     getDialog()
       .find('select')
       .select('EUR');
-    clickDialogButton(1).then(_ => {
+    clickDialogButton(0).then(_ => {
       expect(getAccount().fiatCurrency).to.eql('EUR');
     });
   });
@@ -543,7 +555,7 @@ context('Dialog navigation', function() {
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
     // click the close button
-    closeDialog()
+    closeDialog();
     // assert that the dialog is gone
     cy.get('body')
       .find('div[role="dialog"]')
@@ -560,7 +572,7 @@ context('Dialog navigation', function() {
     // click submit
     clickDialogSubmit();
     // click the close button
-    closeDialog()
+    closeDialog();
     // assert that the dialog is gone
     cy.get('body')
       .find('div[role="dialog"]')
@@ -611,8 +623,8 @@ context('Dialog navigation', function() {
         .find('button:visible')
         .its('length')
         .should('be.gt', 0);
-      // pick the first result (2nd button)
-      clickDialogButton(1, true);
+      // pick the first result
+      clickDialogButton(0, true);
       // go back
       clickDialogBackButton().then(_ => {
         getDialogInput(0).should('have.value', query);

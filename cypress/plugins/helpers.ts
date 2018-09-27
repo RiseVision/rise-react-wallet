@@ -61,12 +61,18 @@ export function clickDialogSubmit() {
 }
 
 /**
+ * Returns all the buttons inside of the dialog body, excluding the header.
+ */
+export function getDialogButtons() {
+  return getDialogContent().find('button, a[role="button"]');
+}
+
+/**
  * TODO support clicking by text
  * @param pos
  */
 export function clickDialogButton(pos: number = 0, force = false) {
-  return getDialogContent()
-    .find('button, a[role="button"]')
+  return getDialogButtons()
     .eq(pos)
     .click({ force });
 }
