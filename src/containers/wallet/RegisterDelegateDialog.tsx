@@ -127,9 +127,9 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
 
     return (
       <TransactionDialog
-          open={this.isOpen}
-          account={account}
-          transaction={transaction ? {
+        open={this.isOpen}
+        account={account}
+        transaction={transaction ? {
           kind: 'delegate',
           username: transaction.username,
         } : null}

@@ -234,14 +234,14 @@ class VoteDelegateDialog extends React.Component<Props, State> {
 
     return (
       <TransactionDialog
-          open={this.isOpen}
-          account={account}
-          transaction={transaction ? {
+        open={this.isOpen}
+        account={account}
+        transaction={transaction ? {
           kind: 'vote',
           add: transaction.add,
           remove: transaction.remove,
         } : null}
-          onCreateTransaction={this.handleCreateTransaction}
+        onCreateTransaction={this.handleCreateTransaction}
         closeLink={navigateBackLink}
         onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
         children={this.renderVoteContent()}
