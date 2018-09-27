@@ -12,9 +12,8 @@ There's a **[nightly build (testnet)](http://risevision.github.io/rise-react-wal
 - [x] Account page
 - [x] Settings
 - [x] Sending Coins
-- [ ] Calculate Fiat
-- [ ] Block explorer
 - [ ] Address book
+- [ ] Ledger hardware wallet support
 - [x] End-to-end tests
 - [ ] Unit tests
 
