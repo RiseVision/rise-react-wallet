@@ -488,7 +488,7 @@ export const addressBookRoute = new Route({
       loading={<LoadingIndicator />}
       render={(components: TWalletComponents) => (
         <components.Wallet>
-          {/* TODO */}
+          <components.AddressBook />
         </components.Wallet>
       )}
     />
