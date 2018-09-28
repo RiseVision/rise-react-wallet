@@ -16,10 +16,10 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import AddressBookStore from '../../stores/addressBook';
 import CreateContactDialog from './CreateContactDialog';
 import { addressBookRoute, addressBookCreateRoute } from '../../routes';
 import Link from '../../components/Link';
-import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -34,13 +34,12 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface Props extends WithStyles<typeof styles> {
-}
+interface Props extends WithStyles<typeof styles> {}
 
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface PropsInjected extends DecoratedProps {
-  walletStore: WalletStore;
+  addressBookStore: AddressBookStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AddressBook' });
@@ -63,7 +62,7 @@ const messages = defineMessages({
   }
 });
 
-@inject('walletStore')
+@inject('addressBookStore')
 @observer
 class AddressBook extends React.Component<DecoratedProps> {
   get injected(): PropsInjected {
@@ -71,36 +70,21 @@ class AddressBook extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { intl, classes, walletStore } = this.injected;
-
-    // Fake contacts from the current account list
-    const contacts = [];
-    for (const acc of walletStore.accounts.values()) {
-      contacts.push({
-        name: acc.name,
-        address: acc.id,
-      });
-    }
+    const { intl, classes, addressBookStore } = this.injected;
 
     const backLink = {
-      route: addressBookRoute,
+      route: addressBookRoute
     };
 
     return (
       <div className={classes.content}>
-        <CreateContactDialog
-          navigateBackLink={backLink}
-        />
+        <CreateContactDialog navigateBackLink={backLink} />
         <Tooltip
           placement="left"
           title={intl.formatMessage(messages.newContactFabTooltip)}
         >
           <Link route={addressBookCreateRoute}>
-            <Button
-              variant="fab"
-              className={classes.fab}
-              color="secondary"
-            >
+            <Button variant="fab" className={classes.fab} color="secondary">
               <PersonAddIcon />
             </Button>
           </Link>
@@ -118,10 +102,10 @@ class AddressBook extends React.Component<DecoratedProps> {
               </TableRow>
             </TableHead>
             <TableBody>
-              {contacts.map((entry) => (
-                <TableRow>
+              {addressBookStore.asArray.map(entry => (
+                <TableRow key={entry.id}>
                   <TableCell children={entry.name} />
-                  <TableCell children={entry.address} />
+                  <TableCell children={entry.id} />
                 </TableRow>
               ))}
             </TableBody>

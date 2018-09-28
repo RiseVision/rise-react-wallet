@@ -35,7 +35,9 @@ const styles = (theme: Theme) =>
     }
   });
 
-const stylesDecorator = withStyles(styles, { name: 'CreateContactDialogContent' });
+const stylesDecorator = withStyles(styles, {
+  name: 'CreateContactDialogContent'
+});
 
 const messages = defineMessages({
   dialogTitle: {
@@ -58,7 +60,7 @@ const messages = defineMessages({
   invalidName: {
     id: 'create-contact-dialog-content.invalid-name',
     description: 'Error label for invalid name text input',
-    defaultMessage: 'Contact name cannot be empty.',
+    defaultMessage: 'Contact name cannot be empty.'
   },
   addressField: {
     id: 'create-contact-dialog-content.address-input-label',
@@ -74,8 +76,7 @@ const messages = defineMessages({
   invalidAddressExists: {
     id: 'create-contact-dialog-content.invalid-address-exists',
     description: 'Error label for invalid address text input',
-    defaultMessage:
-      'A contact with that address already exists.'
+    defaultMessage: 'A contact with that address already exists.'
   },
   createButton: {
     id: 'create-contact-dialog-content.create-button-label',
@@ -84,13 +85,14 @@ const messages = defineMessages({
   }
 });
 
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps {
   checkAddressExists: (address: string) => boolean;
-  onCreate: (contact: { address: string; name: string }) => void;
+  onCreate: (data: TSubmitData) => void;
 }
+
+export type TSubmitData = { id: string; name: string };
 
 type DecoratedProps = Props & InjectedIntlProps;
 
@@ -103,7 +105,10 @@ interface State {
   addressInvalid: boolean;
 }
 
-class CreateContactDialogContent extends React.Component<DecoratedProps, State> {
+class CreateContactDialogContent extends React.Component<
+  DecoratedProps,
+  State
+> {
   @autoId dialogContentId: string;
 
   state = {
@@ -112,7 +117,7 @@ class CreateContactDialogContent extends React.Component<DecoratedProps, State> 
     nameInvalid: false,
     address: '',
     addressNormalized: '',
-    addressInvalid: false,
+    addressInvalid: false
   };
 
   handleNameChange = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +125,7 @@ class CreateContactDialogContent extends React.Component<DecoratedProps, State> 
     this.setState({
       name,
       nameNormalized: name.trim(),
-      nameInvalid: false,
+      nameInvalid: false
     });
   }
 
@@ -135,7 +140,7 @@ class CreateContactDialogContent extends React.Component<DecoratedProps, State> 
     this.setState({
       address,
       addressNormalized: normalizeAddress(address.trim()),
-      addressInvalid: false,
+      addressInvalid: false
     });
   }
 
@@ -154,7 +159,7 @@ class CreateContactDialogContent extends React.Component<DecoratedProps, State> 
     if (nameInvalid || addressInvalid) {
       this.setState({
         nameInvalid,
-        addressInvalid,
+        addressInvalid
       });
       return;
     }
@@ -162,8 +167,8 @@ class CreateContactDialogContent extends React.Component<DecoratedProps, State> 
     const { onCreate } = this.props;
     const { nameNormalized, addressNormalized } = this.state;
     onCreate({
-      address: addressNormalized,
-      name: nameNormalized,
+      id: addressNormalized,
+      name: nameNormalized
     });
   }
 
@@ -196,22 +201,19 @@ class CreateContactDialogContent extends React.Component<DecoratedProps, State> 
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 
   render() {
-    const {
-      intl,
-      classes,
-    } = this.props;
+    const { intl, classes } = this.props;
 
     const {
       name,
       nameInvalid,
       address,
       addressNormalized,
-      addressInvalid,
+      addressInvalid
     } = this.state;
 
     return (
@@ -237,7 +239,7 @@ class CreateContactDialogContent extends React.Component<DecoratedProps, State> 
             onBlur={this.handleNameBlur}
             error={nameInvalid}
             FormHelperTextProps={{
-              error: nameInvalid,
+              error: nameInvalid
             }}
             helperText={nameInvalid ? this.nameError() || '' : ''}
             fullWidth={true}
@@ -253,7 +255,7 @@ class CreateContactDialogContent extends React.Component<DecoratedProps, State> 
               onBlur={this.handleAddressBlur}
               error={addressInvalid}
               FormHelperTextProps={{
-                error: addressInvalid,
+                error: addressInvalid
               }}
               helperText={addressInvalid ? this.addressError() || '' : ''}
               fullWidth={true}

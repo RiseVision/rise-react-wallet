@@ -20,7 +20,8 @@ const stores: TStores = {
   appStore: store.app,
   onboardingStore: store.onboarding,
   walletStore: store.wallet,
-  routerStore: store.router
+  routerStore: store.router,
+  addressBookStore: store.addressBook
 };
 
 const root = (

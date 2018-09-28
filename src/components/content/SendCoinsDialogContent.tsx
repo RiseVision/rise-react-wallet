@@ -18,6 +18,7 @@ import {
 import Downshift, { StateChangeOptions } from 'downshift';
 import AccountIcon from '../../components/AccountIcon';
 import { ChangeEvent, FormEvent } from 'react';
+import { TAddressRecord, TAddressSource } from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import { normalizeAddress, normalizeNumber } from '../../utils/utils';
 import AddressSuggestionsMenu from '../../components/AddressSuggestionsMenu';
@@ -51,8 +52,7 @@ export interface SendFormState {
   amount: RawAmount;
 }
 
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps {
   onSubmit: (state: SendFormState) => void;
@@ -61,14 +61,13 @@ interface Props extends BaseProps {
   balance: RawAmount;
   // pre-filled recipient
   recipientID?: string;
-  // address book TODO type
-  recipients?: { id: string; name: string }[];
+  contacts: TAddressRecord[];
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface State {
-  recipient: AddressRecord;
+  recipient: TAddressRecord;
   recipientInvalid: boolean;
   normalizedAddress: string;
   amount: string;
@@ -103,6 +102,11 @@ const messages = defineMessages({
     description: 'Info label for recipient field when filled via suggestions',
     defaultMessage: 'Address for {name} (from your address book)'
   },
+  recipientFromWallet: {
+    id: 'send-coins-dialog-content.recipient-from-wallet',
+    description: 'Info label for recipient field when filled via suggestions',
+    defaultMessage: 'Address for {name} (from your wallet)'
+  },
   recipientIsDelegate: {
     id: 'send-coins-dialog-content.recipient-is-delegate',
     description: 'Info label for recipient field when filled via suggestions',
@@ -110,60 +114,14 @@ const messages = defineMessages({
   }
 });
 
-type AddressRecord = {
-  address: string;
-  label: string;
-  source: 'user' | 'addressbook' | 'delegate';
-};
-
-// TODO: Replace fake dataset with actual data from address book
-const fakeDataSet: AddressRecord[] = [
-  {
-    address: '10820014087913201714R',
-    label: 'Beer frenzy',
-    source: 'addressbook'
-  },
-  {
-    address: '7851658041862611161R',
-    label: 'Pretty gem',
-    source: 'addressbook'
-  },
-  {
-    address: '4551846025748003872R',
-    label: 'Pink rose',
-    source: 'addressbook'
-  },
-  { address: '8978172996617645434R', label: 'whiteknight', source: 'delegate' },
-  {
-    address: '6364858697947958466R',
-    label: 'wakescpt2018',
-    source: 'delegate'
-  },
-  {
-    address: '18130374930582746781R',
-    label: 'veke.ledger',
-    source: 'delegate'
-  },
-  { address: '3858637968282355585R', label: 'corsaro', source: 'delegate' },
-  {
-    address: '13623845592771759209R',
-    label: 'spookiestevie',
-    source: 'delegate'
-  },
-  { address: '4982634728794354643R', label: 'hirish', source: 'delegate' },
-  { address: '4551846025748003872R', label: 'doodoo', source: 'delegate' },
-  { address: '6318860244441701655R', label: 'mcanever', source: 'delegate' },
-  { address: '8466748795473371581R', label: 'ondin', source: 'delegate' }
-];
-
 class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
   @autoId dialogContentId: string;
 
   state: State = {
     recipient: {
-      address: '',
-      label: '',
-      source: 'user'
+      id: '',
+      name: '',
+      source: TAddressSource.INPUT
     },
     recipientInvalid: false,
     normalizedAddress: '',
@@ -179,9 +137,9 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
 
     if (recipientID) {
       this.state.recipient = {
-        address: recipientID,
-        label: '',
-        source: 'user'
+        id: recipientID,
+        name: '',
+        source: TAddressSource.PREFILLED
       };
       this.state.normalizedAddress = normalizeAddress(recipientID);
     }
@@ -191,7 +149,9 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
     }
   }
 
-  handleRecipientStateChange = (options: StateChangeOptions<AddressRecord>) => {
+  handleRecipientStateChange = (
+    options: StateChangeOptions<TAddressRecord>
+  ) => {
     const { type, inputValue } = options;
     if (type === '__autocomplete_change_input__' && inputValue) {
       // Handle user typing
@@ -199,24 +159,24 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
 
       this.setState({
         recipient: {
-          address: inputValue,
-          label: '',
-          source: 'user'
+          id: inputValue,
+          name: '',
+          source: TAddressSource.INPUT
         },
         recipientInvalid: false,
         normalizedAddress
       });
     } else if (type === '__autocomplete_blur_input__') {
       // Handle user leaving the input
-      const { address } = this.state.recipient;
-      const recipientInvalid = !!address && !!this.recipientError();
+      const { id } = this.state.recipient;
+      const recipientInvalid = !!id && !!this.recipientError();
       this.setState({ recipientInvalid });
     }
   }
 
-  handleRecipientChange = (recipient: AddressRecord) => {
+  handleRecipientChange = (recipient: TAddressRecord) => {
     // Handle user selecting a suggestion
-    const normalizedAddress = normalizeAddress(recipient.address.trim());
+    const normalizedAddress = normalizeAddress(recipient.id.trim());
 
     this.setState({
       recipient,
@@ -293,23 +253,33 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
     }
   }
 
-  recipientSummary(rec: AddressRecord): string {
+  recipientSummary(rec: TAddressRecord): string {
     const { intl } = this.props;
+    const source = TAddressSource;
 
-    if (rec.source === 'addressbook') {
-      return intl.formatMessage(messages.recipientFromAddressBook, {
-        name: rec.label
-      });
-    } else if (rec.source === 'delegate') {
-      return intl.formatMessage(messages.recipientIsDelegate, {
-        name: rec.label
-      });
-    } else {
-      return '';
+    switch (rec.source) {
+      case source.ADDRESS_BOOK:
+        return intl.formatMessage(messages.recipientFromAddressBook, {
+          name: rec.name
+        });
+      case source.DELEGATE:
+        return intl.formatMessage(messages.recipientIsDelegate, {
+          name: rec.name
+        });
+      case source.WALLET:
+        return intl.formatMessage(messages.recipientFromWallet, {
+          name: rec.name
+        });
+      default:
+        return '';
     }
   }
 
-  getSuggestions(query: string): AddressRecord[] {
+  /**
+   * TODO move to an external component
+   * @param query
+   */
+  getSuggestions(query: string): TAddressRecord[] {
     // For a valid address don't show suggestions
     const normalizedAddress = normalizeAddress(query.trim());
     if (normalizedAddress !== '') {
@@ -321,20 +291,20 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
       .toLowerCase()
       .replace(/\s/giu, '');
 
-    let suggestions = fakeDataSet;
+    let suggestions = this.props.contacts;
 
     if (query.trim().length > 0) {
       let arr = suggestions
         .map(data => {
-          const labelPlain = deburr(data.label)
+          const labelPlain = deburr(data.name)
             .toLowerCase()
             .replace(/\s/giu, '');
 
           let score = 0;
-          if (data.address.startsWith(query)) {
+          if (data.id.startsWith(query)) {
             score += 2;
           }
-          if (data.label.trim() === query) {
+          if (data.name.trim() === query) {
             score += 3;
           } else if (labelPlain.startsWith(queryPlain)) {
             score += 2;
@@ -361,7 +331,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 
@@ -390,7 +360,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
           <Typography id={this.dialogContentId}>
             <FormattedMessage
               id="send-coins-dialog-content.instructions"
-              description="Insturctions for send RISE form"
+              description="Instructions for Send RISE form"
               defaultMessage={
                 'Please enter the recipient address and RISE amount that you ' +
                 'wish to send below.'

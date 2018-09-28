@@ -32,6 +32,7 @@ import {
   timestampToUnix
 } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
+import AddressBookStore from './addressBook';
 import { TConfig } from './index';
 import * as moment from 'moment-timezone';
 import * as queryString from 'query-string';
@@ -53,7 +54,11 @@ export default class WalletStore {
   @observable accounts = observable.map<string, AccountStore>();
   @observable selectedAccount: AccountStore;
 
-  constructor(public config: TConfig, public router: RouterStore) {
+  constructor(
+    public config: TConfig,
+    public router: RouterStore,
+    public addressBook: AddressBookStore
+  ) {
     dposAPI.nodeAddress = config.api_url;
     this.dposAPI = dposAPI;
     this.api = config.api_url;
@@ -677,6 +682,34 @@ export default class WalletStore {
       return json;
     }
   }
+
+  /**
+   * Get contacts from all source like the address book, added accounts and
+   * delegates.
+   *
+   * TODO implement delegates
+   */
+  getContacts() {
+    assert(this.selectedAccount);
+
+    const addresses: TAddressRecord[] = this.addressBook.asArray.map(
+      ({ id, name }) => ({
+        id,
+        name,
+        source: TAddressSource.ADDRESS_BOOK
+      })
+    );
+
+    const accounts: TAddressRecord[] = [...this.accounts.values()]
+      .filter(({ id }) => id !== this.selectedAccount.id)
+      .map(({ id, name }) => ({
+        id,
+        name: name || '',
+        source: TAddressSource.WALLET
+      }));
+
+    return [...addresses, ...accounts];
+  }
 }
 
 class DelegateCache {
@@ -877,3 +910,20 @@ export type TFeeTypes =
   | 'delegate'
   | 'multisignature'
   | 'dapp';
+
+export type TAddressRecord = {
+  id: string;
+  name: string;
+  source: TAddressSource;
+};
+
+export enum TAddressSource {
+  // eg URL
+  PREFILLED,
+  // typed by the user
+  INPUT,
+  // other accounts added to the wallet
+  WALLET,
+  ADDRESS_BOOK,
+  DELEGATE
+}

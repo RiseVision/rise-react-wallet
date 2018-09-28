@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router';
+import { RouterStore } from 'mobx-router-rise';
 import { addressBookCreateRoute } from '../../routes';
 import Dialog from '../../components/Dialog';
+import AddressBookStore from '../../stores/addressBook';
 import RootStore, { RouteLink } from '../../stores/root';
-import WalletStore from '../../stores/wallet';
-import CreateContactDialogContent from '../../components/content/CreateContactDialogContent';
+import CreateContactDialogContent, { TSubmitData } from '../../components/content/CreateContactDialogContent';
 
 interface Props {
   navigateBackLink: RouteLink;
@@ -15,12 +15,12 @@ interface Props {
 interface InjectedProps extends Props {
   store: RootStore;
   routerStore: RouterStore;
-  walletStore: WalletStore;
+  addressBookStore: AddressBookStore;
 }
 
 @inject('store')
 @inject('routerStore')
-@inject('walletStore')
+@inject('addressBookStore')
 @observer
 class CreateContactDialog extends React.Component<Props> {
   private get injected(): InjectedProps {
@@ -28,16 +28,14 @@ class CreateContactDialog extends React.Component<Props> {
   }
 
   @action
-  handleCreate = (data: { name: string }) => {
-    const { navigateBackLink, store } = this.injected;
-    // TODO: Create new contact
+  handleCreate = (data: TSubmitData) => {
+    const { navigateBackLink, store, addressBookStore } = this.injected;
+    addressBookStore.setContact(data.id, data.name);
     store.navigateTo(navigateBackLink);
   }
 
   checkAddressExists = (address: string): boolean => {
-    // TODO: Verify address against address book
-    const { walletStore } = this.injected;
-    return walletStore.accounts.has(address);
+    return this.injected.addressBookStore.contacts.has(address);
   }
 
   render() {
@@ -46,10 +44,7 @@ class CreateContactDialog extends React.Component<Props> {
     const isOpen = routerStore.currentView === addressBookCreateRoute;
 
     return (
-      <Dialog
-        open={isOpen}
-        closeLink={navigateBackLink}
-      >
+      <Dialog open={isOpen} closeLink={navigateBackLink}>
         <CreateContactDialogContent
           checkAddressExists={this.checkAddressExists}
           onCreate={this.handleCreate}

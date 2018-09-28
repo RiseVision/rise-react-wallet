@@ -2,12 +2,16 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import TransactionDialog from './TransactionDialog';
 import SendCoinsDialogContent from '../../components/content/SendCoinsDialogContent';
 import { accountSendRoute } from '../../routes';
 import AccountStore from '../../stores/account';
-import WalletStore from '../../stores/wallet';
+import AddressBookStore from '../../stores/addressBook';
+import WalletStore, {
+  TAddressRecord,
+  TAddressSource
+} from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
+import TransactionDialog from './TransactionDialog';
 
 interface Props {
   account: AccountStore;
@@ -19,6 +23,7 @@ interface Props {
 interface PropsInjected extends Props {
   routerStore: RouterStore;
   walletStore: WalletStore;
+  addressBookStore: AddressBookStore;
 }
 
 interface State {
@@ -33,6 +38,7 @@ interface State {
 
 @inject('routerStore')
 @inject('walletStore')
+@inject('addressBookStore')
 @observer
 class SendCoinsDialog extends React.Component<Props, State> {
   disposeOpenMonitor: null | IReactionDisposer = null;
@@ -175,9 +181,27 @@ class SendCoinsDialog extends React.Component<Props, State> {
   }
 
   renderSendCoins() {
-    const { account, walletStore } = this.injected;
+    const { account, walletStore, addressBookStore } = this.injected;
     const { recipientID, amount } = this.state;
     const fee = walletStore.fees.get('send')!;
+
+    // TODO inject delegates into contacts, extract to a wallet method
+    const addresses: TAddressRecord[] = addressBookStore.asArray.map(
+      ({ id, name }) => ({
+        id,
+        name,
+        source: TAddressSource.ADDRESS_BOOK
+      })
+    );
+    const accounts: TAddressRecord[] = [...walletStore.accounts.values()]
+      .filter(({ id }) => id !== account.id)
+      .map(({ id, name }) => ({
+        id,
+        name: name || '',
+        source: TAddressSource.WALLET
+      }));
+
+    const contacts = [...addresses, ...accounts];
 
     return (
       <SendCoinsDialogContent
@@ -186,6 +210,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
         amount={amount}
         sendFee={fee}
         balance={account.balance}
+        contacts={contacts}
       />
     );
   }
