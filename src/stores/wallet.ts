@@ -29,7 +29,9 @@ import { RawAmount } from '../utils/amounts';
 import {
   getTimestamp,
   normalizeAddress,
-  timestampToUnix
+  timestampToUnix,
+  TAddressRecord,
+  TAddressSource
 } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
 import AddressBookStore from './addressBook';
@@ -320,13 +322,16 @@ export default class WalletStore {
    * @returns The name from the address book OR from one of the added accounts
    *   OR null if not found
    */
-  idToName(id: string): string | null {
-    for (const account of this.accounts.values()) {
-      if (account.id === id && account.name) {
-        return account.name;
-      }
+  idToName(id: string): string {
+    const account = this.accounts.get(id);
+    if (account) {
+      return account.name;
     }
-    return null;
+    const addressBookName = this.addressBook.contacts.get(id);
+    if (addressBookName) {
+      return addressBookName;
+    }
+    return '';
   }
 
   /**
@@ -689,7 +694,7 @@ export default class WalletStore {
    *
    * TODO implement delegates
    */
-  getContacts() {
+  getContacts(): TAddressRecord[] {
     assert(this.selectedAccount);
 
     const addresses: TAddressRecord[] = this.addressBook.asArray.map(
@@ -910,20 +915,3 @@ export type TFeeTypes =
   | 'delegate'
   | 'multisignature'
   | 'dapp';
-
-export type TAddressRecord = {
-  id: string;
-  name: string;
-  source: TAddressSource;
-};
-
-export enum TAddressSource {
-  // eg URL
-  PREFILLED,
-  // typed by the user
-  INPUT,
-  // other accounts added to the wallet
-  WALLET,
-  ADDRESS_BOOK,
-  DELEGATE
-}

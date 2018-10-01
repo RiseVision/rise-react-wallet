@@ -6,10 +6,7 @@ import SendCoinsDialogContent from '../../components/content/SendCoinsDialogCont
 import { accountSendRoute } from '../../routes';
 import AccountStore from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
-import WalletStore, {
-  TAddressRecord,
-  TAddressSource
-} from '../../stores/wallet';
+import WalletStore from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import TransactionDialog from './TransactionDialog';
 
@@ -181,36 +178,19 @@ class SendCoinsDialog extends React.Component<Props, State> {
   }
 
   renderSendCoins() {
-    const { account, walletStore, addressBookStore } = this.injected;
+    const { account, walletStore } = this.injected;
     const { recipientID, amount } = this.state;
     const fee = walletStore.fees.get('send')!;
-
-    // TODO inject delegates into contacts, extract to a wallet method
-    const addresses: TAddressRecord[] = addressBookStore.asArray.map(
-      ({ id, name }) => ({
-        id,
-        name,
-        source: TAddressSource.ADDRESS_BOOK
-      })
-    );
-    const accounts: TAddressRecord[] = [...walletStore.accounts.values()]
-      .filter(({ id }) => id !== account.id)
-      .map(({ id, name }) => ({
-        id,
-        name: name || '',
-        source: TAddressSource.WALLET
-      }));
-
-    const contacts = [...addresses, ...accounts];
 
     return (
       <SendCoinsDialogContent
         onSubmit={this.handleSubmit}
         recipientID={recipientID}
+        recipientName={walletStore.idToName(recipientID)}
         amount={amount}
         sendFee={fee}
         balance={account.balance}
-        contacts={contacts}
+        contacts={walletStore.getContacts()}
       />
     );
   }

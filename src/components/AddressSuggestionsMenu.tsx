@@ -12,7 +12,7 @@ import {
 import { PropGetters } from 'downshift';
 import * as classNames from 'classnames';
 import * as React from 'react';
-import { TAddressRecord } from '../stores/wallet';
+import { TAddressRecord } from '../utils/utils';
 import AccountIcon from './AccountIcon';
 
 const styles = (theme: Theme) =>

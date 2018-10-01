@@ -18,9 +18,13 @@ import {
 import Downshift, { StateChangeOptions } from 'downshift';
 import AccountIcon from '../../components/AccountIcon';
 import { ChangeEvent, FormEvent } from 'react';
-import { TAddressRecord, TAddressSource } from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
-import { normalizeAddress, normalizeNumber } from '../../utils/utils';
+import {
+  normalizeAddress,
+  normalizeNumber,
+  TAddressRecord,
+  TAddressSource
+} from '../../utils/utils';
 import AddressSuggestionsMenu from '../../components/AddressSuggestionsMenu';
 import { deburr, take } from 'lodash';
 import { DialogContentProps, SetDialogContent } from '../Dialog';
@@ -61,6 +65,8 @@ interface Props extends BaseProps {
   balance: RawAmount;
   // pre-filled recipient
   recipientID?: string;
+  recipientName?: string;
+  // all the contacts
   contacts: TAddressRecord[];
 }
 
@@ -133,12 +139,12 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
   constructor(props: DecoratedProps) {
     super(props);
 
-    const { intl, recipientID, amount } = this.props;
+    const { intl, recipientID, recipientName, amount } = this.props;
 
     if (recipientID) {
       this.state.recipient = {
         id: recipientID,
-        name: '',
+        name: recipientName || '',
         source: TAddressSource.PREFILLED
       };
       this.state.normalizedAddress = normalizeAddress(recipientID);
@@ -160,6 +166,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
       this.setState({
         recipient: {
           id: inputValue,
+          // TODO get the name from contacts
           name: '',
           source: TAddressSource.INPUT
         },
@@ -370,7 +377,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
         </Grid>
         <Grid item={true} xs={12}>
           <Downshift
-            itemToString={rec => rec.address}
+            itemToString={(rec: TAddressRecord) => rec.id}
             selectedItem={recipient}
             onStateChange={this.handleRecipientStateChange}
             onChange={this.handleRecipientChange}
