@@ -177,6 +177,19 @@ context('Wallet', () => {
       expect(input.val()).have.length.above(0);
     });
   });
+
+  it('navigate to the address book', () => {
+    cy.get('ul[aria-label="Navigation"]')
+      .find('span')
+      .contains('Address book')
+      .click();
+    // assert the url
+    cy.url().should('contain', '/address-book');
+    // assert the header
+    cy.get('h2')
+      .contains('Address book')
+      .should('have.length', 1);
+  });
 });
 
 context('Server errors', () => {
