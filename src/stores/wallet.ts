@@ -300,8 +300,7 @@ export default class WalletStore {
     const params = {
       q: query
     };
-    // @ts-ignore wrong types in dpos-api-wrapper
-    const res = await this.dposAPI.delegates.getList(params);
+    const res = await this.dposAPI.delegates.search(params);
     return res.delegates || [];
   }
 

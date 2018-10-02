@@ -7246,9 +7246,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-risejs@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/risejs/-/risejs-1.4.0.tgz#486cb6dacd72714cf99d2031d1da9e9d8e6ec27b"
+risejs@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/risejs/-/risejs-1.4.1.tgz#5fc3d392298146aad1acb5076d294afa99eece67"
   dependencies:
     axios "^0.16.2"
 
