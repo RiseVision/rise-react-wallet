@@ -45,12 +45,22 @@ const messages = defineMessages({
     description: 'Create contact dialog title',
     defaultMessage: 'New contact'
   },
+  dialogTitleModify: {
+    id: 'create-contact-dialog-content.dialog-title-modify',
+    description: 'Modify contact dialog title',
+    defaultMessage: 'Modify contact'
+  },
   instructions: {
     id: 'create-contact-dialog-content.instructions',
     description: 'Instructions before the create contact fields',
     defaultMessage:
       'Add a new contact to your address book. ' +
       'This info will only be visible to you and nobody else.'
+  },
+  instructionsModify: {
+    id: 'create-contact-dialog-content.instructions-modify',
+    description: 'Instructions before the modify contact fields',
+    defaultMessage: 'This info will only be visible to you and nobody else.'
   },
   nameField: {
     id: 'create-contact-dialog-content.name-input-label',
@@ -82,14 +92,21 @@ const messages = defineMessages({
     id: 'create-contact-dialog-content.create-button-label',
     description: 'Create contact button label',
     defaultMessage: 'Create'
+  },
+  modifyButton: {
+    id: 'create-contact-dialog-content.modify-button-label',
+    description: 'Modify contact button label',
+    defaultMessage: 'Modify'
   }
 });
 
 type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps {
-  checkAddressExists: (address: string) => boolean;
-  onCreate: (data: TSubmitData) => void;
+  checkAddressExists?: (address: string) => boolean;
+  onSubmit: (data: TSubmitData) => void;
+  id?: string;
+  name?: string;
 }
 
 export type TSubmitData = { id: string; name: string };
@@ -119,6 +136,14 @@ class CreateContactDialogContent extends React.Component<
     addressNormalized: '',
     addressInvalid: false
   };
+
+  constructor(props: DecoratedProps) {
+    super(props);
+    if (props.name) {
+      this.state.name = props.name;
+      this.state.nameNormalized = props.name;
+    }
+  }
 
   handleNameChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const name = ev.target.value;
@@ -153,8 +178,10 @@ class CreateContactDialogContent extends React.Component<
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
+    const { id } = this.props;
+
     const nameInvalid = !!this.nameError();
-    const addressInvalid = !!this.addressError();
+    const addressInvalid = !id && Boolean(this.addressError());
 
     if (nameInvalid || addressInvalid) {
       this.setState({
@@ -164,10 +191,10 @@ class CreateContactDialogContent extends React.Component<
       return;
     }
 
-    const { onCreate } = this.props;
+    const { onSubmit } = this.props;
     const { nameNormalized, addressNormalized } = this.state;
-    onCreate({
-      id: addressNormalized,
+    onSubmit({
+      id: id || addressNormalized,
       name: nameNormalized
     });
   }
@@ -189,7 +216,7 @@ class CreateContactDialogContent extends React.Component<
 
     if (addressNormalized === '') {
       return intl.formatMessage(messages.invalidAddress);
-    } else if (checkAddressExists(addressNormalized)) {
+    } else if (checkAddressExists && checkAddressExists(addressNormalized)) {
       return intl.formatMessage(messages.invalidAddressExists);
     } else {
       return null;
@@ -200,13 +227,15 @@ class CreateContactDialogContent extends React.Component<
     const { intl } = this.props;
 
     SetDialogContent(this, {
-      title: intl.formatMessage(messages.dialogTitle),
+      title: intl.formatMessage(
+        this.props.id ? messages.dialogTitleModify : messages.dialogTitle
+      ),
       contentId: this.dialogContentId
     });
   }
 
   render() {
-    const { intl, classes } = this.props;
+    const { intl, classes, id } = this.props;
 
     const {
       name,
@@ -227,7 +256,9 @@ class CreateContactDialogContent extends React.Component<
         <Grid item={true} xs={12}>
           <Typography
             id={this.dialogContentId}
-            children={intl.formatMessage(messages.instructions)}
+            children={intl.formatMessage(
+              id ? messages.instructionsModify : messages.instructions
+            )}
           />
         </Grid>
         <Grid item={true} xs={12}>
@@ -245,33 +276,39 @@ class CreateContactDialogContent extends React.Component<
             fullWidth={true}
           />
         </Grid>
-        <Grid item={true} xs={12}>
-          <div className={classes.accountContainer}>
-            <TextField
-              className={classes.addressField}
-              label={intl.formatMessage(messages.addressField)}
-              value={address}
-              onChange={this.handleAddressChange}
-              onBlur={this.handleAddressBlur}
-              error={addressInvalid}
-              FormHelperTextProps={{
-                error: addressInvalid
-              }}
-              helperText={addressInvalid ? this.addressError() || '' : ''}
-              fullWidth={true}
-            />
-            <AccountIcon
-              className={classes.accountIcon}
-              size={48}
-              address={addressNormalized}
-            />
-          </div>
-        </Grid>
+        {!id && (
+          <Grid item={true} xs={12}>
+            <div className={classes.accountContainer}>
+              <TextField
+                className={classes.addressField}
+                label={intl.formatMessage(messages.addressField)}
+                value={address}
+                onChange={this.handleAddressChange}
+                onBlur={this.handleAddressBlur}
+                error={addressInvalid}
+                FormHelperTextProps={{
+                  error: addressInvalid
+                }}
+                helperText={addressInvalid ? this.addressError() || '' : ''}
+                fullWidth={true}
+              />
+              <AccountIcon
+                className={classes.accountIcon}
+                size={48}
+                address={addressNormalized}
+              />
+            </div>
+          </Grid>
+        )}
         <Grid item={true} xs={12}>
           <Button
             type="submit"
             fullWidth={true}
-            children={intl.formatMessage(messages.createButton)}
+            children={
+              id
+                ? intl.formatMessage(messages.modifyButton)
+                : intl.formatMessage(messages.createButton)
+            }
           />
         </Grid>
       </Grid>

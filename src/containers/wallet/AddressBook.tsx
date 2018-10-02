@@ -18,8 +18,13 @@ import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AddressBookStore from '../../stores/addressBook';
 import CreateContactDialog from './CreateContactDialog';
-import { addressBookRoute, addressBookCreateRoute } from '../../routes';
+import {
+  addressBookRoute,
+  addressBookCreateRoute,
+  addressBookModifyRoute
+} from '../../routes';
 import Link from '../../components/Link';
+import ModifyContactDialog from './ModifyContactDialog';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -69,6 +74,10 @@ class AddressBook extends React.Component<DecoratedProps> {
     return this.props as PropsInjected;
   }
 
+  handleEditContact = () => {
+    // this.injected.router;
+  }
+
   render() {
     const { intl, classes, addressBookStore } = this.injected;
 
@@ -79,6 +88,7 @@ class AddressBook extends React.Component<DecoratedProps> {
     return (
       <div className={classes.content}>
         <CreateContactDialog navigateBackLink={backLink} />
+        <ModifyContactDialog navigateBackLink={backLink} />
         <Tooltip
           placement="left"
           title={intl.formatMessage(messages.newContactFabTooltip)}
@@ -103,8 +113,15 @@ class AddressBook extends React.Component<DecoratedProps> {
             </TableHead>
             <TableBody>
               {addressBookStore.asArray.map(entry => (
-                <TableRow key={entry.id}>
-                  <TableCell children={entry.name} />
+                <TableRow key={entry.id} onClick={this.handleEditContact}>
+                  <TableCell>
+                    <Link
+                      route={addressBookModifyRoute}
+                      params={{ id: entry.id }}
+                    >
+                      <a>{entry.name}</a>
+                    </Link>
+                  </TableCell>
                   <TableCell children={entry.id} />
                 </TableRow>
               ))}

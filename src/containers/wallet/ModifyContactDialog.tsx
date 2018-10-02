@@ -2,14 +2,17 @@ import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import { addressBookCreateRoute } from '../../routes';
+import { addressBookModifyRoute } from '../../routes';
 import Dialog from '../../components/Dialog';
 import AddressBookStore from '../../stores/addressBook';
 import RootStore, { RouteLink } from '../../stores/root';
-import CreateContactDialogContent, { TSubmitData } from '../../components/content/CreateContactDialogContent';
+import CreateContactDialogContent, {
+  TSubmitData
+} from '../../components/content/CreateContactDialogContent';
 
 interface Props {
   navigateBackLink: RouteLink;
+  id?: string;
 }
 
 interface InjectedProps extends Props {
@@ -22,36 +25,33 @@ interface InjectedProps extends Props {
 @inject('routerStore')
 @inject('addressBookStore')
 @observer
-class CreateContactDialog extends React.Component<Props> {
+export default class ModifyContactDialog extends React.Component<Props> {
   private get injected(): InjectedProps {
     return this.props as InjectedProps;
   }
 
   @action
-  handleCreate = (data: TSubmitData) => {
+  handleEdit = (data: TSubmitData) => {
     const { navigateBackLink, store, addressBookStore } = this.injected;
     addressBookStore.setContact(data.id, data.name);
     store.navigateTo(navigateBackLink);
   }
 
-  checkAddressExists = (address: string): boolean => {
-    return this.injected.addressBookStore.contacts.has(address);
-  }
-
   render() {
-    const { navigateBackLink, routerStore } = this.injected;
+    const { navigateBackLink, routerStore, addressBookStore } = this.injected;
 
-    const isOpen = routerStore.currentView === addressBookCreateRoute;
+    const id = this.injected.id || routerStore.params.id;
+    const isOpen = routerStore.currentView === addressBookModifyRoute;
+    const name = addressBookStore.contacts.get(id);
 
     return (
       <Dialog open={isOpen} closeLink={navigateBackLink}>
         <CreateContactDialogContent
-            checkAddressExists={this.checkAddressExists}
-            onSubmit={this.handleCreate}
+          id={id}
+          name={name}
+          onSubmit={this.handleEdit}
         />
       </Dialog>
     );
   }
 }
-
-export default CreateContactDialog;
