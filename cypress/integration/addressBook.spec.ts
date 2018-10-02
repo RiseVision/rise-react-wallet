@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 context('Address Book', () => {
-  it('add contact', () => {
+  it('add a contact', () => {
     const id = '10317456780953445769R';
     const name = 'test test';
     // click the New Contact button
@@ -62,7 +62,11 @@ context('Address Book', () => {
     cy.get('main')
       .find('td')
       .contains(id)
-      .should('have.length', 1);
+      .should('have.length', 1)
+      .then(() => {
+        // assert localStorage
+        expect(lstore.get('contacts')[2].name).to.eql(name);
+      });
   });
 
   it('contacts list', function() {
@@ -81,5 +85,29 @@ context('Address Book', () => {
         .contains(name)
         .should('have.length', 1);
     }
+  });
+
+  it('edit a contact', function() {
+    const id = '10317456780953445769R';
+    const name = 'test test';
+    // open the edit dialog for the first contact
+    cy.get('main')
+      .find('td')
+      .contains(this.contacts[0].name)
+      .should('have.length', 1)
+      .click();
+    // change the name
+    fillDialogInput(0, `{selectall}${name}`);
+    // submit
+    clickDialogSubmit();
+    // assert the that list has changes
+    cy.get('main')
+      .find('td')
+      .contains(name)
+      .should('have.length', 1)
+      .then(() => {
+        // assert localStorage
+        expect(lstore.get('contacts')[0].name).to.eql(name);
+      });
   });
 });
