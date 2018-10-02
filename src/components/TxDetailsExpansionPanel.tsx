@@ -24,6 +24,7 @@ import { TransactionType } from 'dpos-api-wrapper';
 import * as moment from 'moment-timezone';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import { addressBookModifyRoute, accountSettingsNameRoute } from '../routes';
 import Link from './Link';
 import { TTransaction } from '../stores/wallet';
 import { RawAmount } from '../utils/amounts';
@@ -961,107 +962,21 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             <span className={classes.detailsRowActions} />
           </Typography>
           {/* SENDER */}
-          {tx.type === TransactionType.SEND && (
-            <Typography className={classes.detailsRow}>
-              <span
-                className={classes.detailsRowLabel}
-                children={fmt(msg.detailsSenderLabel)}
-              />
-              <span
-                className={classes.detailsRowValue}
-                children={fmt(
-                  !!tx.senderName
-                    ? msg.detailsAddressAlias
-                    : msg.detailsAddress,
-                  {
-                    alias: tx.senderName,
-                    address: tx.senderId
-                  }
-                )}
-              />
-              <span className={classes.detailsRowActions}>
-                <Tooltip title={fmt(msg.detailsSenderCopyTooltip)}>
-                  <IconButton
-                    className={classes.detailsRowAction}
-                    aria-label={fmt(msg.detailsSenderCopyAria)}
-                    onClick={this.handleCopySenderAddress}
-                  >
-                    <ContentCopyIcon fontSize="inherit" />
-                  </IconButton>
-                </Tooltip>
-                {!tx.senderName ? (
-                  <Tooltip title={fmt(msg.detailsSenderAddTooltip)}>
-                    <IconButton
-                      className={classes.detailsRowAction}
-                      aria-label={fmt(msg.detailsSenderAddAria)}
-                    >
-                      <PersonAddIcon fontSize="inherit" />
-                    </IconButton>
-                  </Tooltip>
-                ) : (
-                  <Tooltip title={fmt(msg.detailsSenderEditTooltip)}>
-                    <IconButton
-                      className={classes.detailsRowAction}
-                      aria-label={fmt(msg.detailsSenderEditAria)}
-                    >
-                      <PersonIcon fontSize="inherit" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </span>
-            </Typography>
-          )}
+          {tx.type === TransactionType.SEND &&
+            this.renderContact(
+              tx.senderId,
+              tx.senderName,
+              true,
+              !tx.isIncoming
+            )}
           {/* RECIPIENT */}
-          {tx.type === TransactionType.SEND && (
-            <Typography className={classes.detailsRow}>
-              <span
-                className={classes.detailsRowLabel}
-                children={fmt(msg.detailsRecipientLabel)}
-              />
-              <span
-                className={classes.detailsRowValue}
-                children={fmt(
-                  !!tx.recipientName
-                    ? msg.detailsAddressAlias
-                    : msg.detailsAddress,
-                  {
-                    alias: tx.recipientName,
-                    address: tx.recipientId
-                  }
-                )}
-              />
-              <span className={classes.detailsRowActions}>
-                <Tooltip title={fmt(msg.detailsRecipientCopyTooltip)}>
-                  <IconButton
-                    className={classes.detailsRowAction}
-                    aria-label={fmt(msg.detailsRecipientCopyAria)}
-                    onClick={this.handleCopyRecipientAddress}
-                  >
-                    <ContentCopyIcon fontSize="inherit" />
-                  </IconButton>
-                </Tooltip>
-                {!tx.recipientName ? (
-                  <Tooltip title={fmt(msg.detailsRecipientAddTooltip)}>
-                    <IconButton
-                      className={classes.detailsRowAction}
-                      aria-label={fmt(msg.detailsRecipientAddAria)}
-                    >
-                      <PersonAddIcon fontSize="inherit" />
-                    </IconButton>
-                  </Tooltip>
-                ) : (
-                  <Tooltip title={fmt(msg.detailsRecipientEditTooltip)}>
-                    <IconButton
-                      className={classes.detailsRowAction}
-                      aria-label={fmt(msg.detailsRecipientEditAria)}
-                    >
-                      <PersonIcon fontSize="inherit" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </span>
-            </Typography>
-          )}
+          {tx.type === TransactionType.SEND &&
+            this.renderContact(
+              tx.recipientId,
+              tx.recipientName,
+              false,
+              tx.isIncoming
+            )}
           {/* SEND INFO (AMOUNT) */}
           {tx.type === TransactionType.SEND && (
             <Typography className={classes.detailsRow}>
@@ -1184,14 +1099,81 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
     copyToClipboard(tx.blockId);
   }
 
-  handleCopySenderAddress = () => {
-    const { tx } = this.props;
-    copyToClipboard(tx.senderId);
-  }
+  /**
+   * Renders a contact entry, linked to the name edit dialog.
+   *
+   * @param id
+   * @param name
+   * @param sender
+   * @param ownAccount
+   */
+  renderContact(
+    id: string,
+    name: string | null,
+    sender: boolean,
+    ownAccount: boolean
+  ) {
+    const { intl, classes } = this.props;
 
-  handleCopyRecipientAddress = () => {
-    const { tx } = this.props;
-    copyToClipboard(tx.recipientId);
+    // shortcuts
+    const fmt = intl.formatMessage.bind(intl);
+    const msg = messages;
+
+    const ContactIcon = name ? PersonIcon : PersonAddIcon;
+
+    // TODO icons not visible, missing SVG wrapper
+    const contactButton = ownAccount ? (
+      <Link route={accountSettingsNameRoute} params={{ id }}>
+        <ContactIcon fontSize="inherit" />
+      </Link>
+    ) : (
+      <Link route={addressBookModifyRoute} params={{ id }}>
+        <ContactIcon fontSize="inherit" />
+      </Link>
+    );
+
+    return (
+      <Typography className={classes.detailsRow}>
+        <span
+          className={classes.detailsRowLabel}
+          children={fmt(
+            sender ? msg.detailsSenderLabel : msg.detailsRecipientLabel
+          )}
+        />
+        <span
+          className={classes.detailsRowValue}
+          children={fmt(name ? msg.detailsAddressAlias : msg.detailsAddress, {
+            alias: name,
+            address: id
+          })}
+        />
+        <span className={classes.detailsRowActions}>
+          <Tooltip title={fmt(msg.detailsSenderCopyTooltip)}>
+            <IconButton
+              className={classes.detailsRowAction}
+              aria-label={fmt(msg.detailsSenderCopyAria)}
+              onClick={() => copyToClipboard(id)}
+            >
+              <ContentCopyIcon fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip
+            title={fmt(
+              name ? msg.detailsSenderEditTooltip : msg.detailsSenderAddTooltip
+            )}
+          >
+            <IconButton
+              className={classes.detailsRowAction}
+              aria-label={fmt(
+                name ? msg.detailsSenderEditAria : msg.detailsSenderAddAria
+              )}
+            >
+              {contactButton}
+            </IconButton>
+          </Tooltip>
+        </span>
+      </Typography>
+    );
   }
 }
 
