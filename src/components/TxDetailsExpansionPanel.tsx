@@ -781,6 +781,10 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
       .filter(({ op }) => op === 'add')
       .map(({ delegate }) => delegate);
 
+    // shortcuts
+    const fmt = intl.formatMessage.bind(intl);
+    const msg = messages;
+
     return (
       <ExpansionPanel>
         <ExpansionPanelSummary
@@ -830,58 +834,39 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             root: classes.detailsRoot
           }}
         >
+          {/* STATUS */}
           <Typography className={classes.detailsRow}>
             <span
               className={classes.detailsRowLabel}
-              children={intl.formatMessage(messages.detailsStatusLabel)}
+              children={fmt(msg.detailsStatusLabel)}
             />
             <span className={classes.detailsRowValue}>
               {tx.confirmations >= 101 ? (
-                <Tooltip
-                  title={intl.formatMessage(
-                    messages.detailsStatusSettledTooltip
-                  )}
-                >
-                  <span
-                    children={intl.formatMessage(messages.detailsStatusSettled)}
-                  />
+                <Tooltip title={fmt(msg.detailsStatusSettledTooltip)}>
+                  <span children={fmt(msg.detailsStatusSettled)} />
                 </Tooltip>
               ) : tx.confirmations >= 1 ? (
-                <Tooltip
-                  title={intl.formatMessage(
-                    messages.detailsStatusUnsettledTooltip
-                  )}
-                >
+                <Tooltip title={fmt(msg.detailsStatusUnsettledTooltip)}>
                   <span
-                    children={intl.formatMessage(
-                      messages.detailsStatusUnsettled,
-                      {
-                        confirmations: tx.confirmations,
-                        needed: 101
-                      }
-                    )}
+                    children={fmt(msg.detailsStatusUnsettled, {
+                      confirmations: tx.confirmations,
+                      needed: 101
+                    })}
                   />
                 </Tooltip>
               ) : (
-                <Tooltip
-                  title={intl.formatMessage(
-                    messages.detailsStatusUnconfirmedTooltip
-                  )}
-                >
-                  <span
-                    children={intl.formatMessage(
-                      messages.detailsStatusUnconfirmed
-                    )}
-                  />
+                <Tooltip title={fmt(msg.detailsStatusUnconfirmedTooltip)}>
+                  <span children={fmt(msg.detailsStatusUnconfirmed)} />
                 </Tooltip>
               )}
             </span>
             <span className={classes.detailsRowActions} />
           </Typography>
+          {/* TIMESTAMP */}
           <Typography className={classes.detailsRow}>
             <span
               className={classes.detailsRowLabel}
-              children={intl.formatMessage(messages.detailsTimestampLabel)}
+              children={fmt(msg.detailsTimestampLabel)}
             />
             <time
               className={classes.detailsRowValue}
@@ -891,75 +876,61 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             </time>
             <span className={classes.detailsRowActions} />
           </Typography>
+          {/* TX ID */}
           <Typography className={classes.detailsRow}>
             <span
               className={classes.detailsRowLabel}
-              children={intl.formatMessage(messages.detailsTxIdLabel)}
+              children={fmt(msg.detailsTxIdLabel)}
             />
             <span className={classes.detailsRowValue} children={tx.id} />
             <span className={classes.detailsRowActions}>
-              <Tooltip
-                title={intl.formatMessage(messages.detailsTxIdCopyTooltip)}
-              >
+              <Tooltip title={fmt(msg.detailsTxIdCopyTooltip)}>
                 <IconButton
                   className={classes.detailsRowAction}
-                  aria-label={intl.formatMessage(messages.detailsTxIdCopyAria)}
+                  aria-label={fmt(msg.detailsTxIdCopyAria)}
                   onClick={this.handleCopyTxId}
                 >
                   <ContentCopyIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
-              <Tooltip
-                title={intl.formatMessage(messages.detailsTxIdExplorerTooltip)}
-              >
+              <Tooltip title={fmt(msg.detailsTxIdExplorerTooltip)}>
                 <IconButton
                   className={classes.detailsRowAction}
                   component="a"
                   href={`${explorerUrl}/tx/${tx.id}`}
                   target="_blank"
-                  aria-label={intl.formatMessage(
-                    messages.detailsTxIdExplorerAria
-                  )}
+                  aria-label={fmt(msg.detailsTxIdExplorerAria)}
                 >
                   <LinkIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
             </span>
           </Typography>
+          {/* BLOCK ID */}
           {tx.confirmations >= 1 && (
             <Typography className={classes.detailsRow}>
               <span
                 className={classes.detailsRowLabel}
-                children={intl.formatMessage(messages.detailsBlockIdLabel)}
+                children={fmt(msg.detailsBlockIdLabel)}
               />
               <span className={classes.detailsRowValue} children={tx.blockId} />
               <span className={classes.detailsRowActions}>
-                <Tooltip
-                  title={intl.formatMessage(messages.detailsBlockIdCopyTooltip)}
-                >
+                <Tooltip title={fmt(msg.detailsBlockIdCopyTooltip)}>
                   <IconButton
                     className={classes.detailsRowAction}
-                    aria-label={intl.formatMessage(
-                      messages.detailsBlockIdCopyAria
-                    )}
+                    aria-label={fmt(msg.detailsBlockIdCopyAria)}
                     onClick={this.handleCopyBlockId}
                   >
                     <ContentCopyIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
-                <Tooltip
-                  title={intl.formatMessage(
-                    messages.detailsBlockIdExplorerTooltip
-                  )}
-                >
+                <Tooltip title={fmt(msg.detailsBlockIdExplorerTooltip)}>
                   <IconButton
                     className={classes.detailsRowAction}
                     component="a"
                     href={`${explorerUrl}/block/${tx.blockId}`}
                     target="_blank"
-                    aria-label={intl.formatMessage(
-                      messages.detailsBlockIdExplorerAria
-                    )}
+                    aria-label={fmt(msg.detailsBlockIdExplorerAria)}
                   >
                     <LinkIcon fontSize="inherit" />
                   </IconButton>
@@ -967,39 +938,41 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               </span>
             </Typography>
           )}
+          {/* TYPE */}
           <Typography className={classes.detailsRow}>
             <span
               className={classes.detailsRowLabel}
-              children={intl.formatMessage(messages.detailsTxTypeLabel)}
+              children={fmt(msg.detailsTxTypeLabel)}
             />
             <span
               className={classes.detailsRowValue}
-              children={intl.formatMessage(
+              children={fmt(
                 tx.type === TransactionType.SEND
-                  ? messages.detailsTxTypeSend
+                  ? msg.detailsTxTypeSend
                   : tx.type === TransactionType.VOTE
-                    ? messages.detailsTxTypeVote
+                    ? msg.detailsTxTypeVote
                     : tx.type === TransactionType.SIGNATURE
-                      ? messages.detailsTxTypePassphrase
+                      ? msg.detailsTxTypePassphrase
                       : tx.type === TransactionType.DELEGATE
-                        ? messages.detailsTxTypeDelegate
-                        : messages.detailsTxTypeUnknown
+                        ? msg.detailsTxTypeDelegate
+                        : msg.detailsTxTypeUnknown
               )}
             />
             <span className={classes.detailsRowActions} />
           </Typography>
+          {/* SENDER */}
           {tx.type === TransactionType.SEND && (
             <Typography className={classes.detailsRow}>
               <span
                 className={classes.detailsRowLabel}
-                children={intl.formatMessage(messages.detailsSenderLabel)}
+                children={fmt(msg.detailsSenderLabel)}
               />
               <span
                 className={classes.detailsRowValue}
-                children={intl.formatMessage(
+                children={fmt(
                   !!tx.senderName
-                    ? messages.detailsAddressAlias
-                    : messages.detailsAddress,
+                    ? msg.detailsAddressAlias
+                    : msg.detailsAddress,
                   {
                     alias: tx.senderName,
                     address: tx.senderId
@@ -1007,43 +980,29 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
                 )}
               />
               <span className={classes.detailsRowActions}>
-                <Tooltip
-                  title={intl.formatMessage(messages.detailsSenderCopyTooltip)}
-                >
+                <Tooltip title={fmt(msg.detailsSenderCopyTooltip)}>
                   <IconButton
                     className={classes.detailsRowAction}
-                    aria-label={intl.formatMessage(
-                      messages.detailsSenderCopyAria
-                    )}
+                    aria-label={fmt(msg.detailsSenderCopyAria)}
                     onClick={this.handleCopySenderAddress}
                   >
                     <ContentCopyIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
                 {!tx.senderName ? (
-                  <Tooltip
-                    title={intl.formatMessage(messages.detailsSenderAddTooltip)}
-                  >
+                  <Tooltip title={fmt(msg.detailsSenderAddTooltip)}>
                     <IconButton
                       className={classes.detailsRowAction}
-                      aria-label={intl.formatMessage(
-                        messages.detailsSenderAddAria
-                      )}
+                      aria-label={fmt(msg.detailsSenderAddAria)}
                     >
                       <PersonAddIcon fontSize="inherit" />
                     </IconButton>
                   </Tooltip>
                 ) : (
-                  <Tooltip
-                    title={intl.formatMessage(
-                      messages.detailsSenderEditTooltip
-                    )}
-                  >
+                  <Tooltip title={fmt(msg.detailsSenderEditTooltip)}>
                     <IconButton
                       className={classes.detailsRowAction}
-                      aria-label={intl.formatMessage(
-                        messages.detailsSenderEditAria
-                      )}
+                      aria-label={fmt(msg.detailsSenderEditAria)}
                     >
                       <PersonIcon fontSize="inherit" />
                     </IconButton>
@@ -1052,18 +1011,19 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               </span>
             </Typography>
           )}
+          {/* RECIPIENT */}
           {tx.type === TransactionType.SEND && (
             <Typography className={classes.detailsRow}>
               <span
                 className={classes.detailsRowLabel}
-                children={intl.formatMessage(messages.detailsRecipientLabel)}
+                children={fmt(msg.detailsRecipientLabel)}
               />
               <span
                 className={classes.detailsRowValue}
-                children={intl.formatMessage(
+                children={fmt(
                   !!tx.recipientName
-                    ? messages.detailsAddressAlias
-                    : messages.detailsAddress,
+                    ? msg.detailsAddressAlias
+                    : msg.detailsAddress,
                   {
                     alias: tx.recipientName,
                     address: tx.recipientId
@@ -1071,47 +1031,29 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
                 )}
               />
               <span className={classes.detailsRowActions}>
-                <Tooltip
-                  title={intl.formatMessage(
-                    messages.detailsRecipientCopyTooltip
-                  )}
-                >
+                <Tooltip title={fmt(msg.detailsRecipientCopyTooltip)}>
                   <IconButton
                     className={classes.detailsRowAction}
-                    aria-label={intl.formatMessage(
-                      messages.detailsRecipientCopyAria
-                    )}
+                    aria-label={fmt(msg.detailsRecipientCopyAria)}
                     onClick={this.handleCopyRecipientAddress}
                   >
                     <ContentCopyIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
                 {!tx.recipientName ? (
-                  <Tooltip
-                    title={intl.formatMessage(
-                      messages.detailsRecipientAddTooltip
-                    )}
-                  >
+                  <Tooltip title={fmt(msg.detailsRecipientAddTooltip)}>
                     <IconButton
                       className={classes.detailsRowAction}
-                      aria-label={intl.formatMessage(
-                        messages.detailsRecipientAddAria
-                      )}
+                      aria-label={fmt(msg.detailsRecipientAddAria)}
                     >
                       <PersonAddIcon fontSize="inherit" />
                     </IconButton>
                   </Tooltip>
                 ) : (
-                  <Tooltip
-                    title={intl.formatMessage(
-                      messages.detailsRecipientEditTooltip
-                    )}
-                  >
+                  <Tooltip title={fmt(msg.detailsRecipientEditTooltip)}>
                     <IconButton
                       className={classes.detailsRowAction}
-                      aria-label={intl.formatMessage(
-                        messages.detailsRecipientEditAria
-                      )}
+                      aria-label={fmt(msg.detailsRecipientEditAria)}
                     >
                       <PersonIcon fontSize="inherit" />
                     </IconButton>
@@ -1120,11 +1062,12 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               </span>
             </Typography>
           )}
+          {/* SEND INFO (AMOUNT) */}
           {tx.type === TransactionType.SEND && (
             <Typography className={classes.detailsRow}>
               <span
                 className={classes.detailsRowLabel}
-                children={intl.formatMessage(messages.detailsSendAmountLabel)}
+                children={fmt(msg.detailsSendAmountLabel)}
               />
               <span className={classes.detailsRowValue}>
                 {intl.formatNumber(tx.amount.unit.toNumber(), {
@@ -1135,13 +1078,12 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               <span className={classes.detailsRowActions} />
             </Typography>
           )}
+          {/* DELEGATE INFO */}
           {tx.type === TransactionType.DELEGATE && (
             <Typography className={classes.detailsRow}>
               <span
                 className={classes.detailsRowLabel}
-                children={intl.formatMessage(
-                  messages.detailsDelegateUsernameLabel
-                )}
+                children={fmt(msg.detailsDelegateUsernameLabel)}
               />
               <span
                 className={classes.detailsRowValue}
@@ -1150,16 +1092,14 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               <span className={classes.detailsRowActions} />
             </Typography>
           )}
+          {/* VOTE INFO */}
           {removedVotes.length > 0 && (
             <Typography className={classes.detailsRow}>
               <span
                 className={classes.detailsRowLabel}
-                children={intl.formatMessage(
-                  messages.detailsVotesRemovedLabel,
-                  {
-                    voteCount: removedVotes.length
-                  }
-                )}
+                children={fmt(msg.detailsVotesRemovedLabel, {
+                  voteCount: removedVotes.length
+                })}
               />
               <span
                 className={classes.detailsRowValue}
@@ -1173,11 +1113,12 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               <span className={classes.detailsRowActions} />
             </Typography>
           )}
+          {/* VOTE INFO */}
           {addedVotes.length > 0 && (
             <Typography className={classes.detailsRow}>
               <span
                 className={classes.detailsRowLabel}
-                children={intl.formatMessage(messages.detailsVotesAddedLabel, {
+                children={fmt(msg.detailsVotesAddedLabel, {
                   voteCount: addedVotes.length
                 })}
               />
@@ -1193,10 +1134,11 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               <span className={classes.detailsRowActions} />
             </Typography>
           )}
+          {/* FEE */}
           <Typography className={classes.detailsRow}>
             <span
               className={classes.detailsRowLabel}
-              children={intl.formatMessage(messages.detailsNetworkFeeLabel)}
+              children={fmt(msg.detailsNetworkFeeLabel)}
             />
             <span className={classes.detailsRowValue}>
               {intl.formatNumber(tx.fee.unit.toNumber(), {
@@ -1207,15 +1149,14 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             <span className={classes.detailsRowActions} />
           </Typography>
         </ExpansionPanelDetails>
+        {/* BUTTONS */}
         <ExpansionPanelActions>
           {tx.type === TransactionType.SEND &&
             tx.isIncoming && (
               <Link {...getSendLinkProps(tx.senderId, tx.amount)}>
                 <Button
                   size="small"
-                  children={intl.formatMessage(
-                    messages.detailsReturnFundsLabel
-                  )}
+                  children={fmt(msg.detailsReturnFundsLabel)}
                 />
               </Link>
             )}
@@ -1224,7 +1165,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               <Link {...getSendLinkProps(tx.recipientId, tx.amount)}>
                 <Button
                   size="small"
-                  children={intl.formatMessage(messages.detailsSendAgainLabel)}
+                  children={fmt(msg.detailsSendAgainLabel)}
                 />
               </Link>
             )}
