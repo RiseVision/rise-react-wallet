@@ -178,6 +178,23 @@ context('Wallet', () => {
     });
   });
 
+  it('transaction - edit account name', () => {
+    const name = 'test-name';
+    // click the second transaction row
+    expandTransactionDetails(2);
+    getTransactionDetails()
+      .find('button[aria-label="Add sender to contacts"]')
+      .click();
+    fillDialogInput(0, name);
+    clickDialogSubmit();
+    getTransactionDetails()
+      .find('span')
+      .contains(name)
+      .should('have.length', 1);
+    // TODO test the ModifyContact dialog, requires additional fixtures
+    // and a transaction to that account
+  });
+
   it('navigate to the address book', () => {
     cy.get('ul[aria-label="Navigation"]')
       .find('span')
