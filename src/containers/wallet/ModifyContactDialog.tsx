@@ -13,6 +13,7 @@ import CreateContactDialogContent, {
 interface Props {
   navigateBackLink: RouteLink;
   id?: string;
+  open?: boolean;
 }
 
 interface InjectedProps extends Props {
@@ -38,10 +39,15 @@ export default class ModifyContactDialog extends React.Component<Props> {
   }
 
   render() {
-    const { navigateBackLink, routerStore, addressBookStore } = this.injected;
+    const {
+      navigateBackLink,
+      routerStore,
+      addressBookStore,
+      open
+    } = this.injected;
 
     const id = this.injected.id || routerStore.params.id;
-    const isOpen = routerStore.currentView === addressBookModifyRoute;
+    const isOpen = open || routerStore.currentView === addressBookModifyRoute;
     const name = addressBookStore.contacts.get(id);
 
     return (
