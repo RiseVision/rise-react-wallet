@@ -123,8 +123,7 @@ const AccountOverviewHeader = stylesDecorator(
           className,
           address,
           alias,
-          balance,
-          balance_in_fiat
+          balance
         } = this.props;
 
         const formatAmount = (value: RawAmount) =>
@@ -133,10 +132,7 @@ const AccountOverviewHeader = stylesDecorator(
         return (
           <Paper
             square={true}
-            className={classNames(
-              classes.container,
-              className,
-            )}
+            className={classNames(classes.container, className)}
           >
             <div className={classes.icon} aria-hidden={true}>
               <AccountIcon size={64} address={address} />
@@ -167,9 +163,9 @@ const AccountOverviewHeader = stylesDecorator(
               >
                 {formatAmount(balance)}
               </Typography>
-              <Typography className={classes.secondary_text}>
+              {/*<Typography className={classes.secondary_text}>
                 {balance_in_fiat}
-              </Typography>
+              </Typography>*/}
             </div>
           </Paper>
         );
