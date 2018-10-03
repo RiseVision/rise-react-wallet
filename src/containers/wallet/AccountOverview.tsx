@@ -14,7 +14,10 @@ import { RouterStore } from 'mobx-router-rise';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import { RouteLink } from '../../stores/root';
 import { RawAmount } from '../../utils/amounts';
+import AccountNameDialog from './AccountNameDialog';
+import ModifyContactDialog from './ModifyContactDialog';
 import SendCoinsDialog from './SendCoinsDialog';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
@@ -99,11 +102,19 @@ const messages = defineMessages({
   }
 });
 
+type State = {
+  editContactID: string | null;
+};
+
 @inject(accountStore)
 @inject('routerStore')
 @inject('walletStore')
 @observer
-class AccountOverview extends React.Component<DecoratedProps> {
+class AccountOverview extends React.Component<DecoratedProps, State> {
+  state: State = {
+    editContactID: null
+  };
+
   get injected(): PropsInjected & DecoratedProps {
     // @ts-ignore
     return this.props;
@@ -121,6 +132,40 @@ class AccountOverview extends React.Component<DecoratedProps> {
 
   handleLoadMore = () => {
     this.account.recentTransactions.loadMore(this.injected.walletStore);
+  }
+
+  handleContactEdit = (id: string) => {
+    this.setState({ editContactID: id });
+  }
+
+  renderContactDialog = () => {
+    const { walletStore: wallet } = this.injected;
+    const { editContactID: id } = this.state;
+
+    const backLink: RouteLink = {
+      route: accountOverviewRoute,
+      onBeforeNavigate: () => {
+        this.setState({
+          editContactID: null
+        });
+      }
+    };
+
+    return (
+      <>
+        <AccountNameDialog
+          // @ts-ignore TODO avoid rendering date-less dialogs
+          account={wallet.accounts.get(id) || { id: '', name: '' }}
+          navigateBackLink={backLink}
+          open={Boolean(id && wallet.accounts.has(id))}
+        />
+        <ModifyContactDialog
+          navigateBackLink={backLink}
+          id={id || ''}
+          open={Boolean(id && !wallet.accounts.has(id))}
+        />
+      </>
+    );
   }
 
   getSendLinkProps = (address: string, amount: RawAmount) => {
@@ -156,6 +201,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
 
     return (
       <div className={classes.container}>
+        {this.renderContactDialog()}
         <AccountOverviewHeader
           className={classNames(classes.header, classes.headerFixed)}
           {...headerProps}
@@ -168,14 +214,10 @@ class AccountOverview extends React.Component<DecoratedProps> {
             <Link
               route={accountSendRoute}
               params={{
-                id: this.account.id,
+                id: this.account.id
               }}
             >
-              <Button
-                variant="fab"
-                className={classes.fab}
-                color="secondary"
-              >
+              <Button variant="fab" className={classes.fab} color="secondary">
                 <SendIcon />
               </Button>
             </Link>
@@ -191,9 +233,8 @@ class AccountOverview extends React.Component<DecoratedProps> {
             className={classNames(classes.header, classes.headerInline)}
             {...headerProps}
           />
-          {recentTransactions.items.length === 0 && recentTransactions.isLoading && (
-            <LoadingIndicator />
-          )}
+          {recentTransactions.items.length === 0 &&
+            recentTransactions.isLoading && <LoadingIndicator />}
           {toPairs(recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
               <React.Fragment key={`${this.account.id}-${group}`}>
@@ -221,6 +262,7 @@ class AccountOverview extends React.Component<DecoratedProps> {
                         key={transaction.id}
                         tx={transaction}
                         explorerUrl={this.account.config.explorer_url}
+                        handleContactEdit={this.handleContactEdit}
                       />
                     );
                   })}

@@ -60,7 +60,9 @@ const messages = defineMessages({
   instructionsModify: {
     id: 'create-contact-dialog-content.instructions-modify',
     description: 'Instructions before the modify contact fields',
-    defaultMessage: 'This info will only be visible to you and nobody else.'
+    defaultMessage:
+      'Contact name for {id}. This info will only be visible ' +
+      'to you and nobody else.'
   },
   nameField: {
     id: 'create-contact-dialog-content.name-input-label',
@@ -257,7 +259,8 @@ class CreateContactDialogContent extends React.Component<
           <Typography
             id={this.dialogContentId}
             children={intl.formatMessage(
-              id ? messages.instructionsModify : messages.instructions
+              id ? messages.instructionsModify : messages.instructions,
+              id ? { id } : undefined
             )}
           />
         </Grid>

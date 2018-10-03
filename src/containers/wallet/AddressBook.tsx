@@ -17,6 +17,7 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AddressBookStore from '../../stores/addressBook';
+import { RouteLink } from '../../stores/root';
 import CreateContactDialog from './CreateContactDialog';
 import {
   addressBookRoute,
@@ -81,7 +82,7 @@ class AddressBook extends React.Component<DecoratedProps> {
   render() {
     const { intl, classes, addressBookStore } = this.injected;
 
-    const backLink = {
+    const backLink: RouteLink = {
       route: addressBookRoute
     };
 

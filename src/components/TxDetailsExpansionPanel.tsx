@@ -24,7 +24,6 @@ import { TransactionType } from 'dpos-api-wrapper';
 import * as moment from 'moment-timezone';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import { addressBookModifyRoute, accountSettingsNameRoute } from '../routes';
 import Link from './Link';
 import { TTransaction } from '../stores/wallet';
 import { RawAmount } from '../utils/amounts';
@@ -146,6 +145,7 @@ interface Props extends WithStyles<typeof styles> {
   tx: TTransaction;
   explorerUrl: string;
   getSendLinkProps: (address: string, amount: RawAmount) => LinkProps;
+  handleContactEdit(id: string): void;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -1092,19 +1092,19 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
   handleCopyTxId = () => {
     const { tx } = this.props;
     copyToClipboard(tx.id);
-  }
+  };
 
   handleCopyBlockId = () => {
     const { tx } = this.props;
     copyToClipboard(tx.blockId);
-  }
+  };
 
   /**
    * Renders a contact entry, linked to the name edit dialog.
    *
    * @param id
    * @param name
-   * @param sender
+   * @param sender This contact initiated the transaction.
    * @param ownAccount
    */
   renderContact(
@@ -1113,24 +1113,13 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
     sender: boolean,
     ownAccount: boolean
   ) {
-    const { intl, classes } = this.props;
+    const { intl, classes, handleContactEdit } = this.props;
 
     // shortcuts
     const fmt = intl.formatMessage.bind(intl);
     const msg = messages;
 
     const ContactIcon = name ? PersonIcon : PersonAddIcon;
-
-    // TODO icons not visible, missing SVG wrapper
-    const contactButton = ownAccount ? (
-      <Link route={accountSettingsNameRoute} params={{ id }}>
-        <ContactIcon fontSize="inherit" />
-      </Link>
-    ) : (
-      <Link route={addressBookModifyRoute} params={{ id }}>
-        <ContactIcon fontSize="inherit" />
-      </Link>
-    );
 
     return (
       <Typography className={classes.detailsRow}>
@@ -1159,16 +1148,31 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
           </Tooltip>
           <Tooltip
             title={fmt(
-              name ? msg.detailsSenderEditTooltip : msg.detailsSenderAddTooltip
+              sender
+                ? name
+                  ? msg.detailsSenderEditTooltip
+                  : msg.detailsSenderAddTooltip
+                : name
+                  ? msg.detailsRecipientEditTooltip
+                  : msg.detailsRecipientAddTooltip
             )}
           >
             <IconButton
               className={classes.detailsRowAction}
               aria-label={fmt(
-                name ? msg.detailsSenderEditAria : msg.detailsSenderAddAria
+                sender
+                  ? name
+                    ? msg.detailsSenderEditAria
+                    : msg.detailsSenderAddAria
+                  : name
+                    ? msg.detailsRecipientEditAria
+                    : msg.detailsRecipientAddAria
               )}
             >
-              {contactButton}
+              <ContactIcon
+                fontSize="inherit"
+                onClick={() => handleContactEdit(id)}
+              />
             </IconButton>
           </Tooltip>
         </span>
