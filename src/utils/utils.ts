@@ -60,3 +60,20 @@ export function normalizeNumber(intl: InjectedIntl, value: string): string {
     return '';
   }
 }
+
+export type TAddressRecord = {
+  id: string;
+  name: string;
+  source: TAddressSource;
+};
+
+export enum TAddressSource {
+  // eg URL
+  PREFILLED,
+  // typed by the user
+  INPUT,
+  // other accounts added to the wallet
+  WALLET,
+  ADDRESS_BOOK,
+  DELEGATE
+}

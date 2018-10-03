@@ -1,6 +1,7 @@
 import { configure } from 'mobx';
 import { RouterStore, Route, RouteParams } from 'mobx-router-rise';
 import AccountStore from './account';
+import AddressBookStore from './addressBook';
 import AppStore from './app';
 import { TConfig } from './index';
 import OnboardingStore from './onboarding';
@@ -13,7 +14,11 @@ export interface RouteLink {
   route: Route<{}>;
   params?: RouteParams;
   queryParams?: RouteParams;
-  onBeforeNavigate?: (route: Route<{}>, params: RouteParams, queryParams: RouteParams) => void;
+  onBeforeNavigate?: (
+    route: Route<{}>,
+    params: RouteParams,
+    queryParams: RouteParams
+  ) => void;
 }
 
 export default class RootStore {
@@ -22,10 +27,12 @@ export default class RootStore {
   onboarding: OnboardingStore;
   wallet: WalletStore;
   account: AccountStore;
+  addressBook: AddressBookStore;
 
   constructor(public config: TConfig) {
+    this.addressBook = new AddressBookStore();
     this.onboarding = new OnboardingStore();
-    this.wallet = new WalletStore(config, this.router);
+    this.wallet = new WalletStore(config, this.router, this.addressBook);
     const self = this;
     const oldGoTo = this.router.goTo;
     this.router.goTo = function(

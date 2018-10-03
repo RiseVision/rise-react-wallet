@@ -17,7 +17,7 @@ declare module 'mobx-router-rise' {
   export class Route<S> {
     constructor(routeDef: TRouteDef<S>);
     component: React.ReactElement<any>;
-    getParamsObject(): RouteParams;
+    getParamsObject(paramsArray: string[]): RouteParams;
     getRootPath(): string;
     goTo(route: Route<any>): void;
     originalPath: string;

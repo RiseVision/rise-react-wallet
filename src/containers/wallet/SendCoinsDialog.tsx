@@ -2,12 +2,13 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import TransactionDialog from './TransactionDialog';
 import SendCoinsDialogContent from '../../components/content/SendCoinsDialogContent';
 import { accountSendRoute } from '../../routes';
 import AccountStore from '../../stores/account';
+import AddressBookStore from '../../stores/addressBook';
 import WalletStore from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
+import TransactionDialog from './TransactionDialog';
 
 interface Props {
   account: AccountStore;
@@ -19,6 +20,7 @@ interface Props {
 interface PropsInjected extends Props {
   routerStore: RouterStore;
   walletStore: WalletStore;
+  addressBookStore: AddressBookStore;
 }
 
 interface State {
@@ -33,6 +35,7 @@ interface State {
 
 @inject('routerStore')
 @inject('walletStore')
+@inject('addressBookStore')
 @observer
 class SendCoinsDialog extends React.Component<Props, State> {
   disposeOpenMonitor: null | IReactionDisposer = null;
@@ -183,9 +186,11 @@ class SendCoinsDialog extends React.Component<Props, State> {
       <SendCoinsDialogContent
         onSubmit={this.handleSubmit}
         recipientID={recipientID}
+        recipientName={walletStore.idToName(recipientID)}
         amount={amount}
         sendFee={fee}
         balance={account.balance}
+        contacts={walletStore.getContacts()}
       />
     );
   }

@@ -19,7 +19,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { Route, RouteParams } from 'mobx-router-rise';
+import { RouterStore, Route, RouteParams } from 'mobx-router-rise';
 import * as React from 'react';
 import {
   defineMessages,
@@ -29,7 +29,11 @@ import {
 } from 'react-intl';
 import AccountIcon from '../../components/AccountIcon';
 import Link from '../../components/Link';
-import { accountOverviewRoute, onboardingAddAccountRoute } from '../../routes';
+import {
+  accountOverviewRoute,
+  onboardingAddAccountRoute,
+  addressBookRoute
+} from '../../routes';
 import AccountStore from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
@@ -70,11 +74,12 @@ interface Props extends WithStyles<typeof styles> {
   onSignOutClick: () => void;
 }
 
-interface PropsInjected extends Props {
+type DecoratedProps = Props & InjectedIntlProps;
+
+interface PropsInjected extends DecoratedProps {
+  routerStore: RouterStore;
   walletStore: WalletStore;
 }
-
-type DecoratedProps = Props & InjectedIntlProps;
 
 const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 
@@ -96,12 +101,12 @@ const messages = defineMessages({
   }
 });
 
+@inject('routerStore')
 @inject('walletStore')
 @observer
 class DrawerContent extends React.Component<DecoratedProps> {
-  get injected(): PropsInjected & DecoratedProps {
-    // @ts-ignore
-    return this.props;
+  get injected(): PropsInjected {
+    return this.props as PropsInjected;
   }
 
   handleAccountNavigation = (view: Route<{}>, params: RouteParams) => {
@@ -116,14 +121,20 @@ class DrawerContent extends React.Component<DecoratedProps> {
     const {
       intl,
       classes,
-      walletStore,
       onSignOutClick,
+      routerStore,
+      walletStore,
     } = this.injected;
 
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );
-    const selected = walletStore.selectedAccount;
+    const { selectedAccount }  = walletStore;
+
+    let selection: 'addressBook' | 'account' = 'account';
+    if (routerStore.currentView.path.startsWith('/address-book')) {
+      selection = 'addressBook';
+    }
 
     return (
       <React.Fragment>
@@ -166,8 +177,9 @@ class DrawerContent extends React.Component<DecoratedProps> {
             >
               <ListItem
                 className={classNames(
-                  selected &&
-                    selected.id === account.id &&
+                  selection === 'account' &&
+                    selectedAccount &&
+                    selectedAccount.id === account.id &&
                     classes.selectedListItem
                 )}
                 button={true}
@@ -210,18 +222,26 @@ class DrawerContent extends React.Component<DecoratedProps> {
         </List>
         <Divider aria-hidden={true} />
         <List aria-label={intl.formatMessage(messages.navigationListAriaLabel)}>
-          <ListItem button={true}>
-            <ListItemIcon className={classes.listIcon}>
-              <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText>
-              <FormattedMessage
-                id="drawer-content.address-book"
-                description="Address book drawer item"
-                defaultMessage="Address book"
-              />
-            </ListItemText>
-          </ListItem>
+          <Link route={addressBookRoute}>
+            <ListItem
+              className={classNames(
+                selection === 'addressBook' &&
+                  classes.selectedListItem
+              )}
+              button={true}
+            >
+              <ListItemIcon className={classes.listIcon}>
+                <PeopleIcon />
+              </ListItemIcon>
+              <ListItemText>
+                <FormattedMessage
+                  id="drawer-content.address-book"
+                  description="Address book drawer item"
+                  defaultMessage="Address book"
+                />
+              </ListItemText>
+            </ListItem>
+          </Link>
           <ListItem button={true}>
             <ListItemIcon className={classes.listIcon}>
               <LayersIcon />

@@ -53,12 +53,13 @@ afterEach(() => {
 });
 
 context('Wallet', () => {
-  it('send funds', () => {
+  it('send coins', () => {
+    const id = lstore.get('accounts')[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
     assertAutofocus();
-    // type in the recipient address
-    fillDialogInput(0, lstore.get('accounts')[1].id);
+    // type in the recipient address (esc closes auto-completion)
+    fillDialogInput(0, `${id}{esc}`);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -176,10 +177,24 @@ context('Wallet', () => {
       expect(input.val()).have.length.above(0);
     });
   });
+
+  it('navigate to the address book', () => {
+    cy.get('ul[aria-label="Navigation"]')
+      .find('span')
+      .contains('Address book')
+      .click();
+    // assert the url
+    cy.url().should('contain', '/address-book');
+    // assert the header
+    cy.get('h2')
+      .contains('Address book')
+      .should('have.length', 1);
+  });
 });
 
 context('Server errors', () => {
   it('error messages', () => {
+    const id = lstore.get('accounts')[1].id;
     // stab the route
     cy.route({
       method: 'PUT',
@@ -191,8 +206,8 @@ context('Server errors', () => {
     }).as('putTransaction');
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
-    // type in the recipient address
-    fillDialogInput(0, lstore.get('accounts')[1].id);
+    // type in the recipient address (esc closes auto-completion)
+    fillDialogInput(0, `${id}{esc}`);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -202,6 +217,7 @@ context('Server errors', () => {
   });
 
   it('retry', () => {
+    const id = lstore.get('accounts')[1].id;
     // stab the route
     cy.route({
       method: 'PUT',
@@ -213,8 +229,8 @@ context('Server errors', () => {
     }).as('putTransaction');
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
-    // type in the recipient address
-    fillDialogInput(0, lstore.get('accounts')[1].id);
+    // type in the recipient address (esc closes auto-completion)
+    fillDialogInput(0, `${id}{esc}`);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -455,10 +471,11 @@ context('Settings dialogs autofocus', () => {
 
 context('Form validation', function() {
   it('confirmation passphrase', function() {
+    const id = this.accounts.storedAccounts[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
-    // type in the recipient address
-    fillDialogInput(0, this.accounts.storedAccounts[1].id);
+    // type in the recipient address (esc closes auto-completion)
+    fillDialogInput(0, `${id}{esc}`);
     // type in the amount
     fillDialogInput(1, '1');
     // click submit
@@ -476,10 +493,11 @@ context('Form validation', function() {
   });
 
   it('confirmation mnemonic', function() {
+    const id = this.accounts.storedAccounts[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
-    // type in the recipient address
-    fillDialogInput(0, this.accounts.storedAccounts[1].id);
+    // type in the recipient address (esc closes auto-completion)
+    fillDialogInput(0, `${id}{esc}`);
     // type in the amount
     fillDialogInput(1, '1');
     // click submit
@@ -519,7 +537,7 @@ context('Form validation', function() {
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
     // type in the recipient address
-    fillDialogInput(0, 'wrong address');
+    fillDialogInput(0, 'wrong address{esc}');
     // type in the amount
     fillDialogInput(1, '0wer0.056');
     // click submit
@@ -536,10 +554,11 @@ context('Form validation', function() {
 
 context('Dialog navigation', function() {
   it('go back to the first form', function() {
+    const id = lstore.get('accounts')[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
-    // type in the recipient address
-    fillDialogInput(0, this.accounts.storedAccounts[1].id);
+    // type in the recipient address (esc closes auto-completion)
+    fillDialogInput(0, `${id}{esc}`);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -563,10 +582,11 @@ context('Dialog navigation', function() {
   });
 
   it('close button on the second form', function() {
+    const id = lstore.get('accounts')[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
-    // type in the recipient address
-    fillDialogInput(0, this.accounts.storedAccounts[1].id);
+    // type in the recipient address (esc closes auto-completion)
+    fillDialogInput(0, `${id}{esc}`);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit
@@ -580,10 +600,11 @@ context('Dialog navigation', function() {
   });
 
   it('no navigation buttons during a submission', function() {
+    const id = lstore.get('accounts')[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
-    // type in the recipient address
-    fillDialogInput(0, this.accounts.storedAccounts[1].id);
+    // type in the recipient address (esc closes auto-completion)
+    fillDialogInput(0, `${id}{esc}`);
     // type in the amount
     fillDialogInput(1, '0.001');
     // click submit

@@ -12,6 +12,7 @@ import {
 import { PropGetters } from 'downshift';
 import * as classNames from 'classnames';
 import * as React from 'react';
+import { TAddressRecord } from '../utils/utils';
 import AccountIcon from './AccountIcon';
 
 const styles = (theme: Theme) =>
@@ -40,17 +41,11 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface Record {
-  address: string;
-  label: string;
-  source: string;
-}
-
 interface Props extends WithStyles<typeof styles> {
-  suggestions: Record[];
+  suggestions: TAddressRecord[];
   highlightedIndex: number | null;
-  selectedItem: Record;
-  getItemProps: PropGetters<Record>['getItemProps'];
+  selectedItem: TAddressRecord;
+  getItemProps: PropGetters<TAddressRecord>['getItemProps'];
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AddressSuggestionsMenu' });
@@ -63,7 +58,7 @@ class AddressSuggestionsMenu extends React.Component<Props> {
       <Paper className={classes.root} square={true}>
         {suggestions.map((item, index) => (
           <MenuItem
-            key={`${item.source}-${item.address}`}
+            key={`${item.source}-${item.id}`}
             component="div"
             selected={this.isItemHighlighted(index)}
             classes={{
@@ -81,12 +76,12 @@ class AddressSuggestionsMenu extends React.Component<Props> {
                   this.isItemSelected(item) && classes.selected
                 )
               }}
-              primary={item.label}
-              secondary={item.address}
+              primary={item.name}
+              secondary={item.id}
             />
             <ListItemAvatar>
               <Avatar className={classes.accountIcon}>
-                <AccountIcon size={24} address={item.address} />
+                <AccountIcon size={24} address={item.id} />
               </Avatar>
             </ListItemAvatar>
           </MenuItem>
@@ -100,11 +95,9 @@ class AddressSuggestionsMenu extends React.Component<Props> {
     return index === highlightedIndex;
   }
 
-  private isItemSelected(rec: Record): boolean {
+  private isItemSelected(rec: TAddressRecord): boolean {
     const { selectedItem } = this.props;
-    return (
-      selectedItem.address === rec.address && selectedItem.source === rec.source
-    );
+    return selectedItem.id === rec.id && selectedItem.source === rec.source;
   }
 }
 

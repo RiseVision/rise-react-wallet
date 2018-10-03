@@ -29,9 +29,12 @@ import { RawAmount } from '../utils/amounts';
 import {
   getTimestamp,
   normalizeAddress,
-  timestampToUnix
+  timestampToUnix,
+  TAddressRecord,
+  TAddressSource
 } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
+import AddressBookStore from './addressBook';
 import { TConfig } from './index';
 import * as moment from 'moment-timezone';
 import * as queryString from 'query-string';
@@ -53,7 +56,11 @@ export default class WalletStore {
   @observable accounts = observable.map<string, AccountStore>();
   @observable selectedAccount: AccountStore;
 
-  constructor(public config: TConfig, public router: RouterStore) {
+  constructor(
+    public config: TConfig,
+    public router: RouterStore,
+    public addressBook: AddressBookStore
+  ) {
     dposAPI.nodeAddress = config.api_url;
     this.dposAPI = dposAPI;
     this.api = config.api_url;
@@ -292,6 +299,7 @@ export default class WalletStore {
     return res;
   }
 
+  // TODO missing in dposAPI
   async searchDelegates(query: string): Promise<Delegate[]> {
     assert(
       query === query.toLowerCase(),
@@ -308,13 +316,16 @@ export default class WalletStore {
    * @returns The name from the address book OR from one of the added accounts
    *   OR null if not found
    */
-  idToName(id: string): string | null {
-    for (const account of this.accounts.values()) {
-      if (account.id === id && account.name) {
-        return account.name;
-      }
+  idToName(id: string): string {
+    const account = this.accounts.get(id);
+    if (account) {
+      return account.name;
     }
-    return null;
+    const addressBookName = this.addressBook.contacts.get(id);
+    if (addressBookName) {
+      return addressBookName;
+    }
+    return '';
   }
 
   /**
@@ -669,6 +680,34 @@ export default class WalletStore {
       }
       return json;
     }
+  }
+
+  /**
+   * Get contacts from all source like the address book, added accounts and
+   * delegates.
+   *
+   * TODO implement delegates
+   */
+  getContacts(): TAddressRecord[] {
+    assert(this.selectedAccount);
+
+    const addresses: TAddressRecord[] = this.addressBook.asArray.map(
+      ({ id, name }) => ({
+        id,
+        name,
+        source: TAddressSource.ADDRESS_BOOK
+      })
+    );
+
+    const accounts: TAddressRecord[] = [...this.accounts.values()]
+      .filter(({ id }) => id !== this.selectedAccount.id)
+      .map(({ id, name }) => ({
+        id,
+        name: name || '',
+        source: TAddressSource.WALLET
+      }));
+
+    return [...addresses, ...accounts];
   }
 }
 
