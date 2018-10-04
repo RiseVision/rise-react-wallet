@@ -14,6 +14,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { inject, observer } from 'mobx-react';
+import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AddressBookStore from '../../stores/addressBook';
@@ -26,6 +27,8 @@ import {
 } from '../../routes';
 import Link from '../../components/Link';
 import ModifyContactDialog from './ModifyContactDialog';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -46,6 +49,7 @@ type DecoratedProps = Props & InjectedIntlProps;
 
 interface PropsInjected extends DecoratedProps {
   addressBookStore: AddressBookStore;
+  routerStore: RouterStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AddressBook' });
@@ -65,18 +69,33 @@ const messages = defineMessages({
     id: 'wallet-address-book.address-column-header',
     description: 'Label for the address column in address book',
     defaultMessage: 'Address'
+  },
+  actionsColumnHeader: {
+    id: 'wallet-address-book.actions-column-header',
+    description: 'Label for the actions column in address book',
+    defaultMessage: 'Actions'
   }
 });
 
 @inject('addressBookStore')
+@inject('routerStore')
 @observer
 class AddressBook extends React.Component<DecoratedProps> {
   get injected(): PropsInjected {
     return this.props as PropsInjected;
   }
 
-  handleEditContact = () => {
-    // this.injected.router;
+  handleEditContact = (id: string) => () => {
+    this.injected.routerStore.goTo(addressBookModifyRoute, { id });
+  }
+
+  handleDeleteContact = (id: string) => () => {
+    const { addressBookStore } = this.injected;
+    const name = addressBookStore.contacts.get(id) || '';
+    // TODO material dialog
+    if (window.confirm(`Delete ${name}?`)) {
+      addressBookStore.contacts.delete(id);
+    }
   }
 
   render() {
@@ -110,20 +129,26 @@ class AddressBook extends React.Component<DecoratedProps> {
                 <TableCell>
                   {intl.formatMessage(messages.addressColumnHeader)}
                 </TableCell>
+                <TableCell>
+                  {intl.formatMessage(messages.actionsColumnHeader)}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {addressBookStore.asArray.map(entry => (
-                <TableRow key={entry.id} onClick={this.handleEditContact}>
+                <TableRow key={entry.id}>
+                  <TableCell>{entry.name}</TableCell>
+                  <TableCell children={entry.id} />
                   <TableCell>
+                    {/* TODO broken edit icon */}
                     <Link
                       route={addressBookModifyRoute}
                       params={{ id: entry.id }}
                     >
-                      <a>{entry.name}</a>
+                      <EditIcon onClick={this.handleEditContact(entry.id)} />
                     </Link>
+                    <DeleteIcon onClick={this.handleDeleteContact(entry.id)} />
                   </TableCell>
-                  <TableCell children={entry.id} />
                 </TableRow>
               ))}
             </TableBody>
