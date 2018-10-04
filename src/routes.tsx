@@ -79,6 +79,22 @@ export const onboardingExistingAccountRoute = new Route<RootStore>({
   )
 });
 
+export const onboardingMnemonicAccountRoute = new Route<RootStore>({
+  path: '/onboarding/mnemonic-account',
+  component: (
+    <AsyncComponent
+      name="./containers/onboarding"
+      resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.MnemonicAccountPage />
+        </components.Onboarding>
+      )}
+    />
+  )
+});
+
 export const onboardingExistingAccountTypeRoute = new Route<RootStore>({
   path: '/onboarding/existing-account-type',
   component: (

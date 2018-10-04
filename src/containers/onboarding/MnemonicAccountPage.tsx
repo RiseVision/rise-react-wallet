@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import { LiskWallet } from 'dpos-offline';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -13,16 +14,14 @@ import {
   injectIntl
 } from 'react-intl';
 import AccountIcon from '../../components/AccountIcon';
-import Link from '../../components/Link';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingAddAccountRoute,
-  onboardingExistingAccountTypeRoute,
-  onboardingMnemonicAccountRoute
+  onboardingExistingAccountTypeRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
-import { normalizeAddress } from '../../utils/utils';
+import { normalizeMnemonic } from '../../utils/utils';
 
 const styles = createStyles({
   content: {
@@ -48,9 +47,9 @@ interface PropsInjected extends Props {
 }
 
 interface State {
-  address: string;
-  addressInvalid: boolean;
-  normalizedAddress: string;
+  address: string | null;
+  mnemonic: string;
+  mnemonicInvalid: boolean;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -60,25 +59,17 @@ const stylesDecorator = withStyles(styles, {
 });
 
 const messages = defineMessages({
-  invalidAddressGeneric: {
-    id: 'onboarding-existing-account.invalid-address-generic',
-    description: 'Error label for invalid address text input',
-    defaultMessage:
-      'Invalid RISE address. A valid address is in the format of "1234567890R".'
-  },
-  invalidAddressMnemonic: {
-    id: 'onboarding-existing-account.invalid-address-mnemonic',
-    description:
-      'Error label for invalid address text input when it looks like a mnemonic',
-    defaultMessage:
-      'Looks like you\'re trying to enter your passphrase. Please enter your account address instead.'
+  invalidMnemonicGeneric: {
+    id: 'onboarding-existing-account.invalid-mnemonic-generic',
+    description: 'Error label for invalid mnemonic text input',
+    defaultMessage: 'Invalid mnemonic. A valid mnemonic is a list of 12 words.'
   }
 });
 
 @inject('onboardingStore')
 @inject('routerStore')
 @observer
-class ExistingAccountPage extends React.Component<DecoratedProps, State> {
+class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
   get injected(): PropsInjected & DecoratedProps {
     // @ts-ignore
     return this.props;
@@ -87,12 +78,10 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
   constructor(props: DecoratedProps) {
     super(props);
 
-    const { onboardingStore } = this.injected;
-    const address = onboardingStore.address || '';
     this.state = {
-      address,
-      addressInvalid: false,
-      normalizedAddress: normalizeAddress(address.trim())
+      mnemonic: '',
+      mnemonicInvalid: false,
+      address: null
     };
   }
 
@@ -100,51 +89,54 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
     ev.preventDefault();
 
     const { routerStore, onboardingStore } = this.injected;
-    const { normalizedAddress } = this.state;
-    const addressInvalid = !normalizedAddress;
-    if (addressInvalid) {
-      this.setState({ addressInvalid: true });
+    const { address } = this.state;
+    if (!address) {
+      this.setState({ mnemonicInvalid: true });
       return;
     }
 
-    onboardingStore.address = normalizedAddress;
+    onboardingStore.address = address;
     routerStore.goTo(onboardingExistingAccountTypeRoute);
   }
 
-  handleAddressChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const address = ev.target.value;
-    const normalizedAddress = normalizeAddress(address.trim());
+  handleMnemonicChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const mnemonic = ev.target.value;
 
     this.setState({
-      address,
-      addressInvalid: false,
-      normalizedAddress
+      address: null,
+      mnemonic,
+      mnemonicInvalid: false
     });
   }
 
-  handleAddressBlur = () => {
-    const { address, normalizedAddress } = this.state;
-    const addressInvalid = !!address && !normalizedAddress;
-    this.setState({ addressInvalid });
+  handleMnemonicBlur = () => {
+    const { mnemonic } = this.state;
+    const normalized = normalizeMnemonic(mnemonic);
+    if (normalized) {
+      const wallet = new LiskWallet(normalized, 'R');
+      this.setState({
+        mnemonicInvalid: false,
+        address: wallet.address
+      });
+      return;
+    }
+    this.setState({ mnemonicInvalid: true });
   }
 
-  addressError(): string | null {
+  mnemonicError(): string | null {
     const { intl } = this.injected;
-    const { address, normalizedAddress } = this.state;
-    if (normalizedAddress !== '') {
+    const { address } = this.state;
+
+    if (address) {
       return null;
     }
 
-    if (address.trim().indexOf(' ') >= 0) {
-      return intl.formatMessage(messages.invalidAddressMnemonic);
-    } else {
-      return intl.formatMessage(messages.invalidAddressGeneric);
-    }
+    return intl.formatMessage(messages.invalidMnemonicGeneric);
   }
 
   render() {
     const { classes } = this.injected;
-    const { address, addressInvalid, normalizedAddress } = this.state;
+    const { mnemonic, mnemonicInvalid, address } = this.state;
 
     return (
       <ModalPaper open={true}>
@@ -165,9 +157,9 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
           <Grid item={true} xs={12}>
             <Typography>
               <FormattedMessage
-                id="onboarding-existing-account.enter-address-text"
+                id="onboarding-existing-account.enter-mnemonic-text"
                 description="Text asking the user to fill the input field"
-                defaultMessage="Enter the address of an existing RISE account you wish to access:"
+                defaultMessage="Enter the mnemonic of an existing RISE account you wish to access:"
               />
             </Typography>
           </Grid>
@@ -177,27 +169,39 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
                 className={classes.accountField}
                 label={
                   <FormattedMessage
-                    id="onboarding-existing-account.address-input-label"
-                    description="Account address input label"
-                    defaultMessage="Account address"
+                    id="onboarding-existing-account.mnemonic-input-label"
+                    description="Account mnemonic input label"
+                    defaultMessage="Account mnemonic"
                   />
                 }
-                error={addressInvalid}
-                value={address}
+                error={mnemonicInvalid}
+                value={mnemonic}
                 FormHelperTextProps={{
-                  error: addressInvalid
+                  error: mnemonicInvalid
                 }}
-                helperText={addressInvalid ? this.addressError() || '' : ''}
-                onChange={this.handleAddressChange}
-                onBlur={this.handleAddressBlur}
+                helperText={mnemonicInvalid ? this.mnemonicError() || '' : ''}
+                onChange={this.handleMnemonicChange}
+                onBlur={this.handleMnemonicBlur}
               />
               <AccountIcon
                 className={classes.accountIcon}
                 size={48}
-                address={normalizedAddress}
+                address={address || ''}
               />
             </div>
           </Grid>
+          {address && (
+            <Grid item={true} xs={12}>
+              <Typography>
+                <FormattedMessage
+                  id="onboarding-mnemonic-account.account-address-text"
+                  description="Account address for the inputted mnemonic"
+                  defaultMessage="Your account address is {address}."
+                  values={{ address }}
+                />
+              </Typography>
+            </Grid>
+          )}
           <Grid item={true} xs={12}>
             <Button type="submit" fullWidth={true}>
               <FormattedMessage
@@ -207,22 +211,10 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
               />
             </Button>
           </Grid>
-          <Grid item={true} xs={12}>
-            <Typography>
-              <FormattedMessage
-                id="onboarding-existing-account.recover-from-mnemonic"
-                description="Instructions for people who forgot their account address"
-                defaultMessage="Forgotten your address but have your secret mnemonic?"
-              />{' '}
-              <Link route={onboardingMnemonicAccountRoute}>
-                <a>Click here</a>
-              </Link>
-            </Typography>
-          </Grid>
         </Grid>
       </ModalPaper>
     );
   }
 }
 
-export default stylesDecorator(injectIntl(ExistingAccountPage));
+export default stylesDecorator(injectIntl(MnemonicAccountPage));

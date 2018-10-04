@@ -37,6 +37,23 @@ export function normalizeUsername(value: string): string {
   return value;
 }
 
+export function normalizeMnemonic(value: string): string {
+  const array = value.trim().split(' ');
+
+  // 12 words
+  if (array.length !== 12) {
+    return '';
+  }
+
+  // only letters
+  if (!value.match(/^[\w\s]+$/i)) {
+    return '';
+  }
+
+  // remove double spaces
+  return value.replace(/\s{2,}/g, ' ');
+}
+
 export function getTimestamp() {
   return unixToTimestamp(
     moment()
