@@ -406,6 +406,33 @@ context('Settings', () => {
       .should('have.length', 1);
   });
 
+  it('vote delegate, search by ID', () => {
+    clickSettingsRow('Voted delegate');
+    cy.wait(1000);
+    // check if all the results contain the search query
+    getDialogButtons()
+      .prev()
+      .eq(0)
+      // get the ID of the first delegate
+      .then(el => {
+        return el
+          .find('p')
+          .eq(1)
+          .text();
+      })
+      .then(id => {
+        // fill the search with the ID
+        fillDialogInput(0, id);
+        cy.wait(1000);
+        // assert there's only 1 Cast Vote button
+        getDialogContent()
+          .find('span')
+          .contains('Cast vote')
+          .should('have.length', 1)
+          .should('be.visible');
+      });
+  });
+
   it('account name', () => {
     clickSettingsRow('Account name');
     // type in the query

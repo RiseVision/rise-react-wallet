@@ -1092,12 +1092,12 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
   handleCopyTxId = () => {
     const { tx } = this.props;
     copyToClipboard(tx.id);
-  };
+  }
 
   handleCopyBlockId = () => {
     const { tx } = this.props;
     copyToClipboard(tx.blockId);
-  };
+  }
 
   /**
    * Renders a contact entry, linked to the name edit dialog.

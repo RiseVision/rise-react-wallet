@@ -4,6 +4,7 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
+import { normalizeAddress } from '../../utils/utils';
 import TransactionDialog from './TransactionDialog';
 import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
@@ -24,9 +25,7 @@ interface PropsInjected extends Props {
 
 interface State {
   activeDelegates: null | Delegate[];
-  step:
-    | 'vote'
-    | 'transaction';
+  step: 'vote' | 'transaction';
   query: string;
   search: {
     isLoading: boolean;
@@ -45,6 +44,15 @@ interface State {
 @inject('walletStore')
 @observer
 class VoteDelegateDialog extends React.Component<Props, State> {
+  get injected(): PropsInjected {
+    return this.props as PropsInjected;
+  }
+
+  get isOpen() {
+    const { routerStore } = this.injected;
+    return routerStore.currentView === accountSettingsVoteRoute;
+  }
+
   disposeOpenMonitor: null | IReactionDisposer = null;
   lastSearch = 0;
   state: State = {
@@ -54,9 +62,9 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     search: {
       isLoading: true,
       query: '',
-      delegates: [],
+      delegates: []
     },
-    transaction: null,
+    transaction: null
   };
 
   searchDelegates = throttle(
@@ -65,6 +73,12 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       const { walletStore } = this.injected;
       query = query.trim().toLowerCase();
 
+      // search by address (local)
+      if (this.searchByID(query)) {
+        return;
+      }
+
+      // search by name (API)
       this.setState({
         search: {
           isLoading: true,
@@ -91,8 +105,26 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     { leading: false, trailing: true }
   );
 
-  get injected(): PropsInjected {
-    return this.props as PropsInjected;
+  searchByID = (query: string) => {
+    // search by address (local)
+    const isID = normalizeAddress(query);
+    if (!isID) {
+      return false;
+    }
+    const { activeDelegates } = this.state;
+    const match =
+      activeDelegates &&
+      activeDelegates.find(delegate => delegate.address === isID);
+
+    this.setState({
+      search: {
+        isLoading: false,
+        query,
+        delegates: match ? [match] : []
+      }
+    });
+
+    return true;
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
@@ -103,7 +135,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     this.setState({
       step: 'vote',
-      transaction: null,
+      transaction: null
     });
   }
 
@@ -137,8 +169,8 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       transaction: {
         add: addNames,
         remove: removeNames,
-        delegate,
-      },
+        delegate
+      }
     });
   }
 
@@ -162,6 +194,11 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     }
     // Make sure that the suggestions are still something that the user is interested in
     if (this.lastSearch !== thisSearch) {
+      // keep the delegates list anyway and redo a local search
+      this.setState({
+        activeDelegates: activeDelegates
+      });
+      this.searchByID(this.state.query);
       return;
     }
 
@@ -193,7 +230,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     this.setState({
       query: '',
       step: 'vote',
-      transaction: null,
+      transaction: null
     });
     this.suggestDelegates();
 
@@ -205,11 +242,14 @@ class VoteDelegateDialog extends React.Component<Props, State> {
   }
 
   componentWillMount() {
-    this.disposeOpenMonitor = reaction(() => this.isOpen, (isOpen) => {
-      if (isOpen) {
-        this.resetState();
+    this.disposeOpenMonitor = reaction(
+      () => this.isOpen,
+      isOpen => {
+        if (isOpen) {
+          this.resetState();
+        }
       }
-    });
+    );
 
     this.resetState();
   }
@@ -219,11 +259,6 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       this.disposeOpenMonitor();
       this.disposeOpenMonitor = null;
     }
-  }
-
-  get isOpen() {
-    const { routerStore } = this.injected;
-    return routerStore.currentView === accountSettingsVoteRoute;
   }
 
   render() {
@@ -236,11 +271,15 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       <TransactionDialog
         open={this.isOpen}
         account={account}
-        transaction={transaction ? {
-          kind: 'vote',
-          add: transaction.add,
-          remove: transaction.remove,
-        } : null}
+        transaction={
+          transaction
+            ? {
+                kind: 'vote',
+                add: transaction.add,
+                remove: transaction.remove
+              }
+            : null
+        }
         onCreateTransaction={this.handleCreateTransaction}
         closeLink={navigateBackLink}
         onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
@@ -268,19 +307,21 @@ class VoteDelegateDialog extends React.Component<Props, State> {
         votedDelegate={votedDelegate}
         voteFee={fee}
         content={
-          hasInsufficientFunds ? {
-            kind: 'insufficient-funds',
-            onClose: this.handleClose,
-          }
-          : showSuggestions ? {
-            kind: 'suggestions',
-            delegates: search.delegates,
-          }
-          : {
-            kind: 'search-results',
-            query: search.query,
-            delegates: search.delegates,
-          }
+          hasInsufficientFunds
+            ? {
+                kind: 'insufficient-funds',
+                onClose: this.handleClose
+              }
+            : showSuggestions
+              ? {
+                  kind: 'suggestions',
+                  delegates: search.delegates
+                }
+              : {
+                  kind: 'search-results',
+                  query: search.query,
+                  delegates: search.delegates
+                }
         }
       />
     );
