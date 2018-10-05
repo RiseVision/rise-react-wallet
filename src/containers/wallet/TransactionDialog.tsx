@@ -99,12 +99,16 @@ class TransactionDialog extends React.Component<Props, State> {
   wrapCloseLink(link: RouteLink): RouteLink {
     return {
       ...link,
-      onBeforeNavigate: (route: Route<{}>, params: RouteParams, queryParams: RouteParams) => {
+      onBeforeNavigate: (
+        route: Route<{}>,
+        params: RouteParams,
+        queryParams: RouteParams
+      ) => {
         this.beforeClose();
         if (link.onBeforeNavigate) {
           link.onBeforeNavigate(route, params, queryParams);
         }
-      },
+      }
     };
   }
 
@@ -113,7 +117,6 @@ class TransactionDialog extends React.Component<Props, State> {
     this.setState({
       secrets: EMPTY_SECRETS
     });
-
   }
 
   handleBackFromConfirm = (ev: React.SyntheticEvent<{}>) => {
@@ -159,9 +162,8 @@ class TransactionDialog extends React.Component<Props, State> {
       // connection aborted after sending it
       if (e && e.code === 'ECONNABORTED') {
         // try to request the transaction
-        const testTx = await walletStore.dposAPI.transactions.get(tx.id);
         // if successful, consider the whole dialog as error-less
-        success = testTx.success;
+        success = await this.checkTransactionExists(tx.id);
       } else {
         // all the other errors
         errorSummary = e.toString();
@@ -182,6 +184,18 @@ class TransactionDialog extends React.Component<Props, State> {
         secrets: canRetry ? secrets : EMPTY_SECRETS,
         sendError: errorSummary
       });
+    }
+  }
+
+  async checkTransactionExists(id: string): Promise<boolean> {
+    const { walletStore } = this.injected;
+
+    try {
+      // try to request the transaction
+      const tx = await walletStore.dposAPI.transactions.get(id);
+      return Boolean(tx.transaction);
+    } catch (e) {
+      return false;
     }
   }
 
@@ -214,7 +228,12 @@ class TransactionDialog extends React.Component<Props, State> {
     'onClose' | 'closeLink' | 'onNavigateBack' | 'navigateBackLink' | 'children'
   > {
     const { transaction, step } = this.state;
-    const { onClose, closeLink, onNavigateBack, navigateBackLink } = this.injected;
+    const {
+      onClose,
+      closeLink,
+      onNavigateBack,
+      navigateBackLink
+    } = this.injected;
 
     if (!transaction) {
       const { children } = this.injected;
@@ -228,7 +247,10 @@ class TransactionDialog extends React.Component<Props, State> {
       closeProps.onClose = this.handleClose;
     }
 
-    const backProps: Pick<DialogProps, 'onNavigateBack' | 'navigateBackLink'> = {};
+    const backProps: Pick<
+      DialogProps,
+      'onNavigateBack' | 'navigateBackLink'
+    > = {};
     if (navigateBackLink) {
       backProps.navigateBackLink = navigateBackLink;
     } else {
