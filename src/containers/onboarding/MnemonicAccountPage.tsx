@@ -16,11 +16,8 @@ import {
 import AccountIcon from '../../components/AccountIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
-import {
-  onboardingAddAccountRoute,
-  onboardingExistingAccountTypeRoute
-} from '../../routes';
-import OnboardingStore from '../../stores/onboarding';
+import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
+import WalletStore from '../../stores/wallet';
 import { normalizeMnemonic } from '../../utils/utils';
 
 const styles = createStyles({
@@ -42,7 +39,7 @@ const styles = createStyles({
 interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
-  onboardingStore: OnboardingStore;
+  walletStore: WalletStore;
   routerStore: RouterStore;
 }
 
@@ -66,7 +63,7 @@ const messages = defineMessages({
   }
 });
 
-@inject('onboardingStore')
+@inject('walletStore')
 @inject('routerStore')
 @observer
 class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
@@ -88,39 +85,41 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    const { routerStore, onboardingStore } = this.injected;
+    const { routerStore, walletStore } = this.injected;
     const { address } = this.state;
     if (!address) {
       this.setState({ mnemonicInvalid: true });
       return;
     }
 
-    onboardingStore.address = address;
-    routerStore.goTo(onboardingExistingAccountTypeRoute);
+    walletStore.login(address, { readOnly: false }, true);
+    routerStore.goTo(accountOverviewRoute, { id: address });
   }
 
   handleMnemonicChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const mnemonic = ev.target.value;
 
     this.setState({
-      address: null,
+      address: this.getAddressFromMnemonic(mnemonic),
       mnemonic,
       mnemonicInvalid: false
     });
   }
 
-  handleMnemonicBlur = () => {
-    const { mnemonic } = this.state;
+  getAddressFromMnemonic = (mnemonic: string) => {
     const normalized = normalizeMnemonic(mnemonic);
     if (normalized) {
       const wallet = new LiskWallet(normalized, 'R');
-      this.setState({
-        mnemonicInvalid: false,
-        address: wallet.address
-      });
-      return;
+      return wallet.address;
     }
-    this.setState({ mnemonicInvalid: true });
+    return null;
+  }
+
+  handleMnemonicBlur = () => {
+    const { mnemonic } = this.state;
+    if (!this.getAddressFromMnemonic(mnemonic)) {
+      this.setState({ mnemonicInvalid: true });
+    }
   }
 
   mnemonicError(): string | null {
@@ -166,6 +165,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
           <Grid item={true} xs={12}>
             <div className={classes.accountContainer}>
               <TextField
+                type="password"
                 className={classes.accountField}
                 label={
                   <FormattedMessage

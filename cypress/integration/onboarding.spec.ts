@@ -53,7 +53,7 @@ context('Onboarding', function() {
     });
   });
 
-  it('add a new account using a secret', function() {
+  it('add a new account using a secret', () => {
     // check the url
     cy.url().should('contain', '/onboarding/add-account');
     // click "New account"
@@ -128,5 +128,30 @@ context('Onboarding', function() {
         clickOnboardingButton(0);
         cy.url().should('contain', `/account/${id}`);
       });
+  });
+
+  it('add an existing account using a mnemonic', function() {
+    const secret = this.accounts.secrets[0];
+    // click "Existing account"
+    cy.get('body')
+      .find('div')
+      .contains('Existing account')
+      .click();
+    // choose "Forgotten your address but..."
+    cy.get('body')
+      .find('a')
+      .contains('Click here')
+      .click();
+    // enter the mnemonic
+    fillOnboardingInput(0, secret.mnemonic);
+    // assert address visible
+    cy.get('body')
+      .find('span')
+      .contains(secret.id)
+      .should('have.length', 1);
+    // click submit
+    clickOnboardingButton(1);
+    // assert the redirect
+    cy.url().should('contain', `/account/${secret.id}`);
   });
 });
