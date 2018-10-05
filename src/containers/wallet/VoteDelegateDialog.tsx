@@ -189,6 +189,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
         }
       });
       // TODO keep queries in the store
+      // TODO cache
       const response = await walletStore.dposAPI.delegates.getList();
       activeDelegates = response.delegates;
     }

@@ -299,7 +299,6 @@ export default class WalletStore {
     return res;
   }
 
-  // TODO missing in dposAPI
   async searchDelegates(query: string): Promise<Delegate[]> {
     assert(
       query === query.toLowerCase(),
