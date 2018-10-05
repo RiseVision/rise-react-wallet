@@ -2,6 +2,7 @@ import AccountCreatedPage from './AccountCreatedPage';
 import AddAccountPage from './AddAccountPage';
 import ChooseLanguagePage from './ChooseLanguagePage';
 import ExistingAccountPage from './ExistingAccountPage';
+import LedgerAccountPage from './LedgerAccountPage';
 import MnemonicAccountPage from './MnemonicAccountPage';
 import ExistingAccountTypePage from './ExistingAccountTypePage';
 import NewAccountPage from './NewAccountPage';
@@ -23,5 +24,6 @@ export {
   ChooseLanguagePage,
   AddAccountPage,
   AccountCreatedPage,
-  MnemonicAccountPage
+  MnemonicAccountPage,
+  LedgerAccountPage
 };

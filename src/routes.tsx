@@ -207,6 +207,22 @@ export const onboardingSecurityNoticeRoute = new Route<RootStore>({
   )
 });
 
+export const onboardingLedgerAccount = new Route<RootStore>({
+  path: '/onboarding/import-ledger',
+  component: (
+    <AsyncComponent
+      name="./containers/onboarding"
+      resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.LedgerAccountPage />
+        </components.Onboarding>
+      )}
+    />
+  )
+});
+
 export const onboardingNewMnemonicRoute = new Route<RootStore>({
   path: '/onboarding/new-mnemonic',
   component: (

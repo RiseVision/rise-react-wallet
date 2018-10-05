@@ -10,7 +10,8 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingAddAccountRoute,
-  onboardingSecurityNoticeRoute
+  onboardingSecurityNoticeRoute,
+  onboardingLedgerAccount
 } from '../../routes';
 
 interface Props {}
@@ -52,7 +53,7 @@ class NewAccountPage extends React.Component<Props> {
               <ChevronRight />
             </ListItem>
           </Link>
-          <Link>
+          <Link route={onboardingLedgerAccount}>
             <ListItem button={true}>
               <ListItemText
                 primary={
