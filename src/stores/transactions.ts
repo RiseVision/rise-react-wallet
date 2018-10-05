@@ -1,6 +1,7 @@
 import { groupBy } from 'lodash';
 import { computed, observable } from 'mobx';
 import * as moment from 'moment-timezone';
+import AppStore from './app';
 import { TConfig } from './index';
 import WalletStore, { TGroupedTransactions, TTransaction } from './wallet';
 
@@ -18,11 +19,19 @@ export default class TransactionsStore {
       return moment(transaction.timestamp)
         .startOf('day')
         .calendar(undefined, {
-          // TODO translate those
-          lastWeek: '[Last] dddd',
-          lastDay: '[Yesterday]',
-          sameDay: '[Today]',
-          nextDay: '[Tomorrow]',
+          lastWeek: this.translations.get(
+            'transactions-date-last-week',
+            '[Last] dddd'
+          ),
+          lastDay: this.translations.get(
+            'transactions-date-yesterday',
+            '[Yesterday]'
+          ),
+          sameDay: this.translations.get('transactions-date-today', '[Today]'),
+          nextDay: this.translations.get(
+            'transactions-date-tomorrow',
+            '[Tomorrow]'
+          ),
           nextWeek: 'dddd',
           sameElse: () => {
             return this.config.date_format_short;
@@ -31,7 +40,11 @@ export default class TransactionsStore {
     });
   }
 
-  constructor(public config: TConfig, public accountID: string) {}
+  constructor(
+    public config: TConfig,
+    public accountID: string,
+    public translations: AppStore
+  ) {}
 
   /**
    * TODO

@@ -32,7 +32,12 @@ export default class RootStore {
   constructor(public config: TConfig) {
     this.addressBook = new AddressBookStore();
     this.onboarding = new OnboardingStore();
-    this.wallet = new WalletStore(config, this.router, this.addressBook);
+    this.wallet = new WalletStore(
+      config,
+      this.router,
+      this.addressBook,
+      this.app
+    );
     const self = this;
     const oldGoTo = this.router.goTo;
     this.router.goTo = function(

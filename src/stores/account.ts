@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
 import { action, observable } from 'mobx';
+import AppStore from './app';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
 import { TAccount } from './wallet';
@@ -40,11 +41,19 @@ export default class AccountStore {
 
   @observable recentTransactions: TransactionsStore;
 
-  constructor(config: TConfig, account: Partial<TAccount>) {
+  constructor(
+    config: TConfig,
+    account: Partial<TAccount>,
+    translations: AppStore
+  ) {
     assert(account.id, 'Account ID is missing');
     this.importData(account);
     this.config = config;
-    this.recentTransactions = new TransactionsStore(this.config, account.id!);
+    this.recentTransactions = new TransactionsStore(
+      this.config,
+      account.id!,
+      translations
+    );
   }
 
   @action

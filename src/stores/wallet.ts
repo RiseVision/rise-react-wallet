@@ -35,6 +35,7 @@ import {
 } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
 import AddressBookStore from './addressBook';
+import AppStore from './app';
 import { TConfig } from './index';
 import * as moment from 'moment-timezone';
 import * as queryString from 'query-string';
@@ -59,7 +60,8 @@ export default class WalletStore {
   constructor(
     public config: TConfig,
     public router: RouterStore,
-    public addressBook: AddressBookStore
+    public addressBook: AddressBookStore,
+    public translations: AppStore
   ) {
     dposAPI.nodeAddress = config.api_url;
     this.dposAPI = dposAPI;
@@ -414,7 +416,11 @@ export default class WalletStore {
     if (!id) {
       throw Error('Invalid address');
     }
-    const account = new AccountStore(this.config, { id, ...local });
+    const account = new AccountStore(
+      this.config,
+      { id, ...local },
+      this.translations
+    );
     this.accounts.set(id, account);
     if (select) {
       this.selectAccount(id);

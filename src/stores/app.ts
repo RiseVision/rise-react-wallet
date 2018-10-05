@@ -3,6 +3,7 @@ import * as lstore from 'store';
 import { importTranslation, Messages } from '../translations';
 import { getUserLocales, Locale } from '../utils/i18n';
 
+// TODO rename to TranslationsStore
 export default class AppStore {
   @observable translations = observable.map<Locale, Messages>();
   @observable translationError: Error | null = null;
@@ -47,5 +48,19 @@ export default class AppStore {
     runInAction(() => {
       this.locale = locale;
     });
+  }
+
+  /**
+   * Get a translation entry in the current locale.
+   * @param name
+   * @param fallback
+   */
+  get(name: string, fallback: string) {
+    try {
+      const entries = this.translations.get(this.locale);
+      return entries && entries[name];
+    } catch {
+      return fallback;
+    }
   }
 }
