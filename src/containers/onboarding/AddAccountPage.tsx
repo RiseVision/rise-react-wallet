@@ -54,7 +54,7 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  }
+  };
 
   render() {
     const { classes, appStore, walletStore } = this.injected;
@@ -63,10 +63,14 @@ class AddAccountPage extends React.Component<Props> {
     return (
       <ModalPaper open={true}>
         <ModalPaperHeader
-          closeLink={showClose ? {
-            route: accountOverviewNoIDRoute,
-            onBeforeNavigate: this.handleBeforeNavigate,
-          } : undefined}
+          closeLink={
+            showClose
+              ? {
+                  route: accountOverviewNoIDRoute,
+                  onBeforeNavigate: this.handleBeforeNavigate
+                }
+              : undefined
+          }
         >
           <FormattedMessage
             id="onboarding-add-account.title"
@@ -85,7 +89,10 @@ class AddAccountPage extends React.Component<Props> {
           />
         </ModalPaperHeader>
         <List>
-          <Link route={onboardingNewAccountRoute} onBeforeNavigate={this.handleBeforeNavigate}>
+          <Link
+            route={onboardingNewAccountRoute}
+            onBeforeNavigate={this.handleBeforeNavigate}
+          >
             <ListItem button={true}>
               <ListItemText
                 primary={
@@ -106,7 +113,10 @@ class AddAccountPage extends React.Component<Props> {
               <ChevronRight />
             </ListItem>
           </Link>
-          <Link route={onboardingExistingAccountRoute} onBeforeNavigate={this.handleBeforeNavigate}>
+          <Link
+            route={onboardingExistingAccountRoute}
+            onBeforeNavigate={this.handleBeforeNavigate}
+          >
             <ListItem button={true}>
               <ListItemText
                 primary={
@@ -127,9 +137,14 @@ class AddAccountPage extends React.Component<Props> {
               <ChevronRight />
             </ListItem>
           </Link>
-          <Link route={onboardingChooseLanguageRoute} onBeforeNavigate={this.handleBeforeNavigate}>
+          <Link
+            route={onboardingChooseLanguageRoute}
+            onBeforeNavigate={this.handleBeforeNavigate}
+          >
             <ListItem button={true}>
-              <FlagIcon countryCode={getMainCountryForLocale(appStore.locale)} />
+              <FlagIcon
+                countryCode={getMainCountryForLocale(appStore.locale)}
+              />
               <ListItemText>
                 <FormattedMessage
                   id="onboarding-add-account.change-language"
