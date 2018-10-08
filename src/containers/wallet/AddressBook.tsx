@@ -5,6 +5,7 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -40,7 +41,12 @@ const styles = (theme: Theme) =>
       right: 3 * theme.spacing.unit,
       bottom: 3 * theme.spacing.unit,
       zIndex: 1100
-    }
+    },
+    contactRowAction: {
+      width: 28,
+      height: 28,
+      fontSize: theme.typography.pxToRem(14)
+    },
   });
 
 interface Props extends WithStyles<typeof styles> {}
@@ -74,7 +80,17 @@ const messages = defineMessages({
     id: 'wallet-address-book.actions-column-header',
     description: 'Label for the actions column in address book',
     defaultMessage: 'Actions'
-  }
+  },
+  actionModifyTooltip: {
+    id: 'wallet-address-book.modify-action-tooltip',
+    description: 'Label for the modify contact action button',
+    defaultMessage: 'Modify contact'
+  },
+  actionDeleteTooltip: {
+    id: 'wallet-address-book.delete-action-tooltip',
+    description: 'Label for the delete contact action button',
+    defaultMessage: 'Delete contact'
+  },
 });
 
 @inject('addressBookStore')
@@ -140,14 +156,31 @@ class AddressBook extends React.Component<DecoratedProps> {
                   <TableCell>{entry.name}</TableCell>
                   <TableCell children={entry.id} />
                   <TableCell>
-                    {/* TODO broken edit icon */}
-                    <Link
-                      route={addressBookModifyRoute}
-                      params={{ id: entry.id }}
+                    <Tooltip
+                      title={intl.formatMessage(messages.actionModifyTooltip)}
                     >
-                      <EditIcon onClick={this.handleEditContact(entry.id)} />
-                    </Link>
-                    <DeleteIcon onClick={this.handleDeleteContact(entry.id)} />
+                      <Link
+                        route={addressBookModifyRoute}
+                        params={{ id: entry.id }}
+                      >
+                        <IconButton
+                          className={classes.contactRowAction}
+                          onClick={this.handleEditContact(entry.id)}
+                        >
+                          <EditIcon fontSize="inherit" />
+                        </IconButton>
+                      </Link>
+                    </Tooltip>
+                    <Tooltip
+                      title={intl.formatMessage(messages.actionDeleteTooltip)}
+                    >
+                      <IconButton
+                        className={classes.contactRowAction}
+                        onClick={this.handleDeleteContact(entry.id)}
+                      >
+                        <DeleteIcon fontSize="inherit" />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
