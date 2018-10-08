@@ -511,6 +511,7 @@ export const accountSendNoIDRoute = createNoIDRoute('/send', accountSendRoute);
 
 export const addressBookRoute = new Route({
   path: '/address-book',
+  onEnter: redirWhenNoAccounts,
   component: (
     <AsyncComponent
       name="./containers/wallet"
