@@ -1,5 +1,5 @@
 // corrects the int amount from the server to a user-readable float
-import * as moment from 'moment-timezone';
+import * as moment from 'moment/min/moment-with-locales';
 import BigNumber from 'bignumber.js';
 import { InjectedIntl } from 'react-intl';
 

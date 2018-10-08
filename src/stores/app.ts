@@ -2,6 +2,7 @@ import { action, autorun, observable, runInAction } from 'mobx';
 import * as lstore from 'store';
 import { importTranslation, Messages } from '../translations';
 import { getUserLocales, Locale } from '../utils/i18n';
+import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
 
 // TODO rename to TranslationsStore
 export default class AppStore {
@@ -52,15 +53,11 @@ export default class AppStore {
 
   /**
    * Get a translation entry in the current locale.
-   * @param name
-   * @param fallback
+   * TODO support formatMessage
    */
-  get(name: string, fallback: string) {
-    try {
-      const entries = this.translations.get(this.locale);
-      return entries && entries[name];
-    } catch {
-      return fallback;
-    }
+  get(msg: MessageDescriptor): string {
+    const id = msg.id;
+    const fallback = msg.defaultMessage;
+    return this.translations.get(this.locale)![id] || fallback || id;
   }
 }

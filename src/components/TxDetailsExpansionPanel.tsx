@@ -21,7 +21,7 @@ import LinkIcon from '@material-ui/icons/Link';
 import ContentCopyIcon from 'mdi-material-ui/ContentCopy';
 import * as classNames from 'classnames';
 import { TransactionType } from 'dpos-api-wrapper';
-import * as moment from 'moment-timezone';
+import * as moment from 'moment/min/moment-with-locales';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import Link from './Link';
@@ -773,7 +773,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
       amountShort
     } = this.getSummary();
 
-    const timestamp = moment(tx.timestamp).toDate();
+    const timestamp = moment.utc(tx.timestamp).local().toDate();
 
     const removedVotes = (tx.votes || [])
       .filter(({ op }) => op === 'remove')

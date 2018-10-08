@@ -37,7 +37,7 @@ import AccountStore, { LoadingState } from './account';
 import AddressBookStore from './addressBook';
 import AppStore from './app';
 import { TConfig } from './index';
-import * as moment from 'moment-timezone';
+import * as moment from 'moment/min/moment-with-locales';
 import * as queryString from 'query-string';
 
 export default class WalletStore {
@@ -592,7 +592,7 @@ export default class WalletStore {
         isIncoming: raw.senderId !== accountID,
         senderName: this.idToName(raw.senderId),
         recipientName: this.getRecipientName(raw.type, raw.recipientId),
-        time: moment(timestampToUnix(raw.timestamp)).format(
+        time: moment.utc(timestampToUnix(raw.timestamp)).local().format(
           this.config.date_format
         ),
         votes

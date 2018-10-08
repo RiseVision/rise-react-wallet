@@ -44,6 +44,11 @@ declare module 'mobx-router-rise' {
   ): void;
 }
 
+declare module 'moment/min/moment-with-locales' {
+  import * as moment from 'moment'
+  export = moment
+}
+
 declare module '*.json' {
   const value: any;
   export default value;
