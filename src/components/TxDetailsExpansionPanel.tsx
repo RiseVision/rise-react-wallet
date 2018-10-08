@@ -526,32 +526,32 @@ const messages = defineMessages({
     defaultMessage: 'Sender:'
   },
   detailsSenderCopyTooltip: {
-    id: 'tx-details-expansion-panel.details-blockid-copy-tooltip',
+    id: 'tx-details-expansion-panel.details-sender-copy-tooltip',
     description: 'Tx details sender copy tooltip',
     defaultMessage: 'Copy address'
   },
   detailsSenderCopyAria: {
-    id: 'tx-details-expansion-panel.details-blockid-copy-aria',
+    id: 'tx-details-expansion-panel.details-sender-copy-aria',
     description: 'Tx details sender copy aria label',
     defaultMessage: 'Copy sender address'
   },
   detailsSenderAddTooltip: {
-    id: 'tx-details-expansion-panel.details-blockid-add-tooltip',
+    id: 'tx-details-expansion-panel.details-sender-add-tooltip',
     description: 'Tx details sender open explorer tooltip',
     defaultMessage: 'Add contact'
   },
   detailsSenderAddAria: {
-    id: 'tx-details-expansion-panel.details-blockid-add-aria',
+    id: 'tx-details-expansion-panel.details-sender-add-aria',
     description: 'Tx details sender open explorer aria label',
     defaultMessage: 'Add sender to contacts'
   },
   detailsSenderEditTooltip: {
-    id: 'tx-details-expansion-panel.details-blockid-edit-tooltip',
+    id: 'tx-details-expansion-panel.details-sender-edit-tooltip',
     description: 'Tx details sender open explorer tooltip',
     defaultMessage: 'Edit contact'
   },
   detailsSenderEditAria: {
-    id: 'tx-details-expansion-panel.details-blockid-edit-aria',
+    id: 'tx-details-expansion-panel.details-sender-edit-aria',
     description: 'Tx details sender open explorer aria label',
     defaultMessage: 'Edit sender contact card'
   },
@@ -561,32 +561,32 @@ const messages = defineMessages({
     defaultMessage: 'Recipient:'
   },
   detailsRecipientCopyTooltip: {
-    id: 'tx-details-expansion-panel.details-blockid-copy-tooltip',
+    id: 'tx-details-expansion-panel.details-recipient-copy-tooltip',
     description: 'Tx details recipient copy tooltip',
     defaultMessage: 'Copy address'
   },
   detailsRecipientCopyAria: {
-    id: 'tx-details-expansion-panel.details-blockid-copy-aria',
+    id: 'tx-details-expansion-panel.details-recipient-copy-aria',
     description: 'Tx details recipient copy aria label',
     defaultMessage: 'Copy recipient address'
   },
   detailsRecipientAddTooltip: {
-    id: 'tx-details-expansion-panel.details-blockid-add-tooltip',
+    id: 'tx-details-expansion-panel.details-recipient-add-tooltip',
     description: 'Tx details recipient open explorer tooltip',
     defaultMessage: 'Add contact'
   },
   detailsRecipientAddAria: {
-    id: 'tx-details-expansion-panel.details-blockid-add-aria',
+    id: 'tx-details-expansion-panel.details-recipient-add-aria',
     description: 'Tx details recipient open explorer aria label',
     defaultMessage: 'Add recipient to contacts'
   },
   detailsRecipientEditTooltip: {
-    id: 'tx-details-expansion-panel.details-blockid-edit-tooltip',
+    id: 'tx-details-expansion-panel.details-recipient-edit-tooltip',
     description: 'Tx details recipient open explorer tooltip',
     defaultMessage: 'Edit contact'
   },
   detailsRecipientEditAria: {
-    id: 'tx-details-expansion-panel.details-blockid-edit-aria',
+    id: 'tx-details-expansion-panel.details-recipient-edit-aria',
     description: 'Tx details recipient open explorer aria label',
     defaultMessage: 'Edit recipient contact card'
   },

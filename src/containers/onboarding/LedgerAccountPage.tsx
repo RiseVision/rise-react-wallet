@@ -61,13 +61,13 @@ const stylesDecorator = withStyles(styles, {
 
 const messages = defineMessages({
   invalidAddressGeneric: {
-    id: 'onboarding-existing-account.invalid-address-generic',
+    id: 'onboarding-ledger-account.invalid-address-generic',
     description: 'Error label for invalid address text input',
     defaultMessage:
       'Invalid RISE address. A valid address is in the format of "1234567890R".'
   },
   invalidAddressMnemonic: {
-    id: 'onboarding-existing-account.invalid-address-mnemonic',
+    id: 'onboarding-ledger-account.invalid-address-mnemonic',
     description:
       'Error label for invalid address text input when it looks like a mnemonic',
     defaultMessage:

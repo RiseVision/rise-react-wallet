@@ -124,7 +124,7 @@ class RemoveAccountDialogContent extends React.Component<DecoratedProps, State> 
           <Typography id={this.dialogContentId}>
             {name ? (
               <FormattedMessage
-                id="remove-account-dialog-content.prompt-text"
+                id="remove-account-dialog-content.prompt-text-with-name"
                 description="Prompt for named account removal form"
                 defaultMessage={
                   'Are you sure you want to remove {name} ({address}) from the wallet? ' +

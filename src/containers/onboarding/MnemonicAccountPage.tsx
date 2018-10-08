@@ -57,7 +57,7 @@ const stylesDecorator = withStyles(styles, {
 
 const messages = defineMessages({
   invalidMnemonicGeneric: {
-    id: 'onboarding-existing-account.invalid-mnemonic-generic',
+    id: 'onboarding-mnemonic-account.invalid-mnemonic-generic',
     description: 'Error label for invalid mnemonic text input',
     defaultMessage: 'Invalid mnemonic. A valid mnemonic is a list of 12 words.'
   }
@@ -141,7 +141,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
       <ModalPaper open={true}>
         <ModalPaperHeader backLink={{ route: onboardingAddAccountRoute }}>
           <FormattedMessage
-            id="onboarding-existing-account.title"
+            id="onboarding-mnemonic-account.title"
             description="Existing account screen title"
             defaultMessage="Existing account"
           />
@@ -156,7 +156,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
           <Grid item={true} xs={12}>
             <Typography>
               <FormattedMessage
-                id="onboarding-existing-account.enter-mnemonic-text"
+                id="onboarding-mnemonic-account.enter-mnemonic-text"
                 description="Text asking the user to fill the input field"
                 defaultMessage="Enter the mnemonic of an existing RISE account you wish to access:"
               />
@@ -169,7 +169,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
                 className={classes.accountField}
                 label={
                   <FormattedMessage
-                    id="onboarding-existing-account.mnemonic-input-label"
+                    id="onboarding-mnemonic-account.mnemonic-input-label"
                     description="Account mnemonic input label"
                     defaultMessage="Account mnemonic"
                   />
@@ -205,7 +205,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
           <Grid item={true} xs={12}>
             <Button type="submit" fullWidth={true}>
               <FormattedMessage
-                id="onboarding-existing-account.continue"
+                id="onboarding-mnemonic-account.continue"
                 description="Continue button label"
                 defaultMessage="Continue"
               />

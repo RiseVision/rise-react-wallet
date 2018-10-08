@@ -152,7 +152,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     };
 
     return (
-      <>
+      <React.Fragment>
         <AccountNameDialog
           // @ts-ignore TODO avoid rendering date-less dialogs
           account={wallet.accounts.get(id) || { id: '', name: '' }}
@@ -164,7 +164,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
           id={id || ''}
           open={Boolean(id && !wallet.accounts.has(id))}
         />
-      </>
+      </React.Fragment>
     );
   }
 
