@@ -24,10 +24,12 @@ import CreateContactDialog from './CreateContactDialog';
 import {
   addressBookRoute,
   addressBookCreateRoute,
-  addressBookModifyRoute
+  addressBookModifyRoute,
+  addressBookRemoveRoute
 } from '../../routes';
 import Link from '../../components/Link';
 import ModifyContactDialog from './ModifyContactDialog';
+import RemoveContactDialog from './RemoveContactDialog';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 
@@ -106,12 +108,7 @@ class AddressBook extends React.Component<DecoratedProps> {
   }
 
   handleDeleteContact = (id: string) => () => {
-    const { addressBookStore } = this.injected;
-    const name = addressBookStore.contacts.get(id) || '';
-    // TODO material dialog
-    if (window.confirm(`Delete ${name}?`)) {
-      addressBookStore.contacts.delete(id);
-    }
+    this.injected.routerStore.goTo(addressBookRemoveRoute, { id });
   }
 
   render() {
@@ -125,6 +122,7 @@ class AddressBook extends React.Component<DecoratedProps> {
       <div className={classes.content}>
         <CreateContactDialog navigateBackLink={backLink} />
         <ModifyContactDialog navigateBackLink={backLink} />
+        <RemoveContactDialog navigateBackLink={backLink} />
         <Tooltip
           placement="left"
           title={intl.formatMessage(messages.newContactFabTooltip)}

@@ -563,6 +563,24 @@ export const addressBookModifyRoute = new Route({
   )
 });
 
+export const addressBookRemoveRoute = new Route({
+  path: '/address-book/remove/:id',
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      loading={<LoadingIndicator />}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AddressBook />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
 export const homeRoute = new Route<RootStore>({
   path: '/',
   onEnter: (route: Route<RootStore>, params: {}, store: RootStore) => {
