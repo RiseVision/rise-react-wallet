@@ -1168,11 +1168,9 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
                     ? msg.detailsRecipientEditAria
                     : msg.detailsRecipientAddAria
               )}
+              onClick={() => handleContactEdit(id)}
             >
-              <ContactIcon
-                fontSize="inherit"
-                onClick={() => handleContactEdit(id)}
-              />
+              <ContactIcon fontSize="inherit" />
             </IconButton>
           </Tooltip>
         </span>
