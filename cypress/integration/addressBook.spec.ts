@@ -95,6 +95,9 @@ context('Address Book', () => {
       .find('td')
       .contains(this.contacts[0].name)
       .should('have.length', 1)
+      .parent('tr')
+      .find('a[title="Modify contact"]')
+      .should('have.length', 1)
       .click();
     // change the name
     fillDialogInput(0, `{selectall}${name}`);
@@ -108,6 +111,30 @@ context('Address Book', () => {
       .then(() => {
         // assert localStorage
         expect(lstore.get('contacts')[0].name).to.eql(name);
+      });
+  });
+
+  it('remove a contact', function() {
+    const name = this.contacts[0].name;
+    // open the edit dialog for the first contact
+    cy.get('main')
+      .find('td')
+      .contains(name)
+      .should('have.length', 1)
+      .parent('tr')
+      .find('a[title="Delete contact"]')
+      .should('have.length', 1)
+      .click();
+    // confirm
+    clickDialogSubmit();
+    // assert the that list has changes
+    cy.get('main')
+      .find('td')
+      .contains(name)
+      .should('have.length', 0)
+      .then(() => {
+        // assert localStorage
+        expect(lstore.get('contacts')[0].name).to.not.eql(name);
       });
   });
 });
