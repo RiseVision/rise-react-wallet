@@ -17,6 +17,7 @@ import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import { RouteLink } from '../../stores/root';
 import { RawAmount } from '../../utils/amounts';
 import AccountNameDialog from './AccountNameDialog';
+import CreateContactDialog from './CreateContactDialog';
 import ModifyContactDialog from './ModifyContactDialog';
 import SendCoinsDialog from './SendCoinsDialog';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
@@ -26,6 +27,7 @@ import Link from '../../components/Link';
 import { accountOverviewRoute, accountSendRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
+import AddressBookStore from '../../stores/addressBook';
 import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
@@ -83,6 +85,7 @@ interface PropsInjected extends Props {
   accountStore: AccountStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
+  addressBookStore: AddressBookStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -109,6 +112,7 @@ type State = {
 @inject(accountStore)
 @inject('routerStore')
 @inject('walletStore')
+@inject('addressBookStore')
 @observer
 class AccountOverview extends React.Component<DecoratedProps, State> {
   state: State = {
@@ -139,7 +143,10 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
   }
 
   renderContactDialog = () => {
-    const { walletStore: wallet } = this.injected;
+    const {
+      walletStore: wallet,
+      addressBookStore: addressBook
+    } = this.injected;
     const { editContactID: id } = this.state;
 
     const backLink: RouteLink = {
@@ -151,18 +158,37 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
       }
     };
 
+    let showAccountName = false;
+    let showCreateContact = false;
+    let showModifyContact = false;
+
+    if (!id) {
+      // No-op on purpose
+    } else if (wallet.accounts.has(id)) {
+      showAccountName = true;
+    } else if (addressBook.contacts.has(id)) {
+      showModifyContact = true;
+    } else {
+      showCreateContact = true;
+    }
+
     return (
       <React.Fragment>
         <AccountNameDialog
           // @ts-ignore TODO avoid rendering date-less dialogs
           account={wallet.accounts.get(id) || { id: '', name: '' }}
           navigateBackLink={backLink}
-          open={Boolean(id && wallet.accounts.has(id))}
+          open={showAccountName}
+        />
+        <CreateContactDialog
+          navigateBackLink={backLink}
+          address={id || ''}
+          open={showCreateContact}
         />
         <ModifyContactDialog
           navigateBackLink={backLink}
-          id={id || ''}
-          open={Boolean(id && !wallet.accounts.has(id))}
+          address={id || ''}
+          open={showModifyContact}
         />
       </React.Fragment>
     );

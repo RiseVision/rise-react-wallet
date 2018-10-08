@@ -6,13 +6,13 @@ import { addressBookModifyRoute } from '../../routes';
 import Dialog from '../../components/Dialog';
 import AddressBookStore from '../../stores/addressBook';
 import RootStore, { RouteLink } from '../../stores/root';
-import CreateContactDialogContent, {
+import ModifyContactDialogContent, {
   TSubmitData
-} from '../../components/content/CreateContactDialogContent';
+} from '../../components/content/ModifyContactDialogContent';
 
 interface Props {
   navigateBackLink: RouteLink;
-  id?: string;
+  address?: string;
   open?: boolean;
 }
 
@@ -27,6 +27,9 @@ interface InjectedProps extends Props {
 @inject('addressBookStore')
 @observer
 export default class ModifyContactDialog extends React.Component<Props> {
+  address?: string;
+  name?: string;
+
   private get injected(): InjectedProps {
     return this.props as InjectedProps;
   }
@@ -34,7 +37,7 @@ export default class ModifyContactDialog extends React.Component<Props> {
   @action
   handleEdit = (data: TSubmitData) => {
     const { navigateBackLink, store, addressBookStore } = this.injected;
-    addressBookStore.setContact(data.id, data.name);
+    addressBookStore.setContact(data.address, data.name);
     store.navigateTo(navigateBackLink);
   }
 
@@ -46,15 +49,18 @@ export default class ModifyContactDialog extends React.Component<Props> {
       open
     } = this.injected;
 
-    const id = this.injected.id || routerStore.params.id;
     const isOpen = open || routerStore.currentView === addressBookModifyRoute;
-    const name = addressBookStore.contacts.get(id);
+    if (isOpen) {
+      // Cache the data locally to prevent content changes when closing the dialog
+      this.address = this.injected.address || routerStore.params.id;
+      this.name = addressBookStore.contacts.get(this.address);
+    }
 
     return (
       <Dialog open={isOpen} closeLink={navigateBackLink}>
-        <CreateContactDialogContent
-          id={id}
-          name={name}
+        <ModifyContactDialogContent
+          address={this.address || ''}
+          name={this.name || ''}
           onSubmit={this.handleEdit}
         />
       </Dialog>

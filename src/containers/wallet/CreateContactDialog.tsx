@@ -9,7 +9,9 @@ import RootStore, { RouteLink } from '../../stores/root';
 import CreateContactDialogContent, { TSubmitData } from '../../components/content/CreateContactDialogContent';
 
 interface Props {
+  address?: string;
   navigateBackLink: RouteLink;
+  open?: boolean;
 }
 
 interface InjectedProps extends Props {
@@ -23,6 +25,8 @@ interface InjectedProps extends Props {
 @inject('addressBookStore')
 @observer
 class CreateContactDialog extends React.Component<Props> {
+  address?: string;
+
   private get injected(): InjectedProps {
     return this.props as InjectedProps;
   }
@@ -30,7 +34,7 @@ class CreateContactDialog extends React.Component<Props> {
   @action
   handleCreate = (data: TSubmitData) => {
     const { navigateBackLink, store, addressBookStore } = this.injected;
-    addressBookStore.setContact(data.id, data.name);
+    addressBookStore.setContact(data.address, data.name);
     store.navigateTo(navigateBackLink);
   }
 
@@ -39,15 +43,19 @@ class CreateContactDialog extends React.Component<Props> {
   }
 
   render() {
-    const { navigateBackLink, routerStore } = this.injected;
+    const { navigateBackLink, routerStore, open } = this.injected;
 
-    const isOpen = routerStore.currentView === addressBookCreateRoute;
+    const isOpen = open || routerStore.currentView === addressBookCreateRoute;
+    if (isOpen) {
+      this.address = this.injected.address;
+    }
 
     return (
       <Dialog open={isOpen} closeLink={navigateBackLink}>
         <CreateContactDialogContent
-            checkAddressExists={this.checkAddressExists}
-            onSubmit={this.handleCreate}
+          checkAddressExists={this.checkAddressExists}
+          address={this.address || undefined}
+          onSubmit={this.handleCreate}
         />
       </Dialog>
     );
