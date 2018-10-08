@@ -15,7 +15,6 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AddressBookStore from '../../stores/addressBook';
@@ -57,7 +56,6 @@ type DecoratedProps = Props & InjectedIntlProps;
 
 interface PropsInjected extends DecoratedProps {
   addressBookStore: AddressBookStore;
-  routerStore: RouterStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AddressBook' });
@@ -96,19 +94,10 @@ const messages = defineMessages({
 });
 
 @inject('addressBookStore')
-@inject('routerStore')
 @observer
 class AddressBook extends React.Component<DecoratedProps> {
   get injected(): PropsInjected {
     return this.props as PropsInjected;
-  }
-
-  handleEditContact = (id: string) => () => {
-    this.injected.routerStore.goTo(addressBookModifyRoute, { id });
-  }
-
-  handleDeleteContact = (id: string) => () => {
-    this.injected.routerStore.goTo(addressBookRemoveRoute, { id });
   }
 
   render() {
@@ -161,10 +150,7 @@ class AddressBook extends React.Component<DecoratedProps> {
                         route={addressBookModifyRoute}
                         params={{ id: entry.id }}
                       >
-                        <IconButton
-                          className={classes.contactRowAction}
-                          onClick={this.handleEditContact(entry.id)}
-                        >
+                        <IconButton className={classes.contactRowAction}>
                           <EditIcon fontSize="inherit" />
                         </IconButton>
                       </Link>
@@ -172,12 +158,14 @@ class AddressBook extends React.Component<DecoratedProps> {
                     <Tooltip
                       title={intl.formatMessage(messages.actionDeleteTooltip)}
                     >
-                      <IconButton
-                        className={classes.contactRowAction}
-                        onClick={this.handleDeleteContact(entry.id)}
+                      <Link
+                        route={addressBookRemoveRoute}
+                        params={{ id: entry.id }}
                       >
-                        <DeleteIcon fontSize="inherit" />
-                      </IconButton>
+                        <IconButton className={classes.contactRowAction}>
+                          <DeleteIcon fontSize="inherit" />
+                        </IconButton>
+                      </Link>
                     </Tooltip>
                   </TableCell>
                 </TableRow>
