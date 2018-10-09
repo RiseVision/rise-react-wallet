@@ -30,9 +30,13 @@ class RemoveAccountDialog extends React.Component<Props> {
   }
 
   @action
-  handleSubmit = () => {
+  handleSubmit = (saveContact: boolean) => {
     const { account, navigateBackLink, store, walletStore } = this.injected;
     walletStore.removeAccount(account.id);
+    // save the contact to the address book
+    if (saveContact) {
+      walletStore.addressBook.contacts.set(account.id, account.name);
+    }
     store.navigateTo(navigateBackLink);
   }
 

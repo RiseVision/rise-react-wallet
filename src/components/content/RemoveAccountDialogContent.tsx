@@ -1,4 +1,6 @@
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -19,20 +21,25 @@ import {
 import { DialogContentProps, SetDialogContent } from '../Dialog';
 import autoId from '../../utils/autoId';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center'
-  }
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    },
+    saveContact: {
+      textAlign: 'left'
+    }
+  });
+
+const stylesDecorator = withStyles(styles, {
+  name: 'RemoveAccountDialogContent'
 });
 
-const stylesDecorator = withStyles(styles, { name: 'RemoveAccountDialogContent' });
-
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps {
-  onSubmit: () => void;
+  onSubmit: (saveContact: boolean) => void;
   address: string;
   name: string | null;
 }
@@ -42,13 +49,14 @@ type DecoratedProps = Props & InjectedIntlProps;
 interface State {
   addressInput: string;
   addressInvalid: boolean;
+  saveContact: boolean;
 }
 
 const messages = defineMessages({
   dialogTitle: {
     id: 'remove-account-dialog-content.dialog-title',
     description: 'Remove account dialog title',
-    defaultMessage: 'Remove account?',
+    defaultMessage: 'Remove account?'
   },
   invalidAddress: {
     id: 'remove-account-dialog-content.invalid-address',
@@ -57,19 +65,29 @@ const messages = defineMessages({
   }
 });
 
-class RemoveAccountDialogContent extends React.Component<DecoratedProps, State> {
+class RemoveAccountDialogContent extends React.Component<
+  DecoratedProps,
+  State
+> {
   @autoId dialogContentId: string;
 
   state: State = {
     addressInput: '',
     addressInvalid: false,
+    saveContact: true
   };
 
   handleAddressChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const addressInput = ev.target.value;
     this.setState({
       addressInput,
-      addressInvalid: false,
+      addressInvalid: false
+    });
+  }
+
+  handleSaveContactChange = (ev: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      saveContact: Boolean(ev.target.value)
     });
   }
 
@@ -85,7 +103,7 @@ class RemoveAccountDialogContent extends React.Component<DecoratedProps, State> 
       return;
     }
 
-    onSubmit();
+    onSubmit(this.state.saveContact);
   }
 
   addressError(): null | string {
@@ -104,13 +122,13 @@ class RemoveAccountDialogContent extends React.Component<DecoratedProps, State> 
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 
   render() {
     const { classes, name, address } = this.props;
-    const { addressInput, addressInvalid } = this.state;
+    const { addressInput, addressInvalid, saveContact } = this.state;
 
     return (
       <Grid
@@ -158,6 +176,23 @@ class RemoveAccountDialogContent extends React.Component<DecoratedProps, State> 
             error={addressInvalid}
             helperText={addressInvalid ? this.addressError() : null}
             fullWidth={true}
+          />
+        </Grid>
+        <Grid item={true} xs={12} className={classes.saveContact}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={saveContact}
+                onChange={this.handleSaveContactChange}
+              />
+            }
+            label={
+              <FormattedMessage
+                id="remove-account-dialog-content.save-contact"
+                description="Checkbox when removing an own account"
+                defaultMessage="Save address to the address book"
+              />
+            }
           />
         </Grid>
         <Grid item={true} xs={12}>
