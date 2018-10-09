@@ -31,7 +31,13 @@ class Link extends React.Component<Props> {
   }
 
   get routeLink(): RouteLink | null {
-    const { route, params, queryParams, onBeforeNavigate } = this.injected;
+    const {
+      route,
+      params,
+      queryParams,
+      onBeforeNavigate,
+      onAfterNavigate
+    } = this.injected;
 
     if (route) {
       return {
@@ -39,6 +45,7 @@ class Link extends React.Component<Props> {
         params,
         queryParams,
         onBeforeNavigate,
+        onAfterNavigate,
       };
     } else {
       return null;
@@ -66,6 +73,7 @@ class Link extends React.Component<Props> {
       params,
       queryParams,
       onBeforeNavigate,
+      onAfterNavigate,
       children,
       store,
       ...passthroughProps

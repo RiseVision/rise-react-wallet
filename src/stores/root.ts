@@ -19,6 +19,11 @@ export interface RouteLink {
     params: RouteParams,
     queryParams: RouteParams
   ) => void;
+  onAfterNavigate?: (
+    route: Route<{}>,
+    params: RouteParams,
+    queryParams: RouteParams
+  ) => void;
 }
 
 export default class RootStore {
@@ -53,7 +58,7 @@ export default class RootStore {
   }
 
   navigateTo(dest: RouteLink) {
-    const { route, onBeforeNavigate } = dest;
+    const { route, onBeforeNavigate, onAfterNavigate } = dest;
     const params = dest.params || {};
     const queryParams = dest.queryParams || {};
 
@@ -61,6 +66,9 @@ export default class RootStore {
       onBeforeNavigate(route, params, queryParams);
     }
     this.router.goTo(route, params, this, queryParams);
+    if (onAfterNavigate) {
+      onAfterNavigate(route, params, queryParams);
+    }
   }
 
   linkUrl(dest: RouteLink) {

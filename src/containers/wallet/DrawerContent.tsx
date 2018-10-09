@@ -34,6 +34,7 @@ import {
   onboardingAddAccountRoute,
   addressBookRoute
 } from '../../routes';
+import { RouteLink } from '../../stores/root';
 import AccountStore from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
@@ -72,6 +73,7 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   onSignOutClick: () => void;
+  onAfterNavigate?: RouteLink['onAfterNavigate'];
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -121,6 +123,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
     const {
       intl,
       classes,
+      onAfterNavigate,
       onSignOutClick,
       routerStore,
       walletStore,
@@ -174,6 +177,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
                 id: account.id,
               }}
               onBeforeNavigate={this.handleAccountNavigation}
+              onAfterNavigate={onAfterNavigate}
             >
               <ListItem
                 className={classNames(
@@ -203,6 +207,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
           <Link
             key="add-account"
             route={onboardingAddAccountRoute}
+            onAfterNavigate={onAfterNavigate}
           >
             <ListItem button={true}>
               <ListItemAvatar>
@@ -222,7 +227,10 @@ class DrawerContent extends React.Component<DecoratedProps> {
         </List>
         <Divider aria-hidden={true} />
         <List aria-label={intl.formatMessage(messages.navigationListAriaLabel)}>
-          <Link route={addressBookRoute}>
+          <Link
+            route={addressBookRoute}
+            onAfterNavigate={onAfterNavigate}
+          >
             <ListItem
               className={classNames(
                 selection === 'addressBook' &&

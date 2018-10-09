@@ -122,6 +122,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
     const drawer = (
       <DrawerContent
         onSignOutClick={this.handleOpenSignOutPrompt}
+        onAfterNavigate={this.handleAfterNavigate}
       />
     );
 
@@ -198,7 +199,14 @@ class Wallet extends React.Component<DecoratedProps, State> {
 
   handleOpenSignOutPrompt = () => {
     this.setState({
+      mobileDrawerOpen: false,
       signOutOpen: true,
+    });
+  }
+
+  handleAfterNavigate = () => {
+    this.setState({
+      mobileDrawerOpen: false,
     });
   }
 }

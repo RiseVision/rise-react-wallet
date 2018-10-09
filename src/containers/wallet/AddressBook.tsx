@@ -55,9 +55,9 @@ const styles = (theme: Theme) => {
     cell: {
       height: 'unset',
       minHeight: 54,
-      padding: `${theme.spacing.unit}px ${2*theme.spacing.unit}px`,
+      padding: `${theme.spacing.unit}px ${2 * theme.spacing.unit}px`,
       '&:last-child': {
-        padding: `${theme.spacing.unit}px ${2*theme.spacing.unit}px`,
+        padding: `${theme.spacing.unit}px ${2 * theme.spacing.unit}px`,
       },
       wordBreak: 'break-all',
     },
