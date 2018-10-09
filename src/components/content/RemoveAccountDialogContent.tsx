@@ -87,7 +87,7 @@ class RemoveAccountDialogContent extends React.Component<
 
   handleSaveContactChange = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      saveContact: Boolean(ev.target.value)
+      saveContact: Boolean(ev.target.checked)
     });
   }
 
@@ -178,23 +178,25 @@ class RemoveAccountDialogContent extends React.Component<
             fullWidth={true}
           />
         </Grid>
-        <Grid item={true} xs={12} className={classes.saveContact}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={saveContact}
-                onChange={this.handleSaveContactChange}
-              />
-            }
-            label={
-              <FormattedMessage
-                id="remove-account-dialog-content.save-contact"
-                description="Checkbox when removing an own account"
-                defaultMessage="Save address to the address book"
-              />
-            }
-          />
-        </Grid>
+        {name && (
+          <Grid item={true} xs={12} className={classes.saveContact}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={saveContact}
+                  onChange={this.handleSaveContactChange}
+                />
+              }
+              label={
+                <FormattedMessage
+                  id="remove-account-dialog-content.save-contact"
+                  description="Checkbox when removing an own account"
+                  defaultMessage="Remember account's name in the address book"
+                />
+              }
+            />
+          </Grid>
+        )}
         <Grid item={true} xs={12}>
           <Button type="submit" fullWidth={true}>
             <FormattedMessage
