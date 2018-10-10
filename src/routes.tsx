@@ -1,4 +1,4 @@
-import { Route } from 'mobx-router-rise';
+import { Route, RouteParams } from 'mobx-router-rise';
 import * as React from 'react';
 import * as lstore from 'store';
 import AsyncComponent from './components/AsyncComponent';
@@ -244,6 +244,15 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
 export const accountOverviewRoute = new Route({
   path: '/account/:id',
   onEnter: onEnterID,
+  onParamsChange(
+    route: Route<RootStore>,
+    params: RouteParams,
+    store: RootStore
+  ) {
+    store.wallet.selectAccount(params.id);
+    // pass async
+    store.wallet.refreshAccount(params.id);
+  },
   component: (
     <AsyncComponent
       name="./containers/wallet"

@@ -7,12 +7,18 @@ declare module 'mobx-router-rise' {
   export type TRouteDef<GStore> = {
     path: string;
     component?: React.ReactElement<any>;
-    onEnter?: (
+    onEnter?(
       route: Route<GStore>,
       params: RouteParams,
       store: GStore,
       queryParams: RouteParams
-    ) => void;
+    ): void;
+
+    onParamsChange?(
+      route: Route<GStore>,
+      params: RouteParams,
+      store: GStore
+    ): void;
   };
   export class Route<S> {
     constructor(routeDef: TRouteDef<S>);
@@ -45,8 +51,8 @@ declare module 'mobx-router-rise' {
 }
 
 declare module 'moment/min/moment-with-locales' {
-  import * as moment from 'moment'
-  export = moment
+  import * as moment from 'moment';
+  export = moment;
 }
 
 declare module '*.json' {

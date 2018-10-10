@@ -19,7 +19,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { RouterStore, Route, RouteParams } from 'mobx-router-rise';
+import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import {
   defineMessages,
@@ -111,14 +111,6 @@ class DrawerContent extends React.Component<DecoratedProps> {
     return this.props as PropsInjected;
   }
 
-  handleAccountNavigation = (view: Route<{}>, params: RouteParams) => {
-    const { id } = params;
-    const { walletStore } = this.injected;
-    walletStore.selectAccount(id);
-    // pass async
-    walletStore.refreshAccount(id);
-  }
-
   render() {
     const {
       intl,
@@ -176,7 +168,6 @@ class DrawerContent extends React.Component<DecoratedProps> {
               params={{
                 id: account.id,
               }}
-              onBeforeNavigate={this.handleAccountNavigation}
               onAfterNavigate={onAfterNavigate}
             >
               <ListItem
