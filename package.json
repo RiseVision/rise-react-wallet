@@ -41,7 +41,7 @@
     "deploy-nightly": "npm run build-no-tests && gh-pages -d build -m \"Updated the nightly\"",
     "test": "cypress run",
     "test-unit": "jest",
-    "test-unit-prepare": "tsc --watch --module commonjs --target ES6",
+    "test-unit-prepare": "tsc --watch --module commonjs --target es2017",
     "eject": "react-scripts-ts eject",
     "riw:prepare": "rm -r tmp/transpiled/; tsc -p . --target ES6 --module esnext --jsx preserve --outDir tmp/transpiled",
     "riw:translate": "riw app translate",
