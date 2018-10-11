@@ -16,7 +16,7 @@ import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
-  onboardingNewAccountRoute,
+  onboardingAddAccountRoute,
   onboardingVerifyMnemonicsRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
@@ -127,7 +127,7 @@ class NewMnemonicPage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader closeLink={{ route: onboardingNewAccountRoute }}>
+        <ModalPaperHeader closeLink={{ route: onboardingAddAccountRoute }}>
           <FormattedMessage
             id="onboarding-new-mnemonic.title"
             description="New mnemonic screen title"

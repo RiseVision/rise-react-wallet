@@ -13,7 +13,8 @@ import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingChooseLanguageRoute,
   onboardingExistingAccountRoute,
-  onboardingNewAccountRoute,
+  onboardingLedgerAccount,
+  onboardingSecurityNoticeRoute,
   accountOverviewNoIDRoute
 } from '../../routes';
 import AppStore from '../../stores/app';
@@ -90,7 +91,7 @@ class AddAccountPage extends React.Component<Props> {
         </ModalPaperHeader>
         <List>
           <Link
-            route={onboardingNewAccountRoute}
+            route={onboardingSecurityNoticeRoute}
             onBeforeNavigate={this.handleBeforeNavigate}
           >
             <ListItem button={true}>
@@ -131,6 +132,30 @@ class AddAccountPage extends React.Component<Props> {
                     id="onboarding-add-account.existing-account-tip"
                     description="Existing account button tip"
                     defaultMessage="I want to access an existing account on the RISE network"
+                  />
+                }
+              />
+              <ChevronRight />
+            </ListItem>
+          </Link>
+          <Link
+            route={onboardingLedgerAccount}
+            onBeforeNavigate={this.handleBeforeNavigate}
+          >
+            <ListItem button={true}>
+              <ListItemText
+                primary={
+                  <FormattedMessage
+                    id="onboarding-add-account.hw-wallet-account"
+                    description="Hardware wallet account button title"
+                    defaultMessage="Hardware wallet account"
+                  />
+                }
+                secondary={
+                  <FormattedMessage
+                    id="onboarding-add-account.hw-wallet-account-tip"
+                    description="Hardware wallet account button tip"
+                    defaultMessage="I want to import an account from my Ledger device"
                   />
                 }
               />

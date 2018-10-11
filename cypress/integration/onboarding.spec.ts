@@ -61,10 +61,6 @@ context('Onboarding', function() {
       .find('div')
       .contains('New account')
       .click();
-    cy.get('body')
-      .find('span')
-      .contains('Create an account using a secret')
-      .click();
     // click 5 dialog "tip" buttons
     for (const _ of Array(5)) {
       clickOnboardingButton(1);
