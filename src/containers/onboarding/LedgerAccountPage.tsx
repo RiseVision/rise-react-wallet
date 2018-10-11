@@ -22,7 +22,7 @@ import {
 import OnboardingStore from '../../stores/onboarding';
 import { normalizeAddress } from '../../utils/utils';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import { DposLedger, LedgerAccount } from 'dpos-ledger-api';
+import { DposLedger, SupportedCoin, LedgerAccount } from 'dpos-ledger-api';
 
 const styles = createStyles({
   content: {
@@ -100,7 +100,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps, State> {
   async importLedger() {
     // TODO extended timeouts are probably needed to give user the time to
     //   connect and unlock
-    const account = new LedgerAccount();
+    const account = new LedgerAccount().coinIndex(SupportedCoin.RISE);
     // @ts-ignore wrong d.ts
     const transport = await TransportU2F.create();
     // @ts-ignore wrong d.ts
