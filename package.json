@@ -27,8 +27,10 @@
     "react-intl": "^2.4.0",
     "react-scripts-ts": "2.16.0",
     "risejs": "^1.4.1",
+    "sinon": "^6.3.5",
     "store": "^2.0.12",
     "svg-country-flags": "^1.2.1",
+    "ts-jest": "^23.10.4",
     "unique-random": "^2.0.0"
   },
   "homepage": "https://risevision.github.io/rise-react-wallet",
@@ -38,6 +40,8 @@
     "build-no-tests": "react-scripts-ts build",
     "deploy-nightly": "npm run build-no-tests && gh-pages -d build -m \"Updated the nightly\"",
     "test": "cypress run",
+    "test-unit": "jest",
+    "test-unit-prepare": "tsc --watch --module commonjs --target ES6",
     "eject": "react-scripts-ts eject",
     "riw:prepare": "rm -r tmp/transpiled/; tsc -p . --target ES6 --module esnext --jsx preserve --outDir tmp/transpiled",
     "riw:translate": "riw app translate",
@@ -48,9 +52,6 @@
     "prettier": "prettier src/**.{ts,tsx} --write"
   },
   "pre-commit": [
-    "tsc",
-    "prettier",
-    "tslint"
   ],
   "riw": {
     "defaultLocale": "en",
@@ -106,5 +107,10 @@
   },
   "prettier": {
     "singleQuote": true
+  },
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost/"
   }
 }
