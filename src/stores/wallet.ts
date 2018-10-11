@@ -76,7 +76,7 @@ export default class WalletStore {
     const lastSelectedID = lstore.get('lastSelectedAccount');
     // login all stored accounts
     for (const account of accounts) {
-      // login, merge local data and select the last selected one
+      // login and merge-in local data
       this.login(account.id, account);
     }
     this.observeSelectedAccount();
@@ -127,7 +127,6 @@ export default class WalletStore {
 
   /**
    * Remember the account in local storage.
-   * TODO bind an an observer
    * @param account
    */
   saveAccount(account: AccountStore) {
