@@ -32,7 +32,7 @@ import {
 } from '../../routes';
 import { accountStore } from '../../stores';
 import { RouteLink } from '../../stores/root';
-import AccountStore, { LoadingState } from '../../stores/account';
+import AccountStore, { AccountType, LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 import Link from '../../components/Link';
 import RegisterDelegateDialog from './RegisterDelegateDialog';
@@ -218,7 +218,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   render() {
     const { intl, classes } = this.injected;
     const account = this.account;
-    const { readOnly } = account;
+    const { type: accountType } = account;
 
     const backLink: RouteLink = {
       route: accountSettingsRoute,
@@ -292,7 +292,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 />
               </ListItemSecondaryAction>
             </ListItem>
-            {!readOnly && (
+            {accountType !== AccountType.READONLY && (
               <Link
                 route={accountSettingsVoteRoute}
                 params={{
@@ -334,7 +334,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 {intl.formatMessage(messages.advancedSettings)}
               </ListSubheader>}
           >
-            {!readOnly && (
+            {accountType === AccountType.MNEMONIC && (
               <Link
                 route={accountSettingsPassphraseRoute}
                 params={{
@@ -353,7 +353,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 </ListItem>
               </Link>
             )}
-            {!readOnly && (
+            {accountType !== AccountType.READONLY && (
               <Link
                 route={accountSettingsDelegateRoute}
                 params={{

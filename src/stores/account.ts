@@ -13,6 +13,12 @@ export enum LoadingState {
   LOADED
 }
 
+export enum AccountType {
+  READONLY,
+  MNEMONIC,
+  LEDGER,
+}
+
 export default class AccountStore {
   config: TConfig;
 
@@ -21,7 +27,11 @@ export default class AccountStore {
 
   @observable id: string;
   @observable publicKey: string;
-  @observable readOnly: boolean = false;
+
+  @observable type: AccountType;
+  @observable hwId: null | string;
+  @observable hwSlot: null | number;
+
   // TODO enum / config
   @observable fiatCurrency: string = 'USD';
   @observable balance: RawAmount = RawAmount.ZERO;

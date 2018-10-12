@@ -17,6 +17,7 @@ import AccountIcon from '../../components/AccountIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
+import { AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 import { normalizeMnemonic } from '../../utils/utils';
 
@@ -92,7 +93,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
       return;
     }
 
-    walletStore.login(address, { readOnly: false }, true);
+    walletStore.login(address, { type: AccountType.MNEMONIC }, true);
     routerStore.goTo(accountOverviewRoute, { id: address });
   }
 

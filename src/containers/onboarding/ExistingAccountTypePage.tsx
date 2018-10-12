@@ -15,6 +15,7 @@ import {
   onboardingAddAccountRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
+import { AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
 interface Props {}
@@ -49,13 +50,13 @@ class ExistingAccountTypePage extends React.Component<Props> {
 
     let hasFullAccessAccounts = false;
     for (const account of walletStore.accounts.values()) {
-      if (!account.readOnly) {
+      if (account.type !== AccountType.READONLY) {
         hasFullAccessAccounts = true;
         break;
       }
     }
 
-    walletStore.login(address, { readOnly: false }, true);
+    walletStore.login(address, { type: AccountType.MNEMONIC }, true);
     if (hasFullAccessAccounts) {
       routerStore.goTo(accountOverviewRoute, { id: address });
     } else {
@@ -66,7 +67,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
   handleReadOnlyClick = () => {
     const { routerStore, onboardingStore, walletStore } = this.injected;
     const address = onboardingStore.address!;
-    walletStore.login(address, { readOnly: true }, true);
+    walletStore.login(address, { type: AccountType.READONLY }, true);
     routerStore.goTo(accountOverviewRoute, { id: address });
   }
 
