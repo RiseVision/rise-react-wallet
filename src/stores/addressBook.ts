@@ -5,6 +5,8 @@ import {
 } from 'mobx';
 import * as lstore from 'store';
 
+export type TStoredContact = { id: string; name: string }
+
 export default class AddressBookStore {
   // ID -> NAME
   @observable contacts = observable.map<string, string>();
@@ -19,7 +21,7 @@ export default class AddressBookStore {
 
   constructor() {
     // restore contacts from memory
-    const contacts = lstore.get('contacts') as { id: string; name: string }[];
+    const contacts = lstore.get('contacts') as TStoredContact[];
     if (lstore.get('contacts')) {
       for (const entry of contacts) {
         this.contacts.set(entry.id, entry.name);

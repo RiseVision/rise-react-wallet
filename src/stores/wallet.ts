@@ -642,6 +642,7 @@ export default class WalletStore {
   signout() {
     lstore.remove('accounts');
     lstore.remove('lastSelectedAccount');
+    lstore.remove('contacts');
     this.accounts.clear();
     // @ts-ignore
     this.selectedAccount = null;
