@@ -1,7 +1,5 @@
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
@@ -12,145 +10,67 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import AccountIcon from '../../components/AccountIcon';
+import LedgerConnectIllustration from '../../components/LedgerConnectIllustration';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingAddAccountRoute,
-  onboardingExistingAccountTypeRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
-import { normalizeAddress } from '../../utils/utils';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import { DposLedger, SupportedCoin, LedgerAccount } from 'dpos-ledger-api';
 
 const styles = createStyles({
   content: {
-    padding: 20
+    padding: 20,
+    textAlign: 'center',
   },
-  accountContainer: {
-    display: 'flex',
-    alignItems: 'center'
+  noPadding: {
+    marginLeft: -20,
+    marginRight: -20,
   },
-  accountField: {
-    flex: 1
-  },
-  accountIcon: {
-    marginLeft: 10
-  }
 });
 
 interface Props extends WithStyles<typeof styles> {}
 
-interface PropsInjected extends Props {
-  onboardingStore: OnboardingStore;
-  routerStore: RouterStore;
-}
-
 interface State {
-  address: string;
-  addressInvalid: boolean;
-  normalizedAddress: string;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
+
+interface PropsInjected extends DecoratedProps {
+  onboardingStore: OnboardingStore;
+  routerStore: RouterStore;
+}
 
 const stylesDecorator = withStyles(styles, {
   name: 'OnboardingLedgerAccountPage'
 });
 
 const messages = defineMessages({
-  invalidAddressGeneric: {
-    id: 'onboarding-ledger-account.invalid-address-generic',
-    description: 'Error label for invalid address text input',
-    defaultMessage:
-      'Invalid RISE address. A valid address is in the format of "1234567890R".'
+  connectInstructions: {
+    id: 'onboarding-ledger-account.connect-instructions',
+    description: 'Text instructing the user to open the RISE app on their Ledger device',
+    defaultMessage: 'Connect your Ledger & open the RISE app on it.',
   },
-  invalidAddressMnemonic: {
-    id: 'onboarding-ledger-account.invalid-address-mnemonic',
-    description:
-      'Error label for invalid address text input when it looks like a mnemonic',
-    defaultMessage:
-      'Looks like you\'re trying to enter your passphrase. Please enter your account address instead.'
-  }
+  statusConnecting: {
+    id: 'onboarding-ledger-account.status-connecting',
+    description: 'Status text when attempting to connect to the Ledger device',
+    defaultMessage: 'Trying to connect...',
+  },
 });
 
 @inject('onboardingStore')
 @inject('routerStore')
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps, State> {
-  get injected(): PropsInjected & DecoratedProps {
-    // @ts-ignore
-    return this.props;
-  }
+  state = {
+  };
 
-  constructor(props: DecoratedProps) {
-    super(props);
-
-    const { onboardingStore } = this.injected;
-    const address = onboardingStore.address || '';
-    this.state = {
-      address,
-      addressInvalid: false,
-      normalizedAddress: normalizeAddress(address.trim())
-    };
-    this.importLedger();
-  }
-
-  async importLedger() {
-    // TODO extended timeouts are probably needed to give user the time to
-    //   connect and unlock
-    const account = new LedgerAccount().coinIndex(SupportedCoin.RISE);
-    // @ts-ignore wrong d.ts
-    const transport = await TransportU2F.create();
-    // @ts-ignore wrong d.ts
-    const instance = new DposLedger(transport);
-    const { address } = await instance.getPubKey(account);
-    this.handleAddressChange(address);
-  }
-
-  handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
-    ev.preventDefault();
-
-    const { routerStore, onboardingStore } = this.injected;
-    const { normalizedAddress } = this.state;
-    const addressInvalid = !normalizedAddress;
-    if (addressInvalid) {
-      this.setState({ addressInvalid: true });
-      return;
-    }
-
-    onboardingStore.address = normalizedAddress;
-    routerStore.goTo(onboardingExistingAccountTypeRoute);
-  }
-
-  handleAddressChange = (address: string) => {
-    const normalizedAddress = normalizeAddress(address.trim());
-
-    this.setState({
-      address,
-      addressInvalid: !normalizedAddress,
-      normalizedAddress
-    });
-  }
-
-  addressError(): string | null {
-    const { intl } = this.injected;
-    const { address, normalizedAddress } = this.state;
-    if (normalizedAddress !== '') {
-      return null;
-    }
-
-    if (address.trim().indexOf(' ') >= 0) {
-      return intl.formatMessage(messages.invalidAddressMnemonic);
-    } else {
-      return intl.formatMessage(messages.invalidAddressGeneric);
-    }
+  get injected(): PropsInjected {
+    return this.props as PropsInjected;
   }
 
   render() {
-    const { classes } = this.injected;
-    const { address, addressInvalid, normalizedAddress } = this.state;
+    const { intl, classes } = this.injected;
 
     return (
       <ModalPaper open={true}>
@@ -165,52 +85,21 @@ class LedgerAccountPage extends React.Component<DecoratedProps, State> {
           container={true}
           className={classes.content}
           spacing={16}
-          component="form"
-          onSubmit={this.handleFormSubmit}
         >
           <Grid item={true} xs={12}>
-            <Typography>
-              <FormattedMessage
-                id="onboarding-ledger-account.unlock-wallet"
-                description="Text asking the user to unlock the hardware wallet"
-                defaultMessage="Connect and unlock your Ledger hardware wallet. You address will show up below."
-              />
-            </Typography>
+            <Typography
+              children={intl.formatMessage(messages.connectInstructions)}
+            />
           </Grid>
           <Grid item={true} xs={12}>
-            <div className={classes.accountContainer}>
-              <TextField
-                disabled={true}
-                className={classes.accountField}
-                label={
-                  <FormattedMessage
-                    id="onboarding-ledger-account.address-input-label"
-                    description="Account address input label"
-                    defaultMessage="Account address"
-                  />
-                }
-                error={addressInvalid}
-                value={address}
-                FormHelperTextProps={{
-                  error: addressInvalid
-                }}
-                helperText={addressInvalid ? this.addressError() || '' : ''}
-              />
-              <AccountIcon
-                className={classes.accountIcon}
-                size={48}
-                address={normalizedAddress}
-              />
+            <div className={classes.noPadding}>
+              <LedgerConnectIllustration />
             </div>
           </Grid>
           <Grid item={true} xs={12}>
-            <Button type="submit" fullWidth={true}>
-              <FormattedMessage
-                id="onboarding-ledger-account.continue"
-                description="Continue button label"
-                defaultMessage="Continue"
-              />
-            </Button>
+            <Typography
+              children={intl.formatMessage(messages.statusConnecting)}
+            />
           </Grid>
         </Grid>
       </ModalPaper>
