@@ -17,6 +17,8 @@ import {
   onboardingAddAccountRoute,
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
+import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { DposLedger, SupportedCoin, LedgerAccount } from 'dpos-ledger-api';
 
 const styles = createStyles({
   content: {
@@ -32,6 +34,7 @@ const styles = createStyles({
 interface Props extends WithStyles<typeof styles> {}
 
 interface State {
+  ledgerId: string | null;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -62,15 +65,62 @@ const messages = defineMessages({
 @inject('routerStore')
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps, State> {
-  state = {
+  isMonitoring = false;
+  state: State = {
+    ledgerId: null,
   };
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;
   }
 
+  componentDidMount() {
+    this.isMonitoring = true;
+    this.pingDevice();
+  }
+
+  componentWillUnmount() {
+    this.isMonitoring = false;
+  }
+
+  async pingDevice() {
+    if (!this.isMonitoring) { return; }
+
+    const checkAccount = new LedgerAccount().coinIndex(SupportedCoin.RISE);
+    // @ts-ignore wrong d.ts
+    const transport = await TransportU2F.create();
+    transport.setExchangeTimeout(5000);
+    if (!this.isMonitoring) { return; }
+
+    const comm = new DposLedger(transport);
+    try {
+      const { publicKey } = await comm.getPubKey(checkAccount);
+      const ledgerId = publicKey.slice(0, 8);
+
+      if (this.isMonitoring) {
+        this.setState({ ledgerId });
+        setTimeout(() => this.pingDevice(), 1000);
+      }
+    } catch (ex) {
+      if (this.isMonitoring) {
+        this.setState({ ledgerId: null });
+        setTimeout(() => this.pingDevice(), 1000);
+      }
+
+      if (ex.id === "U2F_5") {
+        // Device not connected
+      } else if (ex.statusCode === 0x6804) {
+        // Device locked
+      } else {
+        // Unknown error
+        throw ex;
+      }
+    }
+  }
+
   render() {
     const { intl, classes } = this.injected;
+    const { ledgerId } = this.state;
 
     return (
       <ModalPaper open={true}>
@@ -86,21 +136,29 @@ class LedgerAccountPage extends React.Component<DecoratedProps, State> {
           className={classes.content}
           spacing={16}
         >
-          <Grid item={true} xs={12}>
-            <Typography
-              children={intl.formatMessage(messages.connectInstructions)}
-            />
-          </Grid>
-          <Grid item={true} xs={12}>
-            <div className={classes.noPadding}>
-              <LedgerConnectIllustration />
-            </div>
-          </Grid>
-          <Grid item={true} xs={12}>
-            <Typography
-              children={intl.formatMessage(messages.statusConnecting)}
-            />
-          </Grid>
+          {ledgerId === null ? (
+            <React.Fragment>
+              <Grid item={true} xs={12}>
+                <Typography
+                  children={intl.formatMessage(messages.connectInstructions)}
+                />
+              </Grid>
+              <Grid item={true} xs={12}>
+                <div className={classes.noPadding}>
+                  <LedgerConnectIllustration />
+                </div>
+              </Grid>
+              <Grid item={true} xs={12}>
+                <Typography
+                  children={intl.formatMessage(messages.statusConnecting)}
+                />
+              </Grid>
+            </React.Fragment>
+          ) : (
+            <Grid item={true} xs={12}>
+              <Typography children={ledgerId} />
+            </Grid>
+          )}
         </Grid>
       </ModalPaper>
     );
