@@ -1,6 +1,6 @@
 ## RISE Wallet
 
-This repository contains a _Work-In-Progress_ web wallet for the **RISE** PoS blockchain. It's build on **TypeScript**, **React** and **Material UI**.
+This repository contains a _Work-In-Progress_ web wallet for the **RISE** DPoS blockchain. It's build on **TypeScript**, **React** and **Material UI**.
 
 ### Nightly build
 
