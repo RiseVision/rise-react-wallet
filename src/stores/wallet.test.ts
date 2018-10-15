@@ -1,19 +1,32 @@
 import * as bip39 from 'bip39';
-import { LiskWallet } from 'dpos-offline';
+import {
+  LiskWallet,
+  CreateSignatureTx,
+  VoteTx,
+  DelegateTx
+} from 'dpos-offline';
 import { last } from 'lodash';
 import { RouterStore } from 'mobx-router-rise';
 import { TransactionType } from 'risejs';
 import * as sinon from 'sinon';
 import * as lstore from 'store';
+import VoteDelegateDialog from '../containers/wallet/VoteDelegateDialog';
 import { onboardingAddAccountRoute } from '../routes';
 import { TAddressSource } from '../utils/utils';
-import AccountStore from './account';
+import AccountStore, { LoadingState } from './account';
 import AddressBookStore, { TStoredContact } from './addressBook';
 import TranslationsStore from './app';
-import { storedAccounts, serverAccounts, storedContacts } from './fixtures';
+import {
+  storedAccounts,
+  serverAccounts,
+  storedContacts,
+  serverTransactionsUnconfirmed,
+  serverTransactionsConfirmed
+} from './fixtures';
 import { TConfig } from './index';
-import Wallet, { TStoredAccount } from './wallet';
+import Wallet, { TStoredAccount, TTransactionsRequest } from './wallet';
 import { rise as dposAPI } from 'risejs';
+import 'isomorphic-fetch';
 
 const config: TConfig = {
   api_url: '',
@@ -30,19 +43,26 @@ let translations: TranslationsStore;
 beforeEach(() => {
   // array to keep stubs to restore them later
   stubs = [];
-  // stub loadTranslation
-  stubs.push(
-    sinon.stub(TranslationsStore.prototype, 'loadTranslation').callsFake(() => {
-      // empty
-    })
-  );
-  // stub the getAccount response
+
+  // stub methods making network requests
+  stub(TranslationsStore.prototype, 'loadTranslation', () => {
+    // empty
+  });
+  stub(Wallet.prototype, 'loadRecentTransactions', () => {
+    // empty
+  });
+  stub(Wallet.prototype, 'updateFees', () => {
+    // empty
+  });
+  stub(Wallet.prototype, 'loadVotedDelegates', tx => {
+    return tx;
+  });
+  // stub getAccount responses
   let getAccountsCounter = 0;
-  stubs.push(
-    sinon.stub(dposAPI.accounts, 'getAccount').callsFake(id => {
-      return serverAccounts[getAccountsCounter++];
-    })
-  );
+  stub(dposAPI.accounts, 'getAccount', id => {
+    return serverAccounts[getAccountsCounter++];
+  });
+
   // init
   router = new RouterStore();
   addressBook = new AddressBookStore();
@@ -65,6 +85,10 @@ function mockStoredAccounts(accounts: TStoredAccount[]) {
 
 function mockStoredContacts(contacts: TStoredContact[]) {
   lstore.set('contacts', contacts);
+}
+
+function stub<T>(object: T, method: keyof T, fn: (...args: any[]) => void) {
+  stubs.push(sinon.stub(object, method).callsFake(fn));
 }
 
 describe('constructor', () => {
@@ -98,7 +122,6 @@ describe('accounts', () => {
   beforeEach(() => {
     mockStoredAccounts(storedAccounts);
     mockStoredContacts(storedContacts);
-    // TODO mock wallet.login, create server fixtures
     wallet = new Wallet(config, router, addressBook, translations);
   });
   it('saveAccount', () => {
@@ -248,19 +271,68 @@ describe('accounts', () => {
       );
     }
   });
+  it.skip('parseAccountReponse', () => {});
 });
 
 describe('transactions', () => {
-  it.skip('loadTransactions', () => {});
-  it.skip('createPassphraseTx', () => {});
-  it.skip('createVoteTx', () => {});
-  it.skip('createRegisterDelegateTx', () => {});
+  let wallet: Wallet;
+  beforeEach(() => {
+    mockStoredAccounts(storedAccounts);
+    mockStoredContacts(storedContacts);
+    wallet = new Wallet(config, router, addressBook, translations);
+  });
+  it('loadRecentTransactions', async () => {
+    // stub unconfirmed
+    stub(wallet, 'fetch', () => {
+      return new Response(JSON.stringify(serverTransactionsUnconfirmed));
+    });
+    // stub confirmed
+    stub(wallet.dposAPI.transactions, 'getList', () => {
+      return serverTransactionsConfirmed;
+    });
+    // @ts-ignore restore the (prototype) mock
+    wallet.loadRecentTransactions.restore();
+    await wallet.loadRecentTransactions(storedAccounts[0].id);
+    const transactions = wallet.accounts.get(storedAccounts[0].id)
+      .recentTransactions;
+    expect(transactions.items).toHaveLength(5);
+    expect(transactions.fetched).toBeTruthy();
+  });
+  it('createPassphraseTx', async () => {
+    const pass = 'foo';
+    const wallet2 = new LiskWallet(pass, 'R');
+    const tx = await wallet.createPassphraseTx(pass, storedAccounts[0].id);
+    expect(tx).toBeInstanceOf(CreateSignatureTx);
+    expect(tx.type).toEqual(TransactionType.SIGNATURE);
+    expect(tx.asset.signature.publicKey).toEqual(wallet2.publicKey);
+  });
+  it('createVoteTx', async () => {
+    const account = wallet.selectedAccount;
+    account.votedDelegateState = LoadingState.LOADED;
+    const publicKey =
+      '16b268f3c712d26697551389a7b1b8713a9070bae22843d07cdd6a1a6cba6fa3';
+    const tx = await wallet.createVoteTx(publicKey, account.id);
+    expect(tx).toBeInstanceOf(VoteTx);
+    expect(tx.type).toEqual(TransactionType.VOTE);
+    expect(tx.asset.votes).toContain(`+${publicKey}`);
+  });
+  it('createRegisterDelegateTx', async () => {
+    const account = wallet.selectedAccount;
+    account.registeredDelegateState = LoadingState.LOADED;
+    const username = 'test';
+    const tx = await wallet.createRegisterDelegateTx(username, account.id);
+    expect(tx).toBeInstanceOf(DelegateTx);
+    expect(tx.type).toEqual(TransactionType.DELEGATE);
+    expect(tx.asset.delegate).toMatchObject({
+      publicKey: account.publicKey,
+      username
+    });
+  });
   it.skip('broadcastTransaction', () => {});
   it.skip('searchDelegates', () => {});
   it.skip('secondWallet', () => {});
   it.skip('loadVotedDelegate', () => {});
   it.skip('loadRegisteredDelegate', () => {});
   it.skip('loadRecentTransactions', () => {});
-  it.skip('parseTransactionVotes', () => {});
-  it.skip('parseAccountReponse', () => {});
+  it.skip('loadVotedDelegates', () => {});
 });
