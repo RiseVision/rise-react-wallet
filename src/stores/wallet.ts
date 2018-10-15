@@ -355,9 +355,8 @@ export default class WalletStore {
   }
 
   /**
-   * Loads the currently voted delegate for the currently selected account.
+   * Loads the currently voted delegate for the specified account.
    *
-   * TODO make it usefull when called directly
    * TODO handle errors
    */
   @action
@@ -516,25 +515,22 @@ export default class WalletStore {
       transactions.isLoading = true;
     });
 
-    const recentPromise = this.loadTransactions({
-      limit: amount,
-      orderBy: 'timestamp:desc',
-      recipientId: account.id,
-      senderPublicKey: account.publicKey
-    }).then(tx => this.parseTransactionsReponse(accountID, tx));
-
-    const unconfirmedPromise = this.loadTransactions(
-      {
-        address: account.id,
-        senderPublicKey: account.publicKey
-      },
-      false
-    ).then(tx => this.parseTransactionsReponse(accountID, tx));
-
     // request
     const [recent, unconfirmed] = await Promise.all([
-      recentPromise,
-      unconfirmedPromise
+      this.loadTransactions(accountID, {
+        limit: amount,
+        orderBy: 'timestamp:desc',
+        recipientId: account.id,
+        senderPublicKey: account.publicKey
+      }),
+      this.loadTransactions(
+        accountID,
+        {
+          address: account.id,
+          senderPublicKey: account.publicKey
+        },
+        false
+      )
     ]);
 
     runInAction(() => {
@@ -546,9 +542,12 @@ export default class WalletStore {
     return true;
   }
 
-  parseTransactionVotes(votes: string[]): Promise<TTransactionVote[]> {
-    return Promise.all(
-      votes.map(async vote => {
+  async loadVotedDelegates(tx: TTransaction): Promise<TTransaction> {
+    if (!tx.asset || !tx.asset.votes) {
+      return tx;
+    }
+    tx.votes = await Promise.all(
+      tx.asset.votes.map(async vote => {
         const op = vote.startsWith('-') ? 'remove' : 'add';
         const publicKey = vote.substring(1);
 
@@ -563,23 +562,14 @@ export default class WalletStore {
         } as TTransactionVote;
       })
     );
+    return tx;
   }
 
-  async parseTransactionsReponse(
+  parseTransactionsReponse(
     accountID: string,
     res: TTransactionsResponse
-  ): Promise<TTransaction[]> {
-    let txs = await Promise.all(
-      res.transactions.map(async raw => {
-        const rawVotes = (raw.asset && raw.asset.votes) || [];
-        return {
-          raw,
-          votes: await this.parseTransactionVotes(rawVotes)
-        };
-      })
-    );
-
-    return txs.map(({ raw, votes }) => {
+  ): TTransaction[] {
+    return res.transactions.map(raw => {
       const amount = new RawAmount(raw.amount || 0);
       const fee = new RawAmount(raw.fee);
       return {
@@ -591,10 +581,10 @@ export default class WalletStore {
         isIncoming: raw.senderId !== accountID,
         senderName: this.idToName(raw.senderId),
         recipientName: this.getRecipientName(raw.type, raw.recipientId),
-        time: moment.utc(timestampToUnix(raw.timestamp)).local().format(
-          this.config.date_format
-        ),
-        votes
+        time: moment
+          .utc(timestampToUnix(raw.timestamp))
+          .local()
+          .format(this.config.date_format)
       } as TTransaction;
     });
   }
@@ -651,40 +641,50 @@ export default class WalletStore {
   }
 
   async loadTransactions(
+    accountID: string,
     params: TTransactionsRequest,
     confirmed: boolean = true
-  ): Promise<TTransactionsResponse> {
+  ): Promise<TTransaction[]> {
+    let res: TTransactionsResponse | TErrorResponse;
     if (confirmed) {
       // @ts-ignore TODO type errors in dposAPI
-      const res:
-        | TTransactionsResponse
-        | TErrorResponse = await this.dposAPI.transactions.getList(params);
+      res = await this.dposAPI.transactions.getList(params);
       if (!res.success) {
         throw new Error((res as TErrorResponse).error);
       }
-      return res;
     } else if (!params.senderPublicKey) {
       // Unconfirmed transactions require senderPublicKey to be available,
       // so when the account hasn't broadcast it yet, skip this step
-      return {
+      res = {
         success: true,
         count: 0,
         transactions: []
       };
     } else {
-      // TODO switch to dposAPI once it supports params for
-      //   unconfirmed transactions
-      const path = confirmed ? '' : '/unconfirmed';
-      const url = `${this.api}/api/transactions${path}?${queryString.stringify(
-        params
-      )}`;
-      const res = await fetch(url);
-      const json: TTransactionsResponse | TErrorResponse = await res.json();
-      if (!json.success) {
-        throw new Error((json as TErrorResponse).error);
-      }
-      return json;
+      const url = `${
+        this.api
+      }/api/transactions/unconfirmed?${queryString.stringify(params)}`;
+      // TODO switch to dposAPI once it supports params for unconfirmed
+      // transactions
+      const rawRes = await this.fetch(url);
+      res = await rawRes.json();
     }
+    if (!res.success) {
+      throw new Error((res as TErrorResponse).error);
+    }
+    const txs = this.parseTransactionsReponse(accountID, res);
+
+    // load votes
+    await Promise.all(txs.map(tx => this.loadVotedDelegates(tx)));
+
+    return txs;
+  }
+
+  /**
+   * Fetch overload for tests
+   */
+  async fetch(url: string): Promise<Response> {
+    return fetch(url);
   }
 
   /**
