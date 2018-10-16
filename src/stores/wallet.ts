@@ -542,7 +542,8 @@ export default class WalletStore {
     return true;
   }
 
-  async loadVotedDelegates(tx: TTransaction): Promise<TTransaction> {
+  async loadTransactionDelegates(tx: TTransaction): Promise<TTransaction> {
+    console.log('test')
     if (!tx.asset || !tx.asset.votes) {
       return tx;
     }
@@ -675,7 +676,7 @@ export default class WalletStore {
     const txs = this.parseTransactionsReponse(accountID, res);
 
     // load votes
-    await Promise.all(txs.map(tx => this.loadVotedDelegates(tx)));
+    await Promise.all(txs.map(tx => this.loadTransactionDelegates(tx)));
 
     return txs;
   }
@@ -716,6 +717,7 @@ export default class WalletStore {
   }
 }
 
+// TODO use LoadingState
 class DelegateCache {
   private cached: {
     [key: string]:
@@ -731,6 +733,7 @@ class DelegateCache {
 
   constructor(private api: typeof dposAPI) {}
 
+  // TODO `opts.reload` -> `force`
   async get(
     publicKey: string,
     opts: { reload?: boolean } = {}
@@ -811,6 +814,7 @@ export type TGroupedTransactions = {
   [group: string]: TTransaction[];
 };
 
+// TODO get from `risejs`
 type APITransaction = {
   amount: null | number | string;
   asset: {
@@ -825,8 +829,8 @@ type APITransaction = {
   fee: number | string;
   height: number;
   id: string;
-  recipientId: string;
-  recipientPublicKey: string;
+  recipientId?: string;
+  recipientPublicKey?: string;
   senderId: string;
   senderPublicKey: string;
   signature: string;
