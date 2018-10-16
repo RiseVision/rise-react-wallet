@@ -3,15 +3,17 @@ import {
   LiskWallet,
   CreateSignatureTx,
   VoteTx,
-  DelegateTx
+  DelegateTx,
+  SendTx
 } from 'dpos-offline';
+import 'isomorphic-fetch';
 import { last } from 'lodash';
 import { RouterStore } from 'mobx-router-rise';
-import { TransactionType } from 'risejs';
+import { TransactionType, rise as dposAPI } from 'risejs';
 import * as sinon from 'sinon';
 import * as lstore from 'store';
-import VoteDelegateDialog from '../containers/wallet/VoteDelegateDialog';
 import { onboardingAddAccountRoute } from '../routes';
+import { RawAmount } from '../utils/amounts';
 import { TAddressSource } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
 import AddressBookStore, { TStoredContact } from './addressBook';
@@ -21,12 +23,14 @@ import {
   serverAccounts,
   storedContacts,
   serverTransactionsUnconfirmed,
-  serverTransactionsConfirmed
+  serverTransactionsConfirmed,
+  serverDelegatesSearch,
+  serverAccountsDelegates,
+  serverDelegatesGetByPublicKey,
+  serverTransactionDelegates
 } from './fixtures';
 import { TConfig } from './index';
-import Wallet, { TStoredAccount, TTransactionsRequest } from './wallet';
-import { rise as dposAPI } from 'risejs';
-import 'isomorphic-fetch';
+import Wallet, { TStoredAccount } from './wallet';
 
 const config: TConfig = {
   api_url: '',
@@ -54,7 +58,7 @@ beforeEach(() => {
   stub(Wallet.prototype, 'updateFees', () => {
     // empty
   });
-  stub(Wallet.prototype, 'loadVotedDelegates', tx => {
+  stub(Wallet.prototype, 'loadTransactionDelegates', tx => {
     return tx;
   });
   // stub getAccount responses
@@ -271,6 +275,7 @@ describe('accounts', () => {
       );
     }
   });
+  // TODO
   it.skip('parseAccountReponse', () => {});
 });
 
@@ -328,11 +333,89 @@ describe('transactions', () => {
       username
     });
   });
-  it.skip('broadcastTransaction', () => {});
-  it.skip('searchDelegates', () => {});
-  it.skip('secondWallet', () => {});
-  it.skip('loadVotedDelegate', () => {});
-  it.skip('loadRegisteredDelegate', () => {});
-  it.skip('loadRecentTransactions', () => {});
-  it.skip('loadVotedDelegates', () => {});
+  it('createSendTx', async () => {
+    const recipientID = storedAccounts[1].id;
+    const amount = 1000000;
+
+    const tx = await wallet.createSendTx(recipientID, new RawAmount(amount));
+    expect(tx).toBeInstanceOf(SendTx);
+    expect(tx.type).toEqual(TransactionType.SEND);
+    expect(tx.amount).toEqual(amount);
+    expect(tx.recipientId).toEqual(recipientID);
+  });
+  it('broadcastTransaction', async () => {
+    const recipientID = storedAccounts[1].id;
+    const amount = 1000000;
+    const tx = await wallet.createSendTx(recipientID, new RawAmount(amount));
+    stub(wallet.dposAPI.transactions, 'put', () => {
+      // empty
+    });
+    stub(wallet, 'refreshAccount', async () => {
+      // empty
+    });
+    await wallet.broadcastTransaction(tx, 'foo bar baz', 'test');
+    expect(tx.senderPublicKey).toEqual(wallet.selectedAccount.secondPublicKey);
+    expect(tx.secondSignature).toBeTruthy();
+  });
+});
+
+describe('API calls', () => {
+  let wallet: Wallet;
+  beforeEach(() => {
+    mockStoredAccounts(storedAccounts);
+    mockStoredContacts(storedContacts);
+    wallet = new Wallet(config, router, addressBook, translations);
+  });
+  it('searchDelegates', () => {
+    const q = 'test';
+    stub(wallet.dposAPI.delegates, 'search', () => {
+      return serverDelegatesSearch;
+    });
+    wallet.searchDelegates(q);
+    // @ts-ignore sinon spy
+    expect(wallet.dposAPI.delegates.search.calledWith({ q }));
+  });
+  it('loadVotedDelegate', async () => {
+    const account = wallet.selectedAccount;
+    stub(wallet.dposAPI.accounts, 'getDelegates', () => {
+      return serverAccountsDelegates;
+    });
+    await wallet.loadVotedDelegate(account.id);
+    // @ts-ignore sinon spy
+    expect(wallet.dposAPI.accounts.getDelegates.called);
+    expect(account.votedDelegateState).toEqual(LoadingState.LOADED);
+    expect(account.votedDelegate).toMatchObject(
+      serverAccountsDelegates.delegates[0]
+    );
+  });
+  it('loadRegisteredDelegate', async () => {
+    const account = wallet.selectedAccount;
+    stub(wallet.dposAPI.delegates, 'getByPublicKey', () => {
+      return serverDelegatesGetByPublicKey;
+    });
+    await wallet.loadRegisteredDelegate(account.id);
+    // @ts-ignore sinon spy
+    expect(wallet.dposAPI.delegates.getByPublicKey.called);
+    expect(account.registeredDelegateState).toEqual(LoadingState.LOADED);
+    expect(account.registeredDelegate).toMatchObject(
+      serverDelegatesGetByPublicKey.delegate
+    );
+  });
+  it('loadTransactionDelegates', async () => {
+    const account = wallet.selectedAccount;
+    stub(wallet.dposAPI.delegates, 'getByPublicKey', () => {
+      return serverDelegatesGetByPublicKey;
+    });
+    let tx = wallet.parseTransactionsReponse(
+      account.id,
+      serverTransactionDelegates
+    )[0];
+    // @ts-ignore unstub
+    wallet.loadTransactionDelegates.restore();
+    await wallet.loadTransactionDelegates(tx);
+    expect(tx.votes[0].op).toEqual('remove');
+    expect(tx.votes[0].delegate).toMatchObject(
+      serverDelegatesGetByPublicKey.delegate
+    );
+  });
 });
