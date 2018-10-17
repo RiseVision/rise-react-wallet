@@ -36,7 +36,7 @@ const messages = defineMessages({
 });
 
 export default class TransactionsStore {
-  // transactions has been fetched at least once
+  // transactions have been fetched at least once
   fetched: boolean = false;
 
   @observable isLoading: boolean = false;

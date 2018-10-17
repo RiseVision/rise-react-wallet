@@ -1,3 +1,5 @@
+import { TConfig } from './index';
+
 export const storedAccounts = [
   {
     id: '2655711995542512317R',
@@ -398,4 +400,11 @@ export const serverTransactionDelegates = {
       confirmations: 213579
     }
   ]
+};
+
+export const config: TConfig = {
+  api_url: '',
+  date_format: '',
+  explorer_url: '',
+  fiat_currencies: []
 };

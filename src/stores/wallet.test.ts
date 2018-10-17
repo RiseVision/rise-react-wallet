@@ -14,9 +14,14 @@ import * as sinon from 'sinon';
 import * as lstore from 'store';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';
+import {
+  stub,
+  mockStoredAccounts,
+  mockStoredContacts
+} from '../utils/testHelpers';
 import { TAddressSource } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
-import AddressBookStore, { TStoredContact } from './addressBook';
+import AddressBookStore from './addressBook';
 import TranslationsStore from './app';
 import {
   storedAccounts,
@@ -27,17 +32,14 @@ import {
   serverDelegatesSearch,
   serverAccountsDelegates,
   serverDelegatesGetByPublicKey,
-  serverTransactionDelegates
+  serverTransactionDelegates,
+  config
 } from './fixtures';
-import { TConfig } from './index';
-import Wallet, { TStoredAccount } from './wallet';
-
-const config: TConfig = {
-  api_url: '',
-  date_format: '',
-  explorer_url: '',
-  fiat_currencies: []
-};
+import Wallet, {
+  TStoredAccount,
+  parseAccountReponse,
+  parseTransactionsReponse
+} from './wallet';
 
 let stubs: any[];
 let router: RouterStore;
@@ -49,21 +51,21 @@ beforeEach(() => {
   stubs = [];
 
   // stub methods making network requests
-  stub(TranslationsStore.prototype, 'loadTranslation', () => {
+  stub(stubs, TranslationsStore.prototype, 'loadTranslation', () => {
     // empty
   });
-  stub(Wallet.prototype, 'loadRecentTransactions', () => {
+  stub(stubs, Wallet.prototype, 'loadRecentTransactions', () => {
     // empty
   });
-  stub(Wallet.prototype, 'updateFees', () => {
+  stub(stubs, Wallet.prototype, 'updateFees', () => {
     // empty
   });
-  stub(Wallet.prototype, 'loadTransactionDelegates', tx => {
+  stub(stubs, Wallet.prototype, 'loadTransactionDelegates', tx => {
     return tx;
   });
   // stub getAccount responses
   let getAccountsCounter = 0;
-  stub(dposAPI.accounts, 'getAccount', id => {
+  stub(stubs, dposAPI.accounts, 'getAccount', id => {
     return serverAccounts[getAccountsCounter++];
   });
 
@@ -82,18 +84,6 @@ afterEach(() => {
     stub.restore();
   }
 });
-
-function mockStoredAccounts(accounts: TStoredAccount[]) {
-  lstore.set('accounts', accounts);
-}
-
-function mockStoredContacts(contacts: TStoredContact[]) {
-  lstore.set('contacts', contacts);
-}
-
-function stub<T>(object: T, method: keyof T, fn: (...args: any[]) => void) {
-  stubs.push(sinon.stub(object, method).callsFake(fn));
-}
 
 describe('constructor', () => {
   it('init', () => {
@@ -155,13 +145,11 @@ describe('accounts', () => {
     // @ts-ignore restore to wrap again
     wallet.dposAPI.accounts.getAccount.restore();
     // stub the API response
-    stubs.push(
-      // TODO extract
-      sinon.stub(wallet.dposAPI.accounts, 'getAccount').returns({
-        account: { address: id, balance },
-        success: true
-      })
-    );
+    // TODO extract
+    stub(stubs, wallet.dposAPI.accounts, 'getAccount', () => ({
+      account: { address: id, balance },
+      success: true
+    }));
     // @ts-ignore protected
     const response = await wallet.loadAccount(id);
     expect(response.account).toEqual({ address: id, balance });
@@ -172,13 +160,11 @@ describe('accounts', () => {
     // @ts-ignore restore to wrap again
     wallet.dposAPI.accounts.getAccount.restore();
     // stub the API response
-    stubs.push(
-      // TODO extract
-      sinon.stub(wallet.dposAPI.accounts, 'getAccount').returns({
-        account: { address: id, balance },
-        success: true
-      })
-    );
+    // TODO extract
+    stub(stubs, wallet.dposAPI.accounts, 'getAccount', () => ({
+      account: { address: id, balance },
+      success: true
+    }));
     await wallet.refreshAccount(id);
     expect(wallet.accounts.get(id).balance.toNumber()).toEqual(balance);
   });
@@ -187,12 +173,8 @@ describe('accounts', () => {
     // @ts-ignore restore to wrap again
     wallet.dposAPI.accounts.getAccount.restore();
     // stub the API response
-    stubs.push(
-      // TODO extract
-      sinon
-        .stub(wallet.dposAPI.accounts, 'getAccount')
-        .returns(serverAccounts[0])
-    );
+    // TODO extract
+    stub(stubs, wallet.dposAPI.accounts, 'getAccount', () => serverAccounts[0]);
     // delete existing accounts
     wallet.accounts.clear();
     await wallet.login(id, storedAccounts[0]);
@@ -223,7 +205,7 @@ describe('accounts', () => {
     const mnemonic = bip39.generateMnemonic();
     const liskWallet = new LiskWallet(mnemonic, 'R');
     // stub wallet.login
-    stubs.push(sinon.stub(wallet, 'login').returns(true));
+    stub(stubs, wallet, 'login', () => true);
     const account = {
       id: liskWallet.address,
       publicKey: liskWallet.publicKey
@@ -275,8 +257,17 @@ describe('accounts', () => {
       );
     }
   });
-  // TODO
-  it.skip('parseAccountReponse', () => {});
+  it('parseAccountReponse', () => {
+    // fake a virgin account
+    const local = { ...storedAccounts[0], publickKey: null };
+    const server = serverAccounts[0];
+    // @ts-ignore TODO `number is not assignable to 0|1`
+    const parsed = parseAccountReponse(server, local);
+    expect(parsed.balance.toString()).toEqual(server.account.balance);
+    expect(parsed.publicKey).toEqual(server.account.publicKey);
+    expect(parsed.name).toEqual(local.name);
+    expect(parsed.fiatCurrency).toEqual(local.fiatCurrency);
+  });
 });
 
 describe('transactions', () => {
@@ -288,11 +279,11 @@ describe('transactions', () => {
   });
   it('loadRecentTransactions', async () => {
     // stub unconfirmed
-    stub(wallet, 'fetch', () => {
+    stub(stubs, wallet, 'fetch', () => {
       return new Response(JSON.stringify(serverTransactionsUnconfirmed));
     });
     // stub confirmed
-    stub(wallet.dposAPI.transactions, 'getList', () => {
+    stub(stubs, wallet.dposAPI.transactions, 'getList', () => {
       return serverTransactionsConfirmed;
     });
     // @ts-ignore restore the (prototype) mock
@@ -347,10 +338,10 @@ describe('transactions', () => {
     const recipientID = storedAccounts[1].id;
     const amount = 1000000;
     const tx = await wallet.createSendTx(recipientID, new RawAmount(amount));
-    stub(wallet.dposAPI.transactions, 'put', () => {
+    stub(stubs, wallet.dposAPI.transactions, 'put', () => {
       // empty
     });
-    stub(wallet, 'refreshAccount', async () => {
+    stub(stubs, wallet, 'refreshAccount', async () => {
       // empty
     });
     await wallet.broadcastTransaction(tx, 'foo bar baz', 'test');
@@ -368,7 +359,7 @@ describe('API calls', () => {
   });
   it('searchDelegates', () => {
     const q = 'test';
-    stub(wallet.dposAPI.delegates, 'search', () => {
+    stub(stubs, wallet.dposAPI.delegates, 'search', () => {
       return serverDelegatesSearch;
     });
     wallet.searchDelegates(q);
@@ -377,7 +368,7 @@ describe('API calls', () => {
   });
   it('loadVotedDelegate', async () => {
     const account = wallet.selectedAccount;
-    stub(wallet.dposAPI.accounts, 'getDelegates', () => {
+    stub(stubs, wallet.dposAPI.accounts, 'getDelegates', () => {
       return serverAccountsDelegates;
     });
     await wallet.loadVotedDelegate(account.id);
@@ -390,7 +381,7 @@ describe('API calls', () => {
   });
   it('loadRegisteredDelegate', async () => {
     const account = wallet.selectedAccount;
-    stub(wallet.dposAPI.delegates, 'getByPublicKey', () => {
+    stub(stubs, wallet.dposAPI.delegates, 'getByPublicKey', () => {
       return serverDelegatesGetByPublicKey;
     });
     await wallet.loadRegisteredDelegate(account.id);
@@ -403,10 +394,11 @@ describe('API calls', () => {
   });
   it('loadTransactionDelegates', async () => {
     const account = wallet.selectedAccount;
-    stub(wallet.dposAPI.delegates, 'getByPublicKey', () => {
+    stub(stubs, wallet.dposAPI.delegates, 'getByPublicKey', () => {
       return serverDelegatesGetByPublicKey;
     });
-    let tx = wallet.parseTransactionsReponse(
+    let tx = parseTransactionsReponse(
+      wallet,
       account.id,
       serverTransactionDelegates
     )[0];
