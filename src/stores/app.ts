@@ -58,6 +58,7 @@ export default class AppStore {
   get(msg: MessageDescriptor): string {
     const id = msg.id;
     const fallback = msg.defaultMessage;
-    return this.translations.get(this.locale)![id] || fallback || id;
+    const messages = this.translations.get(this.locale);
+    return (messages && messages[id]) || fallback || id;
   }
 }

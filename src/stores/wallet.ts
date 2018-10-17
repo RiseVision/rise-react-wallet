@@ -543,7 +543,6 @@ export default class WalletStore {
   }
 
   async loadTransactionDelegates(tx: TTransaction): Promise<TTransaction> {
-    console.log('test')
     if (!tx.asset || !tx.asset.votes) {
       return tx;
     }
@@ -564,30 +563,6 @@ export default class WalletStore {
       })
     );
     return tx;
-  }
-
-  parseTransactionsReponse(
-    accountID: string,
-    res: TTransactionsResponse
-  ): TTransaction[] {
-    return res.transactions.map(raw => {
-      const amount = new RawAmount(raw.amount || 0);
-      const fee = new RawAmount(raw.fee);
-      return {
-        ...raw,
-        timestamp: timestampToUnix(raw.timestamp),
-        amount,
-        amountFee: amount.plus(fee),
-        fee,
-        isIncoming: raw.senderId !== accountID,
-        senderName: this.idToName(raw.senderId),
-        recipientName: this.getRecipientName(raw.type, raw.recipientId),
-        time: moment
-          .utc(timestampToUnix(raw.timestamp))
-          .local()
-          .format(this.config.date_format)
-      } as TTransaction;
-    });
   }
 
   getRecipientName(type: TransactionType, recipientID: string) {
@@ -673,7 +648,7 @@ export default class WalletStore {
     if (!res.success) {
       throw new Error((res as TErrorResponse).error);
     }
-    const txs = this.parseTransactionsReponse(accountID, res);
+    const txs = parseTransactionsReponse(this, accountID, res);
 
     // load votes
     await Promise.all(txs.map(tx => this.loadTransactionDelegates(tx)));
@@ -802,6 +777,31 @@ export function parseAccountReponse(
     // always take the public key from the server (ex virgin accounts)
     ...(parsed.publicKey ? { publicKey: parsed.publicKey } : {})
   };
+}
+
+export function parseTransactionsReponse(
+  wallet: WalletStore,
+  accountID: string,
+  res: TTransactionsResponse
+): TTransaction[] {
+  return res.transactions.map(raw => {
+    const amount = new RawAmount(raw.amount || 0);
+    const fee = new RawAmount(raw.fee);
+    return {
+      ...raw,
+      timestamp: timestampToUnix(raw.timestamp),
+      amount,
+      amountFee: amount.plus(fee),
+      fee,
+      isIncoming: raw.senderId !== accountID,
+      senderName: wallet.idToName(raw.senderId),
+      recipientName: wallet.getRecipientName(raw.type, raw.recipientId),
+      time: moment
+        .utc(timestampToUnix(raw.timestamp))
+        .local()
+        .format(wallet.config.date_format)
+    } as TTransaction;
+  });
 }
 
 export type TTransactionResult = {
