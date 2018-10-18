@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 import { TConfig } from './index';
 
 export const storedAccounts = [

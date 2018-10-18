@@ -1,3 +1,5 @@
+// tslint:disable:no-unused-expression
+// tslint:disable:no-shadowed-variable
 import * as lstore from 'store';
 import { mockStoredContacts, stub } from '../utils/testHelpers';
 import TranslationsStore from './app';
@@ -11,7 +13,7 @@ import TransactionsStore from './transactions';
 import { parseTransactionsReponse } from './wallet';
 import * as sinon from 'sinon';
 
-let stubs: any[];
+let stubs: sinon.SinonStub[];
 
 beforeEach(() => {
   // array to keep stubs to restore them later
@@ -25,10 +27,12 @@ beforeEach(() => {
 afterEach(() => {
   lstore.clearAll();
   // check if a test has failed
-  if (!stubs) return;
+  if (!stubs) {
+    return;
+  }
   // dispose all the stubs
-  for (const stub of stubs) {
-    stub.restore();
+  for (const fn of stubs) {
+    fn.restore();
   }
 });
 
@@ -36,10 +40,10 @@ describe('address book', () => {
   let store: TransactionsStore;
   const id = storedAccounts[0].id;
   const wallet = {
-    idToName(id) {
-      return id;
+    idToName(address: string) {
+      return address;
     },
-    getRecipientName(id) {
+    getRecipientName(id: string) {
       return id;
     },
     loadRecentTransactions: sinon.spy(),

@@ -42,17 +42,20 @@
     "deploy-nightly": "npm run build-no-tests && gh-pages -d build -m \"Updated the nightly\"",
     "test": "cypress run",
     "test-unit": "jest",
-    "test-unit-prepare": "tsc --watch --module commonjs --target es2017",
+    "test-unit-prepare": "tsc --module commonjs --target es2017",
+    "test-unit-prepare-watch": "tsc --watch --module commonjs --target es2017",
     "eject": "react-scripts-ts eject",
     "riw:prepare": "rm -r tmp/transpiled/; tsc -p . --target ES6 --module esnext --jsx preserve --outDir tmp/transpiled",
     "riw:translate": "riw app translate",
     "riw:status": "riw app status",
     "tsc": "tsc --project tsconfig.prod.json --noEmit",
     "tslint": "npx tslint --fix --project tslint.prod.json 'src/**/*.{ts,tsx}'",
-    "precommit": "npm run tsc && npm run prettier && npm run tslint",
+    "precommit": "npm run tsc && npm run prettier && npm run tslint && npm run test-unit-prepare && npm run test-unit",
     "prettier": "prettier src/**.{ts,tsx} --write"
   },
-  "pre-commit": [],
+  "pre-commit": [
+    "precommit"
+  ],
   "riw": {
     "defaultLocale": "en",
     "targetLocales": [

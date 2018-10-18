@@ -15,6 +15,7 @@ export function stub<T>(
   stubs: Function[],
   object: T,
   method: keyof T,
+  // tslint:disable-next-line:no-any
   fn: (...args: any[]) => void
 ) {
   stubs.push(sinon.stub(object, method).callsFake(fn));

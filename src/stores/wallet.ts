@@ -565,11 +565,11 @@ export default class WalletStore {
     return tx;
   }
 
-  getRecipientName(type: TransactionType, recipientID: string) {
+  getRecipientName(type: TransactionType, recipientID: string | undefined) {
     const types = TransactionType;
     switch (type) {
       case types.SEND:
-        return this.idToName(recipientID);
+        return this.idToName(recipientID!);
       default:
         return null;
     }
@@ -829,6 +829,7 @@ type APITransaction = {
   fee: number | string;
   height: number;
   id: string;
+  // TODO non-optional for type === SEND
   recipientId?: string;
   recipientPublicKey?: string;
   senderId: string;

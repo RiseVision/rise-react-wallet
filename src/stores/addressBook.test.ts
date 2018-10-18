@@ -1,9 +1,12 @@
+// tslint:disable:no-unused-expression
+// tslint:disable:no-shadowed-variable
 import * as lstore from 'store';
 import { stub, mockStoredContacts } from '../utils/testHelpers';
+import { TAddressRecord } from '../utils/utils';
 import AddressBookStore from './addressBook';
 import { storedContacts } from './fixtures';
 
-let stubs: any[];
+let stubs: sinon.SinonStub[];
 
 beforeEach(() => {
   // array to keep stubs to restore them later
@@ -13,10 +16,12 @@ beforeEach(() => {
 afterEach(() => {
   lstore.clearAll();
   // check if a test has failed
-  if (!stubs) return;
+  if (!stubs) {
+    return;
+  }
   // dispose all the stubs
-  for (const stub of stubs) {
-    stub.restore();
+  for (const fn of stubs) {
+    fn.restore();
   }
 });
 
@@ -33,7 +38,9 @@ describe('constructor', () => {
   it('observes for changes', () => {
     const book = new AddressBookStore();
     let contact = storedContacts[0];
-    stub(stubs, book, 'persist', () => {});
+    stub(stubs, book, 'persist', () => {
+      // empty
+    });
     book.contacts.set(contact.id, contact.name);
     // @ts-ignore sinon stub
     expect(book.persist.called).toBeTruthy();
@@ -51,7 +58,7 @@ describe('address book', () => {
     const id = '123R';
     const name = 'test';
     book.contacts.set(id, name);
-    const stored = lstore.get('contacts');
+    const stored: TAddressRecord[] = lstore.get('contacts');
     expect(stored.some(c => c.id === id && c.name === name)).toBeTruthy();
   });
 

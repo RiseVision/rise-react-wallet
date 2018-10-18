@@ -972,7 +972,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
           {/* RECIPIENT */}
           {tx.type === TransactionType.SEND &&
             this.renderContact(
-              tx.recipientId,
+              tx.recipientId!,
               tx.recipientName,
               false,
               tx.isIncoming
@@ -1077,7 +1077,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
             )}
           {tx.type === TransactionType.SEND &&
             !tx.isIncoming && (
-              <Link {...getSendLinkProps(tx.recipientId, tx.amount)}>
+              <Link {...getSendLinkProps(tx.recipientId!, tx.amount)}>
                 <Button
                   size="small"
                   children={fmt(msg.detailsSendAgainLabel)}

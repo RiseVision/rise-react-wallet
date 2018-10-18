@@ -1,3 +1,5 @@
+// tslint:disable:no-unused-expression
+// tslint:disable:no-shadowed-variable
 import * as bip39 from 'bip39';
 import {
   LiskWallet,
@@ -41,7 +43,7 @@ import Wallet, {
   parseTransactionsReponse
 } from './wallet';
 
-let stubs: any[];
+let stubs: sinon.SinonStub[];
 let router: RouterStore;
 let addressBook: AddressBookStore;
 let translations: TranslationsStore;
@@ -78,10 +80,12 @@ beforeEach(() => {
 afterEach(() => {
   lstore.clearAll();
   // check if a test has failed
-  if (!stubs) return;
+  if (!stubs) {
+    return;
+  }
   // dispose all the stubs
-  for (const stub of stubs) {
-    stub.restore();
+  for (const fn of stubs) {
+    fn.restore();
   }
 });
 
@@ -128,13 +132,13 @@ describe('accounts', () => {
   it('getAccountbyID', () => {
     const id = storedAccounts[0].id;
     const account = wallet.getAccountByID(id);
-    expect(account.name).toEqual(storedAccounts[0].name);
+    expect(account!.name).toEqual(storedAccounts[0].name);
   });
   it('saveAccount (observable)', () => {
     const id = storedAccounts[0].id;
     const name = 'test98fds7idfsh';
     const account = wallet.getAccountByID(id);
-    account.name = name;
+    account!.name = name;
     // observable auto saved the change
     const saved = last(Object.values(lstore.get('accounts'))) as TStoredAccount;
     expect(saved.name).toEqual(name);
@@ -166,7 +170,7 @@ describe('accounts', () => {
       success: true
     }));
     await wallet.refreshAccount(id);
-    expect(wallet.accounts.get(id).balance.toNumber()).toEqual(balance);
+    expect(wallet.accounts.get(id)!.balance.toNumber()).toEqual(balance);
   });
   it('login', async () => {
     const id = storedAccounts[0].id;
@@ -179,7 +183,7 @@ describe('accounts', () => {
     wallet.accounts.clear();
     await wallet.login(id, storedAccounts[0]);
     const account = wallet.accounts.get(id);
-    expect(account.balance.toString()).toEqual(
+    expect(account!.balance.toString()).toEqual(
       serverAccounts[0].account.balance
     );
   });
@@ -289,7 +293,7 @@ describe('transactions', () => {
     // @ts-ignore restore the (prototype) mock
     wallet.loadRecentTransactions.restore();
     await wallet.loadRecentTransactions(storedAccounts[0].id);
-    const transactions = wallet.accounts.get(storedAccounts[0].id)
+    const transactions = wallet.accounts.get(storedAccounts[0].id)!
       .recentTransactions;
     expect(transactions.items).toHaveLength(5);
     expect(transactions.fetched).toBeTruthy();

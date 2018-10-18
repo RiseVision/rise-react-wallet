@@ -5,7 +5,7 @@ import {
 } from 'mobx';
 import * as lstore from 'store';
 
-export type TStoredContact = { id: string; name: string }
+export type TStoredContact = { id: string; name: string };
 
 export default class AddressBookStore {
   // ID -> NAME
