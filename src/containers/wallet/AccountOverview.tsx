@@ -135,7 +135,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
   }
 
   handleLoadMore = () => {
-    this.account.recentTransactions.loadMore(this.injected.walletStore);
+    this.account.recentTransactions.loadMore();
   }
 
   handleContactEdit = (id: string) => {
@@ -210,7 +210,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
   render() {
     // mark the current account as viewed
     this.account.viewed = true;
-    const { intl, classes, walletStore } = this.injected;
+    const { intl, classes } = this.injected;
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );
@@ -273,15 +273,6 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                 </Typography>
                 <div>
                   {transactions.map(transaction => {
-                    // make sure the transaction data has up to dane names
-                    // TODO move this to a getter (create a Transaction class)
-                    transaction.senderName = walletStore.idToName(
-                      transaction.senderId
-                    );
-                    transaction.recipientName = walletStore.getRecipientName(
-                      transaction.type,
-                      transaction.recipientId
-                    );
                     return (
                       <TxDetailsExpansionPanel
                         getSendLinkProps={this.getSendLinkProps}

@@ -1,5 +1,9 @@
 import * as assert from 'assert';
-import { Delegate, rise as dposAPI, TransactionType } from 'risejs';
+import {
+  Delegate,
+  rise as dposAPI,
+  TransactionType,
+} from 'risejs';
 import {
   BaseTx,
   CreateSignatureTx,
@@ -29,7 +33,6 @@ import { RawAmount } from '../utils/amounts';
 import {
   getTimestamp,
   normalizeAddress,
-  timestampToUnix,
   TAddressRecord,
   TAddressSource
 } from '../utils/utils';
@@ -37,8 +40,8 @@ import AccountStore, { LoadingState } from './account';
 import AddressBookStore from './addressBook';
 import AppStore from './app';
 import { TConfig } from './index';
-import * as moment from 'moment/min/moment-with-locales';
 import * as queryString from 'query-string';
+import { Transaction } from './transactions';
 
 export default class WalletStore {
   api: string;
@@ -198,10 +201,7 @@ export default class WalletStore {
   }
 
   /**
-   *
    * @param delegatePublicKey Delegate you want to vote for.
-   * @param mnemonic
-   * @param passphrase
    * @param accountID Optional - the voter's account ID.
    *   Defaults to the currently selected one.
    */
@@ -414,11 +414,7 @@ export default class WalletStore {
     if (!id) {
       throw Error('Invalid address');
     }
-    const account = new AccountStore(
-      this.config,
-      { id, ...local },
-      this.translations
-    );
+    const account = new AccountStore(this.config, { id, ...local }, this);
     this.accounts.set(id, account);
     if (select) {
       this.selectAccount(id);
@@ -542,7 +538,7 @@ export default class WalletStore {
     return true;
   }
 
-  async loadTransactionDelegates(tx: TTransaction): Promise<TTransaction> {
+  async loadTransactionDelegates(tx: Transaction): Promise<Transaction> {
     if (!tx.asset || !tx.asset.votes) {
       return tx;
     }
@@ -620,7 +616,7 @@ export default class WalletStore {
     accountID: string,
     params: TTransactionsRequest,
     confirmed: boolean = true
-  ): Promise<TTransaction[]> {
+  ): Promise<Transaction[]> {
     let res: TTransactionsResponse | TErrorResponse;
     if (confirmed) {
       // @ts-ignore TODO type errors in dposAPI
@@ -783,24 +779,9 @@ export function parseTransactionsReponse(
   wallet: WalletStore,
   accountID: string,
   res: TTransactionsResponse
-): TTransaction[] {
+): Transaction[] {
   return res.transactions.map(raw => {
-    const amount = new RawAmount(raw.amount || 0);
-    const fee = new RawAmount(raw.fee);
-    return {
-      ...raw,
-      timestamp: timestampToUnix(raw.timestamp),
-      amount,
-      amountFee: amount.plus(fee),
-      fee,
-      isIncoming: raw.senderId !== accountID,
-      senderName: wallet.idToName(raw.senderId),
-      recipientName: wallet.getRecipientName(raw.type, raw.recipientId),
-      time: moment
-        .utc(timestampToUnix(raw.timestamp))
-        .local()
-        .format(wallet.config.date_format)
-    } as TTransaction;
+    return new Transaction(wallet, accountID, raw);
   });
 }
 
@@ -811,11 +792,11 @@ export type TTransactionResult = {
 };
 
 export type TGroupedTransactions = {
-  [group: string]: TTransaction[];
+  [group: string]: Transaction[];
 };
 
-// TODO get from `risejs`
-type APITransaction = {
+// TODO get from `risejs` once types complete
+export type APITransaction = {
   amount: null | number | string;
   asset: {
     signature?: {};
@@ -845,17 +826,6 @@ type APITransaction = {
 export type TTransactionVote = {
   op: 'add' | 'remove';
   delegate: Delegate;
-};
-
-export type TTransaction = APITransaction & {
-  amount: RawAmount;
-  amountFee: RawAmount;
-  fee: RawAmount;
-  isIncoming: boolean;
-  senderName: string | null;
-  recipientName: string | null;
-  time: string;
-  votes: TTransactionVote[];
 };
 
 export type TTransactionsRequest = {

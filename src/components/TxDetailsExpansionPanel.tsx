@@ -25,7 +25,7 @@ import * as moment from 'moment/min/moment-with-locales';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import Link from './Link';
-import { TTransaction } from '../stores/wallet';
+import { Transaction } from '../stores/transactions';
 import { RawAmount } from '../utils/amounts';
 import { copyToClipboard } from '../utils/clipboard';
 import { PropsOf } from '../utils/metaTypes';
@@ -142,7 +142,7 @@ const styles = (theme: Theme) => {
 };
 
 interface Props extends WithStyles<typeof styles> {
-  tx: TTransaction;
+  tx: Transaction;
   explorerUrl: string;
   getSendLinkProps: (address: string, amount: RawAmount) => LinkProps;
   handleContactEdit(id: string): void;

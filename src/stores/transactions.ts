@@ -2,9 +2,16 @@ import { groupBy } from 'lodash';
 import { computed, observable } from 'mobx';
 import * as moment from 'moment/min/moment-with-locales';
 import { defineMessages } from 'react-intl';
-import AppStore from './app';
+import { TransactionType } from 'risejs';
+import { RawAmount } from '../utils/amounts';
+import { timestampToUnix } from '../utils/utils';
 import { TConfig } from './index';
-import WalletStore, { TGroupedTransactions, TTransaction } from './wallet';
+import WalletStore, {
+  TGroupedTransactions,
+  TTransactionVote,
+  APITransaction
+} from './wallet';
+import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
 
 const messages = defineMessages({
   lastWeek: {
@@ -40,24 +47,29 @@ export default class TransactionsStore {
   fetched: boolean = false;
 
   @observable isLoading: boolean = false;
-  @observable items = observable.array<TTransaction>();
+  @observable items = observable.array<Transaction>();
 
   @computed
   get groupedByDay(): TGroupedTransactions {
+    const msg = (desc: MessageDescriptor) => {
+      return this.wallet.translations.get(desc);
+    };
     // switch the locale of every new `moment` instance
-    moment.locale(this.translations.locale);
+    moment.locale(this.wallet.translations.locale);
     // @ts-ignore wrong lodash typing for groupBy
-    return groupBy(this.items, (transaction: TTransaction) => {
-      return moment.utc(transaction.timestamp).local()
+    return groupBy(this.items, (transaction: Transaction) => {
+      return moment
+        .utc(transaction.timestamp)
+        .local()
         .startOf('day')
         .calendar(undefined, {
-          lastWeek: this.translations.get(messages.lastWeek),
-          lastDay: this.translations.get(messages.yesterday),
-          sameDay: this.translations.get(messages.today),
-          nextDay: this.translations.get(messages.tomorrow),
+          lastWeek: msg(messages.lastWeek),
+          lastDay: msg(messages.yesterday),
+          sameDay: msg(messages.today),
+          nextDay: msg(messages.tomorrow),
           nextWeek: 'dddd',
           sameElse: () => {
-            return this.translations.get(messages.short);
+            return msg(messages.short);
           }
         });
     });
@@ -66,19 +78,103 @@ export default class TransactionsStore {
   constructor(
     public config: TConfig,
     public accountID: string,
-    public translations: AppStore
+    public wallet: WalletStore
   ) {}
 
   /**
    * TODO
-   * - avoid passing the wallet
-   * - dont duplicate previous transactions
-   * - recognize then there's no more transactions to load
+   * - dont re-download previous transactions
+   * - recognize that there's no more transactions to load
    *
-   * @param wallet
    * @param amount
    */
-  loadMore(wallet: WalletStore, amount: number = 8) {
-    wallet.loadRecentTransactions(this.accountID, this.items.length + amount);
+  loadMore(amount: number = 8) {
+    // pass async
+    this.wallet.loadRecentTransactions(
+      this.accountID,
+      this.items.length + amount
+    );
+  }
+}
+
+export class Transaction {
+  asset: {
+    signature?: {};
+    votes?: string[];
+    delegate?: {
+      username: string;
+    };
+  };
+  blockId: string;
+  confirmations: number;
+  height: number;
+  id: string;
+  recipientId?: string;
+  recipientPublicKey?: string;
+  senderId: string;
+  senderPublicKey: string;
+  signature: string;
+  // TODO
+  // tslint:disable-next-line:no-any
+  signatures: any[];
+  timestamp: number;
+  type: TransactionType;
+  amount: RawAmount;
+  amountFee: RawAmount;
+  fee: RawAmount;
+  isIncoming: boolean;
+  time: string;
+  votes: TTransactionVote[];
+
+  get senderName(): string | null {
+    return this.wallet.idToName(this.senderId);
+  }
+
+  get recipientName(): string | null {
+    return this.wallet.getRecipientName(this.type, this.recipientId);
+  }
+
+  protected fields = [
+    'senderId',
+    'relays',
+    'receivedAt',
+    'type',
+    'amount',
+    'senderPublicKey',
+    'requesterPublicKey',
+    'timestamp',
+    'asset',
+    'recipientId',
+    'signature',
+    'id',
+    'fee',
+    'signatures',
+    'assets',
+    'recipientPublicKey'
+  ];
+
+  constructor(
+    public wallet: WalletStore,
+    accountID: string,
+    raw: APITransaction
+  ) {
+    this.importRaw(raw);
+    const amount = new RawAmount(raw.amount || 0);
+    const fee = new RawAmount(raw.fee);
+    this.timestamp = timestampToUnix(raw.timestamp);
+    this.amount = amount;
+    this.amountFee = amount.plus(fee);
+    this.fee = fee;
+    this.isIncoming = raw.recipientId === accountID;
+    this.time = moment
+      .utc(timestampToUnix(raw.timestamp))
+      .local()
+      .format(wallet.config.date_format);
+  }
+
+  private importRaw(raw: APITransaction) {
+    for (const field of this.fields) {
+      this[field] = raw[field];
+    }
   }
 }

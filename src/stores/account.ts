@@ -1,10 +1,9 @@
 import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
 import { action, observable } from 'mobx';
-import AppStore from './app';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
-import { TAccount } from './wallet';
+import WalletStore, { TAccount } from './wallet';
 import { RawAmount } from '../utils/amounts';
 
 export enum LoadingState {
@@ -44,7 +43,7 @@ export default class AccountStore {
   constructor(
     config: TConfig,
     account: Partial<TAccount>,
-    translations: AppStore
+    wallet: WalletStore
   ) {
     assert(account.id, 'Account ID is missing');
     this.importData(account);
@@ -52,7 +51,7 @@ export default class AccountStore {
     this.recentTransactions = new TransactionsStore(
       this.config,
       account.id!,
-      translations
+      wallet
     );
   }
 
