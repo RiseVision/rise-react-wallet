@@ -17,7 +17,7 @@ startRouter(routes, store, { strict: false });
 
 const stores: TStores = {
   store,
-  appStore: store.app,
+  langStore: store.lang,
   onboardingStore: store.onboarding,
   walletStore: store.wallet,
   routerStore: store.router,

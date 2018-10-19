@@ -4,8 +4,7 @@ import { importTranslation, Messages } from '../translations';
 import { getUserLocales, Locale } from '../utils/i18n';
 import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
 
-// TODO rename to TranslationsStore
-export default class AppStore {
+export default class LangStore {
   @observable translations = observable.map<Locale, Messages>();
   @observable translationError: Error | null = null;
   @observable locale: Locale;

@@ -1,7 +1,7 @@
 import { RouterStore } from 'mobx-router-rise';
 import AccountStore from './account';
 import AddressBookStore from './addressBook';
-import AppStore from './app';
+import LangStore from './lang';
 import OnboardingStore from './onboarding';
 import RootStore from './root';
 import WalletStore from './wallet';
@@ -15,7 +15,7 @@ export type TConfig = {
 
 export type TStores = {
   store: RootStore;
-  appStore: AppStore;
+  langStore: LangStore;
   onboardingStore: OnboardingStore;
   walletStore: WalletStore;
   routerStore: RouterStore;

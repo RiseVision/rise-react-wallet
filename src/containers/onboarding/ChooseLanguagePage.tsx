@@ -11,7 +11,7 @@ import FlagIcon from '../../components/FlagIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute } from '../../routes';
-import AppStore from '../../stores/app';
+import LangStore from '../../stores/lang';
 import {
   getMainCountryForLocale,
   getUserLocales,
@@ -48,7 +48,7 @@ const styles = createStyles({
 interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
-  appStore: AppStore;
+  langStore: LangStore;
   routerStore: RouterStore;
 }
 
@@ -56,7 +56,7 @@ const stylesDecorator = withStyles(styles, {
   name: 'OnboardingChooseLanguagePage'
 });
 
-@inject('appStore')
+@inject('langStore')
 @inject('routerStore')
 @observer
 class ChooseLanguagePage extends React.Component<Props> {
@@ -66,8 +66,8 @@ class ChooseLanguagePage extends React.Component<Props> {
   }
 
   handleLanguageClicked = async (locale: Locale) => {
-    const { routerStore, appStore } = this.injected;
-    await appStore.changeLanguage(locale);
+    const { routerStore, langStore } = this.injected;
+    await langStore.changeLanguage(locale);
     routerStore.goTo(onboardingAddAccountRoute);
   }
 

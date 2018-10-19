@@ -1,11 +1,9 @@
-import { TransactionType } from 'risejs';
-
 // tslint:disable:no-unused-expression
 // tslint:disable:no-shadowed-variable
 import * as lstore from 'store';
 import { mockStoredContacts, stub } from '../utils/testHelpers';
 import { timestampToUnix } from '../utils/utils';
-import TranslationsStore from './app';
+import LangStore from './lang';
 import {
   storedContacts,
   storedAccounts,
@@ -15,6 +13,7 @@ import {
 import TransactionsStore, { Transaction } from './transactions';
 import { parseTransactionsReponse } from './wallet';
 import * as sinon from 'sinon';
+import { TransactionType } from 'risejs';
 
 let stubs: sinon.SinonStub[];
 
@@ -22,7 +21,7 @@ beforeEach(() => {
   // array to keep stubs to restore them later
   stubs = [];
   // stub methods making network requests
-  stub(stubs, TranslationsStore.prototype, 'loadTranslation', () => {
+  stub(stubs, LangStore.prototype, 'loadTranslation', () => {
     // empty
   });
 });
@@ -43,7 +42,7 @@ describe('TransactionsStore', () => {
   let store: TransactionsStore;
   const id = storedAccounts[0].id;
   // mock the wallet
-  const translations = new TranslationsStore();
+  const lang = new LangStore();
   const wallet = {
     idToName(address: string) {
       return address;
@@ -53,7 +52,7 @@ describe('TransactionsStore', () => {
     },
     loadRecentTransactions: sinon.spy(),
     config,
-    translations
+    lang
   };
 
   beforeEach(() => {

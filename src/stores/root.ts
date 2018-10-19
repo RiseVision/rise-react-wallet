@@ -2,7 +2,7 @@ import { configure } from 'mobx';
 import { RouterStore, Route, RouteParams } from 'mobx-router-rise';
 import AccountStore from './account';
 import AddressBookStore from './addressBook';
-import AppStore from './app';
+import LangStore from './lang';
 import { TConfig } from './index';
 import OnboardingStore from './onboarding';
 import WalletStore from './wallet';
@@ -28,7 +28,7 @@ export interface RouteLink {
 
 export default class RootStore {
   router = new RouterStore();
-  app = new AppStore();
+  lang = new LangStore();
   onboarding: OnboardingStore;
   wallet: WalletStore;
   account: AccountStore;
@@ -41,7 +41,7 @@ export default class RootStore {
       config,
       this.router,
       this.addressBook,
-      this.app
+      this.lang
     );
     const self = this;
     const oldGoTo = this.router.goTo;

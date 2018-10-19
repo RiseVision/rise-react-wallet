@@ -3,17 +3,17 @@ import { MobxRouter } from 'mobx-router-rise';
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 import { Helmet } from 'react-helmet';
-import AppStore from '../stores/app';
+import LangStore from '../stores/lang';
 import ThemeProvider from './ThemeProvider';
 import LoadingIndicator from '../components/LoadingIndicator';
 
 interface Props {
-  appStore?: AppStore;
+  langStore?: LangStore;
 }
 
 interface State {}
 
-@inject('appStore')
+@inject('langStore')
 @observer
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -26,13 +26,13 @@ class App extends React.Component<Props, State> {
     let currentError = null;
     let isLoading = false;
 
-    const appStore = this.props.appStore!;
-    let locale = appStore.locale;
+    const langStore = this.props.langStore!;
+    let locale = langStore.locale;
 
-    let translations = appStore.translations.get(locale);
+    let translations = langStore.translations.get(locale);
     if (!translations && locale !== 'en') {
-      if (appStore.translationError) {
-        currentError = appStore.translationError;
+      if (langStore.translationError) {
+        currentError = langStore.translationError;
       } else {
         isLoading = true;
       }

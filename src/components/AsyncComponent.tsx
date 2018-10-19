@@ -1,9 +1,9 @@
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import AppStore from '../stores/app';
+import LangStore from '../stores/lang';
 
 type Props = {
-  appStore?: AppStore;
+  langStore?: LangStore;
   name: string;
   // tslint:disable-next-line:no-any
   loading?: React.ReactElement<any>;
@@ -17,7 +17,7 @@ type State = {
   components?: {};
 };
 
-@inject('appStore')
+@inject('langStore')
 @observer
 export default class AsyncComponent extends React.Component<Props, State> {
   components: {};
@@ -55,8 +55,8 @@ export default class AsyncComponent extends React.Component<Props, State> {
   }
 
   render() {
-    const appStore = this.props.appStore!;
-    const translationsLoaded = appStore.translations.get(appStore.locale);
+    const langStore = this.props.langStore!;
+    const translationsLoaded = langStore.translations.get(langStore.locale);
     if (translationsLoaded && this.state && this.state.components) {
       return this.props.render(this.state.components);
     } else if (this.props.loading) {

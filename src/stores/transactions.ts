@@ -52,10 +52,10 @@ export default class TransactionsStore {
   @computed
   get groupedByDay(): TGroupedTransactions {
     const msg = (desc: MessageDescriptor) => {
-      return this.wallet.translations.get(desc);
+      return this.wallet.lang.get(desc);
     };
     // switch the locale of every new `moment` instance
-    moment.locale(this.wallet.translations.locale);
+    moment.locale(this.wallet.lang.locale);
     // @ts-ignore wrong lodash typing for groupBy
     return groupBy(this.items, (transaction: Transaction) => {
       return moment

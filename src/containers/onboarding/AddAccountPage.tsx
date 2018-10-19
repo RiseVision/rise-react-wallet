@@ -16,7 +16,7 @@ import {
   onboardingNewAccountRoute,
   accountOverviewNoIDRoute
 } from '../../routes';
-import AppStore from '../../stores/app';
+import LangStore from '../../stores/lang';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
@@ -32,7 +32,7 @@ const styles = createStyles({
 interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
-  appStore: AppStore;
+  langStore: LangStore;
   onboardingStore: OnboardingStore;
   walletStore: WalletStore;
 }
@@ -41,7 +41,7 @@ const stylesDecorator = withStyles(styles, {
   name: 'OnboardingAddAccountPage'
 });
 
-@inject('appStore')
+@inject('langStore')
 @inject('onboardingStore')
 @inject('walletStore')
 @observer
@@ -57,7 +57,7 @@ class AddAccountPage extends React.Component<Props> {
   }
 
   render() {
-    const { classes, appStore, walletStore } = this.injected;
+    const { classes, langStore, walletStore } = this.injected;
     const showClose = [...walletStore.accounts.keys()].length > 0;
 
     return (
@@ -143,7 +143,7 @@ class AddAccountPage extends React.Component<Props> {
           >
             <ListItem button={true}>
               <FlagIcon
-                countryCode={getMainCountryForLocale(appStore.locale)}
+                countryCode={getMainCountryForLocale(langStore.locale)}
               />
               <ListItemText>
                 <FormattedMessage

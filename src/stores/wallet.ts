@@ -38,7 +38,7 @@ import {
 } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
 import AddressBookStore from './addressBook';
-import AppStore from './app';
+import LangStore from './lang';
 import { TConfig } from './index';
 import * as queryString from 'query-string';
 import { Transaction } from './transactions';
@@ -64,7 +64,7 @@ export default class WalletStore {
     public config: TConfig,
     public router: RouterStore,
     public addressBook: AddressBookStore,
-    public translations: AppStore
+    public lang: LangStore
   ) {
     dposAPI.nodeAddress = config.api_url;
     this.dposAPI = dposAPI;

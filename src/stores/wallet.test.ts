@@ -24,7 +24,7 @@ import {
 import { TAddressSource } from '../utils/utils';
 import AccountStore, { LoadingState } from './account';
 import AddressBookStore from './addressBook';
-import TranslationsStore from './app';
+import LangStore from './lang';
 import {
   storedAccounts,
   serverAccounts,
@@ -46,14 +46,14 @@ import Wallet, {
 let stubs: sinon.SinonStub[];
 let router: RouterStore;
 let addressBook: AddressBookStore;
-let translations: TranslationsStore;
+let lang: LangStore;
 
 beforeEach(() => {
   // array to keep stubs to restore them later
   stubs = [];
 
   // stub methods making network requests
-  stub(stubs, TranslationsStore.prototype, 'loadTranslation', () => {
+  stub(stubs, LangStore.prototype, 'loadTranslation', () => {
     // empty
   });
   stub(stubs, Wallet.prototype, 'loadRecentTransactions', () => {
@@ -74,7 +74,7 @@ beforeEach(() => {
   // init
   router = new RouterStore();
   addressBook = new AddressBookStore();
-  translations = new TranslationsStore();
+  lang = new LangStore();
 });
 
 afterEach(() => {
@@ -91,12 +91,12 @@ afterEach(() => {
 
 describe('constructor', () => {
   it('init', () => {
-    new Wallet(config, router, addressBook, translations);
+    new Wallet(config, router, addressBook, lang);
   });
   it('redirects when no account', () => {
     sinon.spy(router, 'goTo');
     // init
-    new Wallet(config, router, addressBook, translations);
+    new Wallet(config, router, addressBook, lang);
     // @ts-ignore
     expect(router.goTo.calledWith(onboardingAddAccountRoute)).toBeTruthy();
   });
@@ -104,13 +104,13 @@ describe('constructor', () => {
     mockStoredAccounts(storedAccounts);
     lstore.set('lastSelectedAccount', storedAccounts[1].id);
     // init
-    const wallet = new Wallet(config, router, addressBook, translations);
+    const wallet = new Wallet(config, router, addressBook, lang);
     expect(wallet.selectedAccount.id).toEqual(storedAccounts[1].id);
   });
   it('signs in the first account when the latest is missing', () => {
     mockStoredAccounts(storedAccounts);
     // init
-    const wallet = new Wallet(config, router, addressBook, translations);
+    const wallet = new Wallet(config, router, addressBook, lang);
     expect(wallet.selectedAccount.id).toEqual(storedAccounts[0].id);
   });
 });
@@ -120,7 +120,7 @@ describe('accounts', () => {
   beforeEach(() => {
     mockStoredAccounts(storedAccounts);
     mockStoredContacts(storedContacts);
-    wallet = new Wallet(config, router, addressBook, translations);
+    wallet = new Wallet(config, router, addressBook, lang);
   });
   it('saveAccount', () => {
     const id = storedAccounts[0].id;
@@ -279,7 +279,7 @@ describe('transactions', () => {
   beforeEach(() => {
     mockStoredAccounts(storedAccounts);
     mockStoredContacts(storedContacts);
-    wallet = new Wallet(config, router, addressBook, translations);
+    wallet = new Wallet(config, router, addressBook, lang);
   });
   it('loadRecentTransactions', async () => {
     // stub unconfirmed
@@ -359,7 +359,7 @@ describe('API calls', () => {
   beforeEach(() => {
     mockStoredAccounts(storedAccounts);
     mockStoredContacts(storedContacts);
-    wallet = new Wallet(config, router, addressBook, translations);
+    wallet = new Wallet(config, router, addressBook, lang);
   });
   it('searchDelegates', () => {
     const q = 'test';
