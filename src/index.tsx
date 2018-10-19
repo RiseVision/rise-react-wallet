@@ -21,7 +21,8 @@ const stores: TStores = {
   onboardingStore: store.onboarding,
   walletStore: store.wallet,
   routerStore: store.router,
-  addressBookStore: store.addressBook
+  addressBookStore: store.addressBook,
+  ledgerStore: store.ledger
 };
 
 const root = (

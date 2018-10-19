@@ -20,6 +20,7 @@ import {
 import AppStore from '../../stores/app';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
+import LedgerStore, { LedgerChannel } from '../../stores/ledger';
 import { getMainCountryForLocale } from '../../utils/i18n';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -36,6 +37,7 @@ interface PropsInjected extends Props {
   appStore: AppStore;
   onboardingStore: OnboardingStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 const stylesDecorator = withStyles(styles, {
@@ -45,11 +47,22 @@ const stylesDecorator = withStyles(styles, {
 @inject('appStore')
 @inject('onboardingStore')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
+  private ledger: LedgerChannel;
+
   get injected(): PropsInjected {
-    // @ts-ignore
-    return this.props;
+    return this.props as PropsInjected;
+  }
+
+  componentWillMount() {
+    const { ledgerStore } = this.injected;
+    this.ledger = ledgerStore.openChannel();
+  }
+
+  componentWillUnmount() {
+    this.ledger.close();
   }
 
   handleBeforeNavigate = () => {

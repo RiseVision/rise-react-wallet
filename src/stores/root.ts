@@ -6,6 +6,7 @@ import AppStore from './app';
 import { TConfig } from './index';
 import OnboardingStore from './onboarding';
 import WalletStore from './wallet';
+import LedgerStore from './ledger';
 
 // make sure only actions modify the store
 configure({ enforceActions: true });
@@ -33,6 +34,7 @@ export default class RootStore {
   wallet: WalletStore;
   account: AccountStore;
   addressBook: AddressBookStore;
+  ledger = new LedgerStore();
 
   constructor(public config: TConfig) {
     this.addressBook = new AddressBookStore();

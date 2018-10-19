@@ -5,6 +5,7 @@ import AppStore from './app';
 import OnboardingStore from './onboarding';
 import RootStore from './root';
 import WalletStore from './wallet';
+import LedgerStore from './ledger';
 
 export type TConfig = {
   api_url: string;
@@ -21,6 +22,7 @@ export type TStores = {
   routerStore: RouterStore;
   accountStore?: AccountStore;
   addressBookStore: AddressBookStore;
+  ledgerStore: LedgerStore;
 };
 
 /**
