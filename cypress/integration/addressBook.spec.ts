@@ -95,7 +95,7 @@ context('Address Book', () => {
       .find('td')
       .contains(this.contacts[0].name)
       .should('have.length', 1)
-      .parent('tr')
+      .parents('tr')
       .find('a[title="Modify contact"]')
       .should('have.length', 1)
       .click();
@@ -121,7 +121,7 @@ context('Address Book', () => {
       .find('td')
       .contains(name)
       .should('have.length', 1)
-      .parent('tr')
+      .parents('tr')
       .find('a[title="Delete contact"]')
       .should('have.length', 1)
       .click();
