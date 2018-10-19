@@ -782,7 +782,7 @@ export function parseTransactionsReponse(
 ): Transaction[] {
   return res.transactions.map(raw => {
     return new Transaction(wallet, accountID, raw);
-  })
+  });
 }
 
 export type TTransactionResult = {

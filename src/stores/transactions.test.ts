@@ -1,7 +1,10 @@
+import { TransactionType } from 'risejs';
+
 // tslint:disable:no-unused-expression
 // tslint:disable:no-shadowed-variable
 import * as lstore from 'store';
 import { mockStoredContacts, stub } from '../utils/testHelpers';
+import { timestampToUnix } from '../utils/utils';
 import TranslationsStore from './app';
 import {
   storedContacts,
@@ -9,7 +12,7 @@ import {
   config,
   serverTransactionsConfirmed
 } from './fixtures';
-import TransactionsStore from './transactions';
+import TransactionsStore, { Transaction } from './transactions';
 import { parseTransactionsReponse } from './wallet';
 import * as sinon from 'sinon';
 
@@ -36,24 +39,27 @@ afterEach(() => {
   }
 });
 
-describe('address book', () => {
+describe('TransactionsStore', () => {
   let store: TransactionsStore;
   const id = storedAccounts[0].id;
+  // mock the wallet
+  const translations = new TranslationsStore();
   const wallet = {
     idToName(address: string) {
       return address;
     },
-    getRecipientName(id: string) {
+    getRecipientName(type: TransactionType, id: string) {
       return id;
     },
     loadRecentTransactions: sinon.spy(),
-    config
+    config,
+    translations
   };
 
   beforeEach(() => {
-    const translations = new TranslationsStore();
     mockStoredContacts(storedContacts);
-    store = new TransactionsStore(config, id, translations);
+    // @ts-ignore mocked wallet
+    store = new TransactionsStore(config, id, wallet);
     // TODO generate transactions with current dates
     const txs = parseTransactionsReponse(
       // @ts-ignore mocked wallet
@@ -72,7 +78,47 @@ describe('address book', () => {
 
   it('loadMore', () => {
     // @ts-ignore wallet mock
-    store.loadMore(wallet);
+    store.loadMore();
     expect(wallet.loadRecentTransactions.calledWith(id, 16));
+  });
+});
+
+describe('Transaction class', () => {
+  const accountID = storedAccounts[0].id;
+  // mock the wallet
+  const wallet = {
+    idToName(address: string) {
+      return address;
+    },
+    getRecipientName(type: TransactionType, id: string) {
+      return id;
+    },
+    loadRecentTransactions: sinon.spy(),
+    config
+  };
+
+  beforeEach(() => {
+    mockStoredContacts(storedContacts);
+  });
+
+  it('constructor', () => {
+    const raw = serverTransactionsConfirmed.transactions[0];
+    const transaction = new Transaction(
+      // @ts-ignore mocked wallet
+      wallet,
+      accountID,
+      raw
+    );
+    expect(transaction.timestamp).toEqual(timestampToUnix(raw.timestamp));
+    expect(transaction.amount.toNumber()).toEqual(raw.amount);
+    expect(transaction.fee.toNumber()).toEqual(raw.fee);
+    expect(transaction.amountFee.toNumber()).toEqual(raw.amount + raw.fee);
+    expect(transaction.isIncoming).toBeFalsy();
+    const skip = ['amount', 'fee', 'timestamp'];
+    // @ts-ignore protected field
+    const fields = transaction.fields.filter(f => !skip.includes(f));
+    for (const field of fields) {
+      expect(transaction[field]).toEqual(raw[field]);
+    }
   });
 });

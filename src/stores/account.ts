@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
 import { action, observable } from 'mobx';
-import AppStore from './app';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
 import WalletStore, { TAccount } from './wallet';

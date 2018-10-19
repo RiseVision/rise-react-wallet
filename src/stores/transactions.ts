@@ -51,8 +51,8 @@ export default class TransactionsStore {
 
   @computed
   get groupedByDay(): TGroupedTransactions {
-    const msg = (msg: MessageDescriptor) => {
-      return this.wallet.translations.get(msg);
+    const msg = (desc: MessageDescriptor) => {
+      return this.wallet.translations.get(desc);
     };
     // switch the locale of every new `moment` instance
     moment.locale(this.wallet.translations.locale);
@@ -83,15 +83,17 @@ export default class TransactionsStore {
 
   /**
    * TODO
-   * - avoid passing the wallet
-   * - dont duplicate previous transactions
-   * - recognize then there's no more transactions to load
+   * - dont re-download previous transactions
+   * - recognize that there's no more transactions to load
    *
-   * @param wallet
    * @param amount
    */
-  loadMore(wallet: WalletStore, amount: number = 8) {
-    wallet.loadRecentTransactions(this.accountID, this.items.length + amount);
+  loadMore(amount: number = 8) {
+    // pass async
+    this.wallet.loadRecentTransactions(
+      this.accountID,
+      this.items.length + amount
+    );
   }
 }
 
@@ -163,7 +165,7 @@ export class Transaction {
     this.amount = amount;
     this.amountFee = amount.plus(fee);
     this.fee = fee;
-    this.isIncoming = raw.senderId !== accountID;
+    this.isIncoming = raw.recipientId === accountID;
     this.time = moment
       .utc(timestampToUnix(raw.timestamp))
       .local()
