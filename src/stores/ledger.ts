@@ -127,7 +127,16 @@ export class LedgerChannel {
   }
 }
 
+/**
+ * LedgerHub is an abstraction layer that serializes various API requests to the device
+ * so that the UI layer wouldn't have to worry about the fact that Ledger doesn't handle
+ * parallel requests.
+ *
+ * In addition to managing the requests, it also handles determining wether the device
+ * is connected to the computer and caching of cachable requests (eg getAddress).
+ */
 class LedgerHub implements LedgerTaskRunner {
+  @observable hasBrowserSupport: boolean | null = null;
   @observable deviceId: null | string = null;
 
   private processIntervalId: null | number = null;
@@ -140,6 +149,10 @@ class LedgerHub implements LedgerTaskRunner {
     [slot: number]: LedgerAccount,
   } = {};
   private taskQueue: LedgerTask<{}>[] = [];
+
+  constructor() {
+    this.detectBrowserSupport();
+  }
 
   processTasks() {
     const now = new Date();
@@ -286,7 +299,20 @@ class LedgerHub implements LedgerTaskRunner {
     });
   }
 
+  private async detectBrowserSupport() {
+    // @ts-ignore missing d.ts
+    const isSupported = await TransportU2F.isSupported();
+
+    runInAction(() => {
+      this.hasBrowserSupport = isSupported;
+    });
+  }
+
   private injectPingTask(): LedgerTask<{}> {
+    // We ping the device periodically to see if it's actually connected and to
+    // get the connected device id. Since there's no actual API present that would
+    // provide us with the device ID, we rely on the account at path 44'/1120'/0'
+    // to fingerprint the currently connected device.
     const handleResponse = (value: null | LedgerAccount) => {
       const deviceId = value !== null ? value.publicKey.slice(0, 8) : null;
 
@@ -340,6 +366,10 @@ class LedgerHub implements LedgerTaskRunner {
 
 export default class LedgerStore {
   private hub = new LedgerHub();
+
+  get hasBrowserSupport() {
+    return this.hub.hasBrowserSupport;
+  }
 
   openChannel(): LedgerChannel {
     return this.hub.openChannel();

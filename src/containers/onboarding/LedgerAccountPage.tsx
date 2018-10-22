@@ -62,6 +62,13 @@ const messages = defineMessages({
     description: 'Text instructing the user to open the RISE app on their Ledger device',
     defaultMessage: 'Connect your Ledger & open the RISE app on it.',
   },
+  unsupportedBrowser: {
+    id: 'onboarding-ledger-account.unsupported-browser',
+    description: 'Message when trying to use a browser that doesn\'t support Ledger devices',
+    defaultMessage:
+      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
+      'you could try again with Google Chrome. It is a browser known to implement support for this.',
+  },
   statusConnecting: {
     id: 'onboarding-ledger-account.status-connecting',
     description: 'Status text when attempting to connect to the Ledger device',
@@ -126,7 +133,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { intl, classes } = this.injected;
+    const { intl, classes, ledgerStore } = this.injected;
     const { deviceId } = this.ledger;
 
     return (
@@ -138,7 +145,19 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             defaultMessage="Import a Ledger account"
           />
         </ModalPaperHeader>
-        {deviceId === null ? (
+        {ledgerStore.hasBrowserSupport === false ? (
+          <Grid
+            container={true}
+            className={classes.content}
+            spacing={16}
+          >
+            <Grid item={true} xs={12}>
+              <Typography
+                children={intl.formatMessage(messages.unsupportedBrowser)}
+              />
+            </Grid>
+          </Grid>
+        ) : deviceId === null ? (
           <Grid
             container={true}
             className={classes.content}
