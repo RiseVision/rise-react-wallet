@@ -22,7 +22,7 @@
     {
       "id": "FILL_IN",
       "publicKey": "FILL_IN",
-      "readOnly": false,
+      "type": 1,
       "fiatCurrency": "USD",
       "name": null,
       "pinned": false
@@ -30,7 +30,7 @@
     {
       "id": "FILL_IN",
       "publicKey": "FILL_IN",
-      "readOnly": false,
+      "type": 1,
       "fiatCurrency": "USD",
       "name": null,
       "pinned": false

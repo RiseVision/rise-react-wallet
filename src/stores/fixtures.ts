@@ -6,7 +6,9 @@ export const storedAccounts = [
     id: '2655711995542512317R',
     publicKey:
       '023bab3e17365565d7a796291f8d3bb6878a3083ea520fbd163db713d51b44f9',
-    readOnly: false,
+    type: 1,
+    hwId: null,
+    hwSlot: null,
     fiatCurrency: 'USD',
     name: null,
     pinned: true
@@ -15,7 +17,9 @@ export const storedAccounts = [
     id: '5932278668828702947R',
     publicKey:
       '491e09b538aa8d44a613bc5d23e2b6a4f93126b89c8fb8766016708af519fded',
-    readOnly: false,
+    type: 1,
+    hwId: null,
+    hwSlot: null,
     fiatCurrency: 'USD',
     name: 'test-2',
     pinned: false
@@ -24,7 +28,9 @@ export const storedAccounts = [
     id: '10317456780953445784R',
     publicKey:
       'e9ae239743b47125305a3f339937661368a7f8d810ae53d79e5c4de001356563',
-    readOnly: false,
+    type: 1,
+    hwId: null,
+    hwSlot: null,
     fiatCurrency: 'USD',
     name: 'test-3',
     pinned: false

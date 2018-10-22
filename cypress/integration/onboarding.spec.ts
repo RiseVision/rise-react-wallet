@@ -61,10 +61,6 @@ context('Onboarding', function() {
       .find('div')
       .contains('New account')
       .click();
-    cy.get('body')
-      .find('span')
-      .contains('Create an account using a secret')
-      .click();
     // click 5 dialog "tip" buttons
     for (const _ of Array(5)) {
       clickOnboardingButton(1);
@@ -132,6 +128,8 @@ context('Onboarding', function() {
 
   it('add an existing account using a mnemonic', function() {
     const secret = this.accounts.secrets[0];
+    // check the url
+    cy.url().should('contain', '/onboarding/add-account');
     // click "Existing account"
     cy.get('body')
       .find('div')

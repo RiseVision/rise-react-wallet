@@ -13,12 +13,14 @@ import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingChooseLanguageRoute,
   onboardingExistingAccountRoute,
-  onboardingNewAccountRoute,
+  onboardingLedgerAccount,
+  onboardingSecurityNoticeRoute,
   accountOverviewNoIDRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
+import LedgerStore, { LedgerChannel } from '../../stores/ledger';
 import { getMainCountryForLocale } from '../../utils/i18n';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -35,6 +37,7 @@ interface PropsInjected extends Props {
   langStore: LangStore;
   onboardingStore: OnboardingStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 const stylesDecorator = withStyles(styles, {
@@ -44,11 +47,22 @@ const stylesDecorator = withStyles(styles, {
 @inject('langStore')
 @inject('onboardingStore')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
+  private ledger: LedgerChannel;
+
   get injected(): PropsInjected {
-    // @ts-ignore
-    return this.props;
+    return this.props as PropsInjected;
+  }
+
+  componentWillMount() {
+    const { ledgerStore } = this.injected;
+    this.ledger = ledgerStore.openChannel();
+  }
+
+  componentWillUnmount() {
+    this.ledger.close();
   }
 
   handleBeforeNavigate = () => {
@@ -90,7 +104,7 @@ class AddAccountPage extends React.Component<Props> {
         </ModalPaperHeader>
         <List>
           <Link
-            route={onboardingNewAccountRoute}
+            route={onboardingSecurityNoticeRoute}
             onBeforeNavigate={this.handleBeforeNavigate}
           >
             <ListItem button={true}>
@@ -131,6 +145,30 @@ class AddAccountPage extends React.Component<Props> {
                     id="onboarding-add-account.existing-account-tip"
                     description="Existing account button tip"
                     defaultMessage="I want to access an existing account on the RISE network"
+                  />
+                }
+              />
+              <ChevronRight />
+            </ListItem>
+          </Link>
+          <Link
+            route={onboardingLedgerAccount}
+            onBeforeNavigate={this.handleBeforeNavigate}
+          >
+            <ListItem button={true}>
+              <ListItemText
+                primary={
+                  <FormattedMessage
+                    id="onboarding-add-account.hw-wallet-account"
+                    description="Hardware wallet account button title"
+                    defaultMessage="Hardware wallet account"
+                  />
+                }
+                secondary={
+                  <FormattedMessage
+                    id="onboarding-add-account.hw-wallet-account-tip"
+                    description="Hardware wallet account button tip"
+                    defaultMessage="I want to import an account from my Ledger device"
                   />
                 }
               />

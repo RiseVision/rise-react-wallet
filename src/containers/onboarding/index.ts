@@ -5,7 +5,6 @@ import ExistingAccountPage from './ExistingAccountPage';
 import LedgerAccountPage from './LedgerAccountPage';
 import MnemonicAccountPage from './MnemonicAccountPage';
 import ExistingAccountTypePage from './ExistingAccountTypePage';
-import NewAccountPage from './NewAccountPage';
 import NewMnemonicPage from './NewMnemonicPage';
 import NoMnemonicNoticePage from './NoMnemonicNoticePage';
 import Onboarding from './Onboarding';
@@ -19,7 +18,6 @@ export {
   NoMnemonicNoticePage,
   ExistingAccountTypePage,
   SecurityNoticePage,
-  NewAccountPage,
   ExistingAccountPage,
   ChooseLanguagePage,
   AddAccountPage,

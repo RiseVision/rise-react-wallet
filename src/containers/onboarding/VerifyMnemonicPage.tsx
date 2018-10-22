@@ -18,7 +18,7 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
   onboardingAccountCreatedRoute,
-  onboardingNewAccountRoute
+  onboardingAddAccountRoute
 } from '../../routes';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
@@ -119,7 +119,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     const { routerStore, onboardingStore } = this.injected;
     const mnemonic = props.mnemonic || onboardingStore.mnemonic;
     if (!mnemonic) {
-      routerStore.goTo(onboardingNewAccountRoute);
+      routerStore.goTo(onboardingAddAccountRoute);
       return;
     }
 
@@ -216,7 +216,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader closeLink={{ route: onboardingNewAccountRoute }}>
+        <ModalPaperHeader closeLink={{ route: onboardingAddAccountRoute }}>
           <FormattedMessage
             id="onboarding-verify-mnemonic.title"
             description="Verify mnemonic screen title"

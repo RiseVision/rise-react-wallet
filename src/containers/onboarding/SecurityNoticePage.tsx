@@ -15,7 +15,7 @@ import Link from '../../components/Link';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
-  onboardingNewAccountRoute,
+  onboardingAddAccountRoute,
   onboardingNewMnemonicRoute
 } from '../../routes';
 
@@ -148,7 +148,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
 
     return (
       <ModalPaper open={true}>
-        <ModalPaperHeader closeLink={{ route: onboardingNewAccountRoute }}>
+        <ModalPaperHeader closeLink={{ route: onboardingAddAccountRoute }}>
           <FormattedMessage
             id="onboarding-security-notice.title"
             description="Security notice screen title"

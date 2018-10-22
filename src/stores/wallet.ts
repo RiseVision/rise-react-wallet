@@ -36,7 +36,7 @@ import {
   TAddressRecord,
   TAddressSource
 } from '../utils/utils';
-import AccountStore, { LoadingState } from './account';
+import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
 import LangStore from './lang';
 import { TConfig } from './index';
@@ -137,7 +137,9 @@ export default class WalletStore {
     const fields = [
       'id',
       'publicKey',
-      'readOnly',
+      'type',
+      'hwId',
+      'hwSlot',
       'fiatCurrency',
       'name',
       'pinned'
@@ -757,7 +759,9 @@ export function parseAccountReponse(
     publicKey: res.account.publicKey,
     name: null,
     fiatCurrency: 'USD',
-    readOnly: false,
+    type: AccountType.READONLY,
+    hwId: null,
+    hwSlot: null,
     pinned: false,
     secondSignature: Boolean(res.account.secondSignature),
     secondPublicKey: res.account.secondPublicKey,
@@ -845,7 +849,9 @@ export type TTransactionsResponse = {
 export type TStoredAccount = {
   id: string;
   publicKey: string;
-  readOnly: boolean;
+  type: AccountType;
+  hwId: null | string;
+  hwSlot: null | number;
   fiatCurrency: string;
   name: string | null;
   pinned: boolean;

@@ -26,7 +26,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import Link from '../../components/Link';
 import { accountOverviewRoute, accountSendRoute } from '../../routes';
 import { accountStore } from '../../stores';
-import AccountStore from '../../stores/account';
+import AccountStore, { AccountType } from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
 import WalletStore from '../../stores/wallet';
 
@@ -215,7 +215,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
       messages.unnamedAccountLabel
     );
 
-    const readOnly = this.account && this.account.readOnly;
+    const readOnly = this.account && this.account.type === AccountType.READONLY;
     const headerProps = {
       address: this.account.id,
       alias: this.account.name || unnamedAccountLabel,
