@@ -1,6 +1,6 @@
 import { action, autorun, observable, runInAction } from 'mobx';
+import { addLocaleData, Locale as LocaleData } from 'react-intl';
 import * as lstore from 'store';
-import { importTranslation, Messages } from '../translations';
 import { getUserLocales, Locale } from '../utils/i18n';
 import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
 
@@ -21,6 +21,14 @@ export default class LangStore {
     autorun(() => lstore.set('locale', this.locale));
   }
 
+  async importTranslation(locale: Locale): Promise<Messages> {
+    let data = await translations[locale]();
+    // Automatically inject locale data into runtime
+    addLocaleData(data.default.data);
+
+    return data.default.messages;
+  }
+
   @action
   async loadTranslation(locale: Locale) {
     this.translationError = null;
@@ -29,7 +37,7 @@ export default class LangStore {
     }
 
     try {
-      const ret = await importTranslation(locale);
+      const ret = await this.importTranslation(locale);
       runInAction(() => {
         this.translations.set(locale, ret);
       });
@@ -61,3 +69,38 @@ export default class LangStore {
     return (messages && messages[id]) || fallback || id;
   }
 }
+
+export interface Messages {
+  [id: string]: string;
+}
+
+interface Translation {
+  data: LocaleData | LocaleData[];
+  messages: Messages;
+}
+
+interface TranslationModule {
+  default: Translation;
+}
+
+const translations: { [P in Locale]: () => Promise<TranslationModule> } = {
+  de: () => import('../translations/de'),
+  es: () => import('../translations/es'),
+  et: () => import('../translations/et'),
+  fr: () => import('../translations/fr'),
+  it: () => import('../translations/it'),
+  hu: () => import('../translations/hu'),
+  nl: () => import('../translations/nl'),
+  pl: () => import('../translations/pl'),
+  ro: () => import('../translations/ro'),
+  ru: () => import('../translations/ru'),
+  uk: () => import('../translations/uk'),
+  zh: () => import('../translations/zh'),
+  // Project language doesn't need to load anything extra
+  en: async () => ({
+    default: {
+      data: [],
+      messages: {}
+    }
+  })
+};

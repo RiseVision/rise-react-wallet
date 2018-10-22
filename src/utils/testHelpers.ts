@@ -11,12 +11,26 @@ export function mockStoredContacts(contacts: TStoredContact[]) {
   lstore.set('contacts', contacts);
 }
 
+/**
+ * Stubs the specified functions and adds it to the stubs array for later
+ * restoration. Supports betters with `isGetter`.
+ *
+ * @param stubs
+ * @param object
+ * @param method
+ * @param fn
+ * @param isGetter
+ */
 export function stub<T>(
   stubs: Function[],
   object: T,
   method: keyof T,
   // tslint:disable-next-line:no-any
-  fn: (...args: any[]) => void
+  fn: (...args: any[]) => void,
+  isGetter: boolean = false
 ) {
-  stubs.push(sinon.stub(object, method).callsFake(fn));
+  const toStub = sinon.stub(object, method);
+  const ret = isGetter ? toStub.get(fn) : toStub.callsFake(fn);
+  stubs.push(ret);
+  return ret;
 }
