@@ -6,6 +6,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import { observable, reaction, IReactionDisposer, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -25,7 +26,7 @@ import {
 import { AccountType } from '../../stores/account';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
-import LedgerStore, { LedgerChannel } from '../../stores/ledger';
+import LedgerStore, { LedgerAccount, LedgerChannel } from '../../stores/ledger';
 
 const styles = createStyles({
   content: {
@@ -81,6 +82,25 @@ const messages = defineMessages({
   },
 });
 
+class AccountData {
+  @observable data: null | LedgerAccount;
+
+  constructor(ledger: LedgerChannel, readonly slot: number) {
+    this.load(ledger);
+  }
+
+  private async load(ledger: LedgerChannel) {
+    try {
+      const resp = await ledger.getAccount(this.slot);
+      runInAction(() => {
+        this.data = resp;
+      });
+    } catch (ex) {
+      // Ignore failures
+    }
+}
+}
+
 @inject('onboardingStore')
 @inject('routerStore')
 @inject('walletStore')
@@ -88,6 +108,9 @@ const messages = defineMessages({
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps> {
   private ledger: LedgerChannel;
+  private disposeAccountLoader: null | IReactionDisposer = null;
+
+  @observable private accounts = observable.array<AccountData>([]);
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;
@@ -96,40 +119,21 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
   componentWillMount() {
     const { ledgerStore } = this.injected;
     this.ledger = ledgerStore.openChannel();
+
+    this.disposeAccountLoader = reaction(
+      () => this.ledger.deviceId,
+      this.accountLoader,
+    );
+    this.accountLoader();
   }
 
   componentWillUnmount() {
+    if (this.disposeAccountLoader) {
+      this.disposeAccountLoader();
+      this.disposeAccountLoader = null;
+    }
+
     this.ledger.close();
-  }
-
-  get importableAccounts() {
-    const { walletStore } = this.injected;
-    const { ledger } = this;
-
-    if (ledger.deviceId === null) {
-      return [];
-    }
-
-    const importedAccounts = [...walletStore.accounts.values()]
-      .filter(({ type }) => type === AccountType.LEDGER)
-      .filter(({ hwId }) => hwId === ledger.deviceId);
-
-    const accounts = [];
-    for (let slot = 0; accounts.length < 3; slot++) {
-      const isImported = importedAccounts
-        .filter(({ hwSlot }) => hwSlot === slot)
-        .length > 0;
-
-      if (!isImported) {
-        ledger.getAccount(slot).then((acc) => {
-          console.log(`Account (#${slot}):`, acc);
-        },                           (err) => {
-          console.log(`Account (#${slot}) lookup failure:`, err);
-        });
-        accounts.push(slot);
-      }
-    }
-    return accounts;
   }
 
   render() {
@@ -181,19 +185,24 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
           </Grid>
         ) : (
           <List>
-            {this.importableAccounts.map((accNr) => (
-              <ListItem key={accNr} divider={true} button={true}>
+            {this.accounts.map((acc, idx) => (
+              <ListItem
+                key={acc.slot}
+                divider={idx + 1 < this.accounts.length}
+                button={true}
+                onClick={() => this.confirmImport(acc)}
+              >
                 <ListItemAvatar>
                   <Avatar className={classes.accountAvatar}>
-                    <AccountIcon size={24} address={''} />
+                    <AccountIcon size={24} address={acc.data ? acc.data.address : ''} />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                   primary={intl.formatMessage(
                     messages.accountNrLabel,
-                    { number: accNr + 1 }
+                    { number: acc.slot + 1 }
                   )}
-                  secondary="..."
+                  secondary={acc.data ? acc.data.address : '...'}
                 />
               </ListItem>
             ))}
@@ -201,6 +210,49 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
         )}
       </ModalPaper>
     );
+  }
+
+  private async confirmImport(account: AccountData) {
+    // TODO: Switch to account importing UI
+
+    let success: boolean;
+    try {
+      success = await this.ledger.confirmAccount(account.slot);
+    } catch (ex) {
+      success = false;
+    }
+
+    if (success) {
+      // TODO: Add account to store
+    } else {
+      // TODO: Switch back to account list
+    }
+  }
+
+  private accountLoader = () => {
+    const accountsToLoad = 5;
+    const { walletStore } = this.injected;
+    const { deviceId } = this.ledger;
+
+    this.accounts = observable.array();
+    if (deviceId === null) {
+      return;
+    }
+
+    const importedAccounts = [...walletStore.accounts.values()]
+      .filter(({ type }) => type === AccountType.LEDGER)
+      .filter(({ hwId }) => hwId === deviceId);
+
+    for (let slot = 0; this.accounts.length < accountsToLoad; slot++) {
+      const isImported = importedAccounts
+        .filter(({ hwSlot }) => hwSlot === slot)
+        .length > 0;
+
+      if (!isImported) {
+        const acc = new AccountData(this.ledger, slot);
+        this.accounts.push(acc);
+      }
+    }
   }
 }
 
