@@ -99,7 +99,7 @@ const messages = defineMessages({
 });
 
 class AccountData {
-  @observable data: null | LedgerAccount;
+  @observable data: null | LedgerAccount = null;
 
   constructor(ledger: LedgerChannel, readonly slot: number) {
     this.load(ledger);
