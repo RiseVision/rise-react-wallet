@@ -10,7 +10,7 @@ export const storedAccounts = [
     hwId: null,
     hwSlot: null,
     fiatCurrency: 'USD',
-    name: null,
+    name: '',
     pinned: true
   },
   {

@@ -754,10 +754,10 @@ export function parseAccountReponse(
   res: TAccountResponse,
   local?: Partial<TStoredAccount> | null
 ): TAccount {
-  const parsed = {
+  const parsed: Partial<TAccount> = {
     id: res.account.address,
     publicKey: res.account.publicKey,
-    name: null,
+    name: '',
     fiatCurrency: 'USD',
     type: AccountType.READONLY,
     hwId: null,
@@ -776,7 +776,7 @@ export function parseAccountReponse(
     ...local,
     // always take the public key from the server (ex virgin accounts)
     ...(parsed.publicKey ? { publicKey: parsed.publicKey } : {})
-  };
+  } as TAccount;
 }
 
 export function parseTransactionsReponse(
@@ -853,7 +853,7 @@ export type TStoredAccount = {
   hwId: null | string;
   hwSlot: null | number;
   fiatCurrency: string;
-  name: string | null;
+  name: string;
   pinned: boolean;
 };
 

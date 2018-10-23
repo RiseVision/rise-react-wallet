@@ -3,7 +3,7 @@ import { Delegate } from 'dpos-api-wrapper';
 import { action, observable } from 'mobx';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
-import WalletStore, { TAccount } from './wallet';
+import WalletStore from './wallet';
 import { RawAmount } from '../utils/amounts';
 
 export enum LoadingState {
@@ -17,6 +17,20 @@ export enum AccountType {
   MNEMONIC,
   LEDGER,
 }
+
+type ImportableFields =
+  'id'
+  | 'publicKey'
+  | 'type'
+  | 'hwId'
+  | 'hwSlot'
+  | 'fiatCurrency'
+  | 'name'
+  | 'pinned'
+  | 'balance'
+  | 'unconfirmedBalance'
+  | 'secondPublicKey'
+  | 'secondSignature';
 
 export default class AccountStore {
   config: TConfig;
@@ -52,7 +66,7 @@ export default class AccountStore {
 
   constructor(
     config: TConfig,
-    account: Partial<TAccount>,
+    account: Partial<Pick<AccountStore, ImportableFields>>,
     wallet: WalletStore
   ) {
     assert(account.id, 'Account ID is missing');
@@ -66,7 +80,7 @@ export default class AccountStore {
   }
 
   @action
-  importData(account: Partial<TAccount>) {
+  importData(account: Partial<Pick<AccountStore, ImportableFields>>) {
     for (const [name, value] of Object.entries(account)) {
       this[name] = value;
     }
