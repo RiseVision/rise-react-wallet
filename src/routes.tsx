@@ -227,7 +227,20 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
 
 export const accountOverviewRoute = new Route({
   path: '/account/:id',
-  onEnter: onEnterID,
+  onEnter: (
+    route: Route<RootStore>,
+    params: { id: string },
+    store: RootStore,
+    queryParams: {}
+  ) => {
+    onEnterID(route, params, store, queryParams);
+    // load recent transaction on the first page view
+    // TODO ideally would be handled automatically by the observer
+    if (store.wallet.selectedAccount) {
+      // pass async
+      store.wallet.loadRecentTransactions(store.wallet.selectedAccount.id);
+    }
+  },
   onParamsChange(
     route: Route<RootStore>,
     params: RouteParams,
