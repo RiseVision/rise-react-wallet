@@ -686,7 +686,8 @@ export default class WalletStore {
       .filter(({ id }) => id !== this.selectedAccount.id)
       .map(({ id, name }) => ({
         id,
-        name,
+        // prevent null names
+        name: name || '',
         source: TAddressSource.WALLET
       }));
 
