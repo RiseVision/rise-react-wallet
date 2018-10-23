@@ -135,6 +135,7 @@ export class Transaction {
   }
 
   protected fields = [
+    'confirmations',
     'senderId',
     'relays',
     'receivedAt',
@@ -165,7 +166,7 @@ export class Transaction {
     this.amount = amount;
     this.amountFee = amount.plus(fee);
     this.fee = fee;
-    this.isIncoming = raw.recipientId === accountID;
+    this.isIncoming = raw.senderId !== accountID;
     this.time = moment
       .utc(timestampToUnix(raw.timestamp))
       .local()

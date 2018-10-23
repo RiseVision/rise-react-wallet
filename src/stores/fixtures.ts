@@ -138,8 +138,34 @@ export const serverTransactionsUnconfirmed = {
 
 export const serverTransactionsConfirmed = {
   success: true,
-  count: 4,
+  count: 5,
   transactions: [
+    {
+      signatures: [],
+      id: '6148269007073020449',
+      rowId: 18165,
+      height: 1064690,
+      blockId: '12571019205669775789',
+      type: 3,
+      timestamp: 76189352,
+      senderPublicKey:
+        '023bab3e17365565d7a796291f8d3bb6878a3083ea520fbd163db713d51b44f9',
+      senderId: '5932278668828702947R',
+      recipientId: '5932278668828702947R',
+      amount: 0,
+      fee: 100000000,
+      signature:
+        'cac9d17a9e4d0ed55417f0d0f90deadbae5ab91d1745d0b97d20f91ed86a1a41aac378368ca84654cba651afee570e4b42709a69aafebb07ac77dc6b6bb33206',
+      signSignature:
+        'ed0f4235687b85688bb6cd9a6fcac75a0f4230363481e4b25a4fc9d825d1faa8d2f178d2778bde2e079185a56bb2fdd5c77a964b2c6ebfc8c463d4c1f75f3c07',
+      requesterPublicKey: null,
+      asset: {
+        votes: [
+          '+76fe4c7c944bde63bcc83e7af712b60f935c52bafe396f0d8195a885f35067ef'
+        ]
+      },
+      confirmations: 44
+    },
     {
       signatures: [],
       id: '12628099815516138545',

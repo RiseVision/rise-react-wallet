@@ -296,7 +296,9 @@ describe('transactions', () => {
     await wallet.loadRecentTransactions(storedAccounts[0].id);
     const transactions = wallet.accounts.get(storedAccounts[0].id)!
       .recentTransactions;
-    expect(transactions.items).toHaveLength(5);
+    expect(transactions.items).toHaveLength(
+      serverTransactionsConfirmed.count + serverTransactionsUnconfirmed.count
+    );
     expect(transactions.fetched).toBeTruthy();
   });
   it('createPassphraseTx', async () => {

@@ -83,7 +83,7 @@ describe('TransactionsStore', () => {
 });
 
 describe('Transaction class', () => {
-  const accountID = storedAccounts[0].id;
+  const accountID = storedAccounts[1].id;
   // mock the wallet
   const wallet = {
     idToName(address: string) {
@@ -101,23 +101,53 @@ describe('Transaction class', () => {
   });
 
   it('constructor', () => {
-    const raw = serverTransactionsConfirmed.transactions[0];
+    // TODO exclusive fixture
+    const raw = serverTransactionsConfirmed.transactions[1];
     const transaction = new Transaction(
       // @ts-ignore mocked wallet
       wallet,
       accountID,
       raw
     );
+    // test simple fields
+    const fields = [
+      'confirmations',
+      'senderId',
+      'relays',
+      'receivedAt',
+      'type',
+      'senderPublicKey',
+      'requesterPublicKey',
+      'asset',
+      'recipientId',
+      'signature',
+      'id',
+      'signatures',
+      'assets',
+      'recipientPublicKey'
+    ];
+    for (const field of fields) {
+      expect(transaction[field]).toEqual(raw[field]);
+    }
+    // test parsed fields
     expect(transaction.timestamp).toEqual(timestampToUnix(raw.timestamp));
     expect(transaction.amount.toNumber()).toEqual(raw.amount);
     expect(transaction.fee.toNumber()).toEqual(raw.fee);
     expect(transaction.amountFee.toNumber()).toEqual(raw.amount + raw.fee);
     expect(transaction.isIncoming).toBeFalsy();
-    const skip = ['amount', 'fee', 'timestamp'];
-    // @ts-ignore protected field
-    const fields = transaction.fields.filter(f => !skip.includes(f));
-    for (const field of fields) {
-      expect(transaction[field]).toEqual(raw[field]);
-    }
+  });
+
+  it('vote transaction', () => {
+    // TODO exclusive fixture
+    const voteTx = serverTransactionsConfirmed.transactions.find(
+      tx => tx.type === TransactionType.VOTE
+    );
+    const tx = new Transaction(
+      // @ts-ignore mocked wallet
+      wallet,
+      accountID,
+      voteTx
+    );
+    expect(tx.isIncoming).toBeFalsy();
   });
 });
