@@ -4,8 +4,8 @@ import {
   rise as dposAPI,
   TransactionType,
 } from 'risejs';
+import { BaseTx, ITransaction } from 'dpos-offline/dist/es5/trxTypes/BaseTx';
 import {
-  BaseTx,
   CreateSignatureTx,
   DelegateTx,
   IDelegateTxAsset,
@@ -271,10 +271,20 @@ export default class WalletStore {
       .set('recipientId', account.id);
   }
 
-  async broadcastTransaction(
+  signTransaction(
     unsignedTx: BaseTx,
     mnemonic: string,
     passphrase: string | null = null,
+  ): ITransaction {
+    const wallet = new LiskWallet(mnemonic, 'R');
+    return wallet.signTransaction(
+      unsignedTx,
+      this.secondWallet(passphrase)
+    );
+  }
+
+  async broadcastTransaction(
+    signedTx: ITransaction,
     accountID?: string
   ): Promise<TTransactionResult> {
     const account = accountID
@@ -282,14 +292,8 @@ export default class WalletStore {
       : this.selectedAccount;
     assert(account, 'Account required');
 
-    const wallet = new LiskWallet(mnemonic, 'R');
-    const tx = wallet.signTransaction(
-      unsignedTx,
-      this.secondWallet(passphrase)
-    );
-
     // refreshed the account's delegate
-    if (unsignedTx instanceof VoteTx) {
+    if (signedTx.type === new VoteTx().type) {
       runInAction(() => {
         account.votedDelegate = null;
         account.votedDelegateState = LoadingState.NOT_LOADED;
@@ -297,7 +301,7 @@ export default class WalletStore {
     }
 
     // @ts-ignore TODO array
-    const res = await this.dposAPI.transactions.put(tx);
+    const res = await this.dposAPI.transactions.put(signedTx);
     await this.refreshAccount(account.id);
     return res;
   }

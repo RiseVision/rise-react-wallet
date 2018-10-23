@@ -1,23 +1,17 @@
-import { BaseTx } from 'dpos-offline';
+import { BaseTx, ITransaction } from 'dpos-offline/dist/es5/trxTypes/BaseTx';
 import { inject, observer } from 'mobx-react';
-import { Route, RouteParams } from 'mobx-router-rise';
 import * as React from 'react';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog from '../../components/Dialog';
 import AccountStore from '../../stores/account';
-import RootStore, { RouteLink } from '../../stores/root';
+import RootStore from '../../stores/root';
 import WalletStore, { TFeeTypes } from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import { PropsOf } from '../../utils/metaTypes';
 
-export type Secrets = {
+type Secrets = {
   mnemonic: string;
   passphrase: null | string;
-};
-
-const EMPTY_SECRETS: Secrets = {
-  mnemonic: '',
-  passphrase: null
 };
 
 type DialogProps = PropsOf<typeof Dialog>;
@@ -42,7 +36,7 @@ interface PropsInjected extends Props {
 interface State {
   transaction: Props['transaction'];
   step: 'confirm' | 'sending' | 'failure' | 'sent';
-  secrets: Secrets;
+  signedTx: null | ITransaction;
   sendError: string;
 }
 
@@ -53,7 +47,7 @@ class TransactionDialog extends React.Component<Props, State> {
   state: State = {
     transaction: null,
     step: 'confirm',
-    secrets: EMPTY_SECRETS,
+    signedTx: null,
     sendError: ''
   };
 
@@ -69,7 +63,7 @@ class TransactionDialog extends React.Component<Props, State> {
       return {
         transaction: nextProps.transaction,
         step: 'confirm',
-        secrets: EMPTY_SECRETS,
+        signedTx: null,
         sendError: ''
       };
     } else {
@@ -86,7 +80,6 @@ class TransactionDialog extends React.Component<Props, State> {
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     const { store, onClose, closeLink } = this.injected;
-    this.beforeClose();
     if (onClose) {
       onClose(ev);
     } else if (closeLink) {
@@ -96,29 +89,6 @@ class TransactionDialog extends React.Component<Props, State> {
     }
   }
 
-  wrapCloseLink(link: RouteLink): RouteLink {
-    return {
-      ...link,
-      onBeforeNavigate: (
-        route: Route<{}>,
-        params: RouteParams,
-        queryParams: RouteParams
-      ) => {
-        this.beforeClose();
-        if (link.onBeforeNavigate) {
-          link.onBeforeNavigate(route, params, queryParams);
-        }
-      }
-    };
-  }
-
-  beforeClose() {
-    // Clear secrets from state when closing
-    this.setState({
-      secrets: EMPTY_SECRETS
-    });
-  }
-
   handleBackFromConfirm = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
     if (onNavigateBack) {
@@ -126,31 +96,38 @@ class TransactionDialog extends React.Component<Props, State> {
     }
   }
 
-  handleConfirmTransaction = (secrets: Secrets) => {
-    this.broadcastTransaction(secrets);
+  handleConfirmTransaction = async (secrets: Secrets) => {
+    const { walletStore, onCreateTransaction } = this.injected;
+
+    this.setState({ step: 'sending' });
+
+    const unsignedTx = await onCreateTransaction();
+    const signedTx = walletStore.signTransaction(
+      unsignedTx,
+      secrets.mnemonic,
+      secrets.passphrase || undefined
+    );
+
+    this.broadcastTransaction(signedTx);
   }
 
   handleRetryTransaction = () => {
-    const { secrets } = this.state;
-    this.broadcastTransaction(secrets);
+    const { signedTx } = this.state;
+    if (signedTx !== null) {
+      this.broadcastTransaction(signedTx);
+    }
   }
 
-  async broadcastTransaction(secrets: Secrets) {
-    const { walletStore, onCreateTransaction } = this.injected;
+  async broadcastTransaction(signedTx: ITransaction) {
+    const { walletStore } = this.injected;
 
     this.setState({ step: 'sending' });
 
     let success = false;
     let errorSummary = '';
-    let canRetry = true;
-    const tx = await onCreateTransaction();
 
     try {
-      const result = await walletStore.broadcastTransaction(
-        tx,
-        secrets.mnemonic,
-        secrets.passphrase
-      );
+      const result = await walletStore.broadcastTransaction(signedTx);
       // this supports only a single transaction per request
       success = Boolean(result.accepted && result.accepted.length);
       if (!success) {
@@ -163,7 +140,7 @@ class TransactionDialog extends React.Component<Props, State> {
       if (e && e.code === 'ECONNABORTED') {
         // try to request the transaction
         // if successful, consider the whole dialog as error-less
-        success = await this.checkTransactionExists(tx.id);
+        success = await this.checkTransactionExists(signedTx.id);
       } else {
         // all the other errors
         errorSummary = e.toString();
@@ -173,15 +150,12 @@ class TransactionDialog extends React.Component<Props, State> {
     if (success) {
       this.setState({
         step: 'sent',
-        secrets: EMPTY_SECRETS
+        signedTx: null
       });
     } else {
-      // TODO: Really wish we would not store the secrets in memory for extended periods of time,
-      //       instead the transaction should be prepared and then if retry is required just sent
-      //       again.
       this.setState({
         step: 'failure',
-        secrets: canRetry ? secrets : EMPTY_SECRETS,
+        signedTx,
         sendError: errorSummary
       });
     }
@@ -242,7 +216,7 @@ class TransactionDialog extends React.Component<Props, State> {
 
     const closeProps: Pick<DialogProps, 'onClose' | 'closeLink'> = {};
     if (closeLink) {
-      closeProps.closeLink = this.wrapCloseLink(closeLink);
+      closeProps.closeLink = closeLink;
     } else {
       closeProps.onClose = this.handleClose;
     }
@@ -320,9 +294,9 @@ class TransactionDialog extends React.Component<Props, State> {
 
   renderFailedTxContent() {
     const { account } = this.injected;
-    const { transaction, secrets, sendError } = this.state;
+    const { transaction, signedTx, sendError } = this.state;
 
-    const canRetry = !!secrets.mnemonic;
+    const canRetry = !!signedTx;
 
     return (
       <ConfirmTransactionDialogContent
