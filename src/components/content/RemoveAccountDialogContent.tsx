@@ -71,11 +71,15 @@ class RemoveAccountDialogContent extends React.Component<
 > {
   @autoId dialogContentId: string;
 
-  state: State = {
-    addressInput: '',
-    addressInvalid: false,
-    saveContact: true
-  };
+  constructor(props: DecoratedProps) {
+    super(props);
+
+    this.state = {
+      addressInput: '',
+      addressInvalid: false,
+      saveContact: !!this.props.name,
+    };
+  }
 
   handleAddressChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const addressInput = ev.target.value;
