@@ -670,23 +670,27 @@ export default class WalletStore {
   getContacts(): TAddressRecord[] {
     assert(this.selectedAccount);
 
-    const addresses: TAddressRecord[] = this.addressBook.asArray.map(
-      ({ id, name }) => ({
+    const walletAccounts = [...this.accounts.values()];
+    const walletIDs = walletAccounts.map(({ id }) => id);
+
+    const contactRecords: TAddressRecord[] = this.addressBook.asArray
+      // Wallet accounts take precedence, should there be a record in the address book
+      .filter(({ id }) => walletIDs.indexOf(id) < 0)
+      .map(({ id, name }) => ({
         id,
         name,
         source: TAddressSource.ADDRESS_BOOK
-      })
-    );
+      }));
 
-    const accounts: TAddressRecord[] = [...this.accounts.values()]
+    const walletRecords: TAddressRecord[] = walletAccounts
       .filter(({ id }) => id !== this.selectedAccount.id)
       .map(({ id, name }) => ({
         id,
-        name: name || '',
+        name,
         source: TAddressSource.WALLET
       }));
 
-    return [...addresses, ...accounts];
+    return [...contactRecords, ...walletRecords];
   }
 }
 

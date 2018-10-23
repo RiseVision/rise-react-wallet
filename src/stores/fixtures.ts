@@ -25,6 +25,17 @@ export const storedAccounts = [
     pinned: false
   },
   {
+    id: '11543739950532038814R',
+    publicKey:
+      '63a12d153b3c72ed71392da9aac6b897c4b908f9ff17201794d69b4622d30aee',
+    type: 1,
+    hwId: null,
+    hwSlot: null,
+    fiatCurrency: 'USD',
+    name: '',
+    pinned: false
+  },
+  {
     id: '10317456780953445784R',
     publicKey:
       'e9ae239743b47125305a3f339937661368a7f8d810ae53d79e5c4de001356563',
@@ -91,6 +102,7 @@ export const serverAccounts = [
 export const storedContacts = [
   { id: '10317456780953445784R', name: 'test' },
   { id: '12525095472804841547R', name: 'DE AD' },
+  { id: '11543739950532038814R', name: 'hidden contact name' },
   { id: '5399275477602875017R', name: 'test fixture 2' }
 ];
 

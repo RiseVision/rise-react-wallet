@@ -73,6 +73,7 @@ beforeEach(() => {
 
   // init
   router = new RouterStore();
+  mockStoredContacts(storedContacts);
   addressBook = new AddressBookStore();
   lang = new LangStore();
 });
@@ -119,7 +120,6 @@ describe('accounts', () => {
   let wallet: Wallet;
   beforeEach(() => {
     mockStoredAccounts(storedAccounts);
-    mockStoredContacts(storedContacts);
     wallet = new Wallet(config, router, addressBook, lang);
   });
   it('saveAccount', () => {
@@ -225,8 +225,8 @@ describe('accounts', () => {
     const id2 = storedAccounts[1].id;
     wallet.removeAccount(id);
     expect(wallet.selectedAccount.id).toEqual(id2);
-    expect([...wallet.accounts.keys()]).toHaveLength(2);
-    expect(lstore.get('accounts')).toHaveLength(2);
+    expect([...wallet.accounts.keys()]).toHaveLength(3);
+    expect(lstore.get('accounts')).toHaveLength(3);
   });
   it('signout', () => {
     wallet.signout();
@@ -237,29 +237,30 @@ describe('accounts', () => {
     expect(wallet.selectedAccount).toBeFalsy();
   });
   it('getContacts', () => {
+    const compareById = (a: { id: string }, b: { id: string }) => {
+      if (a.id < b.id) { return -1; }
+      if (a.id > b.id) { return 1; }
+      return 0;
+    };
+
+    // We exclude the selected account from the dataset below, so make sure
+    // that the actual selected account matches that of our excluded record
+    expect(wallet.selectedAccount.id).toEqual('2655711995542512317R');
+
     const contacts = wallet.getContacts();
-    // assert accounts
-    for (const a of storedAccounts) {
-      expect(
-        contacts.find(
-          c =>
-            c.id === a.id &&
-            c.name === a.name &&
-            c.source === TAddressSource.WALLET
-        )
-      );
-    }
-    // assert contacts
-    for (const a of storedContacts) {
-      expect(
-        contacts.find(
-          c =>
-            c.id === a.id &&
-            c.name === a.name &&
-            c.source === TAddressSource.ADDRESS_BOOK
-        )
-      );
-    }
+    contacts.sort(compareById);
+
+    const { ADDRESS_BOOK, WALLET } = TAddressSource;
+    const expected = [
+      { id: '12525095472804841547R', name: 'DE AD', source: ADDRESS_BOOK },
+      { id: '5399275477602875017R', name: 'test fixture 2', source: ADDRESS_BOOK },
+      { id: '5932278668828702947R', name: 'test-2', source: WALLET },
+      { id: '11543739950532038814R', name: '', source: WALLET },
+      { id: '10317456780953445784R', name: 'test-3', source: WALLET },
+    ];
+    expected.sort(compareById);
+
+    expect(contacts).toEqual(expected);
   });
   it('parseAccountReponse', () => {
     // fake a virgin account
