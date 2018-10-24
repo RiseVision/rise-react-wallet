@@ -341,19 +341,13 @@ describe('transactions', () => {
     expect(tx.amount).toEqual(amount);
     expect(tx.recipientId).toEqual(recipientID);
   });
-  it('broadcastTransaction', async () => {
+  it('signTransaction', async () => {
     const recipientID = storedAccounts[1].id;
     const amount = 1000000;
     const tx = await wallet.createSendTx(recipientID, new RawAmount(amount));
-    stub(stubs, wallet.dposAPI.transactions, 'put', () => {
-      // empty
-    });
-    stub(stubs, wallet, 'refreshAccount', async () => {
-      // empty
-    });
-    await wallet.broadcastTransaction(tx, 'foo bar baz', 'test');
-    expect(tx.senderPublicKey).toEqual(wallet.selectedAccount.secondPublicKey);
-    expect(tx.secondSignature).toBeTruthy();
+    const signedTx = wallet.signTransaction(tx, 'foo bar baz', 'test');
+    expect(signedTx.senderPublicKey).toEqual(wallet.selectedAccount.secondPublicKey);
+    expect(signedTx.signSignature).toBeTruthy();
   });
 });
 

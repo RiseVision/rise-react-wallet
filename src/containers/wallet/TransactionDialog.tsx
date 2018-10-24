@@ -1,23 +1,21 @@
-import { BaseTx } from 'dpos-offline';
+import { BaseTx, ITransaction } from 'dpos-offline/dist/es5/trxTypes/BaseTx';
+import { observable, runInAction, reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { Route, RouteParams } from 'mobx-router-rise';
 import * as React from 'react';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog from '../../components/Dialog';
-import AccountStore from '../../stores/account';
-import RootStore, { RouteLink } from '../../stores/root';
+import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
+import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
+import AccountStore, { AccountType } from '../../stores/account';
+import RootStore from '../../stores/root';
+import LedgerStore, { LedgerChannel } from '../../stores/ledger';
 import WalletStore, { TFeeTypes } from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import { PropsOf } from '../../utils/metaTypes';
 
-export type Secrets = {
+type Secrets = {
   mnemonic: string;
   passphrase: null | string;
-};
-
-const EMPTY_SECRETS: Secrets = {
-  mnemonic: '',
-  passphrase: null
 };
 
 type DialogProps = PropsOf<typeof Dialog>;
@@ -37,25 +35,35 @@ interface Props extends DialogProps {
 interface PropsInjected extends Props {
   store: RootStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 interface State {
   transaction: Props['transaction'];
   step: 'confirm' | 'sending' | 'failure' | 'sent';
-  secrets: Secrets;
+  signedTx: null | ITransaction;
   sendError: string;
 }
 
 @inject('store')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class TransactionDialog extends React.Component<Props, State> {
   state: State = {
     transaction: null,
     step: 'confirm',
-    secrets: EMPTY_SECRETS,
+    signedTx: null,
     sendError: ''
   };
+
+  private ledger: LedgerChannel;
+  private lastLedgerSignId = 0;
+  private disposeLedgerMonitor: null | IReactionDisposer = null;
+
+  private countdownId: null | number = null;
+  @observable private confirmationTimeout: null | Date = null;
+  @observable private countdownSeconds: number = 0;
 
   static getDerivedStateFromProps(
     nextProps: Readonly<Props>,
@@ -69,7 +77,7 @@ class TransactionDialog extends React.Component<Props, State> {
       return {
         transaction: nextProps.transaction,
         step: 'confirm',
-        secrets: EMPTY_SECRETS,
+        signedTx: null,
         sendError: ''
       };
     } else {
@@ -84,9 +92,17 @@ class TransactionDialog extends React.Component<Props, State> {
     return this.props as PropsInjected;
   }
 
+  goBack = () => {
+    const { store, onNavigateBack, navigateBackLink } = this.injected;
+    if (onNavigateBack) {
+      onNavigateBack();
+    } else if (navigateBackLink) {
+      store.navigateTo(navigateBackLink);
+    }
+  }
+
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     const { store, onClose, closeLink } = this.injected;
-    this.beforeClose();
     if (onClose) {
       onClose(ev);
     } else if (closeLink) {
@@ -96,61 +112,38 @@ class TransactionDialog extends React.Component<Props, State> {
     }
   }
 
-  wrapCloseLink(link: RouteLink): RouteLink {
-    return {
-      ...link,
-      onBeforeNavigate: (
-        route: Route<{}>,
-        params: RouteParams,
-        queryParams: RouteParams
-      ) => {
-        this.beforeClose();
-        if (link.onBeforeNavigate) {
-          link.onBeforeNavigate(route, params, queryParams);
-        }
-      }
-    };
-  }
+  handleConfirmTransaction = async (secrets: Secrets) => {
+    const { walletStore, onCreateTransaction } = this.injected;
 
-  beforeClose() {
-    // Clear secrets from state when closing
-    this.setState({
-      secrets: EMPTY_SECRETS
-    });
-  }
+    this.setState({ step: 'sending' });
 
-  handleBackFromConfirm = (ev: React.SyntheticEvent<{}>) => {
-    const { onNavigateBack } = this.injected;
-    if (onNavigateBack) {
-      onNavigateBack(ev);
-    }
-  }
+    const unsignedTx = await onCreateTransaction();
+    const signedTx = walletStore.signTransaction(
+      unsignedTx,
+      secrets.mnemonic,
+      secrets.passphrase || undefined
+    );
 
-  handleConfirmTransaction = (secrets: Secrets) => {
-    this.broadcastTransaction(secrets);
+    this.broadcastTransaction(signedTx);
   }
 
   handleRetryTransaction = () => {
-    const { secrets } = this.state;
-    this.broadcastTransaction(secrets);
+    const { signedTx } = this.state;
+    if (signedTx !== null) {
+      this.broadcastTransaction(signedTx);
+    }
   }
 
-  async broadcastTransaction(secrets: Secrets) {
-    const { walletStore, onCreateTransaction } = this.injected;
+  async broadcastTransaction(signedTx: ITransaction) {
+    const { walletStore } = this.injected;
 
     this.setState({ step: 'sending' });
 
     let success = false;
     let errorSummary = '';
-    let canRetry = true;
-    const tx = await onCreateTransaction();
 
     try {
-      const result = await walletStore.broadcastTransaction(
-        tx,
-        secrets.mnemonic,
-        secrets.passphrase
-      );
+      const result = await walletStore.broadcastTransaction(signedTx);
       // this supports only a single transaction per request
       success = Boolean(result.accepted && result.accepted.length);
       if (!success) {
@@ -163,7 +156,7 @@ class TransactionDialog extends React.Component<Props, State> {
       if (e && e.code === 'ECONNABORTED') {
         // try to request the transaction
         // if successful, consider the whole dialog as error-less
-        success = await this.checkTransactionExists(tx.id);
+        success = await this.checkTransactionExists(signedTx.id);
       } else {
         // all the other errors
         errorSummary = e.toString();
@@ -173,15 +166,12 @@ class TransactionDialog extends React.Component<Props, State> {
     if (success) {
       this.setState({
         step: 'sent',
-        secrets: EMPTY_SECRETS
+        signedTx: null
       });
     } else {
-      // TODO: Really wish we would not store the secrets in memory for extended periods of time,
-      //       instead the transaction should be prepared and then if retry is required just sent
-      //       again.
       this.setState({
         step: 'failure',
-        secrets: canRetry ? secrets : EMPTY_SECRETS,
+        signedTx,
         sendError: errorSummary
       });
     }
@@ -217,6 +207,73 @@ class TransactionDialog extends React.Component<Props, State> {
     return walletStore.fees.get(feeMap[transaction.kind])!;
   }
 
+  componentDidMount() {
+    const { ledgerStore } = this.injected;
+    this.ledger = ledgerStore.openChannel();
+
+    this.disposeLedgerMonitor = reaction(
+      this.canSignOnLedger,
+      this.beginLedgerSigning
+    );
+  }
+
+  componentWillUnmount() {
+    if (this.disposeLedgerMonitor !== null) {
+      this.disposeLedgerMonitor();
+      this.disposeLedgerMonitor = null;
+    }
+
+    this.ledger.close();
+  }
+
+  canSignOnLedger = () => {
+    const { transaction, account, ledgerStore } = this.injected;
+    const { step } = this.state;
+    const { ledger } = this;
+
+    return step === 'confirm'
+      && transaction !== null
+      && ledgerStore.hasBrowserSupport
+      && account.hwId !== null
+      && ledger.deviceId === account.hwId;
+  }
+
+  beginLedgerSigning = async () => {
+    const { account, onCreateTransaction } = this.injected;
+    const { ledger } = this;
+
+    const ledgerSignId = ++this.lastLedgerSignId;
+
+    if (!this.canSignOnLedger() || account.hwSlot === null) {
+      return;
+    }
+    const accountSlot = account.hwSlot || 0;
+
+    let unsignedTx = await onCreateTransaction();
+    if (ledgerSignId !== this.lastLedgerSignId) {
+      return;
+    }
+
+    this.confirmationTimeout = new Date(new Date().getTime() + 25000);
+    this.updateConfirmationCountdown();
+
+    let signedTx;
+    try {
+      signedTx = await ledger.signTransaction(accountSlot, unsignedTx);
+      if (ledgerSignId !== this.lastLedgerSignId) {
+        return;
+      }
+    } catch (ex) {
+      signedTx = null;
+    }
+
+    if (signedTx) {
+      this.broadcastTransaction(signedTx);
+    } else {
+      this.goBack();
+    }
+  }
+
   render() {
     const { open } = this.injected;
 
@@ -242,7 +299,7 @@ class TransactionDialog extends React.Component<Props, State> {
 
     const closeProps: Pick<DialogProps, 'onClose' | 'closeLink'> = {};
     if (closeLink) {
-      closeProps.closeLink = this.wrapCloseLink(closeLink);
+      closeProps.closeLink = closeLink;
     } else {
       closeProps.onClose = this.handleClose;
     }
@@ -282,8 +339,9 @@ class TransactionDialog extends React.Component<Props, State> {
   }
 
   renderConfirmTxContent() {
-    const { account, passphrasePublicKey } = this.injected;
+    const { account, passphrasePublicKey, ledgerStore } = this.injected;
     const { transaction } = this.state;
+    const { ledger } = this;
 
     return (
       <ConfirmTransactionDialogContent
@@ -291,13 +349,28 @@ class TransactionDialog extends React.Component<Props, State> {
         fee={this.fee}
         senderName={account.name}
         senderAddress={account.id}
-        step={{
-          kind: 'confirm',
-          publicKey: account.publicKey,
-          secondPublicKey: passphrasePublicKey || account.secondPublicKey,
-          onConfirm: this.handleConfirmTransaction
-        }}
-      />
+      >
+        {account.type === AccountType.LEDGER ? (
+          !ledgerStore.hasBrowserSupport ? (
+            <ConfirmTxStatusFooter type="ledger-not-supported" />
+          ) : ledger.deviceId === null ? (
+            <ConfirmTxStatusFooter type="ledger-not-connected" />
+          ) : ledger.deviceId !== account.hwId ? (
+            <ConfirmTxStatusFooter type="ledger-another-device" />
+          ) : (
+            <ConfirmTxStatusFooter
+              type="ledger-confirming"
+              timeout={this.countdownSeconds}
+            />
+          )
+        ) : (
+          <ConfirmTxEnterSecretsFooter
+            publicKey={account.publicKey}
+            secondPublicKey={passphrasePublicKey || account.secondPublicKey}
+            onConfirm={this.handleConfirmTransaction}
+          />
+        )}
+      </ConfirmTransactionDialogContent>
     );
   }
 
@@ -311,18 +384,17 @@ class TransactionDialog extends React.Component<Props, State> {
         fee={this.fee}
         senderName={account.name}
         senderAddress={account.id}
-        step={{
-          kind: 'in-progress'
-        }}
-      />
+      >
+        <ConfirmTxStatusFooter type="broadcasting" />
+      </ConfirmTransactionDialogContent>
     );
   }
 
   renderFailedTxContent() {
     const { account } = this.injected;
-    const { transaction, secrets, sendError } = this.state;
+    const { transaction, signedTx, sendError } = this.state;
 
-    const canRetry = !!secrets.mnemonic;
+    const canRetry = !!signedTx;
 
     return (
       <ConfirmTransactionDialogContent
@@ -330,13 +402,14 @@ class TransactionDialog extends React.Component<Props, State> {
         fee={this.fee}
         senderName={account.name}
         senderAddress={account.id}
-        step={{
-          kind: 'failure',
-          reason: sendError,
-          onRetry: canRetry ? this.handleRetryTransaction : undefined,
-          onClose: this.handleClose
-        }}
-      />
+      >
+        <ConfirmTxStatusFooter
+          type="broadcast-failed"
+          reason={sendError}
+          onRetry={canRetry ? this.handleRetryTransaction : undefined}
+          onClose={this.handleClose}
+        />
+      </ConfirmTransactionDialogContent>
     );
   }
 
@@ -350,12 +423,36 @@ class TransactionDialog extends React.Component<Props, State> {
         fee={this.fee}
         senderName={account.name}
         senderAddress={account.id}
-        step={{
-          kind: 'success',
-          onClose: this.handleClose
-        }}
-      />
+      >
+        <ConfirmTxStatusFooter
+          type="broadcast-succeeded"
+          onClose={this.handleClose}
+        />
+      </ConfirmTransactionDialogContent>
     );
+  }
+
+  private updateConfirmationCountdown = () => {
+    const now = new Date();
+    const remainMs = this.confirmationTimeout !== null ? this.confirmationTimeout.getTime() - now.getTime() : 0;
+    const isCountdownActive = remainMs > 0;
+
+    runInAction(() => {
+      if (isCountdownActive) {
+        this.countdownSeconds = Math.ceil(remainMs / 1000);
+      } else {
+        // Make sure that the timeout clears the selected account
+        this.lastLedgerSignId += 1;
+        this.goBack();
+      }
+    });
+
+    if (isCountdownActive && this.countdownId === null) {
+      this.countdownId = window.setInterval(this.updateConfirmationCountdown, 250);
+    } else if (!isCountdownActive && this.countdownId !== null) {
+      window.clearInterval(this.countdownId);
+      this.countdownId = null;
+    }
   }
 }
 

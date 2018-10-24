@@ -6,7 +6,7 @@ import {
   withStyles
 } from '@material-ui/core/styles';
 import * as React from 'react';
-import { ReactElement, ReactEventHandler } from 'react';
+import { ReactElement } from 'react';
 import { inject, observer } from 'mobx-react';
 import ModalPaperHeader from './ModalPaperHeader';
 import autoId from '../utils/autoId';
@@ -28,8 +28,9 @@ type BaseProps = PropsOf<typeof MuiDialog>
   & WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
+  onClose?: (ev?: React.SyntheticEvent<{}>) => void;
   closeLink?: RouteLink;
-  onNavigateBack?: ReactEventHandler<{}>;
+  onNavigateBack?: (ev?: React.SyntheticEvent<{}>) => void;
   navigateBackLink?: RouteLink;
   children: ReactElement<DialogContentProps>;
 }
