@@ -13,7 +13,7 @@ There's a **[nightly build (testnet)](http://risevision.github.io/rise-react-wal
 - [x] Settings
 - [x] Sending Coins
 - [x] Address book
-- [ ] Ledger hardware wallet support
+- [x] Ledger hardware wallet support
 - [x] Unit tests
 - [x] End-to-end tests
 
