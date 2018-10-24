@@ -43,14 +43,14 @@ describe('TransactionsStore', () => {
   const id = storedAccounts[0].id;
   // mock the wallet
   const lang = new LangStore();
-  const wallet = {
+  const wallet: Partial<WalletStore> = {
     idToName(address: string) {
       return address;
     },
     getRecipientName(type: TransactionType, id: string) {
       return id;
     },
-    loadRecentTransactions: sinon.spy(),
+    fetchTransactions: sinon.stub(),
     config,
     lang
   };
@@ -75,10 +75,12 @@ describe('TransactionsStore', () => {
     expect(grouped['19th of Sep']).toHaveLength(4);
   });
 
-  it('loadMore', () => {
-    // @ts-ignore wallet mock
-    store.loadMore();
-    expect(wallet.loadRecentTransactions.calledWith(id, 16));
+  it('loadMore', async () => {
+    // @ts-ignore sinon stub
+    wallet.fetchTransactions.returns(serverTransactionsConfirmed);
+    await store.loadMore();
+    // @ts-ignore sinon stub
+    expect(wallet.fetchTransactions.calledWith(id, 16));
   });
 });
 

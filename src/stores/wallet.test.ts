@@ -68,7 +68,6 @@ beforeEach(() => {
   // stub getAccount responses
   let getAccountsCounter = 0;
   stub(stubs, dposAPI.accounts, 'getAccount', id => {
-    debugger;
     return serverAccounts[getAccountsCounter++];
   });
 

@@ -1,6 +1,8 @@
 // tslint:disable:max-line-length
 import { TConfig } from './index';
+import * as assert from 'assert';
 
+/** Account from localStorage. Need to match the data in `serverAccounts`. */
 export const storedAccounts = [
   {
     id: '2655711995542512317R',
@@ -48,6 +50,7 @@ export const storedAccounts = [
   }
 ];
 
+/** Account from localStorage. Need to match the data in `storedAccounts`. */
 export const serverAccounts = [
   {
     success: true,
@@ -81,6 +84,7 @@ export const serverAccounts = [
       unconfirmedSignature: 1
     }
   },
+  { success: false, error: 'Account not found' },
   {
     success: true,
     account: {
@@ -98,6 +102,11 @@ export const serverAccounts = [
     }
   }
 ];
+
+assert(
+  serverAccounts.length === storedAccounts.length,
+  'Stored and server accounts should match'
+);
 
 export const storedContacts = [
   { id: '10317456780953445784R', name: 'test' },
