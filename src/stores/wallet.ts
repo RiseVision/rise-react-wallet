@@ -267,8 +267,7 @@ export default class WalletStore {
     };
     return new DelegateTx(assets)
       .withFees(this.fees.get('delegate')!.toNumber())
-      .set('timestamp', getTimestamp())
-      .set('recipientId', account.id);
+      .set('timestamp', getTimestamp());
   }
 
   signTransaction(
