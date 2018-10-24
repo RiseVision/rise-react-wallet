@@ -1,10 +1,6 @@
-import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import DoneIcon from '@material-ui/icons/Done';
 import {
   createStyles,
   Theme,
@@ -24,6 +20,7 @@ import { DialogContentProps, SetDialogContent } from '../Dialog';
 import { RawAmount } from '../../utils/amounts';
 import AccountIcon from '../AccountIcon';
 import ConfirmTxEnterSecretsFooter from '../ConfirmTxEnterSecretsFooter';
+import ConfirmTxStatusFooter from '../ConfirmTxStatusFooter';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -124,25 +121,6 @@ const styles = (theme: Theme) =>
     },
     totalAmount: {
       fontWeight: 500
-    },
-    statusContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginLeft: 2 * theme.spacing.unit,
-      marginRight: 2 * theme.spacing.unit,
-      marginTop: theme.spacing.unit,
-      marginBottom: theme.spacing.unit,
-      '& > * + *': {
-        marginLeft: 2 * theme.spacing.unit
-      }
-    },
-    statusIcon: {
-      fontSize: 48
-    },
-    statusMessage: {
-      textAlign: 'left'
     }
   });
 
@@ -203,16 +181,6 @@ const messages = defineMessages({
     id: 'confirm-tx-dialog-content.breakdown-section-aria',
     description: 'Transaction breakdown section title for accessibility',
     defaultMessage: 'Transaction cost breakdown'
-  },
-  errorIconAria: {
-    id: 'confirm-tx-dialog-content.error-icon-aria',
-    description: 'Error status icon label for accessibility',
-    defaultMessage: 'Error indicator icon'
-  },
-  successIconAria: {
-    id: 'confirm-tx-dialog-content.success-icon-aria',
-    description: 'Success status icon label for accessibility',
-    defaultMessage: 'Success indicator icon'
   }
 });
 
@@ -532,9 +500,25 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
           </Grid>
         </Grid>
         <Divider aria-hidden={true} />
-        {step.kind === 'failure' && this.renderFailureFooter(step)}
-        {step.kind === 'success' && this.renderSuccessFooter(step)}
-        {step.kind === 'in-progress' && this.renderInProgressFooter(step)}
+        {step.kind === 'failure' && (
+          <ConfirmTxStatusFooter
+            type="failure"
+            reason={step.reason}
+            onRetry={step.onRetry}
+            onClose={step.onClose}
+          />
+        )}
+        {step.kind === 'success' && (
+          <ConfirmTxStatusFooter
+            type="success"
+            onClose={step.onClose}
+          />
+        )}
+        {step.kind === 'in-progress' && (
+          <ConfirmTxStatusFooter
+            type="in-progress"
+          />
+        )}
         {step.kind === 'confirm' && (
           <ConfirmTxEnterSecretsFooter
             publicKey={step.publicKey}
@@ -543,117 +527,6 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
           />
         )}
       </React.Fragment>
-    );
-  }
-
-  renderInProgressFooter(step: InProgressStep) {
-    const { classes } = this.props;
-
-    return (
-      <Grid
-        className={classes.content}
-        container={true}
-        spacing={16}
-      >
-        <Grid item={true} xs={12} className={classes.statusContainer}>
-          <CircularProgress color="primary" />
-          <Typography className={classes.statusMessage}>
-            <FormattedMessage
-              id="confirm-tx-dialog-content.broadcasting-msg"
-              description="Message for when a transaction is being broadcast."
-              defaultMessage="Broadcasting transaction to the network. Please wait..."
-            />
-          </Typography>
-        </Grid>
-      </Grid>
-    );
-  }
-
-  renderSuccessFooter(step: SuccessStep) {
-    const { intl, classes } = this.props;
-
-    return (
-      <Grid
-        className={classes.content}
-        container={true}
-        spacing={16}
-      >
-        <Grid item={true} xs={12} className={classes.statusContainer}>
-          <DoneIcon
-            className={classes.statusIcon}
-            color="primary"
-            aria-label={intl.formatMessage(messages.successIconAria)}
-          />
-          <Typography className={classes.statusMessage}>
-            <FormattedMessage
-              id="confirm-tx-dialog-content.success-msg"
-              description="Message for when a transaction broadcast succeeded."
-              defaultMessage="The transaction was successfully broadcast to the network!"
-            />
-          </Typography>
-        </Grid>
-        <Grid item={true} xs={12}>
-          <Button onClick={step.onClose} fullWidth={true}>
-            <FormattedMessage
-              id="confirm-tx-dialog-content.done-button"
-              description="Label for done button."
-              defaultMessage="Done"
-            />
-          </Button>
-        </Grid>
-      </Grid>
-    );
-  }
-
-  renderFailureFooter(step: FailureStep) {
-    const { intl, classes } = this.props;
-    const canRetry = !!step.onRetry;
-
-    return (
-      <Grid
-        className={classes.content}
-        container={true}
-        spacing={16}
-      >
-        <Grid item={true} xs={12} className={classes.statusContainer}>
-          <ErrorOutlineIcon
-            className={classes.statusIcon}
-            color="error"
-            aria-label={intl.formatMessage(messages.errorIconAria)}
-          />
-          <Typography className={classes.statusMessage}>
-            <FormattedMessage
-              id="confirm-tx-dialog-content.error-msg"
-              description="Message for when a transaction failed to broadcast."
-              defaultMessage={
-                'Failed to broadcast the transaction to the network: {error}'}
-              values={{
-                error: step.reason || 'N/A'
-              }}
-            />
-          </Typography>
-        </Grid>
-        {canRetry && (
-          <Grid item={true} xs={12} sm={6}>
-            <Button onClick={step.onRetry} fullWidth={true}>
-              <FormattedMessage
-                id="confirm-tx-dialog-content.try-again-button"
-                description="Label for try again button."
-                defaultMessage="Try again"
-              />
-            </Button>
-          </Grid>
-        )}
-        <Grid item={true} xs={12} sm={canRetry ? 6 : 12}>
-          <Button onClick={step.onClose} fullWidth={true}>
-            <FormattedMessage
-              id="confirm-tx-dialog-content.close-button"
-              description="Label for close button."
-              defaultMessage="Close"
-            />
-          </Button>
-        </Grid>
-      </Grid>
     );
   }
 }
