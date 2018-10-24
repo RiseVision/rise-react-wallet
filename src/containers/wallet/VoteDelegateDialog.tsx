@@ -73,12 +73,13 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       const { walletStore } = this.injected;
       query = query.trim().toLowerCase();
 
-      // search by address (local)
-      if (this.searchByID(query)) {
-        return;
+      // search by address
+      const isID = normalizeAddress(query);
+      if (isID) {
+        return this.searchByID(query);
       }
 
-      // search by name (API)
+      // search by query
       this.setState({
         search: {
           isLoading: true,
@@ -105,26 +106,34 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     { leading: false, trailing: true }
   );
 
-  searchByID = (query: string) => {
-    // search by address (local)
-    const isID = normalizeAddress(query);
-    if (!isID) {
-      return false;
+  searchByID = async (query: string) => {
+    const thisSearch = ++this.lastSearch;
+    const { walletStore } = this.injected;
+
+    // search by query
+    this.setState({
+      search: {
+        isLoading: true,
+        query,
+        delegates: []
+      }
+    });
+
+    if (this.lastSearch !== thisSearch) {
+      return;
     }
-    const { activeDelegates } = this.state;
-    const match =
-      activeDelegates &&
-      activeDelegates.find(delegate => delegate.address === isID);
+
+    const match = await walletStore.dposAPI.delegates.getByUsername(
+      query.toUpperCase()
+    );
 
     this.setState({
       search: {
         isLoading: false,
         query,
-        delegates: match ? [match] : []
+        delegates: match.delegate ? [match.delegate] : []
       }
     });
-
-    return true;
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
