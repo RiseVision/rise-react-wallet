@@ -582,7 +582,8 @@ export default class WalletStore {
     const wallet = new LiskWallet(mnemonic.join(' '), 'R');
     const account = {
       id: wallet.address,
-      publicKey: wallet.publicKey
+      publicKey: wallet.publicKey,
+      type: AccountType.MNEMONIC,
     };
     this.login(account.id, account, true);
     return account.id;
