@@ -236,9 +236,10 @@ export const accountOverviewRoute = new Route({
     onEnterID(route, params, store, queryParams);
     // load recent transaction on the first page view
     // TODO ideally would be handled automatically by the observer
-    if (store.wallet.selectedAccount) {
+    const account = store.wallet.selectedAccount;
+    if (account) {
       // pass async
-      store.wallet.loadRecentTransactions(store.wallet.selectedAccount.id);
+      account.recentTransactions.load();
     }
   },
   onParamsChange(

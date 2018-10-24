@@ -458,7 +458,8 @@ export default class WalletStore {
         return;
       }
       calculateFiat();
-      this.loadRecentTransactions(id);
+      // pass async
+      account.recentTransactions.load();
     };
     const disposers: Array<() => void> = [];
     // @ts-ignore issue with mobx d.ts
@@ -507,19 +508,19 @@ export default class WalletStore {
     });
   }
 
-  @action
-  async loadRecentTransactions(accountID: string, amount: number = 8) {
+  async fetchTransactions(
+    accountID: string,
+    limit: number = 8,
+    offset: number = 0
+  ): Promise<Transaction[]> {
     const account = this.accounts.get(accountID) as AccountStore;
     assert(account, `Account ${accountID} doesn't exist`);
-    let transactions = account.recentTransactions;
-    runInAction(() => {
-      transactions.isLoading = true;
-    });
 
     // request
     const [recent, unconfirmed] = await Promise.all([
       this.loadTransactions(accountID, {
-        limit: amount,
+        limit,
+        offset,
         orderBy: 'timestamp:desc',
         recipientId: account.id,
         senderPublicKey: account.publicKey
@@ -527,6 +528,7 @@ export default class WalletStore {
       this.loadTransactions(
         accountID,
         {
+          limit,
           address: account.id,
           senderPublicKey: account.publicKey
         },
@@ -534,13 +536,12 @@ export default class WalletStore {
       )
     ]);
 
-    runInAction(() => {
-      transactions.isLoading = false;
-      transactions.fetched = true;
-      transactions.items.length = 0;
-      transactions.items.push(...unconfirmed, ...recent);
-    });
-    return true;
+    // ignore unconfirmed when paginating
+    if (offset) {
+      return recent;
+    }
+
+    return [...unconfirmed, ...recent];
   }
 
   async loadTransactionDelegates(tx: Transaction): Promise<Transaction> {
@@ -843,6 +844,7 @@ export type TTransactionVote = {
 
 export type TTransactionsRequest = {
   limit?: number;
+  offset?: number;
   orderBy?: string;
   recipientId?: string;
   senderPublicKey?: string;

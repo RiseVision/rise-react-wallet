@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash';
-import { computed, observable } from 'mobx';
+import { computed, observable, runInAction, action } from 'mobx';
 import * as moment from 'moment/min/moment-with-locales';
 import { defineMessages } from 'react-intl';
 import { TransactionType } from 'risejs';
@@ -48,6 +48,7 @@ export default class TransactionsStore {
 
   @observable isLoading: boolean = false;
   @observable items = observable.array<Transaction>();
+  @observable hasMore = false;
 
   @computed
   get groupedByDay(): TGroupedTransactions {
@@ -88,12 +89,40 @@ export default class TransactionsStore {
    *
    * @param amount
    */
-  loadMore(amount: number = 8) {
-    // pass async
-    this.wallet.loadRecentTransactions(
+  @action
+  async load(amount: number = 8) {
+    this.isLoading = true;
+
+    const transactions = await this.wallet.fetchTransactions(
       this.accountID,
-      this.items.length + amount
+      amount
     );
+
+    runInAction(() => {
+      this.isLoading = false;
+      this.fetched = true;
+      this.items.length = 0;
+      this.items.push(...transactions);
+      this.hasMore = transactions.length === amount;
+    });
+  }
+
+  @action
+  async loadMore(amount: number = 8) {
+    this.isLoading = true;
+
+    const page = await this.wallet.fetchTransactions(
+      this.accountID,
+      amount,
+      this.items.length
+    );
+
+    runInAction(() => {
+      this.isLoading = false;
+      this.fetched = true;
+      this.items.push(...page);
+      this.hasMore = page.length === amount;
+    });
   }
 }
 

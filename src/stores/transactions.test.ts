@@ -11,7 +11,7 @@ import {
   serverTransactionsConfirmed
 } from './fixtures';
 import TransactionsStore, { Transaction } from './transactions';
-import { parseTransactionsReponse } from './wallet';
+import WalletStore, { parseTransactionsReponse } from './wallet';
 import * as sinon from 'sinon';
 import { TransactionType } from 'risejs';
 
@@ -85,14 +85,14 @@ describe('TransactionsStore', () => {
 describe('Transaction class', () => {
   const accountID = storedAccounts[1].id;
   // mock the wallet
-  const wallet = {
+  const wallet: Partial<WalletStore> = {
     idToName(address: string) {
       return address;
     },
     getRecipientName(type: TransactionType, id: string) {
       return id;
     },
-    loadRecentTransactions: sinon.spy(),
+    fetchTransactions: sinon.spy(),
     config
   };
 

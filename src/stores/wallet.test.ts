@@ -56,7 +56,7 @@ beforeEach(() => {
   stub(stubs, LangStore.prototype, 'loadTranslation', () => {
     // empty
   });
-  stub(stubs, Wallet.prototype, 'loadRecentTransactions', () => {
+  stub(stubs, Wallet.prototype, 'fetchTransactions', () => {
     // empty
   });
   stub(stubs, Wallet.prototype, 'updateFees', () => {
@@ -68,6 +68,7 @@ beforeEach(() => {
   // stub getAccount responses
   let getAccountsCounter = 0;
   stub(stubs, dposAPI.accounts, 'getAccount', id => {
+    debugger;
     return serverAccounts[getAccountsCounter++];
   });
 
@@ -184,7 +185,7 @@ describe('accounts', () => {
     await wallet.login(id, storedAccounts[0]);
     const account = wallet.accounts.get(id);
     expect(account!.balance.toString()).toEqual(
-      serverAccounts[0].account.balance
+      serverAccounts[0].account!.balance
     );
   });
   it('selectAccount', () => {
@@ -268,8 +269,8 @@ describe('accounts', () => {
     const server = serverAccounts[0];
     // @ts-ignore TODO `number is not assignable to 0|1`
     const parsed = parseAccountReponse(server, local);
-    expect(parsed.balance.toString()).toEqual(server.account.balance);
-    expect(parsed.publicKey).toEqual(server.account.publicKey);
+    expect(parsed.balance.toString()).toEqual(server.account!.balance);
+    expect(parsed.publicKey).toEqual(server.account!.publicKey);
     expect(parsed.name).toEqual(local.name);
     expect(parsed.fiatCurrency).toEqual(local.fiatCurrency);
   });
@@ -292,8 +293,8 @@ describe('transactions', () => {
       return serverTransactionsConfirmed;
     });
     // @ts-ignore restore the (prototype) mock
-    wallet.loadRecentTransactions.restore();
-    await wallet.loadRecentTransactions(storedAccounts[0].id);
+    wallet.fetchTransactions.restore();
+    await wallet.selectedAccount.recentTransactions.load();
     const transactions = wallet.accounts.get(storedAccounts[0].id)!
       .recentTransactions;
     expect(transactions.items).toHaveLength(

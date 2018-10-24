@@ -182,6 +182,7 @@ class ExistingAccountPage extends React.Component<DecoratedProps, State> {
                     defaultMessage="Account address"
                   />
                 }
+                autoFocus={true}
                 error={addressInvalid}
                 value={address}
                 FormHelperTextProps={{

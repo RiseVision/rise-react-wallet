@@ -287,7 +287,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
               </React.Fragment>
             )
           )}
-          {recentTransactions.items.length >= 8 && (
+          {recentTransactions.hasMore && (
             <div className={classes.loadMore}>
               <Button
                 disabled={recentTransactions.isLoading}
