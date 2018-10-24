@@ -14,8 +14,8 @@ There's a **[nightly build (testnet)](http://risevision.github.io/rise-react-wal
 - [x] Sending Coins
 - [x] Address book
 - [ ] Ledger hardware wallet support
+- [x] Unit tests
 - [x] End-to-end tests
-- [ ] Unit tests
 
 ### Contributing
 
