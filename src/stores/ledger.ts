@@ -1,4 +1,5 @@
 import { observable, runInAction } from 'mobx';
+import { BaseTx, ITransaction } from 'dpos-offline/dist/es5/trxTypes/BaseTx';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { DposLedger, SupportedCoin, LedgerAccount as DposAccount } from 'dpos-ledger-api';
 
@@ -117,6 +118,13 @@ export class LedgerChannel {
       return Promise.reject(new LedgerUnreachableError());
     }
     return this.hub.confirmAccount(this.channelId, accountSlot);
+  }
+
+  signTransaction(accountSlot: number, unsignedTx: BaseTx): Promise<null | ITransaction> {
+    if (!this.isOpen) {
+      return Promise.reject(new LedgerUnreachableError());
+    }
+    return this.hub.signTransaction(this.channelId, accountSlot, unsignedTx);
   }
 
   close() {
@@ -294,6 +302,63 @@ class LedgerHub implements LedgerTaskRunner {
           }
         }
       });
+
+      this.scheduleTask(task);
+    });
+  }
+
+  signTransaction(channelId: number, accountSlot: number, unsignedTx: BaseTx): Promise<null | ITransaction> {
+    return new Promise((resolve, reject) => {
+      if (this.deviceId === null) {
+        reject(new LedgerUnreachableError());
+      }
+
+      // Schedule the task
+      const task = new LedgerTask(
+        channelId,
+        ({ account, signedTx }) => {
+          // Add the account to the cache if we had cache-miss in the task runner
+          if (!this.accountCache[accountSlot]) {
+            this.accountCache[accountSlot] = account;
+          }
+          resolve(signedTx);
+        },
+        reject,
+        async () => {
+          const accountPath = new DposAccount()
+            .coinIndex(SupportedCoin.RISE)
+            .account(accountSlot);
+
+          // @ts-ignore wrong d.ts
+          const transport = await TransportU2F.create();
+          const comm = new DposLedger(transport);
+
+          let account = this.accountCache[accountSlot];
+          if (!account) {
+            transport.setExchangeTimeout(5000);
+            account = await comm.getPubKey(accountPath) as LedgerAccount;
+          }
+
+          const txBytes = unsignedTx.getBytes(true, true);
+          let signedTx: null | ITransaction;
+          transport.setExchangeTimeout(30000);
+          try {
+            unsignedTx.signature = await comm.signTX(accountPath, txBytes, false);
+            signedTx = {
+              ...unsignedTx.toObj(),
+              senderId: account.address,
+            };
+          } catch (ex) {
+            if (ex.statusCode === 0x6985) {
+              signedTx = null;
+            } else {
+              throw ex;
+            }
+          }
+
+          return { account, signedTx };
+        }
+      );
 
       this.scheduleTask(task);
     });
