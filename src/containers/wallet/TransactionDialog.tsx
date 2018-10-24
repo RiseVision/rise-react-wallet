@@ -3,6 +3,8 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog from '../../components/Dialog';
+import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
+import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore from '../../stores/account';
 import RootStore from '../../stores/root';
 import WalletStore, { TFeeTypes } from '../../stores/wallet';
@@ -265,13 +267,13 @@ class TransactionDialog extends React.Component<Props, State> {
         fee={this.fee}
         senderName={account.name}
         senderAddress={account.id}
-        step={{
-          kind: 'confirm',
-          publicKey: account.publicKey,
-          secondPublicKey: passphrasePublicKey || account.secondPublicKey,
-          onConfirm: this.handleConfirmTransaction
-        }}
-      />
+      >
+        <ConfirmTxEnterSecretsFooter
+          publicKey={account.publicKey}
+          secondPublicKey={passphrasePublicKey || account.secondPublicKey}
+          onConfirm={this.handleConfirmTransaction}
+        />
+      </ConfirmTransactionDialogContent>
     );
   }
 
@@ -285,10 +287,9 @@ class TransactionDialog extends React.Component<Props, State> {
         fee={this.fee}
         senderName={account.name}
         senderAddress={account.id}
-        step={{
-          kind: 'in-progress'
-        }}
-      />
+      >
+        <ConfirmTxStatusFooter type="in-progress" />
+      </ConfirmTransactionDialogContent>
     );
   }
 
@@ -304,13 +305,14 @@ class TransactionDialog extends React.Component<Props, State> {
         fee={this.fee}
         senderName={account.name}
         senderAddress={account.id}
-        step={{
-          kind: 'failure',
-          reason: sendError,
-          onRetry: canRetry ? this.handleRetryTransaction : undefined,
-          onClose: this.handleClose
-        }}
-      />
+      >
+        <ConfirmTxStatusFooter
+          type="failure"
+          reason={sendError}
+          onRetry={canRetry ? this.handleRetryTransaction : undefined}
+          onClose={this.handleClose}
+        />
+      </ConfirmTransactionDialogContent>
     );
   }
 
@@ -324,11 +326,12 @@ class TransactionDialog extends React.Component<Props, State> {
         fee={this.fee}
         senderName={account.name}
         senderAddress={account.id}
-        step={{
-          kind: 'success',
-          onClose: this.handleClose
-        }}
-      />
+      >
+        <ConfirmTxStatusFooter
+          type="success"
+          onClose={this.handleClose}
+        />
+      </ConfirmTransactionDialogContent>
     );
   }
 }

@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core/styles';
 import * as classNames from 'classnames';
 import * as React from 'react';
-import { ReactEventHandler } from 'react';
 import {
   defineMessages,
   FormattedMessage,
@@ -19,8 +18,6 @@ import {
 import { DialogContentProps, SetDialogContent } from '../Dialog';
 import { RawAmount } from '../../utils/amounts';
 import AccountIcon from '../AccountIcon';
-import ConfirmTxEnterSecretsFooter from '../ConfirmTxEnterSecretsFooter';
-import ConfirmTxStatusFooter from '../ConfirmTxStatusFooter';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -213,35 +210,6 @@ function throwInvalidTxKind(tx: TxData) {
   throw new Error(`Invalid transaction kind ${tx.kind}`);
 }
 
-type ConfirmStep = {
-  kind: 'confirm';
-  publicKey: string;
-  secondPublicKey: string | null;
-  onConfirm: (data: { mnemonic: string; passphrase: null | string }) => void;
-};
-
-type InProgressStep = {
-  kind: 'in-progress';
-};
-
-type SuccessStep = {
-  kind: 'success';
-  onClose: ReactEventHandler<{}>;
-};
-
-type FailureStep = {
-  kind: 'failure';
-  onRetry?: ReactEventHandler<{}>;
-  onClose: ReactEventHandler<{}>;
-  reason: string;
-};
-
-type Step =
-  | ConfirmStep
-  | InProgressStep
-  | SuccessStep
-  | FailureStep;
-
 type BaseProps = WithStyles<typeof styles>
   & DialogContentProps;
 
@@ -250,7 +218,6 @@ interface Props extends BaseProps {
   fee: RawAmount;
   senderName: string | null;
   senderAddress: string;
-  step: Step;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -271,7 +238,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
       data,
       fee,
       senderAddress,
-      step
+      children
     } = this.props;
 
     // TODO extract
@@ -500,32 +467,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
           </Grid>
         </Grid>
         <Divider aria-hidden={true} />
-        {step.kind === 'failure' && (
-          <ConfirmTxStatusFooter
-            type="failure"
-            reason={step.reason}
-            onRetry={step.onRetry}
-            onClose={step.onClose}
-          />
-        )}
-        {step.kind === 'success' && (
-          <ConfirmTxStatusFooter
-            type="success"
-            onClose={step.onClose}
-          />
-        )}
-        {step.kind === 'in-progress' && (
-          <ConfirmTxStatusFooter
-            type="in-progress"
-          />
-        )}
-        {step.kind === 'confirm' && (
-          <ConfirmTxEnterSecretsFooter
-            publicKey={step.publicKey}
-            secondPublicKey={step.secondPublicKey}
-            onConfirm={step.onConfirm}
-          />
-        )}
+        {children}
       </React.Fragment>
     );
   }
