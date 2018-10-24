@@ -339,7 +339,9 @@ class LedgerHub implements LedgerTaskRunner {
             account = await comm.getPubKey(accountPath) as LedgerAccount;
           }
 
+          unsignedTx.senderPublicKey = account.publicKey;
           const txBytes = unsignedTx.getBytes(true, true);
+
           let signedTx: null | ITransaction;
           transport.setExchangeTimeout(30000);
           try {

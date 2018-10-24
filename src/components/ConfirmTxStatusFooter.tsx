@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import InfoIcon from '@material-ui/icons/Info';
 import DoneIcon from '@material-ui/icons/Done';
 import {
   createStyles,
@@ -63,6 +64,11 @@ const messages = defineMessages({
     description: 'Error status icon label for accessibility',
     defaultMessage: 'Error indicator icon'
   },
+  infoIconAria: {
+    id: 'confirm-tx-status-footer.info-icon-aria',
+    description: 'Info status icon label for accessibility',
+    defaultMessage: 'Info indicator icon'
+  },
   successIconAria: {
     id: 'confirm-tx-status-footer.success-icon-aria',
     description: 'Success status icon label for accessibility',
@@ -73,10 +79,17 @@ const messages = defineMessages({
 type BaseProps = WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
-  type: 'in-progress' | 'success' | 'failure';
+  type: 'broadcasting'
+    | 'broadcast-succeeded'
+    | 'broadcast-failed'
+    | 'ledger-not-supported'
+    | 'ledger-not-connected'
+    | 'ledger-another-device'
+    | 'ledger-confirming';
   onRetry?: ReactEventHandler<{}>;
   onClose?: ReactEventHandler<{}>;
   reason?: string;
+  timeout?: number;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -88,6 +101,7 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
       classes,
       type,
       reason,
+      timeout,
       onRetry,
       onClose,
     } = this.props;
@@ -99,35 +113,44 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
         spacing={16}
       >
         <Grid item={true} xs={12} className={classes.statusContainer}>
-          {type === 'in-progress' ? (
-            <CircularProgress color="primary" />
-          ) : type === 'success' ? (
+          {type === 'broadcasting'
+           || type === 'ledger-not-connected' ? (
+            <div><CircularProgress color="primary" /></div>
+          ) : type === 'broadcast-succeeded' ? (
             <DoneIcon
               className={classes.statusIcon}
               color="primary"
               aria-label={intl.formatMessage(messages.successIconAria)}
             />
-          ) : type === 'failure' ? (
+          ) : type === 'broadcast-failed'
+              || type === 'ledger-another-device'
+              || type === 'ledger-not-supported' ? (
             <ErrorOutlineIcon
               className={classes.statusIcon}
               color="error"
               aria-label={intl.formatMessage(messages.errorIconAria)}
             />
+          ) : type === 'ledger-confirming' ? (
+            <InfoIcon
+              className={classes.statusIcon}
+              color="inherit"
+              aria-label={intl.formatMessage(messages.infoIconAria)}
+            />
           ) : null}
           <Typography className={classes.statusMessage}>
-            {type === 'in-progress' ? (
+            {type === 'broadcasting' ? (
               <FormattedMessage
                 id="confirm-tx-dialog-content.broadcasting-msg"
                 description="Message for when a transaction is being broadcast."
                 defaultMessage="Broadcasting transaction to the network. Please wait..."
               />
-            ) : type === 'success' ? (
+            ) : type === 'broadcast-succeeded' ? (
               <FormattedMessage
                 id="confirm-tx-status-footer.success-msg"
                 description="Message for when a transaction broadcast succeeded."
                 defaultMessage="The transaction was successfully broadcast to the network!"
               />
-            ) : type === 'failure' ? (
+            ) : type === 'broadcast-failed' ? (
               <FormattedMessage
                 id="confirm-tx-status-footer.error-msg"
                 description="Message for when a transaction failed to broadcast."
@@ -136,6 +159,44 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 values={{
                   error: reason || 'N/A'
                 }}
+              />
+            ) : type === 'ledger-not-supported' ? (
+              <FormattedMessage
+                id="confirm-tx-status-footer.ledger-not-supported-msg"
+                description="Message for when the browser doesn't support Ledger."
+                defaultMessage="Your browser doesn't support interfacing with Ledger devices."
+              />
+            ) : type === 'ledger-another-device' ? (
+              <FormattedMessage
+                id="confirm-tx-status-footer.ledger-another-device-msg"
+                description="Message for when the user has connected the wrong Ledger."
+                defaultMessage={
+                  'The connected Ledger doesn\'t manage this account. Either you used ' +
+                  'an additional passphrase (in your Ledger) when adding this account ' +
+                  'or you have plugged in a device with a different mnemonic.'
+                }
+              />
+            ) : type === 'ledger-not-connected' ? (
+              <FormattedMessage
+                id="confirm-tx-status-footer.ledger-not-connected-msg"
+                description="Message for when the Ledger device isn't connected."
+                defaultMessage={
+                  'Please connect your Ledger and open the RISE app on it. ' +
+                  'Waiting for Ledger...'
+                }
+              />
+            ) : type === 'ledger-confirming' ? (
+              <FormattedMessage
+                id="confirm-tx-status-footer.ledger-not-connected-msg"
+                description="Message for when the Ledger device isn't connected."
+                defaultMessage={
+                  'Please confirm the transaction on your Ledger. Waiting for confirmation... ' +
+                  '({seconds} {seconds, plural,' +
+                  '  one {second}' +
+                  '  other {seconds}' +
+                  '} remaining)'
+                }
+                values={{ seconds: timeout || 0 }}
               />
             ) : null}
           </Typography>
