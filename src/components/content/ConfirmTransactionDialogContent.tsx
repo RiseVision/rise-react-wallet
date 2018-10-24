@@ -1,7 +1,6 @@
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
@@ -15,17 +14,16 @@ import {
 import * as classNames from 'classnames';
 import * as React from 'react';
 import { ReactEventHandler } from 'react';
-import { ChangeEvent, FormEvent } from 'react';
 import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { LiskWallet } from 'dpos-offline';
 import { DialogContentProps, SetDialogContent } from '../Dialog';
 import { RawAmount } from '../../utils/amounts';
 import AccountIcon from '../AccountIcon';
+import ConfirmTxEnterSecretsFooter from '../ConfirmTxEnterSecretsFooter';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -215,31 +213,6 @@ const messages = defineMessages({
     id: 'confirm-tx-dialog-content.success-icon-aria',
     description: 'Success status icon label for accessibility',
     defaultMessage: 'Success indicator icon'
-  },
-  invalidMnemonicMissing: {
-    id: 'forms-register-delegate.invalid-mnemonic-missing',
-    description: 'Error label for an invalid mnemonic (missing)',
-    defaultMessage: 'Missing secret. Please enter the mnemonic secret for your account.',
-  },
-  invalidMnemonicIncorrect: {
-    id: 'forms-register-delegate.invalid-mnemonic-incorrect',
-    description: 'Error label for an invalid mnemonic',
-    defaultMessage: 'Incorrect secret. The secret you entered is not associated with this account.'
-  },
-  invalidMnemonicNoWords: {
-    id: 'forms-register-delegate.invalid-mnemonic-no-words',
-    description: 'Error label for an invalid mnemonic (no words)',
-    defaultMessage: 'Incorrect secret. The mnemonic usually consists of 12 words separated with spaces.'
-  },
-  invalidPassphraseMissing: {
-    id: 'forms-register-delegate.invalid-passphrase-missing',
-    description: 'Error label for an invalid passphrase',
-    defaultMessage: 'Missing passphrase. Please enter the passphrase for your account.'
-  },
-  invalidPassphraseIncorrect: {
-    id: 'forms-register-delegate.invalid-passphrase-incorrect',
-    description: 'Error label for an invalid passphrase',
-    defaultMessage: 'Incorrect passphrase. The passphrase you entered is not associated with this account.'
   }
 });
 
@@ -314,122 +287,7 @@ interface Props extends BaseProps {
 
 type DecoratedProps = Props & InjectedIntlProps;
 
-interface State {
-  mnemonic: string;
-  mnemonicInvalid: boolean;
-  passphrase: string;
-  passphraseInvalid: boolean;
-}
-
-class ConfirmTransactionDialogContent extends React.Component<DecoratedProps, State> {
-  state = {
-    mnemonic: '',
-    mnemonicInvalid: false,
-    passphrase: '',
-    passphraseInvalid: false,
-  };
-
-  handleMnemonicChange = (ev: ChangeEvent<HTMLInputElement>) => {
-    const mnemonic = ev.target.value;
-    this.setState({
-      mnemonic,
-      mnemonicInvalid: false,
-    });
-  }
-
-  handleMnemonicBlur = () => {
-    const { mnemonic } = this.state;
-    const mnemonicInvalid = !!mnemonic && !!this.mnemonicError();
-    this.setState({ mnemonicInvalid });
-  }
-
-  handlePassphraseChange = (ev: ChangeEvent<HTMLInputElement>) => {
-    const passphrase = ev.target.value;
-    this.setState({
-      passphrase,
-      passphraseInvalid: false,
-    });
-  }
-
-  handlePassphraseBlur = () => {
-    const { passphrase } = this.state;
-    const passphraseInvalid = !!passphrase && !!this.passphraseError();
-    this.setState({ passphraseInvalid });
-  }
-
-  handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
-    ev.preventDefault();
-
-    const { step } = this.props;
-
-    if (step.kind === 'confirm') {
-      const mnemonicInvalid = !!this.mnemonicError();
-      const passphraseInvalid = !!step.secondPublicKey && !!this.passphraseError();
-
-      if (mnemonicInvalid || passphraseInvalid) {
-        this.setState({
-          mnemonicInvalid,
-          passphraseInvalid,
-        });
-        return;
-      }
-
-      const { mnemonic, passphrase } = this.state;
-      step.onConfirm({
-        mnemonic,
-        passphrase: step.secondPublicKey ? passphrase : null,
-      });
-    }
-  }
-
-  mnemonicError(): string | null {
-    const { intl, step } = this.props;
-    const { mnemonic } = this.state;
-
-    let publicKey = '';
-    if (step.kind === 'confirm') {
-      publicKey = step.publicKey;
-    }
-
-    if (!mnemonic.trim()) {
-      return intl.formatMessage(messages.invalidMnemonicMissing);
-    }
-
-    // The derivation takes some CPU cycles, so only do it after the empty check
-    const isValid = !publicKey || derivePublicKey(mnemonic) === publicKey;
-
-    if (isValid) {
-      return null;
-    } else if (mnemonic.indexOf(' ') < 0) {
-      return intl.formatMessage(messages.invalidMnemonicNoWords);
-    } else {
-      return intl.formatMessage(messages.invalidMnemonicIncorrect);
-    }
-  }
-
-  passphraseError(): string | null {
-    const { intl, step } = this.props;
-    const { passphrase } = this.state;
-
-    let publicKey = '';
-    if (step.kind === 'confirm') {
-      publicKey = step.secondPublicKey || '';
-    }
-
-    if (!passphrase.trim()) {
-      return intl.formatMessage(messages.invalidPassphraseMissing);
-    }
-
-    // The derivation takes some CPU cycles, so only do it after the empty check
-    const isValid = derivePublicKey(passphrase) === publicKey;
-
-    if (isValid) {
-      return null;
-    } else {
-      return intl.formatMessage(messages.invalidPassphraseIncorrect);
-    }
-  }
-
+class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
   componentWillMount() {
     const { intl } = this.props;
 
@@ -677,101 +535,14 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps, St
         {step.kind === 'failure' && this.renderFailureFooter(step)}
         {step.kind === 'success' && this.renderSuccessFooter(step)}
         {step.kind === 'in-progress' && this.renderInProgressFooter(step)}
-        {step.kind === 'confirm' && this.renderConfirmFooter(step)}
-      </React.Fragment>
-    );
-  }
-
-  renderConfirmFooter(step: ConfirmStep) {
-    const { classes } = this.props;
-    const {
-      mnemonic,
-      mnemonicInvalid,
-      passphrase,
-      passphraseInvalid
-    } = this.state;
-    const isPassphraseSet = !!step.secondPublicKey;
-
-    return (
-      <Grid
-        className={classes.content}
-        container={true}
-        spacing={16}
-        component="form"
-        onSubmit={this.handleFormSubmit}
-      >
-        <Grid item={true} xs={12}>
-          <Typography>
-            {isPassphraseSet ? (
-              <FormattedMessage
-                id="confirm-tx-dialog-content.instructions-with-passphrase"
-                description="Instructions on how to confirm the transaction (with 2nd passphrase set)."
-                defaultMessage={
-                  'To confirm this transaction, enter your mnemonic secret ' +
-                  'and the 2nd passphrase into the text fields below.'
-                }
-              />
-            ) : (
-              <FormattedMessage
-                id="confirm-tx-dialog-content.instructions"
-                description="Instructions on how to confirm the transaction."
-                defaultMessage={
-                  'To confirm this transaction, enter your mnemonic secret ' +
-                  'into the text field below.'
-                }
-              />
-            )}
-          </Typography>
-        </Grid>
-        <Grid item={true} xs={12}>
-          <TextField
-            type="password"
-            label={
-              <FormattedMessage
-                id="confirm-tx-dialog-content.mnemonic-input-label"
-                description="Label for mnemonic text field."
-                defaultMessage="Account mnemonic secret"
-              />
-            }
-            value={mnemonic}
-            onChange={this.handleMnemonicChange}
-            onBlur={this.handleMnemonicBlur}
-            error={mnemonicInvalid}
-            helperText={mnemonicInvalid ? this.mnemonicError() : ''}
-            autoFocus={true}
-            fullWidth={true}
+        {step.kind === 'confirm' && (
+          <ConfirmTxEnterSecretsFooter
+            publicKey={step.publicKey}
+            secondPublicKey={step.secondPublicKey}
+            onConfirm={step.onConfirm}
           />
-        </Grid>
-        {isPassphraseSet && (
-          <Grid item={true} xs={12}>
-            <TextField
-              type="password"
-              label={
-                <FormattedMessage
-                  id="confirm-tx-dialog-content.passphrase-input-label"
-                  description="Label for 2nd passphrase text field."
-                  defaultMessage="Second passphrase"
-                />
-              }
-              value={passphrase}
-              onChange={this.handlePassphraseChange}
-              onBlur={this.handlePassphraseBlur}
-              error={passphraseInvalid}
-              helperText={passphraseInvalid ? this.passphraseError() : ''}
-              fullWidth={true}
-            />
-          </Grid>
         )}
-        <Grid item={true} xs={12}>
-          <Button type="submit" fullWidth={true}>
-            <FormattedMessage
-              id="confirm-tx-dialog-content.sign-button"
-              description="Label for sign & broadcast button."
-              defaultMessage="Sign & broadcast"
-            />
-          </Button>
-        </Grid>
-      </Grid>
+      </React.Fragment>
     );
   }
 
@@ -888,11 +659,6 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps, St
 }
 
 export default stylesDecorator(injectIntl(ConfirmTransactionDialogContent));
-
-function derivePublicKey(secret: string): string {
-  const w = new LiskWallet(secret, 'R');
-  return w.publicKey;
-}
 
 function emphasizeAndJoin(labels: string[], separator: string = ', '): JSX.Element {
   return (
