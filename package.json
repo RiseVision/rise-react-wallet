@@ -32,7 +32,7 @@
     "react-intl": "^2.4.0",
     "react-scripts-ts": "2.16.0",
     "risejs": "^1.4.1",
-    "sinon": "^6.3.5",
+    "sinon": "^7.0.0",
     "store": "^2.0.12",
     "svg-country-flags": "^1.2.6",
     "ts-jest": "^23.10.4",
