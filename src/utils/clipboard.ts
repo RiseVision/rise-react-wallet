@@ -3,8 +3,10 @@ export function copyToClipboard(value: string) {
 
   // Persist current user selection
   const ranges = [];
-  for (let i = 0; i < selection.rangeCount; i++) {
-    ranges.push(selection.getRangeAt(i));
+  if (selection) {
+    for (let i = 0; i < selection.rangeCount; i++) {
+      ranges.push(selection.getRangeAt(i));
+    }
   }
 
   const el = document.createElement('textarea');
@@ -23,7 +25,7 @@ export function copyToClipboard(value: string) {
   document.body.removeChild(el);
 
   // Restore previous selection
-  if (ranges.length > 0) {
+  if (selection && ranges.length > 0) {
     selection.removeAllRanges();
     for (let i = 0; i < ranges.length; i++) {
       selection.addRange(ranges[i]);
