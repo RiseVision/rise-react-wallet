@@ -464,6 +464,7 @@ export default class WalletStore {
     disposers.push(observe(account, 'balance', balanceChanged));
     // @ts-ignore issue with mobx d.ts
     disposers.push(observe(account, 'fiatCurrency', calculateFiat));
+    // TODO observer `viewed` and then download the recent transactions
     this.accounts.observe(change => {
       // only deletions
       if (change.type !== 'delete') {

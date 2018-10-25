@@ -225,6 +225,24 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
 
 // wallet
 
+export const accountsListRoute = new Route({
+  path: '/accounts',
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      loading={<LoadingIndicator />}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountsList />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
 export const accountOverviewRoute = new Route({
   path: '/account/:id',
   onEnter: (
@@ -236,6 +254,7 @@ export const accountOverviewRoute = new Route({
     onEnterID(route, params, store, queryParams);
     // load recent transaction on the first page view
     // TODO ideally would be handled automatically by the observer
+    // TODO replace with an observer listening on 'viewed'
     const account = store.wallet.selectedAccount;
     if (account) {
       // pass async

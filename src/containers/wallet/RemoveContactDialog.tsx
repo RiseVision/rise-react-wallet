@@ -37,7 +37,7 @@ class RemoveContactDialog extends React.Component<Props> {
     const { navigateBackLink, store, addressBookStore } = this.injected;
     addressBookStore.contacts.delete(this.address);
     store.navigateTo(navigateBackLink);
-  };
+  }
 
   render() {
     const {
