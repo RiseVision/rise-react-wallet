@@ -12,6 +12,7 @@ import ChooseFiatDialogContent from '../../components/content/ChooseFiatDialogCo
 interface Props {
   account: AccountStore;
   navigateBackLink: RouteLink;
+  open?: boolean;
 }
 
 interface InjectedProps extends Props {
@@ -42,7 +43,7 @@ class ChooseFiatDialog extends React.Component<Props> {
     }
 
     store.navigateTo(navigateBackLink);
-  }
+  };
 
   render() {
     const {
@@ -50,15 +51,13 @@ class ChooseFiatDialog extends React.Component<Props> {
       navigateBackLink,
       routerStore,
       walletStore,
+      open
     } = this.injected;
 
-    const isOpen = routerStore.currentView === accountSettingsFiatRoute;
+    const isOpen = open || routerStore.currentView === accountSettingsFiatRoute;
 
     return (
-      <Dialog
-        open={isOpen}
-        closeLink={navigateBackLink}
-      >
+      <Dialog open={isOpen} closeLink={navigateBackLink}>
         <ChooseFiatDialogContent
           key={account.id}
           fiat={account.fiatCurrency}

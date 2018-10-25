@@ -15,6 +15,7 @@ interface Props {
   amount?: RawAmount;
   recipientID?: string;
   onNavigateBack: () => void;
+  open?: boolean;
 }
 
 interface PropsInjected extends Props {
@@ -53,7 +54,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
     onNavigateBack();
-  }
+  };
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     const { onNavigateBack } = this.injected;
@@ -67,7 +68,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
         transaction: null
       });
     }
-  }
+  };
 
   handleSubmit = (data: { recipientID: string; amount: RawAmount }) => {
     const { recipientID, amount } = data;
@@ -81,7 +82,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
         amount
       }
     });
-  }
+  };
 
   handleCreateTransaction = () => {
     const { account, walletStore } = this.injected;
@@ -96,7 +97,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
     } else {
       throw new Error('Invalid internal state');
     }
-  }
+  };
 
   resetState() {
     const { recipientID, amount } = this.props;
@@ -145,8 +146,8 @@ class SendCoinsDialog extends React.Component<Props, State> {
   }
 
   get isOpen() {
-    const { routerStore } = this.injected;
-    return routerStore.currentView === accountSendRoute;
+    const { routerStore, open } = this.injected;
+    return open || routerStore.currentView === accountSendRoute;
   }
 
   render() {

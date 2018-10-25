@@ -13,6 +13,7 @@ import WalletStore from '../../stores/wallet';
 interface Props {
   account: AccountStore;
   navigateBackLink: RouteLink;
+  open?: boolean;
 }
 
 interface PropsInjected extends Props {
@@ -108,8 +109,8 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
   }
 
   get isOpen() {
-    const { routerStore } = this.injected;
-    return routerStore.currentView === accountSettingsPassphraseRoute;
+    const { routerStore, open } = this.injected;
+    return open || routerStore.currentView === accountSettingsPassphraseRoute;
   }
 
   render() {

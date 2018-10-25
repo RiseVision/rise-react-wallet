@@ -11,6 +11,7 @@ import { normalizeAddress } from '../../utils/utils';
 
 interface Props {
   navigateBackLink: RouteLink;
+  open?: boolean;
 }
 
 interface InjectedProps extends Props {
@@ -36,12 +37,17 @@ class RemoveContactDialog extends React.Component<Props> {
     const { navigateBackLink, store, addressBookStore } = this.injected;
     addressBookStore.contacts.delete(this.address);
     store.navigateTo(navigateBackLink);
-  }
+  };
 
   render() {
-    const { navigateBackLink, routerStore, addressBookStore } = this.injected;
+    const {
+      navigateBackLink,
+      routerStore,
+      addressBookStore,
+      open
+    } = this.injected;
 
-    const isOpen = routerStore.currentView === addressBookRemoveRoute;
+    const isOpen = open || routerStore.currentView === addressBookRemoveRoute;
 
     if (isOpen) {
       // Cache the data locally to prevent content changes when closing the dialog
@@ -50,10 +56,7 @@ class RemoveContactDialog extends React.Component<Props> {
     }
 
     return (
-      <Dialog
-        open={isOpen}
-        closeLink={navigateBackLink}
-      >
+      <Dialog open={isOpen} closeLink={navigateBackLink}>
         <RemoveContactDialogContent
           address={this.address}
           name={this.name}

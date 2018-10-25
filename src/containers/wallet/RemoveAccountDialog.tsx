@@ -12,6 +12,7 @@ import RemoveAccountDialogContent from '../../components/content/RemoveAccountDi
 interface Props {
   account: AccountStore;
   navigateBackLink: RouteLink;
+  open?: boolean;
 }
 
 interface InjectedProps extends Props {
@@ -41,9 +42,9 @@ class RemoveAccountDialog extends React.Component<Props> {
   }
 
   render() {
-    const { account, navigateBackLink, routerStore } = this.injected;
+    const { account, navigateBackLink, routerStore, open } = this.injected;
 
-    const isOpen = routerStore.currentView === accountSettingsRemoveRoute;
+    const isOpen = open || routerStore.currentView === accountSettingsRemoveRoute;
 
     return (
       <Dialog

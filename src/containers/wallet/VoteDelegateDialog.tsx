@@ -15,6 +15,7 @@ import WalletStore from '../../stores/wallet';
 interface Props {
   account: AccountStore;
   navigateBackLink: RouteLink;
+  open?: boolean;
 }
 
 interface PropsInjected extends Props {
@@ -49,8 +50,8 @@ class VoteDelegateDialog extends React.Component<Props, State> {
   }
 
   get isOpen() {
-    const { routerStore } = this.injected;
-    return routerStore.currentView === accountSettingsVoteRoute;
+    const { routerStore, open } = this.injected;
+    return open || routerStore.currentView === accountSettingsVoteRoute;
   }
 
   disposeOpenMonitor: null | IReactionDisposer = null;
