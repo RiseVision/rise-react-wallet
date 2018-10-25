@@ -197,7 +197,7 @@ export function openRegisterDelegateDialog() {
 export function getTransactionDetails() {
   return (
     cy
-      .get('main aside + div > div:nth-child(2)')
+      .get('main p[class*="AccountOverview-dateGroupTitle-"] + div > div:nth-child(2)')
       .find('div[aria-expanded="true"][role="button"]')
       .eq(0)
       // move to the expanded panel
@@ -212,7 +212,7 @@ export function getTransactionDetails() {
  */
 export function expandTransactionDetails(index = 1) {
   return cy
-    .get(`main aside + div > div:nth-child(${index})`)
+    .get(`main p[class*="AccountOverview-dateGroupTitle-"] + div > div:nth-child(${index})`)
     .find('div[aria-expanded="false"][role="button"]')
     .eq(0)
     .click();

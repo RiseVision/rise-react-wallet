@@ -39,6 +39,9 @@ const styles = (theme: Theme) =>
         width: `calc(100% - ${drawerWidth}px)`
       }
     },
+    permanentDrawerContainer: {
+      display: 'flex',
+    },
     drawerPaper: {
       width: drawerWidth,
       [theme.breakpoints.up('md')]: {
@@ -143,7 +146,11 @@ class Wallet extends React.Component<DecoratedProps, State> {
             children={drawer}
           />
         </Hidden>
-        <Hidden smDown={true} implementation="css">
+        <Hidden
+          className={classes.permanentDrawerContainer}
+          smDown={true}
+          implementation="css"
+        >
           <Drawer
             variant="permanent"
             open={true}
@@ -211,4 +218,4 @@ class Wallet extends React.Component<DecoratedProps, State> {
   }
 }
 
-export default stylesDecorator<Props>(themeDecorator<DecoratedProps>(Wallet));
+export default stylesDecorator(themeDecorator(Wallet));
