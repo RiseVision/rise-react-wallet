@@ -2,6 +2,9 @@
   "name": "rise-wallet",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "yarn": "^1.10.1"
+  },
   "dependencies": {
     "@ledgerhq/hw-transport-u2f": "^4.21.0",
     "@material-ui/core": "^v1.4.2",
