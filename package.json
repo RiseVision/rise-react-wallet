@@ -13,7 +13,7 @@
     "bip39": "^2.5.0",
     "classnames": "^2.2.6",
     "delay": "^4.1.0",
-    "downshift": "^2.2.0",
+    "downshift": "^3.1.4",
     "dpos-api-wrapper": "^1.3.2",
     "dpos-ledger-api": "^1.1.0",
     "dpos-offline": "^1.6.0",
