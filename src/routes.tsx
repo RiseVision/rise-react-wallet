@@ -225,6 +225,24 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
 
 // wallet
 
+export const accountsListRoute = new Route({
+  path: '/accounts',
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      loading={<LoadingIndicator />}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountsList />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
 export const accountOverviewRoute = new Route({
   path: '/account/:id',
   onEnter: onEnterID,

@@ -43,7 +43,7 @@ class ChooseFiatDialog extends React.Component<Props> {
     }
 
     store.navigateTo(navigateBackLink);
-  };
+  }
 
   render() {
     const {
