@@ -123,7 +123,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       return;
     }
 
-    const match = await walletStore.dposAPI.delegates.getByUsername(
+    const match = await walletStore.fetchDelegateByID(
       query.toUpperCase()
     );
 
@@ -131,7 +131,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       search: {
         isLoading: false,
         query,
-        delegates: match.delegate ? [match.delegate] : []
+        delegates: match ? [match] : []
       }
     });
   }

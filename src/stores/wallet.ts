@@ -274,13 +274,10 @@ export default class WalletStore {
   signTransaction(
     unsignedTx: BaseTx,
     mnemonic: string,
-    passphrase: string | null = null,
+    passphrase: string | null = null
   ): ITransaction {
     const wallet = new LiskWallet(mnemonic, 'R');
-    return wallet.signTransaction(
-      unsignedTx,
-      this.secondWallet(passphrase)
-    );
+    return wallet.signTransaction(unsignedTx, this.secondWallet(passphrase));
   }
 
   async broadcastTransaction(
@@ -584,7 +581,7 @@ export default class WalletStore {
     const account = {
       id: wallet.address,
       publicKey: wallet.publicKey,
-      type: AccountType.MNEMONIC,
+      type: AccountType.MNEMONIC
     };
     this.login(account.id, account, true);
     return account.id;
@@ -698,6 +695,14 @@ export default class WalletStore {
       }));
 
     return [...contactRecords, ...walletRecords];
+  }
+
+  async fetchDelegateByID(id: string): Promise<Delegate | null> {
+    const account = await this.dposAPI.accounts.getAccount(id);
+    if (!account || !account.account.publicKey) {
+      return null;
+    }
+    return await this.delegateCache.get(account.account.publicKey);
   }
 }
 
