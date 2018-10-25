@@ -38,7 +38,7 @@ export class RawAmount {
     } else {
       n = new BigNumber(value);
     }
-    return new RawAmount(n.mul(unitScale));
+    return new RawAmount(n.times(unitScale));
   }
 
   constructor(value: string | number | BigNumber) {

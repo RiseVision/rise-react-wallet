@@ -4,8 +4,9 @@ import {
   rise as dposAPI,
   TransactionType,
 } from 'risejs';
-import { BaseTx, ITransaction } from 'dpos-offline/dist/es5/trxTypes/BaseTx';
 import {
+  BaseTx,
+  ITransaction,
   CreateSignatureTx,
   DelegateTx,
   IDelegateTxAsset,

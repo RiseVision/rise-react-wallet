@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx';
-import { BaseTx, ITransaction } from 'dpos-offline/dist/es5/trxTypes/BaseTx';
+import { BaseTx, ITransaction } from 'dpos-offline';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { DposLedger, SupportedCoin, LedgerAccount as DposAccount } from 'dpos-ledger-api';
 

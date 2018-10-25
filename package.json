@@ -6,7 +6,7 @@
     "yarn": "^1.10.1"
   },
   "dependencies": {
-    "@ledgerhq/hw-transport-u2f": "^4.21.0",
+    "@ledgerhq/hw-transport-u2f": "^4.24.0",
     "@material-ui/core": "^v3.3.1",
     "@material-ui/icons": "^3.0.1",
     "@types/moment": "^2.13.0",
@@ -16,7 +16,7 @@
     "downshift": "^3.1.4",
     "dpos-api-wrapper": "^1.3.2",
     "dpos-ledger-api": "^1.1.0",
-    "dpos-offline": "^1.6.0",
+    "dpos-offline": "^1.6.3",
     "isomorphic-fetch": "^2.2.1",
     "jdenticon": "^2.1.0",
     "lodash": "^4.17.11",
@@ -36,6 +36,7 @@
     "store": "^2.0.12",
     "svg-country-flags": "^1.2.6",
     "ts-jest": "^23.10.4",
+    "bignumber.js": "^7.2.1",
     "unique-random": "^2.0.0"
   },
   "homepage": "https://risevision.github.io/rise-react-wallet",
