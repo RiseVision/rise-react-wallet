@@ -117,6 +117,10 @@
   },
   "jest": {
     "verbose": true,
+    "testMatch": [
+      "<rootDir>/build/dist/**/__tests__/**/*.js?(x)",
+      "<rootDir>/build/dist/**/?(*.)+(spec|test).js?(x)"
+    ],
     "testEnvironment": "jsdom",
     "testURL": "http://localhost/"
   }
