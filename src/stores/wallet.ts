@@ -444,6 +444,10 @@ export default class WalletStore {
       }
     };
     const balanceChanged = (change: IValueDidChange<RawAmount>) => {
+      // skip when already loading
+      if (account.recentTransactions.isLoading) {
+        return;
+      }
       // refresh only when balance changes, but only if downloaded at least once
       if (
         change.oldValue!.toNumber() === change.newValue.toNumber() &&
@@ -459,11 +463,21 @@ export default class WalletStore {
       // pass async
       account.recentTransactions.load();
     };
+    const viewedChanged = () => {
+      // skip when already loading
+      if (account.recentTransactions.isLoading) {
+        return;
+      }
+      // pass async
+      account.recentTransactions.load();
+    };
     const disposers: Array<() => void> = [];
     // @ts-ignore issue with mobx d.ts
     disposers.push(observe(account, 'balance', balanceChanged));
     // @ts-ignore issue with mobx d.ts
     disposers.push(observe(account, 'fiatCurrency', calculateFiat));
+    // @ts-ignore issue with mobx d.ts
+    disposers.push(observe(account, 'viewed', viewedChanged));
     this.accounts.observe(change => {
       // only deletions
       if (change.type !== 'delete') {
