@@ -1,9 +1,5 @@
 import * as assert from 'assert';
-import {
-  Delegate,
-  rise as dposAPI,
-  TransactionType,
-} from 'risejs';
+import { Delegate, rise as dposAPI, TransactionType } from 'risejs';
 import {
   BaseTx,
   ITransaction,
@@ -501,7 +497,11 @@ export default class WalletStore {
     if (!account) {
       throw new Error('Unknown account');
     }
+    if (this.selectedAccount) {
+      this.selectedAccount.selected = false;
+    }
     this.selectedAccount = account;
+    account.selected = true;
   }
 
   getAccountByID(accountID: string): AccountStore | null {

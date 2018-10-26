@@ -32,7 +32,8 @@ import Link from '../../components/Link';
 import {
   accountOverviewRoute,
   onboardingAddAccountRoute,
-  addressBookRoute
+  addressBookRoute,
+  accountsListRoute
 } from '../../routes';
 import { RouteLink } from '../../stores/root';
 import AccountStore from '../../stores/account';
@@ -88,7 +89,7 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
-    description: 'Label for accounts that user hasn\'t named yet',
+    description: "Label for accounts that user hasn't named yet",
     defaultMessage: 'Unnamed account'
   },
   accountsListAriaLabel: {
@@ -111,6 +112,23 @@ class DrawerContent extends React.Component<DecoratedProps> {
     return this.props as PropsInjected;
   }
 
+  accountList() {
+    const { walletStore } = this.injected;
+
+    const list = orderBy(
+      [...walletStore.accounts.values()],
+      ['pinned', 'name'],
+      ['desc', 'asc']
+    ).splice(0, walletStore.config.max_drawer_accounts);
+
+    // if the selected is in the overflow, replace the last one with it
+    if (!list.includes(walletStore.selectedAccount)) {
+      list.splice(list.length - 1, 1, walletStore.selectedAccount);
+    }
+
+    return list;
+  }
+
   render() {
     const {
       intl,
@@ -118,13 +136,13 @@ class DrawerContent extends React.Component<DecoratedProps> {
       onAfterNavigate,
       onSignOutClick,
       routerStore,
-      walletStore,
+      walletStore
     } = this.injected;
 
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );
-    const { selectedAccount }  = walletStore;
+    const { selectedAccount } = walletStore;
 
     let selection: 'addressBook' | 'account' = 'account';
     if (routerStore.currentView.path.startsWith('/address-book')) {
@@ -157,16 +175,12 @@ class DrawerContent extends React.Component<DecoratedProps> {
         </Typography>
         <Divider aria-hidden={true} />
         <List aria-label={intl.formatMessage(messages.accountsListAriaLabel)}>
-          {orderBy(
-            [...walletStore.accounts.values()],
-            ['pinned', 'name'],
-            ['desc', 'asc']
-          ).map((account: AccountStore) => (
+          {this.accountList().map((account: AccountStore) => (
             <Link
               key={account.id}
               route={accountOverviewRoute}
               params={{
-                id: account.id,
+                id: account.id
               }}
               onAfterNavigate={onAfterNavigate}
             >
@@ -174,6 +188,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
                 className={classNames(
                   selection === 'account' &&
                     selectedAccount &&
+                    routerStore.currentView !== accountsListRoute &&
                     selectedAccount.id === account.id &&
                     classes.selectedListItem
                 )}
@@ -195,37 +210,65 @@ class DrawerContent extends React.Component<DecoratedProps> {
               </ListItem>
             </Link>
           ))}
-          <Link
-            key="add-account"
-            route={onboardingAddAccountRoute}
-            onAfterNavigate={onAfterNavigate}
-          >
-            <ListItem button={true}>
-              <ListItemAvatar>
-                <Avatar>
-                  <AddIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText>
-                <FormattedMessage
-                  id="drawer-content.add-an-account"
-                  description="Add account drawer item"
-                  defaultMessage="Add an account"
-                />
-              </ListItemText>
-            </ListItem>
-          </Link>
+          {walletStore.accounts.size <=
+            walletStore.config.max_drawer_accounts && (
+            <Link
+              key="add-account"
+              route={onboardingAddAccountRoute}
+              onAfterNavigate={onAfterNavigate}
+            >
+              <ListItem button={true}>
+                <ListItemAvatar>
+                  <Avatar>
+                    <AddIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText>
+                  <FormattedMessage
+                    id="drawer-content.add-an-account"
+                    description="Add account drawer item"
+                    defaultMessage="Add an account"
+                  />
+                </ListItemText>
+              </ListItem>
+            </Link>
+          )}
+          {walletStore.accounts.size >
+            walletStore.config.max_drawer_accounts && (
+            <Link
+              key="more-accounts"
+              route={accountsListRoute}
+              onAfterNavigate={onAfterNavigate}
+            >
+              <ListItem
+                className={classNames(
+                  routerStore.currentView === accountsListRoute &&
+                    classes.selectedListItem
+                )}
+                button={true}
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    <AddIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText>
+                  <FormattedMessage
+                    id="drawer-content.more-accounts"
+                    description="More accounts drawer item"
+                    defaultMessage="More accounts"
+                  />
+                </ListItemText>
+              </ListItem>
+            </Link>
+          )}
         </List>
         <Divider aria-hidden={true} />
         <List aria-label={intl.formatMessage(messages.navigationListAriaLabel)}>
-          <Link
-            route={addressBookRoute}
-            onAfterNavigate={onAfterNavigate}
-          >
+          <Link route={addressBookRoute} onAfterNavigate={onAfterNavigate}>
             <ListItem
               className={classNames(
-                selection === 'addressBook' &&
-                  classes.selectedListItem
+                selection === 'addressBook' && classes.selectedListItem
               )}
               button={true}
             >
