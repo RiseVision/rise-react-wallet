@@ -15,11 +15,11 @@ export enum LoadingState {
 export enum AccountType {
   READONLY,
   MNEMONIC,
-  LEDGER,
+  LEDGER
 }
 
 type ImportableFields =
-  'id'
+  | 'id'
   | 'publicKey'
   | 'type'
   | 'hwId'
@@ -63,6 +63,7 @@ export default class AccountStore {
   @observable registeredDelegateState: LoadingState = LoadingState.NOT_LOADED;
 
   @observable recentTransactions: TransactionsStore;
+  @observable selected: boolean = false;
 
   constructor(
     config: TConfig,

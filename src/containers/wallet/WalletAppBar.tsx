@@ -22,7 +22,11 @@ import {
   injectIntl
 } from 'react-intl';
 import Link from '../../components/Link';
-import { accountOverviewRoute, accountSettingsRoute } from '../../routes';
+import {
+  accountOverviewRoute,
+  accountSettingsRoute,
+  accountsListRoute
+} from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
 
@@ -71,17 +75,25 @@ const messages = defineMessages({
   }
 });
 
-type AppBarState = null | 'accountOverview' | 'accountSettings' | 'addressBook';
+type AppBarState =
+  | null
+  | 'accountOverview'
+  | 'accountSettings'
+  | 'addressBook'
+  | 'accountsList';
 
 @inject('routerStore')
 @inject(accountStore)
 @observer
 class WalletAppBar extends React.Component<DecoratedProps> {
   appBarState() {
-    const path = this.injected.routerStore.currentView.path;
+    const { routerStore } = this.injected;
+    const path = routerStore.currentView.path;
 
     let state: AppBarState = null;
-    if (path.startsWith('/account') || path.startsWith('/send')) {
+    if (routerStore.currentView === accountsListRoute) {
+      state = 'accountsList';
+    } else if (path.startsWith('/account') || path.startsWith('/send')) {
       state = 'accountOverview';
     } else if (path.startsWith('/settings')) {
       state = 'accountSettings';
@@ -106,8 +118,12 @@ class WalletAppBar extends React.Component<DecoratedProps> {
       return {
         route: accountOverviewRoute,
         params: {
-          id: this.account.id,
-        },
+          id: this.account.id
+        }
+      };
+    } else if (state === 'accountsList') {
+      return {
+        route: accountOverviewRoute
       };
     } else {
       throw new Error('Invalid state for backLink');
@@ -169,6 +185,13 @@ class WalletAppBar extends React.Component<DecoratedProps> {
                 defaultMessage="Address book"
               />
             )}
+            {state === 'accountsList' && (
+              <FormattedMessage
+                id="wallet-appbar.accounts-list-title"
+                description="Accounts list title"
+                defaultMessage="List of added accounts"
+              />
+            )}
           </Typography>
           {state === 'accountOverview' && (
             <Tooltip
@@ -177,11 +200,13 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               <Link
                 route={accountSettingsRoute}
                 params={{
-                  id: this.account.id,
+                  id: this.account.id
                 }}
               >
                 <IconButton
-                  aria-label={intl.formatMessage(messages.accountSettingsTooltip)}
+                  aria-label={intl.formatMessage(
+                    messages.accountSettingsTooltip
+                  )}
                   color="inherit"
                 >
                   <SettingsOutlinedIcon />

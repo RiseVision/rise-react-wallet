@@ -12,6 +12,7 @@ export type TConfig = {
   explorer_url: string;
   date_format: string;
   fiat_currencies: string[];
+  max_drawer_accounts: number;
 };
 
 export type TStores = {

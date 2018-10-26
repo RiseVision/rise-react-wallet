@@ -460,5 +460,6 @@ export const config: TConfig = {
   api_url: '',
   date_format: '',
   explorer_url: '',
-  fiat_currencies: []
+  fiat_currencies: [],
+  max_drawer_accounts: 5
 };
