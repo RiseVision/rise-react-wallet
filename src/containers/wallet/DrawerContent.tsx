@@ -89,7 +89,7 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
-    description: "Label for accounts that user hasn't named yet",
+    description: 'Label for accounts that user hasn\'t named yet',
     defaultMessage: 'Unnamed account'
   },
   accountsListAriaLabel: {

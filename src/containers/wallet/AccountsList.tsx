@@ -64,7 +64,7 @@ const messages = defineMessages({
   },
   unnamedAccountLabel: {
     id: 'accounts-list.unnamed-account-label',
-    description: "Label for accounts that user hasn't named yet",
+    description: 'Label for accounts that user hasn\'t named yet',
     defaultMessage: 'Unnamed account'
   },
   addAccountTooltip: {
