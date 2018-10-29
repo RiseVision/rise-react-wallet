@@ -431,6 +431,7 @@ class LedgerHub implements LedgerTaskRunner {
   }
 }
 
+/** TODO add connection status observables */
 export default class LedgerStore {
   private hub = new LedgerHub();
 
