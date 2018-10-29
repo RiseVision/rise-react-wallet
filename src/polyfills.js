@@ -1,3 +1,5 @@
+import "@babel/polyfill";
+
 if (!Object.entries) {
   Object.entries = function( obj ){
     var ownProps = Object.keys( obj ),
