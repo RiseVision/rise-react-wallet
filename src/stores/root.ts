@@ -59,6 +59,7 @@ export default class RootStore {
     };
   }
 
+  /** TODO move to RouterStore */
   navigateTo(dest: RouteLink) {
     const { route, onBeforeNavigate, onAfterNavigate } = dest;
     const params = dest.params || {};
