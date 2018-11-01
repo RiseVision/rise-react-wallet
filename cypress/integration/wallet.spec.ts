@@ -348,7 +348,7 @@ context('Settings', () => {
     });
   });
 
-  it.only('vote delegate when already voted (stabbed)', () => {
+  it('vote delegate when already voted (stabbed)', () => {
     const query = 'test';
     // stab the route
     cy.route({
@@ -408,7 +408,9 @@ context('Settings', () => {
 
   it('vote delegate, search by ID', () => {
     clickSettingsRow('Voted delegate');
-    cy.wait(1000);
+    getDialog()
+      .contains('span', 'Cast vote')
+      .should('be.visible');
     // check if all the results contain the search query
     getDialogButtons()
       .prev()
