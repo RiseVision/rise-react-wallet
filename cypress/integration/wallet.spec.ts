@@ -25,7 +25,7 @@ import {
   getDialogButtons
 } from '../plugins/helpers';
 
-const url = 'http://localhost:3000';
+const url = 'https://localhost:3000';
 beforeEach(function() {
   cy.location()
     .then(location => {
@@ -40,7 +40,7 @@ beforeEach(function() {
       lstore.set('secrets', accounts.secrets);
       lstore.set('lastSelectedAccount', accounts.storedAccounts[0].id);
       // reload the page to get the account overview
-      cy.visit('http://localhost:3000/');
+      cy.visit('https://localhost:3000/');
     });
   // mock the server
   cy.server();
@@ -348,7 +348,7 @@ context('Settings', () => {
     });
   });
 
-  it('vote delegate when already voted (stabbed)', () => {
+  it.only('vote delegate when already voted (stabbed)', () => {
     const query = 'test';
     // stab the route
     cy.route({

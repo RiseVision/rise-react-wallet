@@ -7,7 +7,7 @@ import {
 } from '../plugins/helpers';
 
 beforeEach(function() {
-  cy.visit('http://localhost:3000/');
+  cy.visit('https://localhost:3000/');
   cy.fixture('accounts')
     .as('accounts')
     .then(accounts => {

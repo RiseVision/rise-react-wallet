@@ -6,7 +6,7 @@ import {
   fillDialogInput
 } from '../plugins/helpers';
 
-const url = 'http://localhost:3000/address-book';
+const url = 'https://localhost:3000/address-book';
 beforeEach(function() {
   let accounts: any;
   cy.location()
