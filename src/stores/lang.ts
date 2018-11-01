@@ -22,6 +22,7 @@ export default class LangStore {
   }
 
   async importTranslation(locale: Locale): Promise<Messages> {
+    // tslint:disable-next-line:no-use-before-declare
     let data = await translations[locale]();
     // Automatically inject locale data into runtime
     addLocaleData(data.default.data);

@@ -448,6 +448,30 @@ export const accountSettingsDelegateNoIDRoute = createNoIDRoute(
   accountSettingsDelegateRoute
 );
 
+export const accountSettingsLedgerRoute = new Route({
+  path: '/settings/ledger/:id',
+  onEnter: onEnterID,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      loading={<LoadingIndicator />}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountSettingsLedgerNoIDRoute = createNoIDRoute(
+  '/settings/ledger',
+  accountSettingsDelegateRoute
+);
+
 export const accountSettingsRemoveRoute = new Route({
   path: '/settings/remove/:id',
   onEnter: onEnterID,

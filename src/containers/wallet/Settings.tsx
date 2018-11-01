@@ -12,7 +12,7 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-import { runInAction, reaction, IReactionDisposer } from 'mobx';
+import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -25,11 +25,11 @@ import {
   accountSettingsDelegateRoute,
   accountSettingsRemoveRoute,
   accountSettingsVoteRoute,
-  accountSettingsFiatRoute
+  accountSettingsFiatRoute,
+  accountSettingsLedgerRoute
 } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore, { AccountType, LoadingState } from '../../stores/account';
-import LedgerStore, { LedgerChannel } from '../../stores/ledger';
 import { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import AccountNameDialog from './AccountNameDialog';
@@ -37,6 +37,7 @@ import AddSecondPassphraseDialog from './AddSecondPassphraseDialog';
 import ChooseFiatDialog from './ChooseFiatDialog';
 import RegisterDelegateDialog from './RegisterDelegateDialog';
 import RemoveAccountDialog from './RemoveAccountDialog';
+import VerifyLedgerDialog from './VerifyLedgerDialog';
 import VoteDelegateDialog from './VoteDelegateDialog';
 
 const styles = (theme: Theme) =>
@@ -66,7 +67,6 @@ interface PropsInjected extends Props {
   accountStore: AccountStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
-  ledgerStore: LedgerStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -74,7 +74,6 @@ type DecoratedProps = Props & InjectedIntlProps;
 interface State {
   delegateLoaded: boolean;
   registeredLoaded: boolean;
-  ledgerStatus: 'not-connected' | 'checking' | 'present' | 'not-present';
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
@@ -153,30 +152,8 @@ const messages = defineMessages({
   ledgerAddress: {
     id: 'account-settings.ledger-address',
     description:
-      'Label for confirming the address is managed by the connected ledger device',
-    defaultMessage: 'Stored on Ledger Nano'
-  },
-  ledgerAddressPresent: {
-    id: 'account-settings.ledger-address-present',
-    description: 'Label when the address is present on the ledger device',
-    defaultMessage: 'YES'
-  },
-  ledgerAddressNotPresent: {
-    id: 'account-settings.ledger-address-not-present',
-    description: 'Label when the address is NOT present on the ledger device',
-    defaultMessage: 'NO'
-  },
-  ledgerAddressChecking: {
-    id: 'account-settings.ledger-address-checking',
-    description:
-      'Label when the address is being checked if present on the ledger device',
-    defaultMessage: 'Checking...'
-  },
-  ledgerNotConnected: {
-    id: 'account-settings.ledger-address-not-connected',
-    description:
-      'Label when no ledger device is connected to check the address',
-    defaultMessage: 'Not connected'
+      'Label for opening a dialog verifying the address on the ledger',
+    defaultMessage: 'Verify Ledger Nano'
   },
   delegateRegistrationUnsetLabel: {
     id: 'account-settings.delegate-registration-unset-label',
@@ -193,13 +170,11 @@ const messages = defineMessages({
 @inject(accountStore)
 @inject('routerStore')
 @inject('walletStore')
-@inject('ledgerStore')
 @observer
 class AccountSettings extends React.Component<DecoratedProps, State> {
   state: State = {
     delegateLoaded: false,
-    registeredLoaded: false,
-    ledgerStatus: 'not-connected'
+    registeredLoaded: false
   };
 
   get injected(): PropsInjected & DecoratedProps {
@@ -210,9 +185,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   get account() {
     return this.injected.account || this.injected.accountStore;
   }
-
-  private disposeAccountLoader: null | IReactionDisposer = null;
-  private ledger: LedgerChannel;
 
   // CLICK HANDLERS
 
@@ -227,23 +199,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   componentDidMount() {
     this.loadVotedDelegate();
     this.loadRegisteredDelegate();
-    const { ledgerStore } = this.injected;
-    this.ledger = ledgerStore.openChannel();
-
-    this.disposeAccountLoader = reaction(
-      () => this.ledger.deviceId,
-      this.handleLedgerAddressCheck
-    );
-    this.handleLedgerAddressCheck();
-  }
-
-  componentWillUnmount() {
-    if (this.disposeAccountLoader) {
-      this.disposeAccountLoader();
-      this.disposeAccountLoader = null;
-    }
-
-    this.ledger.close();
   }
 
   loadVotedDelegate() {
@@ -262,40 +217,6 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     }
     this.setState({ registeredLoaded: true });
     this.injected.walletStore.loadRegisteredDelegate(this.account.id);
-  }
-
-  handleLedgerAddressCheck = async () => {
-    this.setState({
-      ledgerStatus: 'checking'
-    });
-    try {
-      const channel = this.injected.ledgerStore.openChannel();
-      const account = await channel.getAccount(0);
-      this.setState({
-        ledgerStatus:
-          account.address === this.account.id ? 'present' : 'not-present'
-      });
-    } catch {
-      this.setState({
-        ledgerStatus: 'not-connected'
-      });
-    }
-  }
-
-  get storedOnLedgerLabel() {
-    const { intl } = this.injected;
-
-    const { ledgerStatus } = this.state;
-    switch (ledgerStatus) {
-      case 'present':
-        return intl.formatMessage(messages.ledgerAddressPresent);
-      case 'not-present':
-        return intl.formatMessage(messages.ledgerAddressNotPresent);
-      case 'checking':
-        return intl.formatMessage(messages.ledgerAddressChecking);
-      default:
-        return intl.formatMessage(messages.ledgerNotConnected);
-    }
   }
 
   render() {
@@ -327,6 +248,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           navigateBackLink={backLink}
         />
         <RemoveAccountDialog
+          account={this.account}
+          navigateBackLink={backLink}
+        />
+        <VerifyLedgerDialog
           account={this.account}
           navigateBackLink={backLink}
         />
@@ -455,12 +380,18 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               </Link>
             )}
             {accountType === AccountType.LEDGER && (
-              <ListItem button={true}>
-                <ListItemText
-                  primary={intl.formatMessage(messages.ledgerAddress)}
-                  secondary={this.storedOnLedgerLabel}
-                />
-              </ListItem>
+              <Link
+                route={accountSettingsLedgerRoute}
+                params={{
+                  id: this.account.id
+                }}
+              >
+                <ListItem button={true}>
+                  <ListItemText
+                    primary={intl.formatMessage(messages.ledgerAddress)}
+                  />
+                </ListItem>
+              </Link>
             )}
             <Link
               route={accountSettingsRemoveRoute}
