@@ -11,7 +11,7 @@ import {
   SendTx,
   VoteTx
 } from 'dpos-offline';
-import { pick } from 'lodash';
+import { pick, get } from 'lodash';
 import {
   action,
   observable,
@@ -712,11 +712,12 @@ export default class WalletStore {
   }
 
   async fetchDelegateByID(id: string): Promise<Delegate | null> {
-    const account = await this.dposAPI.accounts.getAccount(id);
-    if (!account || !account.account.publicKey) {
+    const res = await this.dposAPI.accounts.getAccount(id);
+    const publicKey = get(res, 'account.publicKey')
+    if (!publicKey) {
       return null;
     }
-    return await this.delegateCache.get(account.account.publicKey);
+    return await this.delegateCache.get(publicKey);
   }
 }
 
