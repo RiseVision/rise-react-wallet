@@ -21,7 +21,7 @@ There's a **[nightly build (testnet)](http://risevision.github.io/rise-react-wal
 
 Run the app:
 1. Clone the repo
-1. Run `HTTPS=true yarn start`
+1. Run `yarn start`
 
 Build the app:
 1. Clone the repo
