@@ -713,7 +713,7 @@ export default class WalletStore {
 
   async fetchDelegateByID(id: string): Promise<Delegate | null> {
     const res = await this.dposAPI.accounts.getAccount(id);
-    const publicKey = get(res, 'account.publicKey')
+    const publicKey = get(res, 'account.publicKey');
     if (!publicKey) {
       return null;
     }

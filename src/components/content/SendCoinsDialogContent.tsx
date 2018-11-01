@@ -204,7 +204,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
 
     this.setState({
       amount,
-      amountInvalid: false,
+      amountInvalid: normalizedAmount.length < 1,
       parsedAmount
     });
   }

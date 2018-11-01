@@ -2,6 +2,7 @@
 import * as moment from 'moment/min/moment-with-locales';
 import BigNumber from 'bignumber.js';
 import { InjectedIntl } from 'react-intl';
+import { isNaN } from 'lodash';
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
@@ -72,6 +73,9 @@ export function normalizeNumber(intl: InjectedIntl, value: string): string {
 
   try {
     const n = new BigNumber(value);
+    if (isNaN(n.toNumber())) {
+      return '';
+    }
     return n.toString();
   } catch (e) {
     return '';
