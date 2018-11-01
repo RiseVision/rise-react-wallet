@@ -163,7 +163,8 @@ export class Transaction {
     return this.wallet.getRecipientName(this.type, this.recipientId);
   }
 
-  protected fields = [
+  protected rawFields = [
+    'blockId',
     'confirmations',
     'senderId',
     'relays',
@@ -203,7 +204,7 @@ export class Transaction {
   }
 
   private importRaw(raw: APITransaction) {
-    for (const field of this.fields) {
+    for (const field of this.rawFields) {
       this[field] = raw[field];
     }
   }
