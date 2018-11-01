@@ -46,8 +46,7 @@
   "homepage": "https://risevision.github.io/rise-react-wallet",
   "scripts": {
     "start": "react-scripts-ts start",
-    "build": "npm te3.1.0react-scripts-ts build",
-    "build-no-tests": "react-scripts-ts build",
+    "build": "react-scripts-ts build",
     "deploy-nightly": "npm run build-no-tests && gh-pages -d build -m \"Updated the nightly\"",
     "test": "cypress run",
     "test-unit": "jest",
