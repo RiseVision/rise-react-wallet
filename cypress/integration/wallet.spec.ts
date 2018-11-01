@@ -407,6 +407,8 @@ context('Settings', () => {
   });
 
   it('vote delegate, search by ID', () => {
+    // TODO use satisfy
+    // .should('satisfy', el => !el.parent().text().includes('Loading'))
     clickSettingsRow('Voted delegate');
     getDialog()
       .contains('span', 'Cast vote')
@@ -491,6 +493,10 @@ context('Settings dialogs autofocus', () => {
     cy.wait(1000);
     // go to the settings of the second account
     goToSettings();
+    // wait for the info to be loaded
+    cy.get('main')
+      .find('p')
+      .should('contain', 'Not set');
     clickSettingsRow('2nd passphrase');
     assertAutofocus();
   });
