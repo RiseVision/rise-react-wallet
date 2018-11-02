@@ -114,6 +114,7 @@ describe('Transaction class', () => {
     // test simple fields
     const fields = [
       'confirmations',
+      'blockId',
       'senderId',
       'relays',
       'receivedAt',
