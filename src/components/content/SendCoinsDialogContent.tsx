@@ -159,7 +159,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
     options: StateChangeOptions<TAddressRecord>
   ) => {
     const { type, inputValue } = options;
-    if (type === '__autocomplete_change_input__' && inputValue) {
+    if (type === Downshift.stateChangeTypes.changeInput && inputValue) {
       // Handle user typing
       const normalizedAddress = normalizeAddress(inputValue.trim());
 
@@ -173,7 +173,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
         recipientInvalid: false,
         normalizedAddress
       });
-    } else if (type === '__autocomplete_blur_input__') {
+    } else if (type === Downshift.stateChangeTypes.blurInput) {
       // Handle user leaving the input
       const { id } = this.state.recipient;
       const recipientInvalid = !!id && !!this.recipientError();

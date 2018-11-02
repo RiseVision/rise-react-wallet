@@ -18,6 +18,7 @@
 //    "noImplicitAny": true,
 //    "strictNullChecks": true,
 //    "noUnusedLocals": true,
+    "preserveConstEnums": true,
     "experimentalDecorators": true,
     "skipLibCheck": true
   },
