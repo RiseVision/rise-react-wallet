@@ -37,6 +37,8 @@ export default class AccountStore {
 
   // account overview has been viewed at least once
   @observable viewed: boolean = false;
+  /** account data has been fetched from the server */
+  @observable loaded: boolean = false;
 
   @observable id: string;
   @observable publicKey: string;
@@ -54,7 +56,6 @@ export default class AccountStore {
   // local only fields
   @observable name: string = '';
   @observable pinned: boolean = false;
-  @observable loaded: boolean = false;
   // dynamic fields
   @observable balanceFiat: string | null;
   @observable votedDelegate: Delegate | null = null;

@@ -452,7 +452,8 @@ export default class WalletStore {
         return;
       }
       // refresh only for viewed accounts (don't pre-fetch)
-      if (!account.viewed) {
+      // and with already downloaded publicKey
+      if (!account.viewed || !account.loaded) {
         return;
       }
       calculateFiat();
@@ -460,6 +461,11 @@ export default class WalletStore {
       account.recentTransactions.load();
     };
     const viewedChanged = () => {
+      // refresh only for viewed accounts (don't pre-fetch)
+      // and with already downloaded publicKey
+      if (!account.viewed || !account.loaded) {
+        return;
+      }
       // skip when already loading
       if (account.recentTransactions.isLoading) {
         return;
@@ -474,6 +480,7 @@ export default class WalletStore {
     disposers.push(observe(account, 'fiatCurrency', calculateFiat));
     // @ts-ignore issue with mobx d.ts
     disposers.push(observe(account, 'viewed', viewedChanged));
+    disposers.push(observe(account, 'loaded', viewedChanged));
     this.accounts.observe(change => {
       // only deletions
       if (change.type !== 'delete') {
