@@ -284,7 +284,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
               </ListItemText>
             </ListItem>
           </Link>
-          <ListItem button={true}>
+          {/*<ListItem button={true}>
             <ListItemIcon className={classes.listIcon}>
               <LayersIcon />
             </ListItemIcon>
@@ -295,7 +295,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
                 defaultMessage="Block explorer"
               />
             </ListItemText>
-          </ListItem>
+          </ListItem>*/}
           <ListItem button={true} onClick={onSignOutClick}>
             <ListItemIcon className={classes.listIcon}>
               <ExitToAppIcon />
