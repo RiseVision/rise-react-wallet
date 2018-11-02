@@ -1,6 +1,5 @@
 {
   "api_url": "https://twallet.rise.vision",
-  "nethash": "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c",
   "explorer_url": "https://texplorer.rise.vision",
   "date_format": "LLLL",
   "fiat_currencies": ["USD", "EUR", "GBP", "CAD", "AUD"],
