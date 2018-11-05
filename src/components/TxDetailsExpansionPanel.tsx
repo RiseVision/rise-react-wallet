@@ -136,6 +136,7 @@ const styles = (theme: Theme) => {
     detailsRowAction: {
       width: 28,
       height: 28,
+      padding: 0,
       fontSize: theme.typography.pxToRem(14)
     }
   });
