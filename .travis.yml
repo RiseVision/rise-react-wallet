@@ -10,8 +10,8 @@ jobs:
     - stage: test
       name: "Translations"
       script:
-        - yarn riw:prepare
-        - exec 5>&1; yarn riw:translate -q | tee /dev/fd/5 | grep -q "ERROR"; test $? -eq 1
+        - yarn intl:prepare
+        - yarn intl:export
     - stage: test
       name: "Unit tests"
       script:

@@ -40,8 +40,8 @@
     "store": "^2.0.12",
     "svg-country-flags": "^1.2.6",
     "ts-jest": "^23.10.4",
-    "unique-random": "^2.0.0",
-    "typescript": "^3.1.3"
+    "typescript": "^3.1.3",
+    "unique-random": "^2.0.0"
   },
   "homepage": "https://risevision.github.io/rise-react-wallet",
   "scripts": {
@@ -50,12 +50,12 @@
     "deploy-nightly": "npm run build-no-tests && gh-pages -d build -m \"Updated the nightly\"",
     "test": "cypress run",
     "test-unit": "jest",
-    "test-unit-prepare": "tsc --module commonjs --target es2017",
-    "test-unit-prepare-watch": "tsc --watch --module commonjs --target es2017",
+    "test-unit-prepare": "rm -rf tmp/transpiled/; tsc --module commonjs --target es2017",
+    "test-unit-prepare-watch": "rm -rf tmp/transpiled/; tsc --watch --module commonjs --target es2017",
     "eject": "react-scripts-ts eject",
-    "riw:prepare": "rm -r tmp/transpiled/; tsc -p . --target ES6 --module esnext --jsx preserve --outDir tmp/transpiled",
-    "riw:translate": "riw app translate",
-    "riw:status": "riw app status",
+    "intl:prepare": "rm -rf tmp/transpiled/ tmp/messages/; tsc && babel tmp/transpiled/",
+    "intl:export": "bash scripts/intl-export.sh",
+    "intl:import": "bash scripts/intl-import.sh",
     "tsc": "tsc --project tsconfig.prod.json --noEmit",
     "tslint": "npx tslint --fix --project tslint.prod.json 'src/**/*.{ts,tsx}'",
     "precommit": "npm run tsc && npm run prettier && npm run tslint && npm run test-unit-prepare && npm run test-unit",
@@ -64,55 +64,28 @@
   "pre-commit": [
     "precommit"
   ],
-  "riw": {
-    "defaultLocale": "en",
-    "targetLocales": [
-      "de",
-      "es",
-      "et",
-      "fr",
-      "it",
-      "hu",
-      "nl",
-      "pl",
-      "ro",
-      "ru",
-      "uk",
-      "zh",
-      "zh"
-    ],
-    "translationsDatabaseFile": "riw-db.json",
-    "sourceDirs": [
-      "tmp/transpiled/**/*.js",
-      "tmp/transpiled/**/*.jsx"
-    ],
-    "reactIntlAutoConfig": false,
-    "outputMode": "file-per-locale",
-    "translationsOutputFile": "src/translations/locales/[locale].json",
-    "todoFile": "translations-todo.json"
-  },
   "devDependencies": {
     "@bahmutov/add-typescript-to-cypress": "^2.0.0",
-    "@types/moment": "^2.13.0",
     "@types/bip39": "^2.4.0",
     "@types/bytebuffer": "^5.0.37",
     "@types/classnames": "^2.2.6",
     "@types/jest": "^23.3.7",
     "@types/ledgerhq__hw-transport-u2f": "^4.21.0",
     "@types/lodash": "^4.14.117",
+    "@types/moment": "^2.13.0",
     "@types/node": "^10.12.0",
     "@types/query-string": "^6.1.1",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
     "@types/react-helmet": "^5.0.7",
     "@types/react-intl": "^2.3.11",
+    "babel-plugin-react-intl": "^3.0.1",
     "cypress": "^3.1.0",
     "gh-pages": "^2.0.1",
     "isomorphic-fetch": "^2.2.1",
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.3",
-    "raf": "^3.4.0",
-    "riw": "^0.8.0"
+    "raf": "^3.4.0"
   },
   "prettier": {
     "singleQuote": true
@@ -120,8 +93,8 @@
   "jest": {
     "verbose": true,
     "testMatch": [
-      "<rootDir>/build/dist/**/__tests__/**/*.js?(x)",
-      "<rootDir>/build/dist/**/?(*.)+(spec|test).js?(x)"
+      "<rootDir>/tmp/transpiled/**/__tests__/**/*.js?(x)",
+      "<rootDir>/tmp/transpiled/**/?(*.)+(spec|test).js?(x)"
     ],
     "testEnvironment": "jsdom",
     "setupFiles": [
