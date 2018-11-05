@@ -2,18 +2,28 @@ language: node_js
 node_js: node
 cache: yarn
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH="$HOME/.yarn/bin:$PATH"
-
+- openssl aes-256-cbc -K $encrypted_63d69a2d54d1_key -iv $encrypted_63d69a2d54d1_iv
+  -in cypress/fixtures/accounts.json.enc -out cypress/fixtures/accounts.json -d
+- curl -o- -L https://yarnpkg.com/install.sh | bash
+- export PATH="$HOME/.yarn/bin:$PATH"
 jobs:
   include:
-    - stage: test
-      name: "Translations"
-      script:
-        - yarn riw:prepare
-        - exec 5>&1; yarn riw:translate -q | tee /dev/fd/5 | grep -q "ERROR"; test $? -eq 1
-    - stage: test
-      name: "Unit tests"
-      script:
-        - yarn test-unit-prepare
-        - yarn test-unit
+  - stage: test
+    name: Build
+    script:
+    - yarn build
+  - stage: test
+    name: Translations
+    script:
+    - yarn riw:prepare
+    - exec 5>&1; yarn riw:translate -q | tee /dev/fd/5 | grep -q "ERROR"; test $?
+      -eq 1
+  - stage: test
+    name: Unit tests
+    script:
+    - yarn test-unit:prepare
+    - yarn test-unit
+  - stage: test
+    name: E2E tests
+    script:
+    - yarn test
