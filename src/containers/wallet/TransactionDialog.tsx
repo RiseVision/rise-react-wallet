@@ -1,4 +1,3 @@
-import { BaseTx, ITransaction } from 'dpos-offline';
 import { observable, runInAction, reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
@@ -9,7 +8,7 @@ import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
 import RootStore from '../../stores/root';
 import LedgerStore, { LedgerChannel } from '../../stores/ledger';
-import WalletStore, { TFeeTypes } from '../../stores/wallet';
+import WalletStore, { PostableRiseTransaction, RiseTransaction, TFeeTypes } from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import { PropsOf } from '../../utils/metaTypes';
 
@@ -29,7 +28,7 @@ interface Props extends DialogProps {
   account: AccountStore;
   transaction: null | Transaction;
   passphrasePublicKey?: string;
-  onCreateTransaction: () => Promise<BaseTx>;
+  onCreateTransaction: () => Promise<RiseTransaction>;
 }
 
 interface PropsInjected extends Props {
@@ -41,7 +40,7 @@ interface PropsInjected extends Props {
 interface State {
   transaction: Props['transaction'];
   step: 'confirm' | 'sending' | 'failure' | 'sent';
-  signedTx: null | ITransaction;
+  signedTx: null | PostableRiseTransaction;
   sendError: string;
 }
 
@@ -134,7 +133,7 @@ class TransactionDialog extends React.Component<Props, State> {
     }
   }
 
-  async broadcastTransaction(signedTx: ITransaction) {
+  async broadcastTransaction(signedTx: PostableRiseTransaction) {
     const { walletStore } = this.injected;
 
     this.setState({ step: 'sending' });

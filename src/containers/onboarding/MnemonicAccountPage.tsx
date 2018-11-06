@@ -3,7 +3,6 @@ import Grid from '@material-ui/core/Grid';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { LiskWallet } from 'dpos-offline';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -20,6 +19,7 @@ import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
 import { AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 import { normalizeMnemonic } from '../../utils/utils';
+import { Rise } from 'dpos-offline';
 
 const styles = createStyles({
   content: {
@@ -110,8 +110,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
   getAddressFromMnemonic = (mnemonic: string) => {
     const normalized = normalizeMnemonic(mnemonic);
     if (normalized) {
-      const wallet = new LiskWallet(normalized, 'R');
-      return wallet.address;
+      return Rise.calcAddress(Rise.deriveKeypair(normalized).publicKey);
     }
     return null;
   }
