@@ -86,7 +86,6 @@
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.3",
     "raf": "^3.4.0",
-    "riw": "^0.8.0",
     "type-tagger": "^1.0.0"
   },
   "prettier": {
