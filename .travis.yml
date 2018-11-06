@@ -1,0 +1,19 @@
+language: node_js
+node_js: node
+cache: yarn
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH="$HOME/.yarn/bin:$PATH"
+
+jobs:
+  include:
+    - stage: test
+      name: "Translations"
+      script:
+        - yarn intl:prepare
+        - yarn intl:export
+    - stage: test
+      name: "Unit tests"
+      script:
+        - yarn test-unit-prepare
+        - yarn test-unit

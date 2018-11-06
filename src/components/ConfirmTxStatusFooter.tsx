@@ -187,8 +187,8 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
               />
             ) : type === 'ledger-confirming' ? (
               <FormattedMessage
-                id="confirm-tx-status-footer.ledger-not-connected-msg"
-                description="Message for when the Ledger device isn't connected."
+                id="confirm-tx-status-footer.ledger-confirming-msg"
+                description="Message for when the user needs to confirm the transaction on Ledger."
                 defaultMessage={
                   'Please confirm the transaction on your Ledger. Waiting for confirmation... ' +
                   '({seconds} {seconds, plural,' +

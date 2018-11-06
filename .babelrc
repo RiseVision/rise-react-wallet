@@ -1,4 +1,9 @@
 {
   "presets": ["es2015", "react"],
-  "plugins": ["syntax-dynamic-import"]
+  "plugins": [
+    "syntax-dynamic-import",
+    ["react-intl", {
+      "messagesDir": "./tmp/messages/"
+    }]
+  ]
 }

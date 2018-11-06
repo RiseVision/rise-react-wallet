@@ -1,5 +1,8 @@
 ## RISE Wallet
 
+[![Build Status](https://travis-ci.org/RiseVision/rise-react-wallet.svg?branch=master)](https://travis-ci.org/RiseVision/rise-react-wallet)
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/rise-web-wallet/localized.svg)](https://crowdin.com/project/rise-web-wallet)
+
 This repository contains a _Work-In-Progress_ web wallet for the **RISE** DPoS blockchain. It's build on **TypeScript**, **React** and **Material UI**.
 
 ### Nightly build
