@@ -1,13 +1,11 @@
 language: node_js
-
 node_js:
-  # Node 10.3+ includes npm@6 which has good "npm ci" command
 - 10.8
 cache:
   yarn: true
   directories:
   - node_modules
-  - ~/.cache/Cypress
+  - "~/.cache/Cypress"
   - build
 before_install:
 - openssl aes-256-cbc -K $encrypted_63d69a2d54d1_key -iv $encrypted_63d69a2d54d1_iv
@@ -15,8 +13,9 @@ before_install:
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - export PATH="$HOME/.yarn/bin:$PATH"
 env:
-  - CI=false
-  - CYPRESS_RECORD_KEY=44a51439-8cd4-4a4d-930c-2cf8461f556b
+  global:
+    - CI=false
+    - secure: UAme/V5A6bu56r6dwNj2SEuHard4ukmPr1k5DrddBPp9EQbFwPHQDHgzCZJBg5t1eu0QAaaywilzU5eHC45Pbirhd7B1tKaW7Xl/FfCQZepeOv0ZENtZ/Hid0/JrLGu0DnK3+jWTfdc5WOHDvAjojRw9FLxRlyyaG9hnKLWsDX020QUrEz1etqg2mz5bSPzeGj8kK8fLub/LCX5vTZHQikq2LFIx2LquDw0/A4mLorboBp8QExWp+7XmQrJqEQNI9Hn0sI+xGgJHgjK+HRQ/HtYIJiYvpBcDkq2NobXlrvfDExSdcb4nlEq3wotXPHfkDpMMFL4id9rZPB/TT/qfcQOlK3gYC3asy/Lkd8d/Nm8rNZytf4j62Z/vfFlydDRWox6wtHt1JpkSonLqSPAUGEsFAHH9K1SXbt9gtCobpys0QVIFDUfShMbexBN334383hFKLeshiv5EjoDSSHAiKSD3/OyOTg+HcLmNAFNfg4i6malrOXmRb/s5xSgqH/XR25cBlJYyEYQz2vCdCh8rZqvfyvfe3p2Q/lko0ojdhjYsmTej2F9JUBF1PW9nn0avwFhPZq9RALmex0vXg2AapD5+J0YECO2cRq+tuUDQlFBqAmYvuT2s1Z/HbxI7asrQou/L0trUsLmGRp1lbznxC6oFDjHB9mJ1LlbFxZPjuK8=
 jobs:
   include:
   - stage: build
