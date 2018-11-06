@@ -6,6 +6,8 @@ node_js:
 cache:
   yarn: true
   directories:
+  - node_modules
+  - ~/.cache/Cypress
   - build
 before_install:
 - openssl aes-256-cbc -K $encrypted_63d69a2d54d1_key -iv $encrypted_63d69a2d54d1_iv
