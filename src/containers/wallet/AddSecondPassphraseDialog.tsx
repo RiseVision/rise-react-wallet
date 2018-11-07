@@ -2,13 +2,13 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import { LiskWallet } from 'dpos-offline';
 import TransactionDialog from './TransactionDialog';
 import AddSecondPassphraseDialogContent from '../../components/content/AddSecondPassphraseDialogContent';
 import { accountSettingsPassphraseRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';
 import AccountStore from '../../stores/account';
 import WalletStore from '../../stores/wallet';
+import { Rise } from 'dpos-offline';
 
 interface Props {
   account: AccountStore;
@@ -164,6 +164,5 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
 export default AddSecondPassphraseDialog;
 
 function derivePublicKey(secret: string): string {
-  const w = new LiskWallet(secret, 'R');
-  return w.publicKey;
+  return Rise.deriveKeypair(secret).publicKey.toString('hex');
 }

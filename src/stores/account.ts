@@ -5,6 +5,8 @@ import { TConfig } from './index';
 import TransactionsStore from './transactions';
 import WalletStore from './wallet';
 import { RawAmount } from '../utils/amounts';
+import { As } from 'type-tagger';
+import { Address, SenderType } from 'dpos-offline';
 
 export enum LoadingState {
   NOT_LOADED,
@@ -86,5 +88,12 @@ export default class AccountStore {
     for (const [name, value] of Object.entries(account)) {
       this[name] = value;
     }
+  }
+
+  toSenderObject(): SenderType {
+    return {
+      address  : this.id as Address,
+      publicKey: Buffer.from(this.publicKey, 'hex') as Buffer & As<'publicKey'>
+    };
   }
 }

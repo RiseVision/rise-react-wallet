@@ -183,7 +183,7 @@
   resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.18.tgz#6a60435d4663e290f3709898a4f75014f279c4d6"
   integrity sha512-OTPWHmsyW18BhrnG5x8F7PzeZ2nFxmHGb42bZn79P9hl+GI5cMzyPgQTwNjbem0lJhoru/8vtjAFCUOu3+gE2w==
 
-"@types/bytebuffer@^5.0.33", "@types/bytebuffer@^5.0.37":
+"@types/bytebuffer@^5.0.37":
   version "5.0.37"
   resolved "https://registry.yarnpkg.com/@types/bytebuffer/-/bytebuffer-5.0.37.tgz#795c0082cfb8c43a4cf3a8fc97d108ec76e59579"
   integrity sha512-ktTBUX8hHsosJbt3Pxx5/pUpEFkLlimJLeddGFz7illfm/gTk43Ln7lAdr0rEPi8QIJjuFuV0bvVSa1sKcYszg==
@@ -3233,17 +3233,19 @@ dpos-ledger-api@^1.1.0:
     bip32-path "^0.4.2"
     crc "^3.5.0"
 
-dpos-offline@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-1.6.3.tgz#5799ef5ebb131dcda820c2db1b970b93a6f5c975"
-  integrity sha512-ZmP1qiz2NxNO2Z81iGmHozedsNcMsTATlgJ735LwlRuFObE4iRoOBv97kllMIn6r24Xk8FWBRw2xPRQZDxuDPQ==
+dpos-offline@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-2.0.2.tgz#5a3697af61b75859915363b0ff2ffb7fd5640981"
+  integrity sha512-lBlBFSCioDZrKWN7GzowacfeySZK5k/s56JMFG2Q0p8CTqbTC80lYoJ3w2XZK1KtknPLb2WNFlEzqyXvCPOP6Q==
   dependencies:
-    "@types/bytebuffer" "^5.0.33"
-    bignumber.js "^7.2.1"
     bytebuffer "^5.0.1"
     is-empty "^1.2.0"
+    long "^4.0.0"
     tweetnacl "^1.0.0"
     tweetnacl-util "^0.15.0"
+    type-tagger "^1.0.0"
+    utility-types "^2.1.0"
+    varuint-bitcoin "^1.1.0"
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -6231,6 +6233,11 @@ lolex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lolex/-/lolex-3.0.0.tgz#f04ee1a8aa13f60f1abd7b0e8f4213ec72ec193e"
   integrity sha512-hcnW80h3j2lbUfFdMArd5UPA/vxZJ+G8vobd+wg3nVEQA0EigStbYcrG030FJxL6xiDDPEkoMatV9xIh5OecQQ==
+
+long@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
+  integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
 
 long@~3:
   version "3.2.0"
@@ -9682,6 +9689,11 @@ type-is@~1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.18"
 
+type-tagger@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/type-tagger/-/type-tagger-1.0.0.tgz#dc6297e52e17097c1b92b42c16816a18f631e7f4"
+  integrity sha512-FIPqqpmDgdaulCnRoKv1/d3U4xVBUrYn42QXWNP3XYmgfPUDuBUsgFOb9ntT0aIe0UsUP+lknpQ5d9Kn36RssA==
+
 typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
@@ -9944,6 +9956,11 @@ utila@~0.4:
   resolved "https://registry.yarnpkg.com/utila/-/utila-0.4.0.tgz#8a16a05d445657a3aea5eecc5b12a4fa5379772c"
   integrity sha1-ihagXURWV6Oupe7MWxKk+lN5dyw=
 
+utility-types@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-2.1.0.tgz#0c78fc9f7eb424d14302222b4ddd13fdb17f44ab"
+  integrity sha512-/nP2gqavggo6l38rtQI/CdeV+2fmBGXVvHgj9kV2MAnms3TIi77Mz9BtapPFI0+GZQCqqom0vACQ+VlTTaCovw==
+
 utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
@@ -9968,6 +9985,13 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+varuint-bitcoin@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/varuint-bitcoin/-/varuint-bitcoin-1.1.0.tgz#7a343f50537607af6a3059312b9782a170894540"
+  integrity sha512-jCEPG+COU/1Rp84neKTyDJQr478/hAfVp5xxYn09QEH0yBjbmPeMfuuQIrp+BUD83hybtYZKhr5elV3bvdV1bA==
+  dependencies:
+    safe-buffer "^5.1.1"
 
 vary@~1.1.2:
   version "1.1.2"

@@ -1,44 +1,32 @@
 import * as assert from 'assert';
 import { Delegate, rise as dposAPI, TransactionType } from 'risejs';
 import {
-  BaseTx,
-  ITransaction,
-  CreateSignatureTx,
-  DelegateTx,
-  IDelegateTxAsset,
-  IVoteAsset,
-  LiskWallet,
-  SendTx,
-  VoteTx
+  RiseTransaction as GenericRiseTransaction,
+  PostableRiseTransaction as GenericPostableRiseTransaction,
+  RecipientId,
+  Rise
 } from 'dpos-offline';
-import { pick, get } from 'lodash';
-import {
-  action,
-  observable,
-  runInAction,
-  autorun,
-  observe,
-  IValueWillChange,
-  IValueDidChange
-} from 'mobx';
+import { get, pick } from 'lodash';
+import { action, autorun, IValueDidChange, IValueWillChange, observable, observe, runInAction } from 'mobx';
 import { RouterStore } from 'mobx-router-rise';
 import * as lstore from 'store';
 import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
 import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';
-import {
-  getTimestamp,
-  normalizeAddress,
-  TAddressRecord,
-  TAddressSource
-} from '../utils/utils';
+import { normalizeAddress, TAddressRecord, TAddressSource } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
 import LangStore from './lang';
 import { TConfig } from './index';
 import * as queryString from 'query-string';
 import { Transaction } from './transactions';
+import { As } from 'type-tagger';
+
+// tslint:disable-next-line:no-any
+export type RiseTransaction<T = any> = GenericRiseTransaction<T>;
+// tslint:disable-next-line:no-any
+export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<T>;
 
 export default class WalletStore {
   api: string;
@@ -166,37 +154,37 @@ export default class WalletStore {
   async createPassphraseTx(
     passphrase: string,
     accountID?: string
-  ): Promise<CreateSignatureTx> {
+  ): Promise<RiseTransaction> {
     assert(passphrase);
     const account = accountID
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
-    const wallet2 = new LiskWallet(passphrase, 'R');
-    const tx = new CreateSignatureTx({
-      signature: { publicKey: wallet2.publicKey }
-    });
-    tx.set('timestamp', getTimestamp());
-    tx.set('fee', this.fees.get('secondsignature')!.toNumber());
+    const wallet2 = Rise.deriveKeypair(passphrase);
 
-    return tx;
+    return Rise.txs.transform({
+      kind: 'second-signature',
+      publicKey: wallet2.publicKey,
+      sender: account.toSenderObject()
+    });
   }
 
   async createSendTx(
     recipientId: string,
     amount: RawAmount,
     accountID?: string
-  ): Promise<SendTx> {
+  ): Promise<RiseTransaction> {
     const account = accountID
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
 
-    return new SendTx()
-      .set('timestamp', getTimestamp())
-      .set('fee', this.fees.get('send')!.toNumber())
-      .set('amount', amount.toNumber())
-      .set('recipientId', recipientId);
+    return Rise.txs.transform({
+      kind: 'send',
+      amount: amount.toString(),
+      recipient: recipientId as RecipientId,
+      sender: account.toSenderObject()
+    });
   }
 
   /**
@@ -207,7 +195,7 @@ export default class WalletStore {
   async createVoteTx(
     delegatePublicKey: string,
     accountID?: string
-  ): Promise<VoteTx> {
+  ): Promise<RiseTransaction> {
     const account = accountID
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
@@ -218,30 +206,26 @@ export default class WalletStore {
       await this.loadVotedDelegate(account.id);
     }
 
-    const assets: IVoteAsset = {
-      votes: []
-    };
-    // take down the prev vote
-    if (account.votedDelegate) {
-      assets.votes.push('-' + account.votedDelegate.publicKey);
-    }
-    // cast a new vote, if different
-    if (
-      !account.votedDelegate ||
-      account.votedDelegate!.publicKey !== delegatePublicKey
-    ) {
-      assets.votes.push('+' + delegatePublicKey);
-    }
-    return new VoteTx(assets)
-      .withFees(this.fees.get('vote')!.toNumber())
-      .set('timestamp', getTimestamp())
-      .set('recipientId', account.id);
+    return Rise.txs.transform({
+      kind       : 'vote',
+      sender     : account.toSenderObject(),
+      preferences: [
+        ... (account.votedDelegate ? [{
+          action            : '-' as '-',
+          delegateIdentifier: Buffer.from(account.votedDelegate.publicKey, 'hex') as Buffer & As<'publicKey'>
+        }] : []),
+        ... (!account.votedDelegate || account.votedDelegate!.publicKey ? [{
+          action            : '+' as '+',
+          delegateIdentifier: Buffer.from(delegatePublicKey, 'hex') as Buffer & As<'publicKey'>
+        }] : [])
+      ]
+    });
   }
 
   async createRegisterDelegateTx(
     username: string,
     accountID?: string
-  ): Promise<DelegateTx> {
+  ): Promise<RiseTransaction> {
     const account = accountID
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
@@ -256,28 +240,27 @@ export default class WalletStore {
       throw new Error('Already registered as a delegate');
     }
 
-    const assets: IDelegateTxAsset = {
-      delegate: {
-        publicKey: account.publicKey,
-        username
-      }
-    };
-    return new DelegateTx(assets)
-      .withFees(this.fees.get('delegate')!.toNumber())
-      .set('timestamp', getTimestamp());
+    return Rise.txs.transform({
+      kind      : 'register-delegate',
+      sender    : account.toSenderObject(),
+      identifier: username as string & As<'delegateName'>,
+    });
   }
 
   signTransaction(
-    unsignedTx: BaseTx,
+    unsignedTx: RiseTransaction,
     mnemonic: string,
     passphrase: string | null = null
-  ): ITransaction {
-    const wallet = new LiskWallet(mnemonic, 'R');
-    return wallet.signTransaction(unsignedTx, this.secondWallet(passphrase));
+  ): PostableRiseTransaction {
+    const signedTx = Rise.txs.sign(unsignedTx, mnemonic);
+    if (passphrase) {
+      signedTx.signSignature = Rise.txs.calcSignature(signedTx, passphrase);
+    }
+    return Rise.txs.toPostable(signedTx);
   }
 
   async broadcastTransaction(
-    signedTx: ITransaction,
+    signedTx: PostableRiseTransaction,
     accountID?: string
   ): Promise<TTransactionResult> {
     const account = accountID
@@ -286,7 +269,7 @@ export default class WalletStore {
     assert(account, 'Account required');
 
     // refreshed the account's delegate
-    if (signedTx.type === new VoteTx().type) {
+    if (signedTx.type === 3 /* vote */) {
       runInAction(() => {
         account.votedDelegate = null;
         account.votedDelegateState = LoadingState.NOT_LOADED;
@@ -325,14 +308,6 @@ export default class WalletStore {
       return addressBookName;
     }
     return '';
-  }
-
-  /**
-   * Second wallet for signing with the second passphrase.
-   * @param passphrase
-   */
-  secondWallet(passphrase: string | null): LiskWallet | undefined {
-    return passphrase ? new LiskWallet(passphrase, 'R') : undefined;
   }
 
   @action
@@ -598,12 +573,14 @@ export default class WalletStore {
 
   @action
   registerAccount(mnemonic: string[]) {
-    const wallet = new LiskWallet(mnemonic.join(' '), 'R');
+    const wallet = Rise.deriveKeypair(mnemonic.join(' '));
+
     const account = {
-      id: wallet.address,
-      publicKey: wallet.publicKey,
+      id: Rise.calcAddress(wallet.publicKey),
+      publicKey: wallet.publicKey.toString('hex'),
       type: AccountType.MNEMONIC
     };
+    // TODO: this is a promise. await?
     this.login(account.id, account, true);
     return account.id;
   }
@@ -909,11 +886,6 @@ export type TErrorResponse = {
   error: string;
   success: false;
 };
-
-export function mnemonicToAddress(mnemonic: string[]) {
-  const wallet = new LiskWallet(mnemonic.join(' '), 'R');
-  return wallet.address;
-}
 
 export type TFeesResponse = {
   fees: {

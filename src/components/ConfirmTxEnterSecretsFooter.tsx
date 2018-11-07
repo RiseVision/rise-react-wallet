@@ -16,7 +16,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { LiskWallet } from 'dpos-offline';
+import { Rise } from 'dpos-offline';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -278,7 +278,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
 
 export default stylesDecorator(injectIntl(ConfirmTxEnterSecretsFooter));
 
+// TODO: Remove me as there is a lot of other places doing the very same thing!?
 function derivePublicKey(secret: string): string {
-  const w = new LiskWallet(secret, 'R');
-  return w.publicKey;
+  return Rise.deriveKeypair(secret).publicKey.toString('hex');
 }

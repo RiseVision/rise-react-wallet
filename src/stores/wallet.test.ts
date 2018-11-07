@@ -1,13 +1,7 @@
 // tslint:disable:no-unused-expression
 // tslint:disable:no-shadowed-variable
 import * as bip39 from 'bip39';
-import {
-  LiskWallet,
-  CreateSignatureTx,
-  VoteTx,
-  DelegateTx,
-  SendTx
-} from 'dpos-offline';
+import { Rise } from 'dpos-offline';
 import 'isomorphic-fetch';
 import { last } from 'lodash';
 import { RouterStore } from 'mobx-router-rise';
@@ -207,15 +201,16 @@ describe('accounts', () => {
   });
   it('registerAccount', () => {
     const mnemonic = bip39.generateMnemonic();
-    const liskWallet = new LiskWallet(mnemonic, 'R');
+    const liskWallet = Rise.deriveKeypair(mnemonic);
+    const addr = Rise.calcAddress(liskWallet.publicKey);
     // stub wallet.login
     stub(stubs, wallet, 'login', () => true);
     const account = {
-      id: liskWallet.address,
-      publicKey: liskWallet.publicKey
+      id: addr,
+      publicKey: liskWallet.publicKey.toString('hex')
     };
     expect(wallet.registerAccount(mnemonic.split(' '))).toEqual(
-      liskWallet.address
+      addr
     );
     // @ts-ignore
     expect(wallet.login.calledWith(account));
@@ -303,13 +298,12 @@ describe('transactions', () => {
   });
   it('createPassphraseTx', async () => {
     const pass = 'foo';
-    const wallet2 = new LiskWallet(pass, 'R');
+    const wallet2 = Rise.deriveKeypair(pass);
     const tx = await wallet.createPassphraseTx(pass, storedAccounts[0].id);
-    expect(tx).toBeInstanceOf(CreateSignatureTx);
     expect(tx.type).toEqual(TransactionType.SIGNATURE);
     expect(tx.asset).toBeDefined();
     if (tx.asset) {
-      expect(tx.asset.signature.publicKey).toEqual(wallet2.publicKey);
+      expect(tx.asset.signature.publicKey).toEqual(wallet2.publicKey.toString('hex'));
     }
   });
   it('createVoteTx', async () => {
@@ -318,7 +312,6 @@ describe('transactions', () => {
     const publicKey =
       '16b268f3c712d26697551389a7b1b8713a9070bae22843d07cdd6a1a6cba6fa3';
     const tx = await wallet.createVoteTx(publicKey, account.id);
-    expect(tx).toBeInstanceOf(VoteTx);
     expect(tx.type).toEqual(TransactionType.VOTE);
     expect(tx.asset).toBeDefined();
     if (tx.asset) {
@@ -330,12 +323,10 @@ describe('transactions', () => {
     account.registeredDelegateState = LoadingState.LOADED;
     const username = 'test';
     const tx = await wallet.createRegisterDelegateTx(username, account.id);
-    expect(tx).toBeInstanceOf(DelegateTx);
     expect(tx.type).toEqual(TransactionType.DELEGATE);
     expect(tx.asset).toBeDefined();
     if (tx.asset) {
       expect(tx.asset.delegate).toMatchObject({
-        publicKey: account.publicKey,
         username
       });
     }
@@ -345,7 +336,6 @@ describe('transactions', () => {
     const amount = 1000000;
 
     const tx = await wallet.createSendTx(recipientID, new RawAmount(amount));
-    expect(tx).toBeInstanceOf(SendTx);
     expect(tx.type).toEqual(TransactionType.SEND);
     expect(tx.amount).toEqual(amount);
     expect(tx.recipientId).toEqual(recipientID);
@@ -355,7 +345,7 @@ describe('transactions', () => {
     const amount = 1000000;
     const tx = await wallet.createSendTx(recipientID, new RawAmount(amount));
     const signedTx = wallet.signTransaction(tx, 'foo bar baz', 'test');
-    expect(signedTx.senderPublicKey).toEqual(wallet.selectedAccount.secondPublicKey);
+    expect(signedTx.senderPublicKey).toEqual(wallet.selectedAccount.publicKey);
     expect(signedTx.signSignature).toBeTruthy();
   });
 });

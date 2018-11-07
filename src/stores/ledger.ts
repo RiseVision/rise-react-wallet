@@ -1,7 +1,9 @@
 import { observable, runInAction } from 'mobx';
-import { BaseTx, ITransaction } from 'dpos-offline';
+import { Rise } from 'dpos-offline';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { DposLedger, SupportedCoin, LedgerAccount as DposAccount } from 'dpos-ledger-api';
+import { PostableRiseTransaction, RiseTransaction } from './wallet';
+import { As } from 'type-tagger';
 
 export interface LedgerAccount {
   publicKey: string;
@@ -120,7 +122,7 @@ export class LedgerChannel {
     return this.hub.confirmAccount(this.channelId, accountSlot);
   }
 
-  signTransaction(accountSlot: number, unsignedTx: BaseTx): Promise<null | ITransaction> {
+  signTransaction(accountSlot: number, unsignedTx: RiseTransaction): Promise<null | PostableRiseTransaction> {
     if (!this.isOpen) {
       return Promise.reject(new LedgerUnreachableError());
     }
@@ -307,7 +309,11 @@ class LedgerHub implements LedgerTaskRunner {
     });
   }
 
-  signTransaction(channelId: number, accountSlot: number, unsignedTx: BaseTx): Promise<null | ITransaction> {
+  signTransaction(
+    channelId: number,
+    accountSlot: number,
+    unsignedTx: RiseTransaction
+  ): Promise<null | PostableRiseTransaction> {
     return new Promise((resolve, reject) => {
       if (this.deviceId === null) {
         reject(new LedgerUnreachableError());
@@ -339,17 +345,14 @@ class LedgerHub implements LedgerTaskRunner {
             account = await comm.getPubKey(accountPath) as LedgerAccount;
           }
 
-          unsignedTx.senderPublicKey = account.publicKey;
-          const txBytes = unsignedTx.getBytes(true, true);
+          unsignedTx.senderPublicKey = Buffer.from(account.publicKey, 'hex') as Buffer & As<'publicKey'>;
+          const txBytes = Rise.txs.bytes(unsignedTx);
 
-          let signedTx: null | ITransaction;
+          let signedTx: null | PostableRiseTransaction;
           transport.setExchangeTimeout(30000);
           try {
-            unsignedTx.signature = await comm.signTX(accountPath, txBytes, false);
-            signedTx = {
-              ...unsignedTx.toObj(),
-              senderId: account.address,
-            };
+            unsignedTx.signature = await comm.signTX(accountPath, txBytes, false) as Buffer & As<'signature'>;
+            signedTx = Rise.txs.toPostable(unsignedTx);
           } catch (ex) {
             if (ex.statusCode === 0x6985) {
               signedTx = null;
