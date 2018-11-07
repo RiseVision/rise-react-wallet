@@ -23,8 +23,11 @@ unzip -Z1 $archive messages/*.json | while read -r path; do
 
   # Generate the react-intl locale file
   unzip -p $archive $path > $translations
-  jq --slurpfile msg $translations 'with_entries(
-    select(.value | in($msg[0]))
-    | .value = $msg[0][.value].message
-  )' $template > $output
+  jq --slurpfile tmpl $template '
+    (if type != "object" then {} else . end) as $msg
+    | $tmpl[0] | with_entries(
+      select(.value | in($msg))
+      | .value = $msg[.value].message
+    )
+  ' $translations > $output
 done
