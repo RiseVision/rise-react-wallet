@@ -1,6 +1,11 @@
 import * as assert from 'assert';
 import { Delegate, rise as dposAPI, TransactionType } from 'risejs';
-import { LiskTransaction, PostableLiskTransaction, RecipientId, Rise } from 'dpos-offline';
+import {
+  RiseTransaction as GenericRiseTransaction,
+  PostableRiseTransaction as GenericPostableRiseTransaction,
+  RecipientId,
+  Rise
+} from 'dpos-offline';
 import { get, pick } from 'lodash';
 import { action, autorun, IValueDidChange, IValueWillChange, observable, observe, runInAction } from 'mobx';
 import { RouterStore } from 'mobx-router-rise';
@@ -18,8 +23,10 @@ import * as queryString from 'query-string';
 import { Transaction } from './transactions';
 import { As } from 'type-tagger';
 
-export type RiseTransaction<T= any> = LiskTransaction<T>;
-export type PostableRiseTransaction<T= any> = PostableLiskTransaction<T>;
+// tslint:disable-next-line:no-any
+export type RiseTransaction<T = any> = GenericRiseTransaction<T>;
+// tslint:disable-next-line:no-any
+export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<T>;
 
 export default class WalletStore {
   api: string;

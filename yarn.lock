@@ -3233,10 +3233,10 @@ dpos-ledger-api@^1.1.0:
     bip32-path "^0.4.2"
     crc "^3.5.0"
 
-dpos-offline@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-2.0.1.tgz#2e4f6eb76638fdbd9235a9260529357f5b766e87"
-  integrity sha512-JqSK/z4Ja5E2CsZab99MYsBDt08m2gtQbx7SFsmzS7zxJvg2sM8bgRssvFaDR67SD6XvTvGHHKT34SyTTI8ImQ==
+dpos-offline@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-2.0.2.tgz#5a3697af61b75859915363b0ff2ffb7fd5640981"
+  integrity sha512-lBlBFSCioDZrKWN7GzowacfeySZK5k/s56JMFG2Q0p8CTqbTC80lYoJ3w2XZK1KtknPLb2WNFlEzqyXvCPOP6Q==
   dependencies:
     bytebuffer "^5.0.1"
     is-empty "^1.2.0"
