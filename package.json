@@ -56,7 +56,7 @@
     "test-unit:prepare-watch": "rm -rf tmp/transpiled/; tsc --watch --module commonjs --target es2017",
     "eject": "react-scripts-ts eject",
     "release": "yarn build && rm -f release.zip && cd build && zip -r ../release.zip *",
-    "intl:prepare": "rm -rf tmp/transpiled/ tmp/messages/; tsc && babel tmp/transpiled/ -o tmp/transpiled-bundle.js",
+    "intl:prepare": "rm -rf tmp/transpiled/ tmp/messages/; tsc --jsx preserve && babel tmp/transpiled/ -o tmp/transpiled-bundle.js",
     "intl:export": "bash scripts/intl-export.sh",
     "intl:import": "bash scripts/intl-import.sh",
     "tsc": "tsc --project tsconfig.prod.json --noEmit",
