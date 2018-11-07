@@ -309,7 +309,11 @@ class LedgerHub implements LedgerTaskRunner {
     });
   }
 
-  signTransaction(channelId: number, accountSlot: number, unsignedTx: RiseTransaction): Promise<null | PostableRiseTransaction> {
+  signTransaction(
+    channelId: number,
+    accountSlot: number,
+    unsignedTx: RiseTransaction
+  ): Promise<null | PostableRiseTransaction> {
     return new Promise((resolve, reject) => {
       if (this.deviceId === null) {
         reject(new LedgerUnreachableError());
