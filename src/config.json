@@ -1,5 +1,5 @@
 {
-  "api_url": "https://wallet.rise.vision",
+  "api_url": "https://twallet.rise.vision",
   "explorer_url": "https://explorer.rise.vision",
   "date_format": "LLLL",
   "fiat_currencies": ["USD", "EUR", "GBP", "CAD", "AUD"],
