@@ -35,4 +35,4 @@ jobs:
   - stage: test
     name: E2E tests
     script:
-    - yarn test
+    - yarn run test-ci
