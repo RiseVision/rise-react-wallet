@@ -129,7 +129,7 @@ class TransactionDialog extends React.Component<Props, State> {
     const signedTx = walletStore.signTransaction(
       unsignedTx,
       secrets.mnemonic,
-      secrets.passphrase || undefined
+      account.secondPublicKey ? secrets.passphrase : null
     );
 
     this.broadcastTransaction(signedTx);
