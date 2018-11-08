@@ -1,6 +1,7 @@
 import { observable, runInAction, reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
+import { Rise } from 'dpos-offline';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog from '../../components/Dialog';
 import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
@@ -112,9 +113,17 @@ class TransactionDialog extends React.Component<Props, State> {
   }
 
   handleConfirmTransaction = async (secrets: Secrets) => {
-    const { walletStore, onCreateTransaction } = this.injected;
+    const { account, walletStore, onCreateTransaction } = this.injected;
 
     this.setState({ step: 'sending' });
+
+    // Ensure that the account publicKey is set
+    if (!account.publicKey) {
+      const kp = Rise.deriveKeypair(secrets.mnemonic);
+      runInAction(() => {
+        account.publicKey = kp.publicKey.toString('hex');
+      });
+    }
 
     const unsignedTx = await onCreateTransaction();
     const signedTx = walletStore.signTransaction(
@@ -248,6 +257,14 @@ class TransactionDialog extends React.Component<Props, State> {
     }
     const accountSlot = account.hwSlot || 0;
 
+    // Ensure that the account publicKey is set before calling onCreateTransaction
+    if (!account.publicKey) {
+      const info = await ledger.getAccount(accountSlot);
+      runInAction(() => {
+        account.publicKey = info.publicKey;
+      });
+    }
+
     let unsignedTx = await onCreateTransaction();
     if (ledgerSignId !== this.lastLedgerSignId) {
       return;
@@ -364,6 +381,7 @@ class TransactionDialog extends React.Component<Props, State> {
           )
         ) : (
           <ConfirmTxEnterSecretsFooter
+            address={account.id}
             publicKey={account.publicKey}
             secondPublicKey={passphrasePublicKey || account.secondPublicKey}
             onConfirm={this.handleConfirmTransaction}

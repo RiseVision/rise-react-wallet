@@ -43,7 +43,7 @@ export default class AccountStore {
   @observable loaded: boolean = false;
 
   @observable id: string;
-  @observable publicKey: string;
+  @observable publicKey: string | null = null;
 
   @observable type: AccountType;
   @observable hwId: null | string;
@@ -91,9 +91,14 @@ export default class AccountStore {
   }
 
   toSenderObject(): SenderType {
+    const { publicKey } = this;
+    if (!publicKey) {
+      throw new Error(`Account publicKey field must be set at this point.`);
+    }
+
     return {
       address  : this.id as Address,
-      publicKey: Buffer.from(this.publicKey, 'hex') as Buffer & As<'publicKey'>
+      publicKey: Buffer.from(publicKey, 'hex') as Buffer & As<'publicKey'>
     };
   }
 }

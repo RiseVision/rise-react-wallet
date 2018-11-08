@@ -360,9 +360,12 @@ export default class WalletStore {
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADING;
     });
-    const delegate = await this.delegateCache.get(account.publicKey, {
-      reload: true
-    });
+    let delegate: Delegate | null = null;
+    if (account.publicKey) {
+      delegate = await this.delegateCache.get(account.publicKey, {
+        reload: true
+      });
+    }
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADED;
       account.registeredDelegate = delegate;
@@ -517,14 +520,14 @@ export default class WalletStore {
         offset,
         orderBy: 'timestamp:desc',
         recipientId: account.id,
-        senderPublicKey: account.publicKey
+        senderPublicKey: account.publicKey || undefined
       }),
       this.loadTransactions(
         accountID,
         {
           limit,
           address: account.id,
-          senderPublicKey: account.publicKey
+          senderPublicKey: account.publicKey || undefined
         },
         false
       )

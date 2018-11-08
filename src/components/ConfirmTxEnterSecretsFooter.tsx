@@ -68,7 +68,8 @@ const messages = defineMessages({
 type BaseProps = WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
-  publicKey: string;
+  address: string;
+  publicKey: string | null;
   secondPublicKey: string | null;
   onConfirm: (data: { mnemonic: string; passphrase: null | string }) => void;
 }
@@ -142,7 +143,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
   }
 
   mnemonicError(): string | null {
-    const { intl, publicKey } = this.props;
+    const { intl, address, publicKey } = this.props;
     const { mnemonic } = this.state;
 
     if (!mnemonic.trim()) {
@@ -150,7 +151,18 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
     }
 
     // The derivation takes some CPU cycles, so only do it after the empty check
-    const isValid = !publicKey || derivePublicKey(mnemonic) === publicKey;
+    let isValid = false;
+    if (mnemonic) {
+      const derivedKey = Rise.deriveKeypair(mnemonic).publicKey;
+
+      if (publicKey) {
+        // Prefer to validate against the account publicKey
+        isValid = derivedKey.toString('hex') === publicKey;
+      } else {
+        // Fallback to comparing addresses instead of publicKEy
+        isValid = Rise.calcAddress(derivedKey) === address;
+      }
+    }
 
     if (isValid) {
       return null;
@@ -170,7 +182,11 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
     }
 
     // The derivation takes some CPU cycles, so only do it after the empty check
-    const isValid = derivePublicKey(passphrase) === secondPublicKey;
+    let isValid = false;
+    if (passphrase) {
+      const derivedKey = Rise.deriveKeypair(passphrase).publicKey;
+      isValid = derivedKey.toString('hex') === secondPublicKey;
+    }
 
     if (isValid) {
       return null;
@@ -277,8 +293,3 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
 }
 
 export default stylesDecorator(injectIntl(ConfirmTxEnterSecretsFooter));
-
-// TODO: Remove me as there is a lot of other places doing the very same thing!?
-function derivePublicKey(secret: string): string {
-  return Rise.deriveKeypair(secret).publicKey.toString('hex');
-}
