@@ -35,9 +35,9 @@ export function getDialog(child: string = '', timeout?: number) {
   return cy.get(`div[role="dialog"] ${child}`, { timeout });
 }
 
-export function getDialogContent() {
+export function getDialogContent(child: string = '') {
   // TODO should query a form element
-  return getDialog('> div:nth-child(2) > div:nth-child(2)');
+  return getDialog(`> div:nth-child(2) > div:nth-child(2) ${child}`);
 }
 
 export function getDialogHeader() {

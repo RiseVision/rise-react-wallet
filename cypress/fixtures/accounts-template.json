@@ -7,6 +7,7 @@
       "mnemonic": "FILL_IN",
       "passphrase": "FILL_IN"
       // Account requirements:
+      // - passphrase set
       // - already voted delegate
       // - at least one transaction
       // - last transaction is an incoming one

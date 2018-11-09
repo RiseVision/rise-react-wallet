@@ -306,7 +306,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
       this.onOpen();
     }
 
-    return <Dialog open={open} {...this.dialogProps} onClose={this.onClose} />;
+    return <Dialog open={open} {...this.dialogProps} />;
   }
 
   // TODO simply, describe

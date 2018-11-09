@@ -254,7 +254,8 @@ context('Server errors', () => {
     clickDialogSubmit();
     fillConfirmationDialog();
     // assert the retry button
-    getDialog('button')
+    getDialogContent('button')
+      .find('span')
       .contains('Try again')
       .should('have.length', 1)
       .then(_ => {
@@ -288,7 +289,8 @@ context('Settings', () => {
       url: '**/api/transactions',
       response: {
         success: true,
-        accepted: ['42323498723942398']
+        accepted: ['42323498723942398'],
+        invalid: []
       }
     }).as('putTransaction');
     openRegisterDelegateDialog();
@@ -305,11 +307,6 @@ context('Settings', () => {
       expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
         'username',
         name
-      );
-      // @ts-ignore TODO wrong defs
-      expect(xhr.requestBody.transaction.asset.delegate).to.have.property(
-        'publicKey',
-        getAccount(0).publicKey
       );
     });
   });
@@ -363,7 +360,7 @@ context('Settings', () => {
     fillDialogInput(0, query);
     // wait for results
     getDialogContent()
-      .find('button:visible')
+      .find('button:visible', { timeout: 5000 })
       .its('length')
       .should('be.gt', 0);
     cy.wait(1000);
@@ -651,7 +648,7 @@ context('Dialog navigation', function() {
       .should('not.exist');
   });
 
-  it('no navigation buttons during a submission', function() {
+  it.only('no navigation buttons during a submission', function() {
     const id = lstore.get('accounts')[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
