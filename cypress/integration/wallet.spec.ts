@@ -648,7 +648,7 @@ context('Dialog navigation', function() {
       .should('not.exist');
   });
 
-  it.only('no navigation buttons during a submission', function() {
+  it('no navigation buttons during a submission', function() {
     const id = lstore.get('accounts')[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
