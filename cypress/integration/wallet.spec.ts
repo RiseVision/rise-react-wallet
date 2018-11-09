@@ -130,7 +130,7 @@ context('Wallet', () => {
 
   it('transaction details', () => {
     // click the second transaction row
-    expandTransactionDetails(2)
+    expandTransactionDetails(1)
       // check if opened
       .should('have.attr', 'aria-expanded', 'true')
       // move to the expanded panel
@@ -141,7 +141,7 @@ context('Wallet', () => {
     // check for "confirmed"
     // re-querying for the details panel shouldn't be necessary
     // but the .end() method doesn't seems to work (selection == null)
-    getTransactionDetails()
+    getTransactionDetails(1)
       .find('span')
       .contains('Send')
       .should('have.length', 1)
@@ -149,21 +149,21 @@ context('Wallet', () => {
       .end();
 
     // check for "Timestamp"
-    getTransactionDetails()
+    getTransactionDetails(1)
       .find('span')
       .contains('Timestamp')
       .should('have.length', 1);
 
     // check for the "Return funds" button
-    getTransactionDetails()
+    getTransactionDetails(1)
       .contains('Send again')
       .should('have.length', 1);
   });
 
   it('transaction - Send Again button', () => {
     // click the second transaction row
-    expandTransactionDetails(2);
-    getTransactionDetails()
+    expandTransactionDetails(1);
+    getTransactionDetails(1)
       .contains('Send again')
       .click();
     // TODO assert with read address and amount
@@ -181,8 +181,8 @@ context('Wallet', () => {
   it('transaction - edit account name', () => {
     const name = 'test-name';
     // click the second transaction row
-    expandTransactionDetails(2);
-    getTransactionDetails()
+    expandTransactionDetails(1);
+    getTransactionDetails(1)
       .find('button[aria-label="Add sender to contacts"]')
       .click();
     fillDialogInput(0, name);

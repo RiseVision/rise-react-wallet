@@ -109,7 +109,7 @@ export function getSettingsRow(text: string) {
   return cy
     .get('main')
     .find('span')
-    .contains(text)
+    .contains(text);
 }
 
 export function clickSettingsRow(text: string) {
@@ -193,18 +193,20 @@ export function openRegisterDelegateDialog() {
   clickSettingsRow('Delegate registration');
 }
 
+function getTransactionDetailsButton(index = 0) {
+  return cy
+    .get('main')
+    .find('div[aria-expanded][role="button"]', { timeout: 5000 })
+    .eq(index);
+}
+
 /**
  * Returns the node with contains expanded transaction details on the account
  * overview page.
  */
-export function getTransactionDetails() {
+export function getTransactionDetails(index = 0) {
   return (
-    cy
-      .get(
-        'main p[class*="AccountOverview-dateGroupTitle-"] + div > div:nth-child(2)'
-      )
-      .find('div[aria-expanded="true"][role="button"]')
-      .eq(0)
+    getTransactionDetailsButton(index)
       // move to the expanded panel
       .next()
   );
@@ -215,12 +217,10 @@ export function getTransactionDetails() {
  *
  * @param index 1-based index.
  */
-export function expandTransactionDetails(index = 1) {
-  return cy
-    .get(
-      `main p[class*="AccountOverview-dateGroupTitle-"] + div > div:nth-child(${index})`
-    )
-    .find('div[aria-expanded="false"][role="button"]')
-    .eq(0)
-    .click();
+export function expandTransactionDetails(index = 0) {
+  return (
+    getTransactionDetailsButton(index)
+      // move to the expanded panel
+      .click()
+  );
 }
