@@ -7,14 +7,26 @@ import {
   Rise
 } from 'dpos-offline';
 import { get, pick } from 'lodash';
-import { action, autorun, IValueDidChange, IValueWillChange, observable, observe, runInAction } from 'mobx';
+import {
+  action,
+  autorun,
+  IValueDidChange,
+  IValueWillChange,
+  observable,
+  observe,
+  runInAction
+} from 'mobx';
 import { RouterStore } from 'mobx-router-rise';
 import * as lstore from 'store';
 import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
 import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';
-import { normalizeAddress, TAddressRecord, TAddressSource } from '../utils/utils';
+import {
+  normalizeAddress,
+  TAddressRecord,
+  TAddressSource
+} from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
 import LangStore from './lang';
@@ -26,7 +38,9 @@ import { As } from 'type-tagger';
 // tslint:disable-next-line:no-any
 export type RiseTransaction<T = any> = GenericRiseTransaction<T>;
 // tslint:disable-next-line:no-any
-export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<T>;
+export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<
+  T
+>;
 
 export default class WalletStore {
   api: string;
@@ -207,17 +221,31 @@ export default class WalletStore {
     }
 
     return Rise.txs.transform({
-      kind       : 'vote',
-      sender     : account.toSenderObject(),
+      kind: 'vote',
+      sender: account.toSenderObject(),
       preferences: [
-        ... (account.votedDelegate ? [{
-          action            : '-' as '-',
-          delegateIdentifier: Buffer.from(account.votedDelegate.publicKey, 'hex') as Buffer & As<'publicKey'>
-        }] : []),
-        ... (!account.votedDelegate || account.votedDelegate!.publicKey ? [{
-          action            : '+' as '+',
-          delegateIdentifier: Buffer.from(delegatePublicKey, 'hex') as Buffer & As<'publicKey'>
-        }] : [])
+        ...(account.votedDelegate
+          ? [
+              {
+                action: '-' as '-',
+                delegateIdentifier: Buffer.from(
+                  account.votedDelegate.publicKey,
+                  'hex'
+                ) as Buffer & As<'publicKey'>
+              }
+            ]
+          : []),
+        ...(!account.votedDelegate || account.votedDelegate!.publicKey
+          ? [
+              {
+                action: '+' as '+',
+                delegateIdentifier: Buffer.from(
+                  delegatePublicKey,
+                  'hex'
+                ) as Buffer & As<'publicKey'>
+              }
+            ]
+          : [])
       ]
     });
   }
@@ -241,9 +269,9 @@ export default class WalletStore {
     }
 
     return Rise.txs.transform({
-      kind      : 'register-delegate',
-      sender    : account.toSenderObject(),
-      identifier: username as string & As<'delegateName'>,
+      kind: 'register-delegate',
+      sender: account.toSenderObject(),
+      identifier: username as string & As<'delegateName'>
     });
   }
 
