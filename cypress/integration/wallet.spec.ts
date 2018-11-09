@@ -346,7 +346,7 @@ context('Settings', () => {
     });
   });
 
-  it('vote delegate when already voted (stabbed)', () => {
+  it.skip('vote delegate when already voted (stabbed)', () => {
     const query = 'test';
     // stab the route
     cy.route({
@@ -395,7 +395,7 @@ context('Settings', () => {
     });
   });
 
-  it('vote delegate, uppercase query', () => {
+  it.skip('vote delegate, uppercase query', () => {
     clickSettingsRow('Voted delegate');
     // type an uppercase query
     fillDialogInput(0, 'TEsT');
@@ -404,7 +404,7 @@ context('Settings', () => {
       .should('have.length', 1);
   });
 
-  it('vote delegate, search by ID', () => {
+  it.skip('vote delegate, search by ID', () => {
     // TODO use satisfy
     // .should('satisfy', el => !el.parent().text().includes('Loading'))
     clickSettingsRow('Voted delegate');
