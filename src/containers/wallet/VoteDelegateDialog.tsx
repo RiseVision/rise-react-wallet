@@ -5,7 +5,7 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { normalizeAddress } from '../../utils/utils';
-import TransactionDialog from './TransactionDialog';
+import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';
@@ -279,7 +279,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     const canGoBack = step !== 'vote';
 
     return (
-      <TransactionDialog
+      <ConfirmTransactionDialog
         open={this.isOpen}
         account={account}
         transaction={

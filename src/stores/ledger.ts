@@ -411,7 +411,9 @@ class LedgerHub implements LedgerTaskRunner {
     const task = new LedgerTask(
       null,
       handleResponse,
-      (reason) => handleResponse(null),
+      () => {},
+      // TODO error handler
+      // (reason) => handleResponse(null),
       async () => {
         const accountPath = new DposAccount()
           .coinIndex(SupportedCoin.RISE)

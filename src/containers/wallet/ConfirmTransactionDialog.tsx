@@ -49,7 +49,7 @@ interface State {
 @inject('walletStore')
 @inject('ledgerStore')
 @observer
-class TransactionDialog extends React.Component<Props, State> {
+class ConfirmTransactionDialog extends React.Component<Props, State> {
   state: State = {
     transaction: null,
     step: 'confirm',
@@ -57,6 +57,7 @@ class TransactionDialog extends React.Component<Props, State> {
     sendError: ''
   };
 
+  open: boolean = false;
   private ledger: LedgerChannel;
   private lastLedgerSignId = 0;
   private disposeLedgerMonitor: null | IReactionDisposer = null;
@@ -101,7 +102,20 @@ class TransactionDialog extends React.Component<Props, State> {
     }
   }
 
-  handleClose = (ev: React.SyntheticEvent<{}>) => {
+  onClose = (ev: React.SyntheticEvent<{}>) => {
+    // ledger part
+    if (!this.open) {
+      return;
+    }
+    this.open = false;
+    if (this.disposeLedgerMonitor !== null) {
+      this.disposeLedgerMonitor();
+      this.disposeLedgerMonitor = null;
+    }
+
+    this.ledger.close();
+
+    // navigation part
     const { store, onClose, closeLink } = this.injected;
     if (onClose) {
       onClose(ev);
@@ -215,7 +229,11 @@ class TransactionDialog extends React.Component<Props, State> {
     return walletStore.fees.get(feeMap[transaction.kind])!;
   }
 
-  componentDidMount() {
+  onOpen() {
+    if (this.open) {
+      return;
+    }
+    this.open = true;
     const { ledgerStore } = this.injected;
     this.ledger = ledgerStore.openChannel();
 
@@ -223,15 +241,6 @@ class TransactionDialog extends React.Component<Props, State> {
       this.canSignOnLedger,
       this.beginLedgerSigning
     );
-  }
-
-  componentWillUnmount() {
-    if (this.disposeLedgerMonitor !== null) {
-      this.disposeLedgerMonitor();
-      this.disposeLedgerMonitor = null;
-    }
-
-    this.ledger.close();
   }
 
   canSignOnLedger = () => {
@@ -293,9 +302,14 @@ class TransactionDialog extends React.Component<Props, State> {
   render() {
     const { open } = this.injected;
 
-    return <Dialog open={open} {...this.dialogProps} />;
+    if (open) {
+      this.onOpen();
+    }
+
+    return <Dialog open={open} {...this.dialogProps} onClose={this.onClose} />;
   }
 
+  // TODO simply, describe
   get dialogProps(): Pick<
     DialogProps,
     'onClose' | 'closeLink' | 'onNavigateBack' | 'navigateBackLink' | 'children'
@@ -308,17 +322,14 @@ class TransactionDialog extends React.Component<Props, State> {
       navigateBackLink
     } = this.injected;
 
+    // TODO comment needed
     if (!transaction) {
       const { children } = this.injected;
       return { onClose, closeLink, onNavigateBack, navigateBackLink, children };
     }
 
     const closeProps: Pick<DialogProps, 'onClose' | 'closeLink'> = {};
-    if (closeLink) {
-      closeProps.closeLink = closeLink;
-    } else {
-      closeProps.onClose = this.handleClose;
-    }
+    closeProps.onClose = this.onClose;
 
     const backProps: Pick<
       DialogProps,
@@ -424,7 +435,7 @@ class TransactionDialog extends React.Component<Props, State> {
           type="broadcast-failed"
           reason={sendError}
           onRetry={canRetry ? this.handleRetryTransaction : undefined}
-          onClose={this.handleClose}
+          onClose={this.onClose}
         />
       </ConfirmTransactionDialogContent>
     );
@@ -443,7 +454,7 @@ class TransactionDialog extends React.Component<Props, State> {
       >
         <ConfirmTxStatusFooter
           type="broadcast-succeeded"
-          onClose={this.handleClose}
+          onClose={this.onClose}
         />
       </ConfirmTransactionDialogContent>
     );
@@ -473,4 +484,4 @@ class TransactionDialog extends React.Component<Props, State> {
   }
 }
 
-export default TransactionDialog;
+export default ConfirmTransactionDialog;

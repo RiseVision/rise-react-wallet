@@ -2,7 +2,7 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import TransactionDialog from './TransactionDialog';
+import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import AddSecondPassphraseDialogContent from '../../components/content/AddSecondPassphraseDialogContent';
 import { accountSettingsPassphraseRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';
@@ -120,7 +120,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
     const canGoBack = step !== 'form';
 
     return (
-      <TransactionDialog
+      <ConfirmTransactionDialog
         open={this.isOpen}
         account={account}
         transaction={

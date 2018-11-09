@@ -2,7 +2,7 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import TransactionDialog from './TransactionDialog';
+import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import RegisterDelegateDialogContent from '../../components/content/RegisterDelegateDialogContent';
 import { accountSettingsDelegateRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';
@@ -127,7 +127,7 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
     const canGoBack = step !== 'form';
 
     return (
-      <TransactionDialog
+      <ConfirmTransactionDialog
         open={this.isOpen}
         account={account}
         transaction={transaction ? {

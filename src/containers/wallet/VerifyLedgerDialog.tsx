@@ -137,6 +137,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
   state: State = {
     confirmed: false
   };
+  open: boolean = false;
   private ledger: LedgerChannel;
   private disposeDeviceLoader: null | IReactionDisposer = null;
   private countdownId: null | number = null;
@@ -152,7 +153,11 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     return this.injected.account || this.injected.accountStore;
   }
 
-  componentWillMount() {
+  onOpen = () => {
+    if (this.open) {
+      return;
+    }
+    this.open = true;
     const { ledgerStore, intl } = this.injected;
     this.ledger = ledgerStore.openChannel();
 
@@ -168,13 +173,18 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     this.handleVerifyLedger();
   }
 
-  componentWillUnmount() {
+  onClose = () => {
+    if (!this.open) {
+      return;
+    }
+    this.open = false;
     if (this.disposeDeviceLoader) {
       this.disposeDeviceLoader();
       this.disposeDeviceLoader = null;
     }
 
     this.ledger.close();
+    this.setState({ confirmed: false });
   }
 
   @action
@@ -212,7 +222,8 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     }
   }
 
-  handleClose = () => {
+  handleCloseButton = () => {
+    this.onClose();
     this.injected.store.navigateTo(this.injected.navigateBackLink);
   }
 
@@ -225,16 +236,22 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       classes,
       ledgerStore
     } = this.injected;
-    const { deviceId } = this.ledger;
-    const { confirmed } = this.state;
+    const account = this.account;
+    let deviceId;
+    let confirmed;
 
     const isOpen =
       open || routerStore.currentView === accountSettingsLedgerRoute;
 
-    const account = this.account;
+    if (isOpen) {
+      this.onOpen();
+
+      deviceId = this.ledger.deviceId;
+      confirmed = this.state.confirmed;
+    }
 
     return (
-      <Dialog open={isOpen} closeLink={navigateBackLink}>
+      <Dialog open={isOpen} closeLink={navigateBackLink} onClose={this.onClose}>
         {!ledgerStore.hasBrowserSupport ? (
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
@@ -314,7 +331,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
                     type="submit"
                     fullWidth={true}
                     children={intl.formatMessage(messages.closeDialog)}
-                    onClick={this.handleClose}
+                    onClick={this.handleCloseButton}
                   />
                 </Grid>
               </Grid>

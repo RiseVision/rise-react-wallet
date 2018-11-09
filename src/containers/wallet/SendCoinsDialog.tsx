@@ -8,7 +8,7 @@ import AccountStore from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
 import WalletStore from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
-import TransactionDialog from './TransactionDialog';
+import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 
 interface Props {
   account: AccountStore;
@@ -157,7 +157,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
     const canGoBack = step !== 'form';
 
     return (
-      <TransactionDialog
+      <ConfirmTransactionDialog
         open={this.isOpen}
         account={account}
         transaction={
