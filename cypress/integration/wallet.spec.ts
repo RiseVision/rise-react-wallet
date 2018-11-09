@@ -321,7 +321,7 @@ context('Settings', () => {
         accepted: ['42323498723942398']
       }
     }).as('putTransaction');
-    selectAccount(getAccount(1).id);
+    selectAccount(getSecrets(1).id);
     cy.wait(1000);
     goToSettings();
     cy.get('main')
