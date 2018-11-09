@@ -685,7 +685,7 @@ context('Dialog navigation', function() {
       });
     });
 
-    it('vote delegate', () => {
+    it.skip('vote delegate', () => {
       const query = 'test';
       clickSettingsRow('Voted delegate');
       fillDialogInput(0, query);
