@@ -57,7 +57,7 @@ const styles = (theme: Theme) =>
       flexDirection: 'column',
       flexGrow: 1,
       maxHeight: '100vh',
-      overflow: 'hidden',
+      overflow: 'auto',
       backgroundColor: theme.palette.background.default,
       '& > :last-child': {
         flex: 1,
