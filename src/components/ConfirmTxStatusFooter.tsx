@@ -29,10 +29,10 @@ const styles = (theme: Theme) =>
       paddingBottom: theme.spacing.unit,
       textAlign: 'center',
       '&:first-child': {
-        paddingTop: theme.spacing.unit * 2,
+        paddingTop: theme.spacing.unit * 2
       },
       '&:last-child': {
-        paddingBottom: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing.unit * 2
       }
     },
     statusContainer: {
@@ -79,7 +79,8 @@ const messages = defineMessages({
 type BaseProps = WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
-  type: 'broadcasting'
+  type:
+    | 'broadcasting'
     | 'broadcast-succeeded'
     | 'broadcast-failed'
     | 'ledger-not-supported'
@@ -103,28 +104,25 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
       reason,
       timeout,
       onRetry,
-      onClose,
+      onClose
     } = this.props;
 
     return (
-      <Grid
-        className={classes.content}
-        container={true}
-        spacing={16}
-      >
+      <Grid className={classes.content} container={true} spacing={16}>
         <Grid item={true} xs={12} className={classes.statusContainer}>
-          {type === 'broadcasting'
-           || type === 'ledger-not-connected' ? (
-            <div><CircularProgress color="primary" /></div>
+          {type === 'broadcasting' || type === 'ledger-not-connected' ? (
+            <div>
+              <CircularProgress color="primary" />
+            </div>
           ) : type === 'broadcast-succeeded' ? (
             <DoneIcon
               className={classes.statusIcon}
               color="primary"
               aria-label={intl.formatMessage(messages.successIconAria)}
             />
-          ) : type === 'broadcast-failed'
-              || type === 'ledger-another-device'
-              || type === 'ledger-not-supported' ? (
+          ) : type === 'broadcast-failed' ||
+          type === 'ledger-another-device' ||
+          type === 'ledger-not-supported' ? (
             <ErrorOutlineIcon
               className={classes.statusIcon}
               color="error"
@@ -214,7 +212,14 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
         )}
         {onClose && (
           <Grid item={true} xs={12} sm={onRetry ? 6 : 12}>
-            <Button onClick={onClose} fullWidth={true}>
+            <Button
+              onClick={onClose}
+              fullWidth={true}
+              buttonRef={ref => {
+                // focus on render
+                ref && ref.focus();
+              }}
+            >
               <FormattedMessage
                 id="confirm-tx-status-footer.close-button"
                 description="Label for close button."
