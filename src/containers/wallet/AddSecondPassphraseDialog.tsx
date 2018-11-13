@@ -1,4 +1,4 @@
-import { reaction, IReactionDisposer } from 'mobx';
+import { reaction, IReactionDisposer, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -53,7 +53,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     this.setState({
       step: 'form',
-      transaction: null,
+      transaction: null
     });
   }
 
@@ -62,8 +62,8 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
       step: 'transaction',
       transaction: {
         passphrase,
-        publicKey: derivePublicKey(passphrase),
-      },
+        publicKey: derivePublicKey(passphrase)
+      }
     });
   }
 
@@ -79,6 +79,17 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
     } else {
       throw new Error('Invalid internal state');
     }
+  }
+
+  onSuccess = () => {
+    const { transaction } = this.state;
+    const { account } = this.injected;
+    // set the passphrase locally
+    const kp = Rise.deriveKeypair(transaction!.passphrase!);
+    runInAction(() => {
+      account.secondPublicKey = kp.publicKey.toString('hex');
+      account.secondSignature = true;
+    });
   }
 
   resetState() {
@@ -132,6 +143,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
         }
         passphrasePublicKey={transaction ? transaction.publicKey : ''}
         onCreateTransaction={this.createTransaction}
+        onSuccess={this.onSuccess}
         closeLink={navigateBackLink}
         onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
         children={this.renderPassphraseContent()}

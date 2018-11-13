@@ -30,6 +30,8 @@ interface Props extends DialogProps {
   transaction: null | Transaction;
   passphrasePublicKey?: string;
   onCreateTransaction: () => Promise<RiseTransaction>;
+  onSuccess?: () => void;
+  onError?: () => void;
 }
 
 interface PropsInjected extends Props {
@@ -157,7 +159,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
   }
 
   async broadcastTransaction(signedTx: PostableRiseTransaction) {
-    const { walletStore } = this.injected;
+    const { walletStore, onSuccess, onError } = this.injected;
 
     this.setState({ step: 'sending' });
 
@@ -190,12 +192,18 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
         step: 'sent',
         signedTx: null
       });
+      if (onSuccess) {
+        onSuccess();
+      }
     } else {
       this.setState({
         step: 'failure',
         signedTx,
         sendError: errorSummary
       });
+      if (onError) {
+        onError();
+      }
     }
   }
 
