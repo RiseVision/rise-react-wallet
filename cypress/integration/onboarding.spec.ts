@@ -104,7 +104,7 @@ context('Onboarding', function() {
         cy.get('body')
           .find('span')
           .contains(
-            'A new acccount has been generated, with the following address'
+            'A new account has been generated, with the following address'
           )
           .parentsUntil('div')
           .parent()

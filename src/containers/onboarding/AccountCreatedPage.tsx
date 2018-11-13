@@ -83,7 +83,7 @@ class AccountCreatedPage extends React.Component<Props, State> {
               <FormattedMessage
                 id="onboarding-account-created.account-with-address-created"
                 description="Text introducing the new account address"
-                defaultMessage="A new acccount has been generated, with the following address:"
+                defaultMessage="A new account has been generated, with the following address:"
               />
             </Typography>
           </Grid>
