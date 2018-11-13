@@ -220,7 +220,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   render() {
-    const { intl, classes } = this.injected;
+    const { intl, classes, walletStore } = this.injected;
     const account = this.account;
     const { type: accountType } = account;
 
@@ -273,28 +273,31 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 />
               </ListItem>
             </Link>
-            <ListItem
-              button={true}
-              onClick={this.handlePinnedClicked}
-              aria-label={intl.formatMessage(
-                account.pinned
-                  ? messages.pinnedAccountOnAria
-                  : messages.pinnedAccountOffAria
-              )}
-            >
-              <ListItemText
-                primary={intl.formatMessage(messages.pinnedAccount)}
-              />
-              <ListItemSecondaryAction
-                className={classes.toggleSecondary}
-                aria-hidden={true}
+            {walletStore.accounts.size >=
+              walletStore.config.max_drawer_accounts && (
+              <ListItem
+                button={true}
+                onClick={this.handlePinnedClicked}
+                aria-label={intl.formatMessage(
+                  account.pinned
+                    ? messages.pinnedAccountOnAria
+                    : messages.pinnedAccountOffAria
+                )}
               >
-                <Switch
-                  onClick={this.handlePinnedClicked}
-                  checked={account.pinned}
+                <ListItemText
+                  primary={intl.formatMessage(messages.pinnedAccount)}
                 />
-              </ListItemSecondaryAction>
-            </ListItem>
+                <ListItemSecondaryAction
+                  className={classes.toggleSecondary}
+                  aria-hidden={true}
+                >
+                  <Switch
+                    onClick={this.handlePinnedClicked}
+                    checked={account.pinned}
+                  />
+                </ListItemSecondaryAction>
+              </ListItem>
+            )}
             {accountType !== AccountType.READONLY && (
               <Link
                 route={accountSettingsVoteRoute}
