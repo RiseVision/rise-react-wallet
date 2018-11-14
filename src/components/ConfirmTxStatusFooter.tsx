@@ -217,7 +217,9 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
               fullWidth={true}
               buttonRef={ref => {
                 // focus on render
-                ref && ref.focus();
+                if (ref) {
+                  ref.focus();
+                }
               }}
             >
               <FormattedMessage
