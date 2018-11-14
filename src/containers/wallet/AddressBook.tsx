@@ -1,37 +1,40 @@
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import SendIcon from '@material-ui/icons/Send';
+import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import * as classNames from 'classnames';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import AddressBookStore from '../../stores/addressBook';
-import { RouteLink } from '../../stores/root';
-import CreateContactDialog from './CreateContactDialog';
+import Link from '../../components/Link';
 import {
   addressBookRoute,
   addressBookCreateRoute,
   addressBookModifyRoute,
-  addressBookRemoveRoute
+  addressBookRemoveRoute,
+  accountSendRoute
 } from '../../routes';
-import Link from '../../components/Link';
+import AddressBookStore from '../../stores/addressBook';
+import { RouteLink } from '../../stores/root';
+import WalletStore from '../../stores/wallet';
+import CreateContactDialog from './CreateContactDialog';
 import ModifyContactDialog from './ModifyContactDialog';
 import RemoveContactDialog from './RemoveContactDialog';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 
 const styles = (theme: Theme) => {
   const normalLayout = theme.breakpoints.up('sm');
@@ -57,31 +60,31 @@ const styles = (theme: Theme) => {
       minHeight: 54,
       padding: `${theme.spacing.unit}px ${2 * theme.spacing.unit}px`,
       '&:last-child': {
-        padding: `${theme.spacing.unit}px ${2 * theme.spacing.unit}px`,
+        padding: `${theme.spacing.unit}px ${2 * theme.spacing.unit}px`
       },
-      wordBreak: 'break-all',
+      wordBreak: 'break-all'
     },
     compactName: {
-      marginTop: 4,
+      marginTop: 4
     },
     compactAddress: {
       marginTop: 4,
       marginBottom: 4,
-      fontStyle: 'italic',
+      fontStyle: 'italic'
     },
     actionsCell: {
-      textAlign: 'right',
+      textAlign: 'right'
     },
     onlyNormal: {
       [compactLayout]: {
-        display: 'none',
-      },
+        display: 'none'
+      }
     },
     onlyCompact: {
       [normalLayout]: {
-        display: 'none',
-      },
-    },
+        display: 'none'
+      }
+    }
   });
 };
 
@@ -91,11 +94,17 @@ type DecoratedProps = Props & InjectedIntlProps;
 
 interface PropsInjected extends DecoratedProps {
   addressBookStore: AddressBookStore;
+  walletStore: WalletStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'AddressBook' });
 
 const messages = defineMessages({
+  sendFabTooltip: {
+    id: 'wallet-account-overview.send-funds-fab-tooltip',
+    description: 'Tooltip for send floating action button',
+    defaultMessage: 'Send RISE'
+  },
   newContactFabTooltip: {
     id: 'wallet-address-book.new-contact-fab-tooltip',
     description: 'Tooltip for new contact floating action button',
@@ -130,10 +139,11 @@ const messages = defineMessages({
     id: 'wallet-address-book.delete-action-tooltip',
     description: 'Label for the delete contact action button',
     defaultMessage: 'Delete contact'
-  },
+  }
 });
 
 @inject('addressBookStore')
+@inject('walletStore')
 @observer
 class AddressBook extends React.Component<DecoratedProps> {
   get injected(): PropsInjected {
@@ -141,7 +151,7 @@ class AddressBook extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { intl, classes, addressBookStore } = this.injected;
+    const { intl, classes, addressBookStore, walletStore } = this.injected;
 
     const backLink: RouteLink = {
       route: addressBookRoute
@@ -167,31 +177,19 @@ class AddressBook extends React.Component<DecoratedProps> {
             <TableHead>
               <TableRow>
                 <TableCell
-                  className={classNames(
-                    classes.cell,
-                    classes.onlyCompact
-                  )}
+                  className={classNames(classes.cell, classes.onlyCompact)}
                   children={intl.formatMessage(messages.compactColumnHeader)}
                 />
                 <TableCell
-                  className={classNames(
-                    classes.cell,
-                    classes.onlyNormal
-                  )}
+                  className={classNames(classes.cell, classes.onlyNormal)}
                   children={intl.formatMessage(messages.nameColumnHeader)}
                 />
                 <TableCell
-                  className={classNames(
-                    classes.cell,
-                    classes.onlyNormal
-                  )}
+                  className={classNames(classes.cell, classes.onlyNormal)}
                   children={intl.formatMessage(messages.addressColumnHeader)}
                 />
                 <TableCell
-                  className={classNames(
-                    classes.cell,
-                    classes.actionsCell
-                  )}
+                  className={classNames(classes.cell, classes.actionsCell)}
                   children={intl.formatMessage(messages.actionsColumnHeader)}
                 />
               </TableRow>
@@ -200,10 +198,7 @@ class AddressBook extends React.Component<DecoratedProps> {
               {addressBookStore.asArray.map(entry => (
                 <TableRow key={entry.id}>
                   <TableCell
-                    className={classNames(
-                      classes.cell,
-                      classes.onlyCompact
-                    )}
+                    className={classNames(classes.cell, classes.onlyCompact)}
                   >
                     <div
                       className={classes.compactName}
@@ -215,25 +210,33 @@ class AddressBook extends React.Component<DecoratedProps> {
                     />
                   </TableCell>
                   <TableCell
-                    className={classNames(
-                      classes.cell,
-                      classes.onlyNormal
-                    )}
+                    className={classNames(classes.cell, classes.onlyNormal)}
                     children={entry.name}
                   />
                   <TableCell
-                    className={classNames(
-                      classes.cell,
-                      classes.onlyNormal
-                    )}
+                    className={classNames(classes.cell, classes.onlyNormal)}
                     children={entry.id}
                   />
                   <TableCell
-                    className={classNames(
-                      classes.cell,
-                      classes.actionsCell
-                    )}
+                    className={classNames(classes.cell, classes.actionsCell)}
                   >
+                    <Tooltip
+                      placement="left"
+                      title={intl.formatMessage(messages.sendFabTooltip)}
+                    >
+                      <Link
+                        route={accountSendRoute}
+                        params={{ id: walletStore.selectedAccount.id }}
+                        queryParams={{
+                          address: entry.id
+                        }}
+                      >
+                        <IconButton className={classes.actionButton}>
+                          <SendIcon fontSize="inherit" />
+                        </IconButton>
+                      </Link>
+                    </Tooltip>
+
                     <Tooltip
                       title={intl.formatMessage(messages.actionModifyTooltip)}
                     >
