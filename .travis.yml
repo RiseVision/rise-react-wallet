@@ -32,8 +32,7 @@ jobs:
     script:
     - yarn test-unit:prepare
     - yarn test-unit
-# TODO temp disabled
-#  - stage: test
-#    name: E2E tests
-#    script:
-#    - yarn run test-ci
+  - stage: test
+    name: E2E tests
+    script:
+    - yarn run test-ci
