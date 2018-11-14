@@ -101,8 +101,8 @@ const stylesDecorator = withStyles(styles, { name: 'AddressBook' });
 
 const messages = defineMessages({
   sendFabTooltip: {
-    id: 'wallet-account-overview.send-funds-fab-tooltip',
-    description: 'Tooltip for send floating action button',
+    id: 'wallet-address-book.send-funds-fab-tooltip',
+    description: 'Tooltip for the contact list Send action button',
     defaultMessage: 'Send RISE'
   },
   newContactFabTooltip: {
