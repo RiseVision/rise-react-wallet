@@ -211,7 +211,7 @@ context('Wallet', () => {
 });
 
 context('Server errors', () => {
-  it('error messages', () => {
+  it.skip('error messages', () => {
     const id = lstore.get('accounts')[1].id;
     // stab the route
     cy.route({
@@ -234,7 +234,7 @@ context('Server errors', () => {
     assertUnsuccessfulDialog('test reason');
   });
 
-  it('retry', () => {
+  it.skip('retry', () => {
     const id = lstore.get('accounts')[1].id;
     // stab the route
     cy.route({
@@ -283,7 +283,7 @@ context('Settings', () => {
     goToSettings();
   });
 
-  it('register delegate (stabbed)', () => {
+  it.skip('register delegate (stabbed)', () => {
     // stab the route
     cy.route({
       method: 'PUT',
@@ -312,7 +312,7 @@ context('Settings', () => {
     });
   });
 
-  it('2nd passphrase (stabbed)', () => {
+  it.skip('2nd passphrase (stabbed)', () => {
     // stab the route
     cy.route({
       method: 'PUT',
@@ -395,7 +395,7 @@ context('Settings', () => {
     });
   });
 
-  it.skip('vote delegate, uppercase query', () => {
+  it('vote delegate, uppercase query', () => {
     clickSettingsRow('Voted delegate');
     // type an uppercase query
     fillDialogInput(0, 'TEsT');
@@ -404,7 +404,7 @@ context('Settings', () => {
       .should('have.length', 1);
   });
 
-  it.skip('vote delegate, search by ID', () => {
+  it('vote delegate, search by ID', () => {
     // TODO use satisfy
     // .should('satisfy', el => !el.parent().text().includes('Loading'))
     clickSettingsRow('Voted delegate');
@@ -416,6 +416,7 @@ context('Settings', () => {
       .prev()
       .eq(0)
       // get the ID of the first delegate
+      // TODO check for "No result to display" <= 2
       .then(el => {
         return el
           .find('p')
@@ -447,7 +448,8 @@ context('Settings', () => {
     });
   });
 
-  it('pinned', () => {
+  // TODO test on many accounts
+  it.skip('pinned', () => {
     cy.wait(1000);
     clickSettingsRow('Pinned').then(_ => {
       expect(getAccount().pinned).to.eql(true);
@@ -685,7 +687,7 @@ context('Dialog navigation', function() {
       });
     });
 
-    it.skip('vote delegate', () => {
+    it('vote delegate', () => {
       const query = 'test';
       clickSettingsRow('Voted delegate');
       fillDialogInput(0, query);
