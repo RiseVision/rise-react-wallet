@@ -13,6 +13,8 @@ export type TConfig = {
   date_format: string;
   fiat_currencies: string[];
   max_drawer_accounts: number;
+  // seconds
+  suggested_delegates_cache_sec: number;
 };
 
 export type TStores = {

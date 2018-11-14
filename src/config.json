@@ -3,5 +3,6 @@
   "explorer_url": "https://explorer.rise.vision",
   "date_format": "LLLL",
   "fiat_currencies": ["USD", "EUR", "GBP", "CAD", "AUD"],
-  "max_drawer_accounts": 5
+  "max_drawer_accounts": 5,
+  "suggested_delegates_cache_sec": 300
 }

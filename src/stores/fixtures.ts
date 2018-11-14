@@ -461,5 +461,6 @@ export const config: TConfig = {
   date_format: '',
   explorer_url: '',
   fiat_currencies: [],
-  max_drawer_accounts: 5
+  max_drawer_accounts: 5,
+  suggested_delegates_cache_sec: 300
 };

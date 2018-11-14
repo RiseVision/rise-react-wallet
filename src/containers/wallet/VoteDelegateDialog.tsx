@@ -1,6 +1,6 @@
 import { Delegate } from 'dpos-api-wrapper';
 import { throttle, sampleSize } from 'lodash';
-import { reaction, IReactionDisposer } from 'mobx';
+import { reaction, IReactionDisposer, observe, Lambda } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -25,7 +25,6 @@ interface PropsInjected extends Props {
 }
 
 interface State {
-  activeDelegates: null | Delegate[];
   step: 'vote' | 'transaction';
   query: string;
   search: {
@@ -55,9 +54,10 @@ class VoteDelegateDialog extends React.Component<Props, State> {
   }
 
   disposeOpenMonitor: null | IReactionDisposer = null;
+  disposeSuggestionsObserver: Lambda | null;
+
   lastSearch = 0;
   state: State = {
-    activeDelegates: null,
     step: 'vote',
     query: '',
     search: {
@@ -120,13 +120,11 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       }
     });
 
+    const match = await walletStore.fetchDelegateByID(query.toUpperCase());
+
     if (this.lastSearch !== thisSearch) {
       return;
     }
-
-    const match = await walletStore.fetchDelegateByID(
-      query.toUpperCase()
-    );
 
     this.setState({
       search: {
@@ -184,41 +182,14 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     });
   }
 
-  // TODO not async
-  async suggestDelegates() {
-    const thisSearch = ++this.lastSearch;
+  suggestDelegates() {
     const { walletStore } = this.injected;
 
-    let { activeDelegates } = this.state;
-    if (activeDelegates === null) {
-      this.setState({
-        search: {
-          isLoading: true,
-          query: '',
-          delegates: []
-        }
-      });
-      // TODO keep queries in the store
-      // TODO cache
-      const response = await walletStore.dposAPI.delegates.getList();
-      activeDelegates = response.delegates;
-    }
-    // Make sure that the suggestions are still something that the user is interested in
-    if (this.lastSearch !== thisSearch) {
-      // keep the delegates list anyway and redo a local search
-      this.setState({
-        activeDelegates: activeDelegates
-      });
-      this.searchByID(this.state.query);
-      return;
-    }
-
     this.setState({
-      activeDelegates: activeDelegates,
       search: {
         isLoading: false,
         query: '',
-        delegates: sampleSize(activeDelegates, 3)
+        delegates: sampleSize(walletStore.suggestedDelegates, 3)
       }
     });
   }
@@ -243,6 +214,8 @@ class VoteDelegateDialog extends React.Component<Props, State> {
       step: 'vote',
       transaction: null
     });
+    // pass async
+    this.injected.walletStore.fetchSuggestedDelegates();
     this.suggestDelegates();
 
     // load the current vote (settings should preload)
@@ -261,6 +234,15 @@ class VoteDelegateDialog extends React.Component<Props, State> {
         }
       }
     );
+    this.disposeSuggestionsObserver = observe(
+      this.injected.walletStore,
+      'suggestedDelegates',
+      () => {
+        if (!this.state.search.query) {
+          this.suggestDelegates();
+        }
+      }
+    );
 
     this.resetState();
   }
@@ -269,6 +251,10 @@ class VoteDelegateDialog extends React.Component<Props, State> {
     if (this.disposeOpenMonitor) {
       this.disposeOpenMonitor();
       this.disposeOpenMonitor = null;
+    }
+    if (this.disposeSuggestionsObserver) {
+      this.disposeSuggestionsObserver();
+      this.disposeSuggestionsObserver = null;
     }
   }
 

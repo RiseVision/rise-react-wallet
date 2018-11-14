@@ -1,4 +1,6 @@
 import * as assert from 'assert';
+import { Moment } from 'moment';
+import * as moment from 'moment';
 import { Delegate, rise as dposAPI, TransactionType } from 'risejs';
 import {
   RiseTransaction as GenericRiseTransaction,
@@ -58,6 +60,10 @@ export default class WalletStore {
   });
   @observable accounts = observable.map<string, AccountStore>();
   @observable selectedAccount: AccountStore;
+
+  @observable suggestedDelegates: Delegate[] = [];
+  suggestedDelegatesTime: Moment;
+  suggestedDelegatesPromise: Promise<Delegate[]> | null;
 
   constructor(
     public config: TConfig,
@@ -360,11 +366,16 @@ export default class WalletStore {
    * Loads the currently voted delegate for the specified account.
    *
    * TODO handle errors
+   * TODO concurrency mutex
    */
   @action
   async loadVotedDelegate(accountID: string) {
     const account = this.accounts.get(accountID) as AccountStore;
     assert(account, `Account ${accountID} doesn't exist`);
+    // check if already loading
+    if (account.votedDelegateState === LoadingState.LOADING) {
+      return;
+    }
     runInAction(() => {
       account.votedDelegateState = LoadingState.LOADING;
     });
@@ -733,6 +744,42 @@ export default class WalletStore {
       return null;
     }
     return await this.delegateCache.get(publicKey);
+  }
+
+  async fetchSuggestedDelegates(): Promise<Delegate[]> {
+    // mutex (usage)
+    if (this.suggestedDelegatesPromise) {
+      await this.suggestedDelegatesPromise;
+      return this.suggestedDelegates;
+    }
+    const timeout = this.config.suggested_delegates_cache_sec;
+    const expired =
+      !this.suggestedDelegatesTime ||
+      this.suggestedDelegatesTime
+        .add(timeout, 'seconds')
+        .isBefore(moment().utc());
+    if (expired) {
+      // mutex (init)
+      this.suggestedDelegatesPromise = new Promise(async (resolve, reject) => {
+        try {
+          const res = await this.dposAPI.delegates.getList();
+          // update the observable
+          runInAction(() => {
+            this.suggestedDelegates = res.delegates || [];
+          });
+          resolve(this.suggestedDelegates);
+        } catch (e) {
+          reject(e);
+        }
+      });
+      try {
+        await this.suggestedDelegatesPromise;
+        this.suggestedDelegatesTime = moment().utc();
+      } finally {
+        this.suggestedDelegatesPromise = null;
+      }
+    }
+    return this.suggestedDelegates;
   }
 }
 
