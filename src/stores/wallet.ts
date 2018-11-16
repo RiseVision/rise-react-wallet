@@ -36,6 +36,7 @@ import { TConfig } from './index';
 import * as queryString from 'query-string';
 import { Transaction } from './transactions';
 import { As } from 'type-tagger';
+import * as io from 'socket.io-client';
 
 // tslint:disable-next-line:no-any
 export type RiseTransaction<T = any> = GenericRiseTransaction<T>;
@@ -48,6 +49,7 @@ export default class WalletStore {
   api: string;
   dposAPI: typeof dposAPI;
   delegateCache: DelegateCache;
+  io: SocketIOClient.Socket;
 
   // TODO type as not null
   @observable
@@ -62,7 +64,7 @@ export default class WalletStore {
   @observable selectedAccount: AccountStore;
 
   @observable suggestedDelegates: Delegate[] = [];
-  suggestedDelegatesTime: Moment;
+  suggestedDelegatesTime: Moment | null = null;
   suggestedDelegatesPromise: Promise<Delegate[]> | null;
 
   constructor(
@@ -96,6 +98,26 @@ export default class WalletStore {
       this.selectAccount([...this.accounts.keys()][0]);
     }
     this.updateFees();
+    this.connectSocket();
+  }
+
+  connectSocket() {
+    this.io = io.connect(this.config.api_url);
+    // update all accounts involved in the listed transactions
+    // TODO get types from rise-node
+    this.io.on('blocks/change', (change: any) => {
+      for (const t of change.transactions) {
+        // pass async
+        this.refreshAccount(t.senderId, t.recipientId);
+      }
+    });
+    // possible delegates ranking change
+    this.io.on('rounds/change', () => {
+      // invalidate delegates details
+      this.delegateCache.clear()
+      // invalidate suggested delegates list
+      this.suggestedDelegatesTime = null
+    });
   }
 
   observeSelectedAccount() {
@@ -828,6 +850,10 @@ class DelegateCache {
       state: 'loaded',
       delegate: delegate
     };
+  }
+
+  clear() {
+    this.cached = {}
   }
 
   private async fetchAndUpdate(publicKey: string): Promise<Delegate> {
