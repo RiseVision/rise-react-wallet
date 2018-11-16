@@ -49,6 +49,7 @@ export default class TransactionsStore {
   @observable isLoading: boolean = false;
   @observable items = observable.array<Transaction>();
   @observable hasMore = false;
+  @observable expanded = observable.array<string>();
 
   @computed
   get groupedByDay(): TGroupedTransactions {

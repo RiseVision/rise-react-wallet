@@ -145,6 +145,8 @@ const styles = (theme: Theme) => {
 interface Props extends WithStyles<typeof styles> {
   tx: Transaction;
   explorerUrl: string;
+  expanded?: boolean;
+  onExpand?: (id: string, expanded: boolean) => void;
   getSendLinkProps: (address: string, amount: RawAmount) => LinkProps;
   handleContactEdit(id: string): void;
 }
@@ -764,7 +766,15 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { intl, classes, tx, explorerUrl, getSendLinkProps } = this.props;
+    const {
+      intl,
+      classes,
+      tx,
+      explorerUrl,
+      getSendLinkProps,
+      expanded,
+      onExpand
+    } = this.props;
 
     const {
       summaryShort,
@@ -774,7 +784,10 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
       amountShort
     } = this.getSummary();
 
-    const timestamp = moment.utc(tx.timestamp).local().toDate();
+    const timestamp = moment
+      .utc(tx.timestamp)
+      .local()
+      .toDate();
 
     const removedVotes = (tx.votes || [])
       .filter(({ op }) => op === 'remove')
@@ -788,7 +801,14 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
     const msg = messages;
 
     return (
-      <ExpansionPanel>
+      <ExpansionPanel
+        expanded={expanded}
+        onChange={(ch, expanded) => {
+          if (onExpand) {
+            onExpand(tx.id, expanded);
+          }
+        }}
+      >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
           classes={{

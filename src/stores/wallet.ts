@@ -114,9 +114,9 @@ export default class WalletStore {
     // possible delegates ranking change
     this.io.on('rounds/change', () => {
       // invalidate delegates details
-      this.delegateCache.clear()
+      this.delegateCache.clear();
       // invalidate suggested delegates list
-      this.suggestedDelegatesTime = null
+      this.suggestedDelegatesTime = null;
     });
   }
 
@@ -853,7 +853,7 @@ class DelegateCache {
   }
 
   clear() {
-    this.cached = {}
+    this.cached = {};
   }
 
   private async fetchAndUpdate(publicKey: string): Promise<Delegate> {

@@ -9,6 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import SendIcon from '@material-ui/icons/Send';
 import { toPairs } from 'lodash';
+import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as classNames from 'classnames';
@@ -207,6 +208,16 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     };
   }
 
+  @action
+  handleExpand = (id: string, expanded: boolean) => {
+    const account = this.account;
+    if (expanded) {
+      account.recentTransactions.expanded.push(id);
+    } else {
+      account.recentTransactions.expanded.remove(id);
+    }
+  }
+
   render() {
     // mark the current account as viewed
     this.account.viewed = true;
@@ -275,6 +286,10 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                   {transactions.map(transaction => {
                     return (
                       <TxDetailsExpansionPanel
+                        expanded={this.account.recentTransactions.expanded.includes(
+                          transaction.id
+                        )}
+                        onExpand={this.handleExpand}
                         getSendLinkProps={this.getSendLinkProps}
                         key={transaction.id}
                         tx={transaction}
