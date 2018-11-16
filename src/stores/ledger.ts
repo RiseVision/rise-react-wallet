@@ -145,7 +145,7 @@ export class LedgerChannel {
  * In addition to managing the requests, it also handles determining wether the device
  * is connected to the computer and caching of cachable requests (eg getAddress).
  */
-class LedgerHub implements LedgerTaskRunner {
+export class LedgerHub implements LedgerTaskRunner {
   @observable hasBrowserSupport: boolean | null = null;
   @observable deviceId: null | string = null;
 
@@ -438,7 +438,7 @@ class LedgerHub implements LedgerTaskRunner {
 
 /** TODO add connection status observables */
 export default class LedgerStore {
-  private hub = new LedgerHub();
+  protected hub = new LedgerHub();
 
   get hasBrowserSupport() {
     return this.hub.hasBrowserSupport;

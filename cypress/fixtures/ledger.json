@@ -1,0 +1,22 @@
+{
+  "storedAccounts": [
+    {
+      "id": "3305381902466344172R",
+      "publicKey":
+        "21215e1aed42384fdfca2e0749c4e24bc89e8148bc1a3fc7e6472f8bc9d45f1f",
+      "type": 1,
+      "fiatCurrency": "USD",
+      "name": null,
+      "pinned": false
+    },
+    {
+      "id": "1859812488441241535R",
+      "publicKey":
+        "ba752574aecd35316ba24010059099346e9b611c69f034c4765223a122a24f14",
+      "type": 1,
+      "fiatCurrency": "USD",
+      "name": null,
+      "pinned": false
+    }
+  ]
+}
