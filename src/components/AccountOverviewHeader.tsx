@@ -87,7 +87,8 @@ interface Props extends WithStyles<typeof styles> {
   address: string;
   alias: string | null;
   balance: RawAmount;
-  balance_in_fiat: string;
+  balanceFiat: number | null;
+  fiatCurrency: string;
   className?: string;
 }
 
@@ -123,7 +124,9 @@ const AccountOverviewHeader = stylesDecorator(
           className,
           address,
           alias,
-          balance
+          balance,
+          balanceFiat,
+          fiatCurrency
         } = this.props;
 
         const formatAmount = (value: RawAmount) =>
@@ -163,9 +166,11 @@ const AccountOverviewHeader = stylesDecorator(
               >
                 {formatAmount(balance)}
               </Typography>
-              {/*<Typography className={classes.secondary_text}>
-                {balance_in_fiat}
-              </Typography>*/}
+              {balanceFiat && (
+                <Typography className={classes.secondary_text}>
+                  {intl.formatNumber(balanceFiat)} {fiatCurrency}
+                </Typography>
+              )}
             </div>
           </Paper>
         );

@@ -231,7 +231,8 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
       address: this.account.id,
       alias: this.account.name || unnamedAccountLabel,
       balance: this.account.balance,
-      balance_in_fiat: this.account.balanceFiat || ''
+      balanceFiat: this.account.balanceFiat,
+      fiatCurrency: this.account.fiatCurrency
     };
 
     const recentTransactions = this.account.recentTransactions;

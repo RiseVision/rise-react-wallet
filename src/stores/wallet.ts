@@ -67,6 +67,8 @@ export default class WalletStore {
   suggestedDelegatesTime: Moment | null = null;
   suggestedDelegatesPromise: Promise<Delegate[]> | null;
 
+  fiatPrices: { [currency: string]: number } = {};
+
   constructor(
     public config: TConfig,
     public router: RouterStore,
@@ -97,8 +99,11 @@ export default class WalletStore {
       // or the first one
       this.selectAccount([...this.accounts.keys()][0]);
     }
+    // pass async
     this.updateFees();
     this.connectSocket();
+    // pass async
+    this.fetchFiatData();
   }
 
   connectSocket() {
@@ -491,6 +496,7 @@ export default class WalletStore {
       }
     };
     const balanceChanged = (change: IValueDidChange<RawAmount>) => {
+      calculateFiat();
       // skip when already loading
       if (account.recentTransactions.isLoading) {
         return;
@@ -507,7 +513,6 @@ export default class WalletStore {
       if (!account.viewed || !account.loaded) {
         return;
       }
-      calculateFiat();
       // pass async
       account.recentTransactions.load();
     };
@@ -568,14 +573,31 @@ export default class WalletStore {
 
   // TODO throttle per account
   @action
-  async calculateFiat(accountID: string) {
+  calculateFiat(accountID: string) {
     const account = this.getAccountByID(accountID) as AccountStore;
     assert(account, `Account ${accountID} not found`);
-    account.balanceFiat = null;
-    // TODO calculate
-    runInAction(() => {
-      account.balanceFiat = '~??? ' + account.fiatCurrency;
-    });
+    const rate = this.fiatPrices[account.fiatCurrency.toLowerCase()];
+    // handle if no conversion rate was provided
+    if (!rate) {
+      account.balanceFiat = null;
+      return;
+    }
+    account.balanceFiat = account.balance.unit.toNumber() * rate;
+  }
+
+  /** Fetches convertion rates from coingecko.com */
+  async fetchFiatData() {
+    const ret = await fetch(
+      `https://api.coingecko.com/api/v3/coins/rise?
+      localization=false&tickers=false&market_data=true&community_data=false&
+      developer_data=false&sparkline=false`.replace(/\s+/g, '')
+    );
+    const json = await ret.json();
+    this.fiatPrices = json.market_data.current_price;
+    // recalculate values for all accounts
+    for (const id of this.accounts.keys()) {
+      this.calculateFiat(id);
+    }
   }
 
   async fetchTransactions(

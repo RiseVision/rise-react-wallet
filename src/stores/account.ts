@@ -59,7 +59,7 @@ export default class AccountStore {
   @observable name: string = '';
   @observable pinned: boolean = false;
   // dynamic fields
-  @observable balanceFiat: string | null;
+  @observable balanceFiat: number | null;
   @observable votedDelegate: Delegate | null = null;
   @observable votedDelegateState: LoadingState = LoadingState.NOT_LOADED;
   @observable registeredDelegate: Delegate | null = null;
