@@ -103,9 +103,12 @@ export default class WalletStore {
 
   connectSocket() {
     this.io = io.connect(this.config.api_url);
-    // update all accounts involved in the listed transactions
     // TODO get types from rise-node
-    this.io.on('blocks/change', (change: any) => {
+    type TTransactionChange = { senderId: string; recipientId: string };
+    // TODO get types from rise-node
+    type TBlocksChange = { transactions: TTransactionChange[] };
+    // update all accounts involved in the listed transactions
+    this.io.on('blocks/change', (change: TBlocksChange) => {
       for (const t of change.transactions) {
         // pass async
         this.refreshAccount(t.senderId, t.recipientId);
@@ -117,6 +120,15 @@ export default class WalletStore {
       this.delegateCache.clear();
       // invalidate suggested delegates list
       this.suggestedDelegatesTime = null;
+    });
+    // new unconfirmed transactions
+    this.io.on('transactions/change', (t: TTransactionChange) => {
+      for (const account of this.accounts.values()) {
+        if ([t.senderId, t.recipientId].includes(account.id)) {
+          // pass async
+          account.recentTransactions.load();
+        }
+      }
     });
   }
 
