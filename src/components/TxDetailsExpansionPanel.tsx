@@ -803,9 +803,9 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
     return (
       <ExpansionPanel
         expanded={expanded}
-        onChange={(ch, expanded) => {
+        onChange={(ch, isExpanded) => {
           if (onExpand) {
-            onExpand(tx.id, expanded);
+            onExpand(tx.id, isExpanded);
           }
         }}
       >
