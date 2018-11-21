@@ -1,3 +1,4 @@
+import { Tooltip } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import {
@@ -168,7 +169,11 @@ const AccountOverviewHeader = stylesDecorator(
               </Typography>
               {balanceFiat && (
                 <Typography className={classes.secondary_text}>
-                  {intl.formatNumber(balanceFiat)} {fiatCurrency}
+                  <Tooltip title="Powered by CoinGecko">
+                    <span>
+                      {intl.formatNumber(balanceFiat)} {fiatCurrency}
+                    </span>
+                  </Tooltip>
                 </Typography>
               )}
             </div>
