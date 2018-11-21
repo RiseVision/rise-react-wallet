@@ -9,7 +9,7 @@ import WalletStore from './wallet';
 import LedgerStore from './ledger';
 
 // make sure only actions modify the store
-configure({ enforceActions: true });
+configure({ enforceActions: 'observed' });
 
 export interface RouteLink {
   route: Route<{}>;
