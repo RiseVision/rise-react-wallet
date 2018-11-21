@@ -1,25 +1,46 @@
+import * as keyboardJS from 'keyboardjs';
+import { KeyEvent } from 'keyboardjs';
 import { inject, observer } from 'mobx-react';
 import { MobxRouter } from 'mobx-router-rise';
 import * as React from 'react';
-import { IntlProvider } from 'react-intl';
 import { Helmet } from 'react-helmet';
-import LangStore from '../stores/lang';
-import ThemeProvider from './ThemeProvider';
+import { IntlProvider } from 'react-intl';
 import LoadingIndicator from '../components/LoadingIndicator';
+import { accountSendNoIDRoute } from '../routes';
+import LangStore from '../stores/lang';
+import RootStore from '../stores/root';
+import ThemeProvider from './ThemeProvider';
 
 interface Props {
   langStore?: LangStore;
+  store?: RootStore;
 }
 
 interface State {}
 
 @inject('langStore')
+@inject('store')
 @observer
 class App extends React.Component<Props, State> {
+
   constructor(props: Props) {
     super(props);
 
     this.state = {};
+  }
+
+  componentDidMount() {
+    keyboardJS.bind('S', this.handlerOpenSendDialog);
+  }
+
+  componentWillUnmount() {
+    keyboardJS.unbind('S', this.handlerOpenSendDialog);
+  }
+
+  handlerOpenSendDialog(e: KeyEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.store!.router.goTo(accountSendNoIDRoute);
   }
 
   render() {

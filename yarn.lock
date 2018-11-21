@@ -237,6 +237,11 @@
     csstype "^2.0.0"
     indefinite-observable "^1.0.1"
 
+"@types/keyboardjs@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@types/keyboardjs/-/keyboardjs-2.4.0.tgz#e917c22e5a5b2d1fe5a319f6bc9b7b4006ad3f4c"
+  integrity sha512-JmWXp4PzNNAOy8UBZT+tYWbDova7MDjrq90iroQE/chwWndEuTnibuyRLBYINmVlM7+y1BUQvgGCqIKGpx8G0A==
+
 "@types/ledgerhq__hw-transport-u2f@^4.21.0":
   version "4.21.0"
   resolved "https://registry.yarnpkg.com/@types/ledgerhq__hw-transport-u2f/-/ledgerhq__hw-transport-u2f-4.21.0.tgz#b3d7af7c42ac063fe98cf0f82dc9aa581a558b3c"
@@ -6054,6 +6059,11 @@ just-extend@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/just-extend/-/just-extend-3.0.0.tgz#cee004031eaabf6406da03a7b84e4fe9d78ef288"
   integrity sha512-Fu3T6pKBuxjWT/p4DkqGHFRsysc8OauWr4ZRTY9dIx07Y9O0RkoR5jcv28aeD1vuAwhm3nLkDurwLXoALp4DpQ==
+
+keyboardjs@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/keyboardjs/-/keyboardjs-2.5.1.tgz#2eb5d96bd1028e07136cd71919f607579edca716"
+  integrity sha512-mRf7MQMiFcudADEpPn3vTtl/rtFELo5MAiKA6yH4ShsFsnwwjMrVfaNt6bpYhBDeODs/T5NXwltz4+ktRQyP7A==
 
 keycode@^2.1.9:
   version "2.2.0"
