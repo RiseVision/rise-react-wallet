@@ -13,19 +13,20 @@ import autoId from '../utils/autoId';
 import { PropsOf } from '../utils/metaTypes';
 import RootStore, { RouteLink } from '../stores/root';
 
-const styles = (theme: Theme) => createStyles({
-  paper: {
-    overflowY: 'initial',
-    marginTop: 20,
-    marginBottom: 20,
-    marginLeft: 10,
-    marginRight: 10,
-    maxWidth: 500
-  },
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    paper: {
+      marginTop: 20,
+      marginBottom: 20,
+      marginLeft: 10,
+      marginRight: 10,
+      maxWidth: 500,
+      // TODO required for ios
+      ...(window.innerWidth > 500 ? { overflowY: 'initial' } : null)
+    }
+  });
 
-type BaseProps = PropsOf<typeof MuiDialog>
-  & WithStyles<typeof styles>;
+type BaseProps = PropsOf<typeof MuiDialog> & WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
   onClose?: (ev?: React.SyntheticEvent<{}>) => void;
@@ -54,7 +55,7 @@ class Dialog extends React.Component<Props, State> {
 
   state = {
     title: '',
-    childContentId: null,
+    childContentId: null
   };
 
   get injected(): PropsInjected {
@@ -64,7 +65,7 @@ class Dialog extends React.Component<Props, State> {
   setDialogContent = (dc: DialogContent) => {
     this.setState({
       title: dc.title,
-      childContentId: dc.contentId || null,
+      childContentId: dc.contentId || null
     });
   }
 
@@ -96,7 +97,7 @@ class Dialog extends React.Component<Props, State> {
         aria-describedby={childContentId || this.dialogContentId}
         onClose={onClose || closeLink ? this.handleCloseDialog : undefined}
         classes={{
-          paper: classes.paper,
+          paper: classes.paper
         }}
         maxWidth={false}
         {...others}
@@ -113,7 +114,7 @@ class Dialog extends React.Component<Props, State> {
           key={children.key !== null ? children.key : undefined}
         >
           {React.cloneElement(children, {
-            setDialogContent: this.setDialogContent,
+            setDialogContent: this.setDialogContent
           })}
         </div>
       </MuiDialog>

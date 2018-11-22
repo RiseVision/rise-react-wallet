@@ -1,22 +1,22 @@
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { Rise } from 'dpos-offline';
 import * as React from 'react';
-import { ChangeEvent, FormEvent } from 'react';
+import { FormEvent } from 'react';
 import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { Rise } from 'dpos-offline';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -27,41 +27,48 @@ const styles = (theme: Theme) =>
       paddingBottom: theme.spacing.unit,
       textAlign: 'center',
       '&:first-child': {
-        paddingTop: theme.spacing.unit * 2,
+        paddingTop: theme.spacing.unit * 2
       },
       '&:last-child': {
-        paddingBottom: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing.unit * 2
       }
-    },
+    }
   });
 
-const stylesDecorator = withStyles(styles, { name: 'ConfirmTxEnterSecretsFooter' });
+const stylesDecorator = withStyles(styles, {
+  name: 'ConfirmTxEnterSecretsFooter'
+});
 
 const messages = defineMessages({
   invalidMnemonicMissing: {
     id: 'confirm-tx-enter-secrets-footer.invalid-mnemonic-missing',
     description: 'Error label for an invalid mnemonic (missing)',
-    defaultMessage: 'Missing secret. Please enter the mnemonic secret for your account.',
+    defaultMessage:
+      'Missing secret. Please enter the mnemonic secret for your account.'
   },
   invalidMnemonicIncorrect: {
     id: 'confirm-tx-enter-secrets-footer.invalid-mnemonic-incorrect',
     description: 'Error label for an invalid mnemonic',
-    defaultMessage: 'Incorrect secret. The secret you entered is not associated with this account.'
+    defaultMessage:
+      'Incorrect secret. The secret you entered is not associated with this account.'
   },
   invalidMnemonicNoWords: {
     id: 'confirm-tx-enter-secrets-footer.invalid-mnemonic-no-words',
     description: 'Error label for an invalid mnemonic (no words)',
-    defaultMessage: 'Incorrect secret. The mnemonic usually consists of 12 words separated with spaces.'
+    defaultMessage:
+      'Incorrect secret. The mnemonic usually consists of 12 words separated with spaces.'
   },
   invalidPassphraseMissing: {
     id: 'confirm-tx-enter-secrets-footer.invalid-passphrase-missing',
     description: 'Error label for an invalid passphrase',
-    defaultMessage: 'Missing passphrase. Please enter the passphrase for your account.'
+    defaultMessage:
+      'Missing passphrase. Please enter the passphrase for your account.'
   },
   invalidPassphraseIncorrect: {
     id: 'confirm-tx-enter-secrets-footer.invalid-passphrase-incorrect',
     description: 'Error label for an invalid passphrase',
-    defaultMessage: 'Incorrect passphrase. The passphrase you entered is not associated with this account.'
+    defaultMessage:
+      'Incorrect passphrase. The passphrase you entered is not associated with this account.'
   }
 });
 
@@ -81,21 +88,35 @@ interface State {
   mnemonicInvalid: boolean;
   passphrase: string;
   passphraseInvalid: boolean;
+  removeInput1: boolean;
 }
 
-class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State> {
+class ConfirmTxEnterSecretsFooter extends React.Component<
+  DecoratedProps,
+  State
+> {
   state = {
     mnemonic: '',
     mnemonicInvalid: false,
     passphrase: '',
     passphraseInvalid: false,
+    removeInput1: false
   };
 
-  handleMnemonicChange = (ev: ChangeEvent<HTMLInputElement>) => {
-    const mnemonic = ev.target.value;
+  passphraseRef: HTMLInputElement;
+  mnemonicRef: HTMLInputElement;
+
+  handleMnemonicChange = () => {
+    if (!this.mnemonicRef) {
+      return;
+    }
+    const mnemonic = this.mnemonicRef.value;
     this.setState({
-      mnemonic,
-      mnemonicInvalid: false,
+      mnemonic: mnemonic,
+      mnemonicInvalid: false
+    });
+    this.setState({
+      removeInput1: !this.mnemonicError(mnemonic)
     });
   }
 
@@ -105,11 +126,14 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
     this.setState({ mnemonicInvalid });
   }
 
-  handlePassphraseChange = (ev: ChangeEvent<HTMLInputElement>) => {
-    const passphrase = ev.target.value;
+  handlePassphraseChange = () => {
+    if (!this.passphraseRef) {
+      return;
+    }
+    const passphrase = this.passphraseRef.value;
     this.setState({
       passphrase,
-      passphraseInvalid: false,
+      passphraseInvalid: false
     });
   }
 
@@ -124,13 +148,17 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
 
     const { secondPublicKey, onConfirm } = this.props;
 
+    this.handleMnemonicChange();
+    this.handlePassphraseChange();
+
     const mnemonicInvalid = !!this.mnemonicError();
     const passphraseInvalid = !!secondPublicKey && !!this.passphraseError();
 
     if (mnemonicInvalid || passphraseInvalid) {
       this.setState({
         mnemonicInvalid,
-        passphraseInvalid,
+        passphraseInvalid: passphraseInvalid && this.state.removeInput1,
+        removeInput1: !this.mnemonicError()
       });
       return;
     }
@@ -138,13 +166,13 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
     const { mnemonic, passphrase } = this.state;
     onConfirm({
       mnemonic,
-      passphrase: secondPublicKey ? passphrase : null,
+      passphrase: secondPublicKey ? passphrase : null
     });
   }
 
-  mnemonicError(): string | null {
+  mnemonicError(secret?: string): string | null {
     const { intl, address, publicKey } = this.props;
-    const { mnemonic } = this.state;
+    const mnemonic = secret || this.state.mnemonic;
 
     if (!mnemonic.trim()) {
       return intl.formatMessage(messages.invalidMnemonicMissing);
@@ -196,10 +224,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
   }
 
   render() {
-    const {
-      classes,
-      secondPublicKey
-    } = this.props;
+    const { classes, secondPublicKey } = this.props;
     const {
       mnemonic,
       mnemonicInvalid,
@@ -239,45 +264,51 @@ class ConfirmTxEnterSecretsFooter extends React.Component<DecoratedProps, State>
             )}
           </Typography>
         </Grid>
-        <Grid item={true} xs={12}>
-          <TextField
-            type="password"
-            label={
-              <FormattedMessage
-                id="confirm-tx-enter-secrets-footer.mnemonic-input-label"
-                description="Label for mnemonic text field."
-                defaultMessage="Account mnemonic secret"
-              />
-            }
-            value={mnemonic}
-            onChange={this.handleMnemonicChange}
-            onBlur={this.handleMnemonicBlur}
-            error={mnemonicInvalid}
-            helperText={mnemonicInvalid ? this.mnemonicError() : ''}
-            autoFocus={true}
-            fullWidth={true}
-          />
-        </Grid>
-        {isPassphraseSet && (
+        {!this.state.removeInput1 && (
           <Grid item={true} xs={12}>
             <TextField
               type="password"
               label={
                 <FormattedMessage
-                  id="confirm-tx-enter-secrets-footer.passphrase-input-label"
-                  description="Label for 2nd passphrase text field."
-                  defaultMessage="Second passphrase"
+                  id="confirm-tx-enter-secrets-footer.mnemonic-input-label"
+                  description="Label for mnemonic text field."
+                  defaultMessage="Account mnemonic secret"
                 />
               }
-              value={passphrase}
-              onChange={this.handlePassphraseChange}
-              onBlur={this.handlePassphraseBlur}
-              error={passphraseInvalid}
-              helperText={passphraseInvalid ? this.passphraseError() : ''}
+              value={mnemonic}
+              onChange={this.handleMnemonicChange}
+              onBlur={this.handleMnemonicBlur}
+              error={mnemonicInvalid}
+              helperText={mnemonicInvalid ? this.mnemonicError() : ''}
+              autoFocus={true}
               fullWidth={true}
+              inputRef={ref => (this.mnemonicRef = ref)}
             />
           </Grid>
         )}
+        {this.state.removeInput1 &&
+          isPassphraseSet && (
+            <Grid item={true} xs={12}>
+              <TextField
+                type="password"
+                label={
+                  <FormattedMessage
+                    id="confirm-tx-enter-secrets-footer.passphrase-input-label"
+                    description="Label for 2nd passphrase text field."
+                    defaultMessage="Second passphrase"
+                  />
+                }
+                autoFocus={true}
+                value={passphrase}
+                onChange={this.handlePassphraseChange}
+                onBlur={this.handlePassphraseBlur}
+                error={passphraseInvalid}
+                helperText={passphraseInvalid ? this.passphraseError() : ''}
+                fullWidth={true}
+                inputRef={ref => (this.passphraseRef = ref)}
+              />
+            </Grid>
+          )}
         <Grid item={true} xs={12}>
           <Button type="submit" fullWidth={true}>
             <FormattedMessage
