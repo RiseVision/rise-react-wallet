@@ -69,13 +69,30 @@ export default class WalletStore {
 
   fiatPrices: { [currency: string]: number } = {};
 
+  /**
+   * Returns node's URL, depending on the current location.
+   *
+   * Rules:
+   * - if on the deployment domain (config), and `wallet` sub-domain
+   *   goes to mainnet
+   * - anything else goes to testnet
+   */
+  get nodeAddress() {
+    const location = window.location;
+    if (location.hostname.startsWith(`wallet.${this.config.domain}`)) {
+      return this.config.api_url;
+    }
+    return this.config.api_url_testnet;
+  }
+
   constructor(
     public config: TConfig,
     public router: RouterStore,
     public addressBook: AddressBookStore,
     public lang: LangStore
   ) {
-    dposAPI.nodeAddress = config.api_url;
+    this.config = config;
+    dposAPI.nodeAddress = this.nodeAddress;
     this.dposAPI = dposAPI;
     this.api = config.api_url;
     // tslint:disable-next-line:no-use-before-declare

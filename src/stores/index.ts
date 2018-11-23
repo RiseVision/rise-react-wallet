@@ -9,6 +9,8 @@ import LedgerStore from './ledger';
 
 export type TConfig = {
   api_url: string;
+  api_url_testnet: string;
+  domain: string;
   explorer_url: string;
   date_format: string;
   fiat_currencies: string[];

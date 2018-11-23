@@ -458,6 +458,8 @@ export const serverTransactionDelegates = {
 
 export const config: TConfig = {
   api_url: '',
+  api_url_testnet: '',
+  domain: '',
   date_format: '',
   explorer_url: '',
   fiat_currencies: [],
