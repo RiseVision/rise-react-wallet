@@ -1,4 +1,4 @@
-import { configure } from 'mobx';
+import { configure, observable } from 'mobx';
 import { RouterStore, Route, RouteParams } from 'mobx-router-rise';
 import AccountStore from './account';
 import AddressBookStore from './addressBook';
@@ -35,6 +35,7 @@ export default class RootStore {
   account: AccountStore;
   addressBook: AddressBookStore;
   ledger = new LedgerStore();
+  @observable updateAvailable: boolean = false;
 
   constructor(public config: TConfig) {
     this.addressBook = new AddressBookStore();

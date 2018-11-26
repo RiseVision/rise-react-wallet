@@ -32,4 +32,4 @@ const root = (
 );
 
 ReactDOM.render(root, document.getElementById('root') as HTMLElement);
-registerServiceWorker();
+registerServiceWorker(store);

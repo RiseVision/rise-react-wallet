@@ -1,3 +1,4 @@
+import { Snackbar } from '@material-ui/core';
 import * as keyboardJS from 'keyboardjs';
 import { KeyEvent } from 'keyboardjs';
 import { inject, observer } from 'mobx-react';
@@ -22,7 +23,6 @@ interface State {}
 @inject('store')
 @observer
 class App extends React.Component<Props, State> {
-
   constructor(props: Props) {
     super(props);
 
@@ -44,6 +44,9 @@ class App extends React.Component<Props, State> {
   }
 
   render() {
+    // TODO `get injected`
+    const { updateAvailable } = this.props!.store!;
+
     let currentError = null;
     let isLoading = false;
 
@@ -89,6 +92,21 @@ class App extends React.Component<Props, State> {
             />
             {content}
             <MobxRouter />
+
+            {updateAvailable && (
+              <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                open={true}
+                ContentProps={{
+                  'aria-describedby': 'message-id'
+                }}
+                message={
+                  <span id="update-available">
+                    Update available, please refresh
+                  </span>
+                }
+              />
+            )}
           </React.Fragment>
         </IntlProvider>
       </ThemeProvider>

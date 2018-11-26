@@ -9,6 +9,8 @@
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
 
+import RootStore from './stores/root';
+
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
@@ -19,7 +21,7 @@ const isLocalhost = Boolean(
     )
 );
 
-export default function register() {
+export default function register(store: RootStore) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(
@@ -38,16 +40,16 @@ export default function register() {
 
       if (!isLocalhost) {
         // Is not local host. Just register service worker
-        registerValidSW(swUrl);
+        registerValidSW(store, swUrl);
       } else {
         // This is running on localhost. Lets check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl);
+        checkValidServiceWorker(store, swUrl);
       }
     });
   }
 }
 
-function registerValidSW(swUrl: string) {
+function registerValidSW(store: RootStore, swUrl: string) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
@@ -61,6 +63,7 @@ function registerValidSW(swUrl: string) {
                 // the fresh content will have been added to the cache.
                 // It's the perfect time to display a 'New content is
                 // available; please refresh.' message in your web app.
+                store.updateAvailable = true;
                 console.log('New content is available; please refresh.');
               } else {
                 // At this point, everything has been precached.
@@ -78,7 +81,7 @@ function registerValidSW(swUrl: string) {
     });
 }
 
-function checkValidServiceWorker(swUrl: string) {
+function checkValidServiceWorker(store: RootStore, swUrl: string) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
     .then(response => {
@@ -95,7 +98,7 @@ function checkValidServiceWorker(swUrl: string) {
         });
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW(swUrl);
+        registerValidSW(store, swUrl);
       }
     })
     .catch(() => {
