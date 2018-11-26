@@ -37,7 +37,7 @@ class App extends React.Component<Props, State> {
     keyboardJS.unbind('S', this.handlerOpenSendDialog);
   }
 
-  handlerOpenSendDialog(e: KeyEvent) {
+  handlerOpenSendDialog = (e: KeyEvent) => {
     e.preventDefault();
     e.stopPropagation();
     this.props.store!.router.goTo(accountSendNoIDRoute);
