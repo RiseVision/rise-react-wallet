@@ -30,6 +30,14 @@ Build the app:
 1. Clone the repo
 1. Run `yarn build`
 
+### Custom backend
+
+To get the wallet working with a custom RISE deployment, you need to:
+1. Checkout a working copy
+1. Edit `src/config.json` and change both `api_url` and `api_url_testnet`
+1. Build a release with `yarn build` or `yarn run release`
+
+
 ### About RISE
 
 RISE is a next generation crypto-currency and blockchain application platform, written entirely in TypeScript. For more information please refer to [our website](https://rise.vision/).
