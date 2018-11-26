@@ -535,7 +535,7 @@ context('Form validation', function() {
     // type in the mnemonic
     fillDialogInput(0, getSecrets().mnemonic);
     // type in the passphrase
-    fillDialogInput(1, 'wrong');
+    fillDialogInput(0, 'wrong');
     // click submit
     clickDialogSubmit();
     getDialog()
@@ -557,7 +557,7 @@ context('Form validation', function() {
     // type in the mnemonic
     fillDialogInput(0, 'wrong');
     // type in the passphrase
-    fillDialogInput(1, getSecrets().passphrase);
+    fillDialogInput(0, getSecrets().passphrase);
     // click submit
     clickDialogSubmit();
     getDialog()
@@ -576,7 +576,7 @@ context('Form validation', function() {
     // type in the mnemonic
     fillDialogInput(0, getSecrets(1).mnemonic);
     // type in a wrong passphrase
-    fillDialogInput(1, 'wrong');
+    fillDialogInput(0, 'wrong');
     // click submit
     clickDialogSubmit();
     getDialog()

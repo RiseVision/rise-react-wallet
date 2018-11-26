@@ -92,12 +92,13 @@ export function fillConfirmationDialog(mnemonic?: string, passphrase?: string) {
   }
   // type in the mnemonic
   const first = fillDialogInput(0, mnemonic!);
+  cy.wait(100)
   // in case the password isnt set
   if (!passphrase) {
     return first;
   }
   // type in the passphrase and the Enter key
-  return fillDialogInput(1, passphrase + '{enter}');
+  return fillDialogInput(0, passphrase + '{enter}');
 }
 
 export function goToSettings() {
