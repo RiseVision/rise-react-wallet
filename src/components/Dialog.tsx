@@ -16,6 +16,7 @@ import RootStore, { RouteLink } from '../stores/root';
 const styles = (theme: Theme) =>
   createStyles({
     paper: {
+      display: 'block',
       marginTop: 20,
       marginBottom: 20,
       marginLeft: 10,
