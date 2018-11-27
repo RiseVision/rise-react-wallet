@@ -118,13 +118,13 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
     this.ledger.close();
 
     // navigation part
-    const { store, onClose, closeLink } = this.injected;
+    const { store, onClose, onCloseRoute } = this.injected;
     if (onClose) {
       onClose(ev);
-    } else if (closeLink) {
+    } else if (onCloseRoute) {
       // Fallback to the closeLink as we use this event handler for the
       // dialog content close buttons as well
-      store.navigateTo(closeLink);
+      store.navigateTo(onCloseRoute);
     }
   }
 
@@ -320,12 +320,12 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
   // TODO simply, describe
   get dialogProps(): Pick<
     DialogProps,
-    'onClose' | 'closeLink' | 'onNavigateBack' | 'navigateBackLink' | 'children'
+    'onClose' | 'onCloseRoute' | 'onNavigateBack' | 'navigateBackLink' | 'children'
   > {
     const { transaction, step } = this.state;
     const {
       onClose,
-      closeLink,
+      onCloseRoute,
       onNavigateBack,
       navigateBackLink
     } = this.injected;
@@ -333,10 +333,10 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
     // TODO comment needed
     if (!transaction) {
       const { children } = this.injected;
-      return { onClose, closeLink, onNavigateBack, navigateBackLink, children };
+      return { onClose, onCloseRoute: onCloseRoute, onNavigateBack, navigateBackLink, children };
     }
 
-    const closeProps: Pick<DialogProps, 'onClose' | 'closeLink'> = {};
+    const closeProps: Pick<DialogProps, 'onClose' | 'onCloseRoute'> = {};
     closeProps.onClose = this.onClose;
 
     const backProps: Pick<

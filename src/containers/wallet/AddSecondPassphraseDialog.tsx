@@ -132,21 +132,21 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialog
-        open={this.isOpen}
-        account={account}
-        transaction={
+          open={this.isOpen}
+          account={account}
+          transaction={
           transaction
             ? {
                 kind: 'passphrase'
               }
             : null
         }
-        passphrasePublicKey={transaction ? transaction.publicKey : ''}
-        onCreateTransaction={this.createTransaction}
-        onSuccess={this.onSuccess}
-        closeLink={navigateBackLink}
-        onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
-        children={this.renderPassphraseContent()}
+          passphrasePublicKey={transaction ? transaction.publicKey : ''}
+          onCreateTransaction={this.createTransaction}
+          onSuccess={this.onSuccess}
+          onCloseRoute={navigateBackLink}
+          onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
+          children={this.renderPassphraseContent()}
       />
     );
   }

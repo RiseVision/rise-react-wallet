@@ -56,7 +56,7 @@ class RemoveContactDialog extends React.Component<Props> {
     }
 
     return (
-      <Dialog open={isOpen} closeLink={navigateBackLink}>
+      <Dialog open={isOpen} onCloseRoute={navigateBackLink}>
         <RemoveContactDialogContent
           address={this.address}
           name={this.name}

@@ -128,16 +128,16 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialog
-        open={this.isOpen}
-        account={account}
-        transaction={transaction ? {
+          open={this.isOpen}
+          account={account}
+          transaction={transaction ? {
           kind: 'delegate',
           username: transaction.username,
         } : null}
-        onCreateTransaction={this.handleCreateTransaction}
-        closeLink={navigateBackLink}
-        onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
-        children={this.renderDelegateContent()}
+          onCreateTransaction={this.handleCreateTransaction}
+          onCloseRoute={navigateBackLink}
+          onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
+          children={this.renderDelegateContent()}
       />
     );
   }

@@ -57,7 +57,7 @@ export default class ModifyContactDialog extends React.Component<Props> {
     }
 
     return (
-      <Dialog open={isOpen} closeLink={navigateBackLink}>
+      <Dialog open={isOpen} onCloseRoute={navigateBackLink}>
         <ModifyContactDialogContent
           address={this.address || ''}
           name={this.name || ''}

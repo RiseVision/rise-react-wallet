@@ -48,8 +48,8 @@ class RemoveAccountDialog extends React.Component<Props> {
 
     return (
       <Dialog
-        open={isOpen}
-        closeLink={navigateBackLink}
+          open={isOpen}
+          onCloseRoute={navigateBackLink}
       >
         <RemoveAccountDialogContent
           name={account.name}

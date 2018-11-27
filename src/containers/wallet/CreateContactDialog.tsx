@@ -51,7 +51,7 @@ class CreateContactDialog extends React.Component<Props> {
     }
 
     return (
-      <Dialog open={isOpen} closeLink={navigateBackLink}>
+      <Dialog open={isOpen} onCloseRoute={navigateBackLink}>
         <CreateContactDialogContent
           checkAddressExists={this.checkAddressExists}
           address={this.address || undefined}

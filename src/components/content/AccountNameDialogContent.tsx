@@ -11,7 +11,11 @@ import {
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import autoId from '../../utils/autoId';
 
 const styles = (theme: Theme) =>
@@ -22,7 +26,9 @@ const styles = (theme: Theme) =>
     }
   });
 
-const stylesDecorator = withStyles(styles, { name: 'AccountNameDialogContent' });
+const stylesDecorator = withStyles(styles, {
+  name: 'AccountNameDialogContent'
+});
 
 const messages = defineMessages({
   dialogTitle: {
@@ -49,15 +55,15 @@ const messages = defineMessages({
   }
 });
 
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
-interface Props extends BaseProps {
+interface Props extends BaseProps, ICloseInterruptFormProps {
   account: {
     name: string;
     address: string;
   };
-  onChange: (account: { address: string; name: string }) => void;
+  onSubmit(account: { address: string; name: string }): void;
+  onFormChanged?(changed: boolean): void;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -82,35 +88,32 @@ class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
 
   handleNameChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const name = ev.target.value;
+    this.props.onFormChanged(this.state.name !== this.props.account.name);
     this.setState({ name });
-  }
+  };
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    const { onChange, account } = this.props;
+    const { onSubmit, account } = this.props;
     const { name } = this.state;
-    onChange({
+    onSubmit({
       address: account.address,
       name: name.trim()
     });
-  }
+  };
 
   componentWillMount() {
     const { intl } = this.props;
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 
   render() {
-    const {
-      intl,
-      classes,
-      account,
-    } = this.props;
+    const { intl, classes, account } = this.props;
 
     const { name } = this.state;
     return (

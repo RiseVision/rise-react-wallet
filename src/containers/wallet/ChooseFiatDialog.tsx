@@ -57,7 +57,7 @@ class ChooseFiatDialog extends React.Component<Props> {
     const isOpen = open || routerStore.currentView === accountSettingsFiatRoute;
 
     return (
-      <Dialog open={isOpen} closeLink={navigateBackLink}>
+      <Dialog open={isOpen} onCloseRoute={navigateBackLink}>
         <ChooseFiatDialogContent
           key={account.id}
           fiat={account.fiatCurrency}

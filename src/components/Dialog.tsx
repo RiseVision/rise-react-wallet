@@ -6,7 +6,7 @@ import {
   withStyles
 } from '@material-ui/core/styles';
 import * as React from 'react';
-import { ReactElement } from 'react';
+import { ReactElement, RefObject, Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import ModalPaperHeader from './ModalPaperHeader';
 import autoId from '../utils/autoId';
@@ -31,7 +31,7 @@ type BaseProps = PropsOf<typeof MuiDialog> & WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
   onClose?: (ev?: React.SyntheticEvent<{}>) => void;
-  closeLink?: RouteLink;
+  onCloseRoute?: RouteLink;
   onNavigateBack?: (ev?: React.SyntheticEvent<{}>) => void;
   navigateBackLink?: RouteLink;
   children: ReactElement<DialogContentProps>;
@@ -68,23 +68,33 @@ class Dialog extends React.Component<Props, State> {
       title: dc.title,
       childContentId: dc.contentId || null
     });
-  }
+  };
 
+  /** Handles click-outside and ESC key closing the dialog */
   handleCloseDialog = (ev: React.SyntheticEvent<{}>) => {
-    const { onClose, closeLink, store } = this.injected;
+    const { onClose, onCloseRoute, store } = this.injected;
 
-    if (closeLink) {
-      store.navigateTo(closeLink);
-    } else if (onClose) {
-      onClose(ev);
+    if (onClose) {
+      // @ts-ignore
+      if (onClose(ev) === true) {
+        // close interrupted, see ICloseInterruptController
+        ev.preventDefault();
+        ev.stopPropagation();
+        // TODO show "form changed, close with the close or submit button" msg
+        return;
+      }
     }
-  }
+
+    if (onCloseRoute) {
+      store.navigateTo(onCloseRoute);
+    }
+  };
 
   render() {
     const {
       classes,
       onClose,
-      closeLink,
+      onCloseRoute,
       onNavigateBack,
       navigateBackLink,
       children,
@@ -96,7 +106,7 @@ class Dialog extends React.Component<Props, State> {
       <MuiDialog
         aria-labelledby={this.dialogTitleId}
         aria-describedby={childContentId || this.dialogContentId}
-        onClose={onClose || closeLink ? this.handleCloseDialog : undefined}
+        onClose={onClose || onCloseRoute ? this.handleCloseDialog : undefined}
         classes={{
           paper: classes.paper
         }}
@@ -104,7 +114,7 @@ class Dialog extends React.Component<Props, State> {
         {...others}
       >
         <ModalPaperHeader
-          closeLink={closeLink}
+          closeLink={onCloseRoute}
           onCloseClick={onClose}
           backLink={navigateBackLink}
           onBackClick={onNavigateBack}
@@ -114,6 +124,7 @@ class Dialog extends React.Component<Props, State> {
           id={this.dialogContentId}
           key={children.key !== null ? children.key : undefined}
         >
+          {/* TODO comment needed */}
           {React.cloneElement(children, {
             setDialogContent: this.setDialogContent
           })}
@@ -143,4 +154,13 @@ export function SetDialogContent(
   if (setDialogContent) {
     setDialogContent(content);
   }
+}
+
+export interface ICloseInterruptController {
+  handleFormChanged(changed: boolean): void;
+  handleClose(): boolean;
+}
+
+export interface ICloseInterruptFormProps {
+  onFormChanged?(changed: boolean): void;
 }
