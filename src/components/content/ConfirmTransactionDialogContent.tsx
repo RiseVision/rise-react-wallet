@@ -15,7 +15,11 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import { RawAmount } from '../../utils/amounts';
 import AccountIcon from '../AccountIcon';
 
@@ -213,7 +217,7 @@ function throwInvalidTxKind(tx: TxData) {
 type BaseProps = WithStyles<typeof styles>
   & DialogContentProps;
 
-interface Props extends BaseProps {
+interface Props extends BaseProps, ICloseInterruptFormProps {
   data: TxData;
   fee: RawAmount;
   senderName: string | null;

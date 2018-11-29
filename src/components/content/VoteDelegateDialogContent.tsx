@@ -19,19 +19,26 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import autoId from '../../utils/autoId';
 import { RawAmount } from '../../utils/amounts';
 import DelegateVoteComponent from '../DelegateVoteComponent';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center'
-  }
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    }
+  });
 
-const stylesDecorator = withStyles(styles, { name: 'VoteDelegateDialogContent' });
+const stylesDecorator = withStyles(styles, {
+  name: 'VoteDelegateDialogContent'
+});
 
 const messages = defineMessages({
   dialogTitle: {
@@ -46,7 +53,7 @@ const messages = defineMessages({
       'New blocks on the RISE blockchain are forged by the top 101 ' +
       'delegates. You as the user determine who those delegates are by ' +
       'casting a vote.'
-  },
+  }
 });
 
 type SuggestionsContent = {
@@ -65,15 +72,11 @@ type ErrorContent = {
   onClose: ReactEventHandler<{}>;
 };
 
-type Content =
-  | SuggestionsContent
-  | ResultsContent
-  | ErrorContent;
+type Content = SuggestionsContent | ResultsContent | ErrorContent;
 
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
-interface Props extends BaseProps {
+interface Props extends BaseProps, ICloseInterruptFormProps {
   query: string;
   onQueryChange: (query: string) => void;
   onSelect: (delegate: Delegate) => void;
@@ -90,8 +93,9 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
 
   handleQueryChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const query = ev.target.value;
-    const { onQueryChange } = this.props;
+    const { onQueryChange, onFormChanged } = this.props;
     onQueryChange(query);
+    onFormChanged(Boolean(query));
   }
 
   componentWillMount() {
@@ -99,7 +103,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 
@@ -112,18 +116,14 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
       isLoading,
       votedDelegate,
       voteFee,
-      content,
+      content
     } = this.props;
 
     const formatAmount = (amount: RawAmount) =>
       `${intl.formatNumber(amount.unit.toNumber())} RISE`;
 
     return (
-      <Grid
-        className={classes.content}
-        container={true}
-        spacing={16}
-      >
+      <Grid className={classes.content} container={true} spacing={16}>
         <Grid item={true} xs={12}>
           <Typography
             id={this.dialogContentId}
@@ -158,7 +158,8 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
             </Grid>
           </React.Fragment>
         )}
-        {(content.kind === 'suggestions' || content.kind === 'search-results') && (
+        {(content.kind === 'suggestions' ||
+          content.kind === 'search-results') && (
           <React.Fragment>
             <Grid item={true} xs={12}>
               <TextField
@@ -176,14 +177,19 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
               />
             </Grid>
             <Grid item={true} xs={12}>
-              <Typography variant="body2" color="textSecondary" align="left" component="p">
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                align="left"
+                component="p"
+              >
                 {content.kind === 'search-results' ? (
                   <FormattedMessage
                     id="vote-delegate-dialog-content.results-subtitle"
                     description="Title for search results"
                     defaultMessage={'Search results for "{query}"'}
                     values={{
-                      query: content.query,
+                      query: content.query
                     }}
                   />
                 ) : (
@@ -197,9 +203,10 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
             </Grid>
             {range(3).map(n => {
               const delegate = content.delegates[n] || null;
-              const hasVote = delegate && votedDelegate
-                ? delegate.publicKey === votedDelegate.publicKey
-                : false;
+              const hasVote =
+                delegate && votedDelegate
+                  ? delegate.publicKey === votedDelegate.publicKey
+                  : false;
               return (
                 <Grid
                   key={delegate ? delegate.address : `placeholder-${n}`}

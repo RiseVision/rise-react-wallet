@@ -176,7 +176,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     return (
       <React.Fragment>
         <AccountNameDialog
-          // @ts-ignore TODO avoid rendering date-less dialogs
+          // @ts-ignore TODO avoid rendering data-less dialogs
           account={wallet.accounts.get(id) || { id: '', name: '' }}
           navigateBackLink={backLink}
           open={showAccountName}

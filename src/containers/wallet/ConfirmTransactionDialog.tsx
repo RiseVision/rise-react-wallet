@@ -3,13 +3,20 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { Rise } from 'dpos-offline';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
-import Dialog from '../../components/Dialog';
+import Dialog, {
+  ICloseInterruptController,
+  ICloseInterruptControllerState
+} from '../../components/Dialog';
 import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
 import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
 import RootStore from '../../stores/root';
 import LedgerStore, { LedgerChannel } from '../../stores/ledger';
-import WalletStore, { PostableRiseTransaction, RiseTransaction, TFeeTypes } from '../../stores/wallet';
+import WalletStore, {
+  PostableRiseTransaction,
+  RiseTransaction,
+  TFeeTypes
+} from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import { PropsOf } from '../../utils/metaTypes';
 
@@ -40,7 +47,7 @@ interface PropsInjected extends Props {
   ledgerStore: LedgerStore;
 }
 
-interface State {
+interface State extends ICloseInterruptControllerState {
   transaction: Props['transaction'];
   step: 'confirm' | 'sending' | 'failure' | 'sent';
   signedTx: null | PostableRiseTransaction;
@@ -51,7 +58,8 @@ interface State {
 @inject('walletStore')
 @inject('ledgerStore')
 @observer
-class ConfirmTransactionDialog extends React.Component<Props, State> {
+class ConfirmTransactionDialog extends React.Component<Props, State>
+  implements ICloseInterruptController {
   state: State = {
     transaction: null,
     step: 'confirm',
@@ -104,10 +112,20 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
     }
   }
 
-  onClose = (ev: React.SyntheticEvent<{}>) => {
+  handleClose = (ev: React.SyntheticEvent<{}>) => {
+    // close interrupt
+    // @ts-ignore
+    const tagName = ev.currentTarget.tagName;
+    const isButton =
+      tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
+
+    if (this.state.formChanged && !isButton) {
+      return true;
+    }
+
     // ledger part
     if (!this.open) {
-      return;
+      return false;
     }
     this.open = false;
     if (this.disposeLedgerMonitor !== null) {
@@ -126,6 +144,11 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
       // dialog content close buttons as well
       store.navigateTo(onCloseRoute);
     }
+    return false;
+  }
+
+  handleFormChanged = (changed: boolean) => {
+    this.setState({ formChanged: changed });
   }
 
   handleConfirmTransaction = async (secrets: Secrets) => {
@@ -256,11 +279,13 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
     const { step } = this.state;
     const { ledger } = this;
 
-    return step === 'confirm'
-      && transaction !== null
-      && ledgerStore.hasBrowserSupport
-      && account.hwId !== null
-      && ledger.deviceId === account.hwId;
+    return (
+      step === 'confirm' &&
+      transaction !== null &&
+      ledgerStore.hasBrowserSupport &&
+      account.hwId !== null &&
+      ledger.deviceId === account.hwId
+    );
   }
 
   beginLedgerSigning = async () => {
@@ -317,10 +342,14 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
     return <Dialog open={open} {...this.dialogProps} />;
   }
 
-  // TODO simply, describe
+  // TODO simplify, describe
   get dialogProps(): Pick<
     DialogProps,
-    'onClose' | 'onCloseRoute' | 'onNavigateBack' | 'navigateBackLink' | 'children'
+    | 'onClose'
+    | 'onCloseRoute'
+    | 'onNavigateBack'
+    | 'navigateBackLink'
+    | 'children'
   > {
     const { transaction, step } = this.state;
     const {
@@ -333,11 +362,17 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
     // TODO comment needed
     if (!transaction) {
       const { children } = this.injected;
-      return { onClose, onCloseRoute: onCloseRoute, onNavigateBack, navigateBackLink, children };
+      return {
+        onClose,
+        onCloseRoute,
+        onNavigateBack,
+        navigateBackLink,
+        children
+      };
     }
 
     const closeProps: Pick<DialogProps, 'onClose' | 'onCloseRoute'> = {};
-    closeProps.onClose = this.onClose;
+    closeProps.onClose = this.handleClose;
 
     const backProps: Pick<
       DialogProps,
@@ -380,6 +415,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialogContent
+        onFormChanged={this.handleFormChanged}
         data={transaction!}
         fee={this.fee}
         senderName={account.name}
@@ -416,6 +452,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialogContent
+        onFormChanged={this.handleFormChanged}
         data={transaction!}
         fee={this.fee}
         senderName={account.name}
@@ -434,6 +471,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialogContent
+        onFormChanged={this.handleFormChanged}
         data={transaction!}
         fee={this.fee}
         senderName={account.name}
@@ -443,7 +481,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
           type="broadcast-failed"
           reason={sendError}
           onRetry={canRetry ? this.handleRetryTransaction : undefined}
-          onClose={this.onClose}
+          onClose={this.handleClose}
         />
       </ConfirmTransactionDialogContent>
     );
@@ -455,6 +493,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialogContent
+        onFormChanged={this.handleFormChanged}
         data={transaction!}
         fee={this.fee}
         senderName={account.name}
@@ -462,7 +501,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
       >
         <ConfirmTxStatusFooter
           type="broadcast-succeeded"
-          onClose={this.onClose}
+          onClose={this.handleClose}
         />
       </ConfirmTransactionDialogContent>
     );
@@ -470,7 +509,10 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
 
   private updateConfirmationCountdown = () => {
     const now = new Date();
-    const remainMs = this.confirmationTimeout !== null ? this.confirmationTimeout.getTime() - now.getTime() : 0;
+    const remainMs =
+      this.confirmationTimeout !== null
+        ? this.confirmationTimeout.getTime() - now.getTime()
+        : 0;
     const isCountdownActive = remainMs > 0;
 
     runInAction(() => {
@@ -484,7 +526,10 @@ class ConfirmTransactionDialog extends React.Component<Props, State> {
     });
 
     if (isCountdownActive && this.countdownId === null) {
-      this.countdownId = window.setInterval(this.updateConfirmationCountdown, 250);
+      this.countdownId = window.setInterval(
+        this.updateConfirmationCountdown,
+        250
+      );
     } else if (!isCountdownActive && this.countdownId !== null) {
       window.clearInterval(this.countdownId);
       this.countdownId = null;

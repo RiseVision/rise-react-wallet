@@ -1,14 +1,18 @@
+import { Rise } from 'dpos-offline';
 import { reaction, IReactionDisposer, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import AddSecondPassphraseDialogContent from '../../components/content/AddSecondPassphraseDialogContent';
+import {
+  ICloseInterruptController,
+  ICloseInterruptControllerState
+} from '../../components/Dialog';
 import { accountSettingsPassphraseRoute } from '../../routes';
-import RootStore, { RouteLink } from '../../stores/root';
 import AccountStore from '../../stores/account';
+import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
-import { Rise } from 'dpos-offline';
+import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 
 interface Props {
   account: AccountStore;
@@ -22,7 +26,8 @@ interface PropsInjected extends Props {
   walletStore: WalletStore;
 }
 
-interface State {
+interface State extends ICloseInterruptControllerState {
+  formChanged?: boolean;
   step: 'form' | 'transaction';
   transaction: null | {
     passphrase: string;
@@ -34,7 +39,8 @@ interface State {
 @inject('routerStore')
 @inject('walletStore')
 @observer
-class AddSecondPassphraseDialog extends React.Component<Props, State> {
+class AddSecondPassphraseDialog extends React.Component<Props, State>
+  implements ICloseInterruptController {
   disposeOpenMonitor: null | IReactionDisposer = null;
   state: State = {
     step: 'form',
@@ -46,8 +52,13 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
+    if (!this.state.formChanged) {
+      return false;
+    }
+
     const { navigateBackLink, store } = this.injected;
     store.navigateTo(navigateBackLink);
+    return false;
   }
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
@@ -65,6 +76,10 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
         publicKey: derivePublicKey(passphrase)
       }
     });
+  }
+
+  handleFormChanged = (changed: boolean) => {
+    this.setState({ formChanged: changed });
   }
 
   createTransaction = () => {
@@ -132,21 +147,22 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialog
-          open={this.isOpen}
-          account={account}
-          transaction={
+        open={this.isOpen}
+        account={account}
+        transaction={
           transaction
             ? {
                 kind: 'passphrase'
               }
             : null
         }
-          passphrasePublicKey={transaction ? transaction.publicKey : ''}
-          onCreateTransaction={this.createTransaction}
-          onSuccess={this.onSuccess}
-          onCloseRoute={navigateBackLink}
-          onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
-          children={this.renderPassphraseContent()}
+        passphrasePublicKey={transaction ? transaction.publicKey : ''}
+        onCreateTransaction={this.createTransaction}
+        onSuccess={this.onSuccess}
+        onClose={this.handleClose}
+        onCloseRoute={navigateBackLink}
+        onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
+        children={this.renderPassphraseContent()}
       />
     );
   }
@@ -158,6 +174,7 @@ class AddSecondPassphraseDialog extends React.Component<Props, State> {
 
     return (
       <AddSecondPassphraseDialogContent
+        onFormChanged={this.handleFormChanged}
         onSubmit={this.handleAddPassphrase}
         onClose={this.handleClose}
         passphraseFee={fee}

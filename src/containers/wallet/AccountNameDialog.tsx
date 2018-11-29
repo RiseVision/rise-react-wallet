@@ -1,15 +1,16 @@
-import { Component, RefObject } from 'react';
-import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import { accountSettingsNameRoute } from '../../routes';
+import * as React from 'react';
+import AccountNameDialogContent
+  from '../../components/content/AccountNameDialogContent';
 import Dialog, {
-  ICloseInterruptController
+  ICloseInterruptController,
+  ICloseInterruptControllerState
 } from '../../components/Dialog';
-import RootStore, { RouteLink } from '../../stores/root';
+import { accountSettingsNameRoute } from '../../routes';
 import AccountStore from '../../stores/account';
-import AccountNameDialogContent from '../../components/content/AccountNameDialogContent';
+import RootStore, { RouteLink } from '../../stores/root';
 
 interface Props {
   account: AccountStore;
@@ -22,8 +23,7 @@ interface InjectedProps extends Props {
   routerStore: RouterStore;
 }
 
-interface State {
-  formChanged: boolean;
+interface State extends ICloseInterruptControllerState {
 }
 
 @inject('store')
@@ -44,15 +44,15 @@ class AccountNameDialog extends React.Component<Props>
     const { account, navigateBackLink, store } = this.injected;
     account.name = data.name;
     store.navigateTo(navigateBackLink);
-  };
+  }
 
-  handleClose = () => {
-    return this.state.formChanged;
-  };
+  handleClose = (ev: React.SyntheticEvent<{}>) => {
+    return Boolean(this.state.formChanged);
+  }
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  };
+  }
 
   render() {
     const { account, navigateBackLink, routerStore, open } = this.injected;

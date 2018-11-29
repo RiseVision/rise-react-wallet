@@ -1,12 +1,17 @@
-import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
+import * as React from 'react';
+import CreateContactDialogContent, {
+  TSubmitData
+} from '../../components/content/CreateContactDialogContent';
+import Dialog, {
+  ICloseInterruptControllerState,
+  ICloseInterruptController
+} from '../../components/Dialog';
 import { addressBookCreateRoute } from '../../routes';
-import Dialog from '../../components/Dialog';
 import AddressBookStore from '../../stores/addressBook';
 import RootStore, { RouteLink } from '../../stores/root';
-import CreateContactDialogContent, { TSubmitData } from '../../components/content/CreateContactDialogContent';
 
 interface Props {
   address?: string;
@@ -20,11 +25,14 @@ interface InjectedProps extends Props {
   addressBookStore: AddressBookStore;
 }
 
+interface State extends ICloseInterruptControllerState {}
+
 @inject('store')
 @inject('routerStore')
 @inject('addressBookStore')
 @observer
-class CreateContactDialog extends React.Component<Props> {
+class CreateContactDialog extends React.Component<Props, State>
+  implements ICloseInterruptController {
   address?: string;
 
   private get injected(): InjectedProps {
@@ -42,6 +50,22 @@ class CreateContactDialog extends React.Component<Props> {
     return this.injected.addressBookStore.contacts.has(address);
   }
 
+  handleClose = (ev: React.SyntheticEvent<{}>) => {
+    // @ts-ignore
+    const tagName = ev.currentTarget.tagName;
+    const isButton =
+      tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
+
+    if (this.state.formChanged && !isButton) {
+      return true;
+    }
+    return false;
+  }
+
+  handleFormChanged = (changed: boolean) => {
+    this.setState({ formChanged: changed });
+  }
+
   render() {
     const { navigateBackLink, routerStore, open } = this.injected;
 
@@ -51,8 +75,13 @@ class CreateContactDialog extends React.Component<Props> {
     }
 
     return (
-      <Dialog open={isOpen} onCloseRoute={navigateBackLink}>
+      <Dialog
+        open={isOpen}
+        onCloseRoute={navigateBackLink}
+        onClose={this.handleClose}
+      >
         <CreateContactDialogContent
+          onFormChanged={this.handleFormChanged}
           checkAddressExists={this.checkAddressExists}
           address={this.address || undefined}
           onSubmit={this.handleCreate}

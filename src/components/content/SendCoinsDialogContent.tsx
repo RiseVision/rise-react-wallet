@@ -27,7 +27,11 @@ import {
 } from '../../utils/utils';
 import AddressSuggestionsMenu from '../../components/AddressSuggestionsMenu';
 import { deburr, take } from 'lodash';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import autoId from '../../utils/autoId';
 
 const styles = (theme: Theme) =>
@@ -58,7 +62,7 @@ export interface SendFormState {
 
 type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
-interface Props extends BaseProps {
+interface Props extends BaseProps, ICloseInterruptFormProps {
   onSubmit: (state: SendFormState) => void;
   amount: RawAmount | null;
   sendFee: RawAmount;
@@ -190,6 +194,9 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
       recipientInvalid: false,
       normalizedAddress
     });
+    this.props.onFormChanged(
+      this.formHasChanges(this.state.amount, recipient.name)
+    );
   }
 
   handleAmountChange = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +214,13 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
       amountInvalid: normalizedAmount.length < 1,
       parsedAmount
     });
+    this.props.onFormChanged(
+      this.formHasChanges(amount, this.state.recipient.name)
+    );
+  }
+
+  formHasChanges(amount: string, recipient: string): boolean {
+    return Boolean(amount || recipient);
   }
 
   handleAmountBlur = () => {

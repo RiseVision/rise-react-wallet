@@ -3,7 +3,9 @@ import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import { addressBookModifyRoute } from '../../routes';
-import Dialog from '../../components/Dialog';
+import Dialog, {
+  ICloseInterruptControllerState, ICloseInterruptController
+} from '../../components/Dialog';
 import AddressBookStore from '../../stores/addressBook';
 import RootStore, { RouteLink } from '../../stores/root';
 import ModifyContactDialogContent, {
@@ -22,13 +24,18 @@ interface InjectedProps extends Props {
   addressBookStore: AddressBookStore;
 }
 
+interface State extends ICloseInterruptControllerState {}
+
 @inject('store')
 @inject('routerStore')
 @inject('addressBookStore')
 @observer
-export default class ModifyContactDialog extends React.Component<Props> {
+export default class ModifyContactDialog extends React.Component<Props, State>
+  implements ICloseInterruptController {
   address?: string;
   name?: string;
+
+  state: State = {};
 
   private get injected(): InjectedProps {
     return this.props as InjectedProps;
@@ -39,6 +46,22 @@ export default class ModifyContactDialog extends React.Component<Props> {
     const { navigateBackLink, store, addressBookStore } = this.injected;
     addressBookStore.setContact(data.address, data.name);
     store.navigateTo(navigateBackLink);
+  }
+
+  handleClose = (ev: React.SyntheticEvent<{}>) => {
+    // @ts-ignore
+    const tagName = ev.currentTarget.tagName;
+    const isButton =
+      tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
+
+    if (this.state.formChanged && !isButton) {
+      return true;
+    }
+    return false;
+  }
+
+  handleFormChanged = (changed: boolean) => {
+    this.setState({ formChanged: changed });
   }
 
   render() {
@@ -57,8 +80,13 @@ export default class ModifyContactDialog extends React.Component<Props> {
     }
 
     return (
-      <Dialog open={isOpen} onCloseRoute={navigateBackLink}>
+      <Dialog
+        open={isOpen}
+        onCloseRoute={navigateBackLink}
+        onClose={this.handleClose}
+      >
         <ModifyContactDialogContent
+          onFormChanged={this.handleFormChanged}
           address={this.address || ''}
           name={this.name || ''}
           onSubmit={this.handleEdit}

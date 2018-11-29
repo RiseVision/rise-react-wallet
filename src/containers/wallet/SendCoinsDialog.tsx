@@ -3,6 +3,10 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import SendCoinsDialogContent from '../../components/content/SendCoinsDialogContent';
+import {
+  ICloseInterruptControllerState,
+  ICloseInterruptController
+} from '../../components/Dialog';
 import { accountSendRoute } from '../../routes';
 import AccountStore from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
@@ -24,7 +28,7 @@ interface PropsInjected extends Props {
   addressBookStore: AddressBookStore;
 }
 
-interface State {
+interface State extends ICloseInterruptControllerState {
   amount: null | RawAmount;
   recipientID: string;
   step: 'form' | 'transaction';
@@ -38,7 +42,8 @@ interface State {
 @inject('walletStore')
 @inject('addressBookStore')
 @observer
-class SendCoinsDialog extends React.Component<Props, State> {
+class SendCoinsDialog extends React.Component<Props, State>
+  implements ICloseInterruptController {
   disposeOpenMonitor: null | IReactionDisposer = null;
   state: State = {
     recipientID: '',
@@ -52,8 +57,22 @@ class SendCoinsDialog extends React.Component<Props, State> {
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
+    // @ts-ignore
+    const tagName = ev.currentTarget.tagName;
+    const isButton =
+      tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
+
+    if (this.state.formChanged && !isButton) {
+      return true;
+    }
+
     const { onNavigateBack } = this.injected;
     onNavigateBack();
+    return false;
+  }
+
+  handleFormChanged = (changed: boolean) => {
+    this.setState({ formChanged: changed });
   }
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
@@ -185,6 +204,7 @@ class SendCoinsDialog extends React.Component<Props, State> {
 
     return (
       <SendCoinsDialogContent
+        onFormChanged={this.handleFormChanged}
         onSubmit={this.handleSubmit}
         recipientID={recipientID}
         recipientName={walletStore.idToName(recipientID)}

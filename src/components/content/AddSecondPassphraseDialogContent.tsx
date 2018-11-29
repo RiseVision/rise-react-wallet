@@ -16,7 +16,11 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import autoId from '../../utils/autoId';
 import { RawAmount } from '../../utils/amounts';
 
@@ -32,7 +36,7 @@ const stylesDecorator = withStyles(styles, { name: 'AddSecondPassphraseDialogCon
 type BaseProps = WithStyles<typeof styles>
   & DialogContentProps;
 
-interface Props extends BaseProps {
+interface Props extends BaseProps, ICloseInterruptFormProps {
   onSubmit: (passphrase: string) => void;
   onClose: ReactEventHandler<{}>;
   passphrase?: string;
@@ -75,6 +79,8 @@ class AddSecondPassphraseDialogContent extends React.Component<DecoratedProps, S
 
   handlePassphraseChanged = (ev: ChangeEvent<HTMLInputElement>) => {
     const passphrase = ev.target.value.trim();
+
+    this.props.onFormChanged(Boolean(passphrase));
 
     this.setState({
       passphrase,

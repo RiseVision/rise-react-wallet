@@ -63,7 +63,6 @@ interface Props extends BaseProps, ICloseInterruptFormProps {
     address: string;
   };
   onSubmit(account: { address: string; name: string }): void;
-  onFormChanged?(changed: boolean): void;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -90,7 +89,7 @@ class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
     const name = ev.target.value;
     this.props.onFormChanged(this.state.name !== this.props.account.name);
     this.setState({ name });
-  };
+  }
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -101,7 +100,7 @@ class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
       address: account.address,
       name: name.trim()
     });
-  };
+  }
 
   componentWillMount() {
     const { intl } = this.props;

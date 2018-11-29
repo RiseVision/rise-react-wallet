@@ -5,13 +5,13 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
-import * as React from 'react';
-import { ReactElement, RefObject, Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import ModalPaperHeader from './ModalPaperHeader';
+import * as React from 'react';
+import { ReactElement } from 'react';
+import RootStore, { RouteLink } from '../stores/root';
 import autoId from '../utils/autoId';
 import { PropsOf } from '../utils/metaTypes';
-import RootStore, { RouteLink } from '../stores/root';
+import ModalPaperHeader from './ModalPaperHeader';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -68,15 +68,19 @@ class Dialog extends React.Component<Props, State> {
       title: dc.title,
       childContentId: dc.contentId || null
     });
-  };
+  }
 
-  /** Handles click-outside and ESC key closing the dialog */
   handleCloseDialog = (ev: React.SyntheticEvent<{}>) => {
     const { onClose, onCloseRoute, store } = this.injected;
 
     if (onClose) {
       // @ts-ignore
-      if (onClose(ev) === true) {
+      const tagName = ev.currentTarget.tagName;
+      const isButton =
+        tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
+
+      // @ts-ignore
+      if (onClose(ev) === true && !isButton) {
         // close interrupted, see ICloseInterruptController
         ev.preventDefault();
         ev.stopPropagation();
@@ -88,7 +92,8 @@ class Dialog extends React.Component<Props, State> {
     if (onCloseRoute) {
       store.navigateTo(onCloseRoute);
     }
-  };
+    return false;
+  }
 
   render() {
     const {
@@ -158,9 +163,13 @@ export function SetDialogContent(
 
 export interface ICloseInterruptController {
   handleFormChanged(changed: boolean): void;
-  handleClose(): boolean;
+  handleClose(ev: React.SyntheticEvent<{}>): boolean;
+}
+
+export interface ICloseInterruptControllerState {
+  formChanged?: boolean;
 }
 
 export interface ICloseInterruptFormProps {
-  onFormChanged?(changed: boolean): void;
+  onFormChanged(changed: boolean): void;
 }

@@ -16,7 +16,11 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import autoId from '../../utils/autoId';
 import { RawAmount } from '../../utils/amounts';
 import { normalizeAddress, normalizeUsername } from '../../utils/utils';
@@ -33,7 +37,7 @@ const stylesDecorator = withStyles(styles, { name: 'RegisterDelegateDialogConten
 type BaseProps = WithStyles<typeof styles>
   & DialogContentProps;
 
-interface Props extends BaseProps {
+interface Props extends BaseProps, ICloseInterruptFormProps {
   onSubmit: () => void;
   onClose: ReactEventHandler<{}>;
   delegateFee: RawAmount;
@@ -102,13 +106,14 @@ class RegisterDelegateDialogContent extends React.Component<DecoratedProps, Stat
 
   handleUsernameChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const username = ev.target.value.trim();
-    const { onUsernameChange } = this.props;
+    const { onUsernameChange, onFormChanged } = this.props;
 
     this.setState({
       usernameInvalid: false,
     });
 
     onUsernameChange(username);
+    onFormChanged(Boolean(username));
   }
 
   handleUsernameBlur = () => {

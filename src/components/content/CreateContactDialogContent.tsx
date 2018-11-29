@@ -12,7 +12,11 @@ import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from '../AccountIcon';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import autoId from '../../utils/autoId';
 import { normalizeAddress } from '../../utils/utils';
 
@@ -87,7 +91,7 @@ const messages = defineMessages({
 
 type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
-interface Props extends BaseProps {
+interface Props extends BaseProps, ICloseInterruptFormProps {
   checkAddressExists?: (address: string) => boolean;
   onSubmit: (data: TSubmitData) => void;
   address?: string;
@@ -121,6 +125,10 @@ class CreateContactDialogContent extends React.Component<
     addressInvalid: false
   };
 
+  formHasChanges(name: string, address: string): boolean {
+    return Boolean(name || address !== this.props.address);
+  }
+
   handleNameChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const name = ev.target.value;
     this.setState({
@@ -128,6 +136,7 @@ class CreateContactDialogContent extends React.Component<
       nameNormalized: name.trim(),
       nameInvalid: false
     });
+    this.props.onFormChanged(this.formHasChanges(name, this.state.address));
   }
 
   handleNameBlur = () => {
@@ -143,6 +152,7 @@ class CreateContactDialogContent extends React.Component<
       addressNormalized: normalizeAddress(address.trim()),
       addressInvalid: false
     });
+    this.props.onFormChanged(this.formHasChanges(this.state.name, address));
   }
 
   handleAddressBlur = () => {

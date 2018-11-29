@@ -14,17 +14,22 @@ import {
   FormattedMessage,
   defineMessages,
   InjectedIntlProps,
-  injectIntl,
+  injectIntl
 } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import autoId from '../../utils/autoId';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center'
-  }
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    }
+  });
 
 const stylesDecorator = withStyles(styles, { name: 'ChooseFiatDialogContent' });
 
@@ -40,14 +45,13 @@ const messages = defineMessages({
     defaultMessage:
       'Select which FIAT currency you prefer to see your ' +
       'RISE account value in.'
-  },
+  }
 });
 
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
-interface Props extends BaseProps {
-  onChange: (value: { fiat: string; global: boolean }) => void;
+interface Props extends BaseProps, ICloseInterruptFormProps {
+  onSubmit: (value: { fiat: string; global: boolean }) => void;
   fiat: string;
   options: string[];
 }
@@ -71,25 +75,26 @@ class ChooseFiatDialogContent extends React.Component<DecoratedProps, State> {
   handleFiatChange = (ev: ChangeEvent<HTMLSelectElement>) => {
     const fiat = ev.target.value;
     this.setState({ fiat });
+    this.props.onFormChanged(this.props.fiat !== fiat);
   }
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    const { onChange } = this.props;
+    const { onSubmit } = this.props;
     const { fiat } = this.state;
-    onChange({
+    onSubmit({
       fiat,
-      global: false,
+      global: false
     });
   }
 
   handleUpdateForAllClick = () => {
-    const { onChange } = this.props;
+    const { onSubmit } = this.props;
     const { fiat } = this.state;
-    onChange({
+    onSubmit({
       fiat,
-      global: true,
+      global: true
     });
   }
 
@@ -98,7 +103,7 @@ class ChooseFiatDialogContent extends React.Component<DecoratedProps, State> {
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 
@@ -143,10 +148,7 @@ class ChooseFiatDialogContent extends React.Component<DecoratedProps, State> {
           </Button>
         </Grid>
         <Grid item={true} xs={12} sm={6}>
-          <Button
-            onClick={this.handleUpdateForAllClick}
-            fullWidth={true}
-          >
+          <Button onClick={this.handleUpdateForAllClick} fullWidth={true}>
             <FormattedMessage
               id="choose-fiat-dialog-content.update-for-all"
               description="Update FIAT for all accounts button label"

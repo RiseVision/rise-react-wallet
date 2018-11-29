@@ -4,6 +4,10 @@ import { reaction, IReactionDisposer, observe, Lambda } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
+import {
+  ICloseInterruptController,
+  ICloseInterruptControllerState
+} from '../../components/Dialog';
 import { normalizeAddress } from '../../utils/utils';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
@@ -24,7 +28,7 @@ interface PropsInjected extends Props {
   walletStore: WalletStore;
 }
 
-interface State {
+interface State extends ICloseInterruptControllerState {
   step: 'vote' | 'transaction';
   query: string;
   search: {
@@ -43,7 +47,8 @@ interface State {
 @inject('routerStore')
 @inject('walletStore')
 @observer
-class VoteDelegateDialog extends React.Component<Props, State> {
+class VoteDelegateDialog extends React.Component<Props, State>
+  implements ICloseInterruptController {
   get injected(): PropsInjected {
     return this.props as PropsInjected;
   }
@@ -136,8 +141,22 @@ class VoteDelegateDialog extends React.Component<Props, State> {
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
+    // @ts-ignore
+    const tagName = ev.currentTarget.tagName;
+    const isButton =
+      tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
+
+    if (this.state.formChanged && !isButton) {
+      return true;
+    }
+
     const { store, navigateBackLink } = this.injected;
     store.navigateTo(navigateBackLink);
+    return false;
+  }
+
+  handleFormChanged = (changed: boolean) => {
+    this.setState({ formChanged: changed });
   }
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
@@ -266,9 +285,9 @@ class VoteDelegateDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialog
-          open={this.isOpen}
-          account={account}
-          transaction={
+        open={this.isOpen}
+        account={account}
+        transaction={
           transaction
             ? {
                 kind: 'vote',
@@ -277,10 +296,11 @@ class VoteDelegateDialog extends React.Component<Props, State> {
               }
             : null
         }
-          onCreateTransaction={this.handleCreateTransaction}
-          onCloseRoute={navigateBackLink}
-          onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
-          children={this.renderVoteContent()}
+        onCreateTransaction={this.handleCreateTransaction}
+        onCloseRoute={navigateBackLink}
+        onClose={this.handleClose}
+        onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
+        children={this.renderVoteContent()}
       />
     );
   }
@@ -297,6 +317,7 @@ class VoteDelegateDialog extends React.Component<Props, State> {
 
     return (
       <VoteDelegateDialogContent
+        onFormChanged={this.handleFormChanged}
         query={query}
         onQueryChange={this.handleQueryChange}
         onSelect={this.handleSelectDelegate}

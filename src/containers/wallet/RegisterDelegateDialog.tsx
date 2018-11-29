@@ -2,6 +2,10 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
+import {
+  ICloseInterruptController,
+  ICloseInterruptControllerState
+} from '../../components/Dialog';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import RegisterDelegateDialogContent from '../../components/content/RegisterDelegateDialogContent';
 import { accountSettingsDelegateRoute } from '../../routes';
@@ -21,11 +25,9 @@ interface PropsInjected extends Props {
   walletStore: WalletStore;
 }
 
-interface State {
+interface State extends ICloseInterruptControllerState {
   usernameInput: string;
-  step:
-    | 'form'
-    | 'transaction';
+  step: 'form' | 'transaction';
   transaction: null | {
     username: string;
   };
@@ -35,12 +37,13 @@ interface State {
 @inject('routerStore')
 @inject('walletStore')
 @observer
-class RegisterDelegateDialog extends React.Component<Props, State> {
+class RegisterDelegateDialog extends React.Component<Props, State>
+  implements ICloseInterruptController {
   disposeOpenMonitor: null | IReactionDisposer = null;
   state: State = {
     usernameInput: '',
     step: 'form',
-    transaction: null,
+    transaction: null
   };
 
   get injected(): PropsInjected {
@@ -48,20 +51,34 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
+    // @ts-ignore
+    const tagName = ev.currentTarget.tagName;
+    const isButton =
+      tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
+
+    if (this.state.formChanged && !isButton) {
+      return true;
+    }
+
     const { navigateBackLink, store } = this.injected;
     store.navigateTo(navigateBackLink);
+    return false;
+  }
+
+  handleFormChanged = (changed: boolean) => {
+    this.setState({ formChanged: changed });
   }
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     this.setState({
       step: 'form',
-      transaction: null,
+      transaction: null
     });
   }
 
   handleUsernameChange = (username: string) => {
     this.setState({
-      usernameInput: username,
+      usernameInput: username
     });
   }
 
@@ -71,8 +88,8 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
     this.setState({
       step: 'transaction',
       transaction: {
-        username: usernameInput,
-      },
+        username: usernameInput
+      }
     });
   }
 
@@ -83,7 +100,7 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
     if (step === 'transaction' && transaction !== null) {
       return walletStore.createRegisterDelegateTx(
         transaction.username,
-        account.id,
+        account.id
       );
     } else {
       throw new Error('Invalid internal state');
@@ -94,16 +111,19 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
     this.setState({
       usernameInput: '',
       step: 'form',
-      transaction: null,
+      transaction: null
     });
   }
 
   componentWillMount() {
-    this.disposeOpenMonitor = reaction(() => this.isOpen, (isOpen) => {
-      if (isOpen) {
-        this.resetState();
+    this.disposeOpenMonitor = reaction(
+      () => this.isOpen,
+      isOpen => {
+        if (isOpen) {
+          this.resetState();
+        }
       }
-    });
+    );
 
     this.resetState();
   }
@@ -128,16 +148,21 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
 
     return (
       <ConfirmTransactionDialog
-          open={this.isOpen}
-          account={account}
-          transaction={transaction ? {
-          kind: 'delegate',
-          username: transaction.username,
-        } : null}
-          onCreateTransaction={this.handleCreateTransaction}
-          onCloseRoute={navigateBackLink}
-          onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
-          children={this.renderDelegateContent()}
+        open={this.isOpen}
+        account={account}
+        transaction={
+          transaction
+            ? {
+                kind: 'delegate',
+                username: transaction.username
+              }
+            : null
+        }
+        onCreateTransaction={this.handleCreateTransaction}
+        onClose={this.handleClose}
+        onCloseRoute={navigateBackLink}
+        onNavigateBack={canGoBack ? this.handleNavigateBack : undefined}
+        children={this.renderDelegateContent()}
       />
     );
   }
@@ -155,6 +180,7 @@ class RegisterDelegateDialog extends React.Component<Props, State> {
     const regUsername = registeredDelegate ? registeredDelegate.username : '';
     return (
       <RegisterDelegateDialogContent
+        onFormChanged={this.handleFormChanged}
         onSubmit={this.handleUsernameCommit}
         onClose={this.handleClose}
         onUsernameChange={this.handleUsernameChange}

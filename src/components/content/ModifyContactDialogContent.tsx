@@ -11,7 +11,11 @@ import {
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
+import {
+  DialogContentProps,
+  SetDialogContent,
+  ICloseInterruptFormProps
+} from '../Dialog';
 import autoId from '../../utils/autoId';
 
 const styles = (theme: Theme) =>
@@ -69,7 +73,7 @@ const messages = defineMessages({
 
 type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
-interface Props extends BaseProps {
+interface Props extends BaseProps, ICloseInterruptFormProps {
   onSubmit: (data: TSubmitData) => void;
   address: string;
   name: string;
@@ -94,7 +98,7 @@ class ModifyContactDialogContent extends React.Component<
   state = {
     name: '',
     nameNormalized: '',
-    nameInvalid: false,
+    nameInvalid: false
   };
 
   constructor(props: DecoratedProps) {
@@ -112,6 +116,7 @@ class ModifyContactDialogContent extends React.Component<
       nameNormalized: name.trim(),
       nameInvalid: false
     });
+    this.props.onFormChanged(Boolean(name !== this.props.name));
   }
 
   handleNameBlur = () => {
@@ -129,7 +134,7 @@ class ModifyContactDialogContent extends React.Component<
 
     if (nameInvalid) {
       this.setState({
-        nameInvalid,
+        nameInvalid
       });
       return;
     }
@@ -165,10 +170,7 @@ class ModifyContactDialogContent extends React.Component<
   render() {
     const { intl, classes, address } = this.props;
 
-    const {
-      name,
-      nameInvalid,
-    } = this.state;
+    const { name, nameInvalid } = this.state;
 
     return (
       <Grid
