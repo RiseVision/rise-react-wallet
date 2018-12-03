@@ -1,0 +1,14 @@
+{
+  "name": "rise-wallet",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "yarn": "^1.10.1"
+  },
+  "dependencies": {
+    "electron": "^3.0.10"
+  },
+  "scripts": {
+    "start": "electron electron.js"
+  }
+}
