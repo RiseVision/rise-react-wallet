@@ -23,7 +23,7 @@ import LedgerConnectIllustration from '../../components/LedgerConnectIllustratio
 import { accountSettingsLedgerRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
-import LedgerStore, { LedgerChannel } from '../../stores/ledger';
+import LedgerStore, { LedgerChannel } from '../../utils/ledgerHub';
 import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import autoId from '../../utils/autoId';
@@ -139,7 +139,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
   };
   open: boolean = false;
   private ledger: LedgerChannel;
-  private disposeDeviceLoader: null | IReactionDisposer = null;
+  private disposeLedgerChangeMonitor: null | IReactionDisposer = null;
   private countdownId: null | number = null;
   @observable private countdownSeconds: number = 0;
   @observable private timeout: null | Date = null;
@@ -166,7 +166,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       contentId: this.dialogContentId
     });
 
-    this.disposeDeviceLoader = reaction(
+    this.disposeLedgerChangeMonitor = reaction(
       () => this.ledger.deviceId,
       this.handleVerifyLedger
     );
@@ -178,9 +178,9 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       return;
     }
     this.open = false;
-    if (this.disposeDeviceLoader) {
-      this.disposeDeviceLoader();
-      this.disposeDeviceLoader = null;
+    if (this.disposeLedgerChangeMonitor) {
+      this.disposeLedgerChangeMonitor();
+      this.disposeLedgerChangeMonitor = null;
     }
 
     this.ledger.close();

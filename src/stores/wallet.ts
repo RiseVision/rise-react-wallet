@@ -38,6 +38,8 @@ import { Transaction } from './transactions';
 import { As } from 'type-tagger';
 import * as io from 'socket.io-client';
 
+// TODO move to /utils/utils.ts
+// TODO proper type instead of any
 // tslint:disable-next-line:no-any
 export type RiseTransaction<T = any> = GenericRiseTransaction<T>;
 // tslint:disable-next-line:no-any
