@@ -63,6 +63,7 @@ class AddAccountPage extends React.Component<Props> {
   }
 
   componentWillUnmount() {
+    // pass async
     this.ledger.close();
   }
 

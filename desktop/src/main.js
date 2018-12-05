@@ -1,6 +1,6 @@
-// Modules to control application life and create native browser window
 const { app, BrowserWindow, webFrame } = require('electron');
-// require('./https');
+// run the ledger hub and expose over IPC
+require('./ledgerIPC');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
