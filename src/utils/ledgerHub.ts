@@ -1,15 +1,15 @@
-import { observable, runInAction } from 'mobx';
-import { Rise } from 'dpos-offline';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import {
   DposLedger,
   SupportedCoin,
   LedgerAccount as DposAccount
 } from 'dpos-ledger-api';
+import { Rise } from 'dpos-offline';
+import isElectron from 'is-electron';
+import { observable, runInAction } from 'mobx';
+import { As } from 'type-tagger';
 // TODO import from /utils/utils.ts
 import { PostableRiseTransaction, RiseTransaction } from '../stores/wallet';
-import { As } from 'type-tagger';
-import isElectron from 'is-electron';
 
 export interface LedgerAccount {
   publicKey: string;
@@ -37,7 +37,7 @@ interface LedgerTaskRunner {
 function getTransport() {
   if (isElectron()) {
     // @ts-ignore
-    return __non_webpack_require__('@ledgerhq/hw-transport-node-hid').default
+    return __non_webpack_require__('@ledgerhq/hw-transport-node-hid').default;
   }
   return TransportU2F;
 }
@@ -109,12 +109,29 @@ class LedgerTask<T> {
   }
 }
 
-export class LedgerChannel {
-  private isOpen = true;
+export interface ILedgerChannel {
+  isOpen: boolean;
+  hub: LedgerHub;
+  channelId: number;
+  readonly deviceId: string | null;
 
-  constructor(private hub: LedgerHub, private channelId: number) {}
+  getAccount(accountSlot: number): Promise<LedgerAccount>;
 
-  // TODO async
+  confirmAccount(accountSlot: number): Promise<boolean>;
+
+  signTransaction(
+    accountSlot: number,
+    unsignedTx: RiseTransaction
+  ): Promise<null | PostableRiseTransaction>;
+
+  close(): Promise<void>;
+}
+
+export class LedgerChannel implements ILedgerChannel {
+  isOpen = true;
+
+  constructor(public hub: LedgerHub, public channelId: number) {}
+
   get deviceId(): null | string {
     if (!this.isOpen) {
       return null;
@@ -141,17 +158,55 @@ export class LedgerChannel {
     unsignedTx: RiseTransaction
   ): Promise<null | PostableRiseTransaction> {
     if (!this.isOpen) {
-      return Promise.reject(new LedgerUnreachableError());
+      throw new LedgerUnreachableError();
     }
-    return await this.hub.signTransaction(this.channelId, accountSlot, unsignedTx);
+    return await this.hub.signTransaction(
+      this.channelId,
+      accountSlot,
+      unsignedTx
+    );
   }
 
-  // TODO async
-  close() {
+  async close() {
     if (this.isOpen) {
       this.hub.closeChannel(this.channelId);
       this.isOpen = false;
     }
+  }
+}
+
+/**
+ * Local interface for a remote LedgerChannel.
+ * Communicates via IPC with LedgerIPCServer.
+ *
+ * TODO type ipcRenderer, including event names
+ */
+export class LedgerChannelIPC implements ILedgerChannel {
+  constructor(public channelId: number) {}
+
+  async getAccount(accountSlot: number): Promise<LedgerAccount> {
+    ipcRenderer.once('open-channel.result', ret => {
+      // result of the command trigger below
+      console.log(ret);
+    });
+    // call `get-account` on a specific channel
+    ipcRenderer.emit('get-account', this.channelId);
+  }
+}
+
+/**
+ * IPC server proxing commands to a specified LedgerChannel.
+ *
+ * TODO type ipcMain, including event names
+ */
+export class LedgerIPCServer {
+  // TODO monitor isOpen of all the channels and push to the renderer thread
+  channels: LedgerChannel[];
+  hub: LedgerHub;
+
+  constructor() {
+    this.hub = new LedgerHub();
+    // ipcMain
   }
 }
 
@@ -242,7 +297,7 @@ export default class LedgerHub implements LedgerTaskRunner {
     this.processTasks();
   }
 
-  openChannel(): LedgerChannel {
+  openChannel(): ILedgerChannel {
     const channelId = ++this.lastChannelId;
     try {
       this.channelCount += 1;
