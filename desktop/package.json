@@ -6,6 +6,7 @@
     "yarn": "^1.10.1"
   },
   "dependencies": {
+    "@ledgerhq/hw-transport-node-hid": "^4.24.0",
     "electron": "^3.0.10"
   },
   "scripts": {

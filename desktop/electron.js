@@ -1,7 +1,6 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron');
-require('./https');
-
+const { app, BrowserWindow, webFrame } = require('electron');
+// require('./https');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -12,7 +11,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({ width: 1000, height: 800 });
 
   // loadURL(mainWindow);
-  mainWindow.loadURL('https://localhost:5000');
+  mainWindow.loadURL('https://localhost:3000');
+  // mainWindow.loadFile('app/index.html')
 
   // and load the index.html of the app.
   // mainWindow.loadFile("app/index.html");

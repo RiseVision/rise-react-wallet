@@ -21,27 +21,25 @@ import LedgerConfirmIllustration from '../../components/LedgerConfirmIllustratio
 import AccountIcon from '../../components/AccountIcon';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
-import {
-  onboardingAddAccountRoute,
-  accountOverviewRoute,
-} from '../../routes';
+import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
 import { AccountType } from '../../stores/account';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
-import LedgerStore, { LedgerAccount, LedgerChannel } from '../../stores/ledger';
+import LedgerStore from '../../stores/ledger';
+import { LedgerAccount, LedgerChannel } from '../../utils/ledgerHub';
 
 const styles = createStyles({
   content: {
     padding: 20,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   noPadding: {
     marginLeft: -20,
-    marginRight: -20,
+    marginRight: -20
   },
   accountAvatar: {
     backgroundColor: 'white'
-  },
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {}
@@ -62,30 +60,33 @@ const stylesDecorator = withStyles(styles, {
 const messages = defineMessages({
   connectInstructions: {
     id: 'onboarding-ledger-account.connect-instructions',
-    description: 'Text instructing the user to open the RISE app on their Ledger device',
-    defaultMessage: 'Connect your Ledger & open the RISE app on it.',
+    description:
+      'Text instructing the user to open the RISE app on their Ledger device',
+    defaultMessage: 'Connect your Ledger & open the RISE app on it.'
   },
   unsupportedBrowser: {
     id: 'onboarding-ledger-account.unsupported-browser',
-    description: 'Message when trying to use a browser that doesn\'t support Ledger devices',
+    description:
+      "Message when trying to use a browser that doesn't support Ledger devices",
     defaultMessage:
-      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
-      'you could try again with Google Chrome. It is a browser known to implement support for this.',
+      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
+      'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
     id: 'onboarding-ledger-account.status-connecting',
     description: 'Status text when attempting to connect to the Ledger device',
-    defaultMessage: 'Trying to connect...',
+    defaultMessage: 'Trying to connect...'
   },
   accountNrLabel: {
     id: 'onboarding-ledger-account.account-nr-label',
     description: 'Label for the account number available for import',
-    defaultMessage: 'Account #{number}',
+    defaultMessage: 'Account #{number}'
   },
   confirmInstructions: {
     id: 'onboarding-ledger-account.confirm-instructions',
-    description: 'Text instructing the user to confirm their address on their Ledger',
-    defaultMessage: 'Please confirm the address above on your Ledger device.',
+    description:
+      'Text instructing the user to confirm their address on their Ledger',
+    defaultMessage: 'Please confirm the address above on your Ledger device.'
   },
   statusWaitingConfirmation: {
     id: 'onboarding-ledger-account.status-waiting-confirmation',
@@ -94,8 +95,8 @@ const messages = defineMessages({
       'Waiting for confirmation... ({seconds} {seconds, plural,' +
       '  one {second}' +
       '  other {seconds}' +
-      '} remaining)',
-  },
+      '} remaining)'
+  }
 });
 
 class AccountData {
@@ -114,7 +115,7 @@ class AccountData {
     } catch (ex) {
       // Ignore failures
     }
-}
+  }
 }
 
 @inject('onboardingStore')
@@ -142,7 +143,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
 
     this.disposeAccountLoader = reaction(
       () => this.ledger.deviceId,
-      this.accountLoader,
+      this.accountLoader
     );
     this.accountLoader();
   }
@@ -171,11 +172,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
           />
         </ModalPaperHeader>
         {ledgerStore.hasBrowserSupport === false ? (
-          <Grid
-            container={true}
-            className={classes.content}
-            spacing={16}
-          >
+          <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography
                 children={intl.formatMessage(messages.unsupportedBrowser)}
@@ -183,11 +180,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             </Grid>
           </Grid>
         ) : deviceId === null ? (
-          <Grid
-            container={true}
-            className={classes.content}
-            spacing={16}
-          >
+          <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography
                 children={intl.formatMessage(messages.connectInstructions)}
@@ -207,29 +200,28 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
         ) : selectedAccount !== null ? (
           <React.Fragment>
             <List>
-              <ListItem
-                key={selectedAccount.slot}
-                divider={true}
-              >
+              <ListItem key={selectedAccount.slot} divider={true}>
                 <ListItemAvatar>
                   <Avatar className={classes.accountAvatar}>
-                    <AccountIcon size={24} address={selectedAccount.data ? selectedAccount.data.address : ''} />
+                    <AccountIcon
+                      size={24}
+                      address={
+                        selectedAccount.data ? selectedAccount.data.address : ''
+                      }
+                    />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                  primary={intl.formatMessage(
-                    messages.accountNrLabel,
-                    { number: selectedAccount.slot + 1 }
-                  )}
-                  secondary={selectedAccount.data ? selectedAccount.data.address : '...'}
+                  primary={intl.formatMessage(messages.accountNrLabel, {
+                    number: selectedAccount.slot + 1
+                  })}
+                  secondary={
+                    selectedAccount.data ? selectedAccount.data.address : '...'
+                  }
                 />
               </ListItem>
             </List>
-            <Grid
-              container={true}
-              className={classes.content}
-              spacing={16}
-            >
+            <Grid container={true} className={classes.content} spacing={16}>
               <Grid item={true} xs={12}>
                 <Typography
                   children={intl.formatMessage(messages.confirmInstructions)}
@@ -261,14 +253,16 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
               >
                 <ListItemAvatar>
                   <Avatar className={classes.accountAvatar}>
-                    <AccountIcon size={24} address={acc.data ? acc.data.address : ''} />
+                    <AccountIcon
+                      size={24}
+                      address={acc.data ? acc.data.address : ''}
+                    />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                  primary={intl.formatMessage(
-                    messages.accountNrLabel,
-                    { number: acc.slot + 1 }
-                  )}
+                  primary={intl.formatMessage(messages.accountNrLabel, {
+                    number: acc.slot + 1
+                  })}
                   secondary={acc.data ? acc.data.address : '...'}
                 />
               </ListItem>
@@ -281,7 +275,10 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
 
   private updateSelectionCountdown = () => {
     const now = new Date();
-    const remainMs = this.selectionTimeout !== null ? this.selectionTimeout.getTime() - now.getTime() : 0;
+    const remainMs =
+      this.selectionTimeout !== null
+        ? this.selectionTimeout.getTime() - now.getTime()
+        : 0;
     const isCountdownActive = remainMs > 0;
 
     runInAction(() => {
@@ -299,7 +296,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  }
+  };
 
   private async confirmImport(account: AccountData) {
     const { walletStore, routerStore } = this.injected;
@@ -331,7 +328,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
           {
             type: AccountType.LEDGER,
             hwId: deviceId,
-            hwSlot: account.slot,
+            hwSlot: account.slot
           },
           true
         );
@@ -361,16 +358,15 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
       .filter(({ hwId }) => hwId === deviceId);
 
     for (let slot = 0; this.accounts.length < accountsToLoad; slot++) {
-      const isImported = importedAccounts
-        .filter(({ hwSlot }) => hwSlot === slot)
-        .length > 0;
+      const isImported =
+        importedAccounts.filter(({ hwSlot }) => hwSlot === slot).length > 0;
 
       if (!isImported) {
         const acc = new AccountData(this.ledger, slot);
         this.accounts.push(acc);
       }
     }
-  }
+  };
 }
 
 export default stylesDecorator(injectIntl(LedgerAccountPage));

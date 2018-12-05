@@ -11,7 +11,7 @@ import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsF
 import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
 import RootStore from '../../stores/root';
-import LedgerStore, { LedgerChannel } from '../../stores/ledger';
+import LedgerStore, { LedgerChannel } from '../../utils/ledgerHub';
 import WalletStore, {
   PostableRiseTransaction,
   RiseTransaction,
@@ -411,7 +411,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   renderConfirmTxContent() {
     const { account, passphrasePublicKey, ledgerStore } = this.injected;
     const { transaction } = this.state;
-    const { ledger } = this;
+    const { ledger } = this;11
 
     return (
       <ConfirmTransactionDialogContent

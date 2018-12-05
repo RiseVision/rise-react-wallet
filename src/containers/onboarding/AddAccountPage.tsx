@@ -20,8 +20,9 @@ import {
 import LangStore from '../../stores/lang';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
-import LedgerStore, { LedgerChannel } from '../../stores/ledger';
+import LedgerStore from '../../stores/ledger';
 import { getMainCountryForLocale } from '../../utils/i18n';
+import { LedgerChannel } from '../../utils/ledgerHub';
 
 const riseIcon = require('../../images/rise_icon.svg');
 
@@ -68,7 +69,7 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  }
+  };
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
