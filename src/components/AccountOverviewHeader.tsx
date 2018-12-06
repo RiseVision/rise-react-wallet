@@ -167,7 +167,7 @@ const AccountOverviewHeader = stylesDecorator(
               >
                 {formatAmount(balance)}
               </Typography>
-              {balanceFiat && (
+              {!!balanceFiat && (
                 <Typography className={classes.secondary_text}>
                   <Tooltip title="Powered by CoinGecko">
                     <span>
