@@ -4,15 +4,19 @@ import { Provider } from 'mobx-react';
 import { startRouter } from 'mobx-router-rise';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as config from './config.json';
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
 import * as routes from './routes';
 import { TConfig, TStores } from './stores';
 import RootStore from './stores/root';
 
-// tslint:disable-next-line:no-any
-const store = new RootStore((config as any) as TConfig);
+declare global {
+  interface Window {
+    env: TConfig;
+  }
+}
+
+const store = new RootStore(window.env);
 startRouter(routes, store, { strict: false });
 
 const stores: TStores = {

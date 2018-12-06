@@ -46,7 +46,6 @@ export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<
 >;
 
 export default class WalletStore {
-  api: string;
   dposAPI: typeof dposAPI;
   delegateCache: DelegateCache;
   io: SocketIOClient.Socket;
@@ -69,32 +68,14 @@ export default class WalletStore {
 
   fiatPrices: { [currency: string]: number } = {};
 
-  /**
-   * Returns node's URL, depending on the current location.
-   *
-   * Rules:
-   * - if on the deployment domain (config), and `wallet` sub-domain
-   *   goes to mainnet
-   * - anything else goes to testnet
-   */
-  get nodeAddress() {
-    const location = window.location;
-    if (location.hostname.startsWith(`wallet.${this.config.domain}`)) {
-      return this.config.api_url;
-    }
-    return this.config.api_url_testnet;
-  }
-
   constructor(
     public config: TConfig,
     public router: RouterStore,
     public addressBook: AddressBookStore,
     public lang: LangStore
   ) {
-    this.config = config;
-    dposAPI.nodeAddress = this.nodeAddress;
+    dposAPI.nodeAddress = config.api_url;
     this.dposAPI = dposAPI;
-    this.api = config.api_url;
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
     const accounts = this.storedAccounts();
@@ -752,7 +733,7 @@ export default class WalletStore {
       };
     } else {
       const url = `${
-        this.api
+        this.config.api_url
       }/api/transactions/unconfirmed?${queryString.stringify(params)}`;
       // TODO switch to dposAPI once it supports params for unconfirmed
       // transactions
