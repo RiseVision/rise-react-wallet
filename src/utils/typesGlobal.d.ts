@@ -2,3 +2,4 @@
 
 declare const ipcRenderer: Electron.IpcRenderer;
 declare const ipcMain: Electron.IpcMain;
+declare function __non_webpack_require__(module: string): any;

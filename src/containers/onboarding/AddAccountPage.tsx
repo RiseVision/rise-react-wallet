@@ -6,8 +6,8 @@ import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import Link from '../../components/Link';
 import FlagIcon from '../../components/FlagIcon';
+import Link from '../../components/Link';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import {
@@ -18,11 +18,11 @@ import {
   accountOverviewNoIDRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
+import LedgerStore from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
-import LedgerStore from '../../stores/ledger';
 import { getMainCountryForLocale } from '../../utils/i18n';
-import { LedgerChannel } from '../../utils/ledgerHub';
+import { ILedgerChannel } from '../../utils/ledgerHub';
 
 const riseIcon = require('../../images/rise_icon.svg');
 
@@ -51,7 +51,7 @@ const stylesDecorator = withStyles(styles, {
 @inject('ledgerStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
-  private ledger: LedgerChannel;
+  private ledger: ILedgerChannel;
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;

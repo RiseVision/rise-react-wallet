@@ -10,6 +10,7 @@ import registerServiceWorker from './registerServiceWorker';
 import * as routes from './routes';
 import { TConfig, TStores } from './stores';
 import RootStore from './stores/root';
+import './bootstrapElectron'
 
 // tslint:disable-next-line:no-any
 const store = new RootStore((config as any) as TConfig);

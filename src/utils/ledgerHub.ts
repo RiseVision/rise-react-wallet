@@ -5,9 +5,9 @@ import {
   LedgerAccount as DposAccount
 } from 'dpos-ledger-api';
 import { Rise } from 'dpos-offline';
-import isElectron from 'is-electron';
 import { observable, runInAction } from 'mobx';
 import { As } from 'type-tagger';
+
 // TODO import from /utils/utils.ts
 import { PostableRiseTransaction, RiseTransaction } from '../stores/wallet';
 
@@ -36,10 +36,17 @@ interface LedgerTaskRunner {
 
 function getTransport() {
   if (isElectron()) {
-    // @ts-ignore
     return __non_webpack_require__('@ledgerhq/hw-transport-node-hid').default;
   }
   return TransportU2F;
+}
+
+function createTransport() {
+  if (isElectron()) {
+    return createTransportNodeHID();
+  }
+  // @ts-ignore
+  return TransportU2F.create();
 }
 
 class LedgerTask<T> {
@@ -111,8 +118,7 @@ class LedgerTask<T> {
 
 export interface ILedgerChannel {
   isOpen: boolean;
-  hub: LedgerHub;
-  channelId: number;
+  channelId: number | null;
   readonly deviceId: string | null;
 
   getAccount(accountSlot: number): Promise<LedgerAccount>;
@@ -178,35 +184,201 @@ export class LedgerChannel implements ILedgerChannel {
 /**
  * Local interface for a remote LedgerChannel.
  * Communicates via IPC with LedgerIPCServer.
- *
- * TODO type ipcRenderer, including event names
  */
 export class LedgerChannelIPC implements ILedgerChannel {
-  constructor(public channelId: number) {}
+  isOpen: boolean = false;
+  channelId: number | null = null;
+  deviceId: string | null;
+
+  constructor() {
+    this.connect();
+    this.listen();
+  }
+
+  /**
+   * Connect to the LedgerIPCServer and get a channel ID.
+   */
+  async connect() {
+    // ask the server to create a new channel
+    this.channelId = ipcRenderer.sendSync('channel.open');
+    // mark as open
+    this.isOpen = true;
+  }
+
+  /**
+   * Listen for push msgs from the main thread.
+   */
+  listen() {
+    // TODO dispose the listener
+    // TODO make it generic?
+    ipcRenderer.on(
+      'channel.deviceId',
+      (event: 'channel.deviceId', id: number, value: string) => {
+        if (id !== this.channelId) {
+          return;
+        }
+        this.deviceId = value;
+      }
+    );
+  }
+
+  assertOpen() {
+    if (!this.isOpen) {
+      throw new LedgerUnreachableError();
+    }
+  }
 
   async getAccount(accountSlot: number): Promise<LedgerAccount> {
-    ipcRenderer.once('open-channel.result', ret => {
-      // result of the command trigger below
-      console.log(ret);
-    });
-    // call `get-account` on a specific channel
-    ipcRenderer.emit('get-account', this.channelId);
+    this.assertOpen();
+    // call getAccount
+    ipcRenderer.sendSync('channel.getAccount', this.channelId, accountSlot);
+    // return
+    return await this.getResult<LedgerAccount>('channel.getAccount');
   }
+
+  async confirmAccount(accountSlot: number): Promise<boolean> {
+    this.assertOpen();
+    // call confirmAccount
+    ipcRenderer.sendSync('channel.confirmAccount', this.channelId, accountSlot);
+    // return
+    return await this.getResult<boolean>('channel.confirmAccount');
+  }
+
+  async signTransaction(
+    accountSlot: number,
+    unsignedTx: RiseTransaction
+  ): Promise<null | PostableRiseTransaction> {
+    this.assertOpen();
+    // call signTransaction
+    ipcRenderer.sendSync(
+      'channel.signTransaction',
+      this.channelId,
+      accountSlot,
+      unsignedTx
+    );
+    // return
+    return await this.getResult<null | PostableRiseTransaction>(
+      'channel.signTransaction'
+    );
+  }
+
+  async close() {
+    if (this.isOpen) {
+      // close the channel
+      ipcRenderer.send('channel.close', this.channelId);
+      this.isOpen = false;
+    }
+  }
+
+  async getResult<T>(name: string): Promise<T> {
+    return new Promise((resolve: (result: T) => void) => {
+      ipcRenderer.once(`${name}.result`, (event: {}, result: T) => {
+        resolve(result);
+      });
+    });
+  }
+}
+
+interface IpcMainEvent {
+  sender: IpcMainEventSender;
+  returnValue: {};
+}
+
+interface IpcMainEventSender {
+  send: Function;
 }
 
 /**
  * IPC server proxing commands to a specified LedgerChannel.
  *
- * TODO type ipcMain, including event names
+ * TODO error handling
  */
 export class LedgerIPCServer {
-  // TODO monitor isOpen of all the channels and push to the renderer thread
-  channels: LedgerChannel[];
+  // local channels
+  channels = new Map<number, LedgerChannel>();
+  // observers for local channels (WebContents)
+  observers = new Map<number, IpcMainEventSender>();
   hub: LedgerHub;
 
   constructor() {
     this.hub = new LedgerHub();
-    // ipcMain
+    this.listen();
+    console.log('Started Ledger IPC Server')
+  }
+
+  /**
+   * Observe for changes from a local and push them over IPC.
+   */
+  observeChannel(id: number, sender: IpcMainEventSender) {
+    this.observers.set(id, sender);
+    // TODO deviceId
+  }
+
+  openChannel(sender: IpcMainEventSender): number {
+    const channel = this.hub.openChannel();
+    const id = channel.channelId;
+    this.channels.set(id, channel);
+    this.observeChannel(id, sender);
+    return id;
+  }
+
+  closeChannel(id: number) {
+    const channel = this.channels.get(id);
+    // pass async
+    channel.close();
+    // TODO dispose the deviceId monitor
+  }
+
+  /**
+   * Listen to IPC requests from the channels in the main thread and proxy the
+   * results from the local ones.
+   */
+  listen() {
+    // channel.open
+    ipcMain.on('channel.open', async (event: IpcMainEvent) => {
+      const id = this.openChannel(event.sender);
+      // return
+      event.sender.send('channel.getAccount.result', id);
+    });
+    // channel.close
+    ipcMain.on('channel.close', (event: 'channel.close', channelId: number) => {
+      this.closeChannel(channelId);
+    });
+    // channel.getAccount
+    ipcMain.on(
+      'channel.getAccount',
+      async (event: IpcMainEvent, channelId: number, accountSlot: number) => {
+        const channel = this.channels.get(channelId);
+        const result = await channel.getAccount(accountSlot);
+        // return
+        event.sender.send('channel.getAccount.result', result);
+      }
+    );
+    // channel.confirmAccount
+    ipcMain.on(
+      'channel.confirmAccount',
+      async (event: IpcMainEvent, channelId: number, accountSlot: number) => {
+        const channel = this.channels.get(channelId);
+        const result = await channel.confirmAccount(accountSlot);
+        // return
+        event.sender.send('channel.confirmAccount.result', result);
+      }
+    );
+    // channel.signTransaction
+    ipcMain.on(
+      'channel.signTransaction',
+      async (
+        event: IpcMainEvent,
+        channelId: number,
+        accountSlot: number,
+        unsignedTx: RiseTransaction
+      ) => {
+        const channel = this.channels.get(channelId);
+        const result = await channel.signTransaction(accountSlot, unsignedTx);
+        // return
+        event.sender.send('channel.signTransaction.result', result);
+      }
+    );
   }
 }
 
@@ -224,7 +396,7 @@ export default class LedgerHub implements LedgerTaskRunner {
   @observable hasBrowserSupport: boolean | null = null;
   @observable deviceId: null | string = null;
 
-  private processIntervalId: null | number = null;
+  private processIntervalId: null | any = null;
   private lastChannelId = 0;
   private channelCount = 0;
   private lastPing: null | Date = null;
@@ -281,12 +453,9 @@ export default class LedgerHub implements LedgerTaskRunner {
       this.channelCount > 0 ||
       (this.lastSend && now.getTime() - this.lastSend.getTime() < 5000);
     if (shouldAutoProcess && this.processIntervalId === null) {
-      this.processIntervalId = window.setInterval(
-        () => this.processTasks(),
-        1000
-      );
+      this.processIntervalId = setInterval(() => this.processTasks(), 1000);
     } else if (!shouldAutoProcess && this.processIntervalId !== null) {
-      window.clearInterval(this.processIntervalId);
+      clearInterval(this.processIntervalId);
       this.processIntervalId = null;
     }
   }
@@ -297,7 +466,7 @@ export default class LedgerHub implements LedgerTaskRunner {
     this.processTasks();
   }
 
-  openChannel(): ILedgerChannel {
+  openChannel(): LedgerChannel {
     const channelId = ++this.lastChannelId;
     try {
       this.channelCount += 1;
@@ -526,4 +695,66 @@ export default class LedgerHub implements LedgerTaskRunner {
 
     return task;
   }
+}
+
+// -------- TODO extract
+
+// Until https://github.com/LedgerHQ/ledgerjs/issues/213 is fixed
+const filterInterface = device =>
+  ['win32', 'darwin'].includes(process.platform)
+    ? device.usagePage === 0xffa0
+    : device.interface === 0 || device.interface === -1;
+
+const getDevices = function() {
+  const HID = __non_webpack_require__('node-hid');
+  return HID.devices(0x2c97, 0x0).filter(filterInterface);
+};
+
+const createTransportNodeHID = async () => {
+  const TransportNodeHid = getTransport();
+
+  const devicesList = getDevices();
+  if (devicesList.length === 0) {
+    throw new Error('ledger-not-connected');
+  }
+  return TransportNodeHid.open(devicesList[0].path);
+};
+
+/**
+ * Required because of differences in handling of default imports in
+ * CRA vs TS+node.
+ *
+ * https://github.com/electron/electron/issues/2288
+ */
+function isElectron() {
+  // Renderer process
+  if (
+    typeof window !== 'undefined' &&
+    // @ts-ignore
+    typeof window.process === 'object' &&
+    // @ts-ignore
+    window.process.type === 'renderer'
+  ) {
+    return true;
+  }
+
+  // Main process
+  if (
+    typeof process !== 'undefined' &&
+    typeof process.versions === 'object' &&
+    !!process.versions.electron
+  ) {
+    return true;
+  }
+
+  // Detect the user agent when the `nodeIntegration` option is set to true
+  if (
+    typeof navigator === 'object' &&
+    typeof navigator.userAgent === 'string' &&
+    navigator.userAgent.indexOf('Electron') >= 0
+  ) {
+    return true;
+  }
+
+  return false;
 }

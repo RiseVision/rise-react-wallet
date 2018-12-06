@@ -1,9 +1,9 @@
+import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
+import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { observable, reaction, IReactionDisposer, runInAction } from 'mobx';
@@ -16,17 +16,21 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import LedgerConnectIllustration from '../../components/LedgerConnectIllustration';
-import LedgerConfirmIllustration from '../../components/LedgerConfirmIllustration';
 import AccountIcon from '../../components/AccountIcon';
+import LedgerConfirmIllustration from '../../components/LedgerConfirmIllustration';
+import LedgerConnectIllustration from '../../components/LedgerConnectIllustration';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
 import { AccountType } from '../../stores/account';
+import LedgerStore from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
-import LedgerStore from '../../stores/ledger';
-import { LedgerAccount, LedgerChannel } from '../../utils/ledgerHub';
+import {
+  LedgerAccount,
+  LedgerChannel,
+  ILedgerChannel
+} from '../../utils/ledgerHub';
 
 const styles = createStyles({
   content: {
@@ -102,11 +106,11 @@ const messages = defineMessages({
 class AccountData {
   @observable data: null | LedgerAccount = null;
 
-  constructor(ledger: LedgerChannel, readonly slot: number) {
+  constructor(ledger: ILedgerChannel, readonly slot: number) {
     this.load(ledger);
   }
 
-  private async load(ledger: LedgerChannel) {
+  private async load(ledger: ILedgerChannel) {
     try {
       const resp = await ledger.getAccount(this.slot);
       runInAction(() => {
@@ -124,7 +128,7 @@ class AccountData {
 @inject('ledgerStore')
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps> {
-  private ledger: LedgerChannel;
+  private ledger: ILedgerChannel;
   private disposeAccountLoader: null | IReactionDisposer = null;
   private countdownId: null | number = null;
 

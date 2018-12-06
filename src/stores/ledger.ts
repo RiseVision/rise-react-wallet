@@ -20,18 +20,6 @@ export default class LedgerStore {
   }
 
   openChannel(): ILedgerChannel {
-    return this.hub.openChannel();
-  }
-
-  async openIPCChannel(): Promise<ILedgerChannel> {
-    // ask the server to create a new channel
-    ipcRenderer.emit('open-channel');
-    // get the channel ID back
-    const channelID = await new Promise(
-      (resolve: (channelId: number) => void) => {
-        ipcRenderer.once('open-channel.result', resolve);
-      }
-    );
-    return new LedgerChannelIPC(channelID);
+    return isElectron() ? new LedgerChannelIPC() : this.hub.openChannel();
   }
 }
