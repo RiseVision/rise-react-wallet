@@ -46,7 +46,6 @@ export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<
 >;
 
 export default class WalletStore {
-  api: string;
   dposAPI: typeof dposAPI;
   delegateCache: DelegateCache;
   io: SocketIOClient.Socket;
@@ -94,7 +93,6 @@ export default class WalletStore {
     this.config = config;
     dposAPI.nodeAddress = this.nodeAddress;
     this.dposAPI = dposAPI;
-    this.api = config.api_url;
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
     const accounts = this.storedAccounts();
@@ -752,7 +750,7 @@ export default class WalletStore {
       };
     } else {
       const url = `${
-        this.api
+        this.nodeAddress
       }/api/transactions/unconfirmed?${queryString.stringify(params)}`;
       // TODO switch to dposAPI once it supports params for unconfirmed
       // transactions
