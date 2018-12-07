@@ -118,16 +118,30 @@ class DrawerContent extends React.Component<DecoratedProps> {
 
   accountList() {
     const { walletStore } = this.injected;
+    const { selectedAccount } = walletStore;
 
-    const list = orderBy(
+    const allAccounts = orderBy(
       [...walletStore.accounts.values()],
       ['pinned', 'name'],
       ['desc', 'asc']
-    ).splice(0, walletStore.config.max_drawer_accounts);
+    );
+    const pinnedCount = allAccounts.filter(a => a.pinned).length;
 
-    // if the selected is in the overflow, replace the last one with it
-    if (!list.includes(walletStore.selectedAccount)) {
-      list.splice(list.length - 1, 1, walletStore.selectedAccount);
+    const maxAccounts = Math.max(
+      walletStore.config.max_drawer_accounts,
+      pinnedCount
+    );
+
+    const list = allAccounts.splice(0, maxAccounts);
+    // Make sure that the selected account is always visible...
+    if (!list.includes(selectedAccount)) {
+      if (!list[list.length - 1].pinned) {
+        // ... either by replacing the last item with the selected account
+        list.splice(list.length - 1, 1, selectedAccount);
+      } else {
+        // ... or appending it as the last item (we don't want to replace pinned accounts)
+        list.push(selectedAccount);
+      }
     }
 
     return list;
