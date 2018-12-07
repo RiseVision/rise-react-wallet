@@ -36,7 +36,7 @@ interface LedgerTaskRunner {
 
 function getTransport() {
   if (isElectron()) {
-    return __non_webpack_require__('@ledgerhq/hw-transport-node-hid').default;
+    return electronRequire('@ledgerhq/hw-transport-node-hid').default;
   }
   return TransportU2F;
 }
@@ -200,7 +200,9 @@ export class LedgerChannelIPC implements ILedgerChannel {
    */
   async connect() {
     // ask the server to create a new channel
-    this.channelId = ipcRenderer.sendSync('channel.open');
+    ipcRenderer.send('channel.open');
+    // result
+    this.channelId =  await this.getResult<number>('channel.open');
     // mark as open
     this.isOpen = true;
   }
@@ -231,7 +233,7 @@ export class LedgerChannelIPC implements ILedgerChannel {
   async getAccount(accountSlot: number): Promise<LedgerAccount> {
     this.assertOpen();
     // call getAccount
-    ipcRenderer.sendSync('channel.getAccount', this.channelId, accountSlot);
+    ipcRenderer.send('channel.getAccount', this.channelId, accountSlot);
     // return
     return await this.getResult<LedgerAccount>('channel.getAccount');
   }
@@ -239,7 +241,7 @@ export class LedgerChannelIPC implements ILedgerChannel {
   async confirmAccount(accountSlot: number): Promise<boolean> {
     this.assertOpen();
     // call confirmAccount
-    ipcRenderer.sendSync('channel.confirmAccount', this.channelId, accountSlot);
+    ipcRenderer.send('channel.confirmAccount', this.channelId, accountSlot);
     // return
     return await this.getResult<boolean>('channel.confirmAccount');
   }
@@ -250,7 +252,7 @@ export class LedgerChannelIPC implements ILedgerChannel {
   ): Promise<null | PostableRiseTransaction> {
     this.assertOpen();
     // call signTransaction
-    ipcRenderer.sendSync(
+    ipcRenderer.send(
       'channel.signTransaction',
       this.channelId,
       accountSlot,
@@ -706,7 +708,7 @@ const filterInterface = device =>
     : device.interface === 0 || device.interface === -1;
 
 const getDevices = function() {
-  const HID = __non_webpack_require__('node-hid');
+  const HID = electronRequire('node-hid');
   return HID.devices(0x2c97, 0x0).filter(filterInterface);
 };
 
