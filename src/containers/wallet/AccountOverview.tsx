@@ -152,6 +152,9 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
 
     const backLink: RouteLink = {
       route: accountOverviewRoute,
+      params: {
+        id: this.account.id,
+      },
       onBeforeNavigate: () => {
         this.setState({
           editContactID: null
