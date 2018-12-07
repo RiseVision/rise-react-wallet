@@ -23,10 +23,10 @@ import LedgerConnectIllustration from '../../components/LedgerConnectIllustratio
 import { accountSettingsLedgerRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
-import LedgerStore, { LedgerChannel } from '../../utils/ledgerHub';
 import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import autoId from '../../utils/autoId';
+import LedgerStore, { LedgerChannel } from '../../utils/ledgerHub';
 
 type Props = WithStyles<typeof styles> &
   DialogContentProps & {
@@ -77,9 +77,9 @@ const messages = defineMessages({
   unsupportedBrowser: {
     id: 'verify-ledger-address.unsupported-browser',
     description:
-      'Message when trying to use a browser that doesn\'t support Ledger devices',
+      "Message when trying to use a browser that doesn't support Ledger devices",
     defaultMessage:
-      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
+      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
       'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
@@ -158,6 +158,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       return;
     }
     this.open = true;
+    this.setState({ confirmed: false });
     const { ledgerStore, intl } = this.injected;
     this.ledger = ledgerStore.openChannel();
 
@@ -166,14 +167,16 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       contentId: this.dialogContentId
     });
 
-    this.disposeLedgerChangeMonitor = reaction(
-      () => this.ledger.deviceId,
-      this.handleVerifyLedger
-    );
+    // TODO observe the store
+    this.disposeLedgerChangeMonitor = reaction(() => {
+      console.log(this.ledger.deviceId);
+      return this.ledger.deviceId;
+    }, this.handleVerifyLedger);
     this.handleVerifyLedger();
-  }
+  };
 
   onClose = () => {
+    console.log('onClose');
     if (!this.open) {
       return;
     }
@@ -185,7 +188,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
 
     this.ledger.close();
     this.setState({ confirmed: false });
-  }
+  };
 
   @action
   updateSelectionCountdown = () => {
@@ -204,9 +207,10 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  }
+  };
 
   handleVerifyLedger = async () => {
+    console.log('handleVerifyLedger');
     if (!this.ledger.deviceId || this.state.confirmed) {
       return;
     }
@@ -220,12 +224,12 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     } catch {
       // silent
     }
-  }
+  };
 
   handleCloseButton = () => {
     this.onClose();
     this.injected.store.navigateTo(this.injected.navigateBackLink);
-  }
+  };
 
   render() {
     const {
@@ -248,10 +252,17 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
 
       deviceId = this.ledger.deviceId;
       confirmed = this.state.confirmed;
+    } else if (this.open) {
+      // TODO dialog doesnt call onClose if onCloseRoute is passed along
+      this.onClose()
     }
 
     return (
-      <Dialog open={isOpen} onCloseRoute={navigateBackLink} onClose={this.onClose}>
+      <Dialog
+        open={isOpen}
+        onCloseRoute={navigateBackLink}
+        onClose={this.onClose}
+      >
         {!ledgerStore.hasBrowserSupport ? (
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>

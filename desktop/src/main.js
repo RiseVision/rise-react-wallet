@@ -1,11 +1,11 @@
-const { app, BrowserWindow, webFrame } = require('electron');
-global.electronRequire = require
-// run the ledger hub and expose over IPC
-require('./ledgerIPC');
+// @ts-check
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+const { app, BrowserWindow, webFrame, ipcMain } = require('electron');
+
+// run the ledger hub and expose over IPC
+// require('./ledgerIPC');
+
+exposeModulesPath()
 
 function createWindow() {
   // Create the browser window.
@@ -23,7 +23,8 @@ function createWindow() {
   mainWindow.webContents.openDevTools();
   // TODO only for testing
   mainWindow.loadURL('https://localhost:3000');
-  // mainWindow.loadFile('app/index.html')
+  // console.log(`file://${__dirname}/../app/index.html`)
+  // mainWindow.loadURL(`file://${__dirname}/../app/index.html`)
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -33,6 +34,8 @@ function createWindow() {
     mainWindow = null;
   });
 }
+
+let mainWindow;
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -68,6 +71,24 @@ app.on('activate', function() {
     createWindow();
   }
 });
+
+/**
+ * Expose the abs path to local node_modules via IPC. Required to have `require`
+ * working for when serving over HTTP
+ * https://stackoverflow.com/questions/39370530/require-node-module-from-electron-renderer-process-served-over-http
+ */
+function exposeModulesPath() {
+  let nodeModDir = require.resolve('electron');
+  const dirnm = 'node_modules';
+  const pos = nodeModDir.lastIndexOf(dirnm);
+  if (pos != -1) {
+    nodeModDir = nodeModDir.substr(0, pos + dirnm.length + 1);
+  }
+
+  ipcMain.on('modules-path', event => {
+    event.returnValue = nodeModDir;
+  });
+}
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

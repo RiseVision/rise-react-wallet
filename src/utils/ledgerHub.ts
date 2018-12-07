@@ -7,8 +7,6 @@ import {
 import { Rise } from 'dpos-offline';
 import { observable, runInAction } from 'mobx';
 import { As } from 'type-tagger';
-
-// TODO import from /utils/utils.ts
 import { PostableRiseTransaction, RiseTransaction } from '../stores/wallet';
 
 export interface LedgerAccount {
@@ -41,12 +39,33 @@ function getTransport() {
   return TransportU2F;
 }
 
-function createTransport() {
-  if (isElectron()) {
-    return createTransportNodeHID();
+// cache the transport
+let ledgerTransport = null;
+
+// monitor USB changes and delete the transport cache
+let usbDetect;
+if (isElectron()) {
+  usbDetect = electronRequire('usb-detection');
+  usbDetect.startMonitoring();
+  usbDetect.on('change', () => {
+    console.log('change');
+    ledgerTransport = null;
+  });
+}
+
+async function createTransport() {
+  console.log('createTransport');
+  // cached
+  if (ledgerTransport) {
+    return ledgerTransport;
   }
-  // @ts-ignore
-  return TransportU2F.create();
+  if (isElectron()) {
+    ledgerTransport = await createTransportNodeHID();
+  } else {
+    // @ts-ignore
+    ledgerTransport = await TransportU2F.create();
+  }
+  return ledgerTransport;
 }
 
 class LedgerTask<T> {
@@ -76,6 +95,14 @@ class LedgerTask<T> {
     if (this.state !== 'pending') {
       throw new Error('Invalid task state');
     }
+
+    // timeout
+    // setTimeout(() => {
+    //   if (this.state === 'executing') {
+    //     console.log('forced timeout');
+    //     this.state = 'done';
+    //   }
+    // }, 1000);
 
     this.state = 'executing';
     try {
@@ -116,24 +143,7 @@ class LedgerTask<T> {
   }
 }
 
-export interface ILedgerChannel {
-  isOpen: boolean;
-  channelId: number | null;
-  readonly deviceId: string | null;
-
-  getAccount(accountSlot: number): Promise<LedgerAccount>;
-
-  confirmAccount(accountSlot: number): Promise<boolean>;
-
-  signTransaction(
-    accountSlot: number,
-    unsignedTx: RiseTransaction
-  ): Promise<null | PostableRiseTransaction>;
-
-  close(): Promise<void>;
-}
-
-export class LedgerChannel implements ILedgerChannel {
+export class LedgerChannel {
   isOpen = true;
 
   constructor(public hub: LedgerHub, public channelId: number) {}
@@ -182,215 +192,6 @@ export class LedgerChannel implements ILedgerChannel {
 }
 
 /**
- * Local interface for a remote LedgerChannel.
- * Communicates via IPC with LedgerIPCServer.
- */
-export class LedgerChannelIPC implements ILedgerChannel {
-  isOpen: boolean = false;
-  channelId: number | null = null;
-  deviceId: string | null;
-
-  constructor() {
-    this.connect();
-    this.listen();
-  }
-
-  /**
-   * Connect to the LedgerIPCServer and get a channel ID.
-   */
-  async connect() {
-    this.channelId = await this.callIPC<number>('channel.open');
-    // mark as open
-    this.isOpen = true;
-  }
-
-  /**
-   * Listen for push msgs from the main thread.
-   */
-  listen() {
-    // TODO dispose the listener
-    // TODO make it generic?
-    ipcRenderer.on(
-      'channel.deviceId',
-      (event: 'channel.deviceId', id: number, value: string) => {
-        if (id !== this.channelId) {
-          return;
-        }
-        this.deviceId = value;
-      }
-    );
-  }
-
-  async callIPC<T>(event: string, ...params): Promise<T> {
-    console.log(`call ${event}`, ...params);
-    // send the event
-    ipcRenderer.send(event, this.channelId, ...params);
-    // wait for the result
-    const ret = await this.getResult<T>(event);
-    console.log(`ret ${event}`, ret);
-    return ret;
-  }
-
-  assertOpen() {
-    if (!this.isOpen) {
-      throw new LedgerUnreachableError();
-    }
-  }
-
-  async getAccount(accountSlot: number): Promise<LedgerAccount> {
-    this.assertOpen();
-    return await this.callIPC<LedgerAccount>(
-      'channel.getAccount',
-      this.channelId,
-      accountSlot
-    );
-  }
-
-  async confirmAccount(accountSlot: number): Promise<boolean> {
-    this.assertOpen();
-    return await this.callIPC<boolean>(
-      'channel.confirmAccount',
-      this.channelId,
-      accountSlot
-    );
-  }
-
-  async signTransaction(
-    accountSlot: number,
-    unsignedTx: RiseTransaction
-  ): Promise<null | PostableRiseTransaction> {
-    this.assertOpen();
-    return await this.callIPC<null | PostableRiseTransaction>(
-      'channel.signTransaction',
-      this.channelId,
-      accountSlot,
-      unsignedTx
-    );
-  }
-
-  async close() {
-    if (this.isOpen) {
-      // close the channel
-      ipcRenderer.send('channel.close', this.channelId);
-      this.isOpen = false;
-    }
-  }
-
-  async getResult<T>(name: string): Promise<T> {
-    return new Promise((resolve: (result: T) => void) => {
-      ipcRenderer.once(`${name}.result`, (event: {}, result: T) => {
-        resolve(result);
-      });
-    });
-  }
-}
-
-interface IpcMainEvent {
-  sender: IpcMainEventSender;
-  returnValue: {};
-}
-
-interface IpcMainEventSender {
-  send: Function;
-}
-
-/**
- * IPC server proxing commands to a specified LedgerChannel.
- *
- * TODO error handling
- */
-export class LedgerIPCServer {
-  // local channels
-  channels = new Map<number, LedgerChannel>();
-  // observers for local channels (WebContents)
-  observers = new Map<number, IpcMainEventSender>();
-  hub: LedgerHub;
-
-  constructor() {
-    this.hub = new LedgerHub();
-    this.listen();
-    console.log('Started Ledger IPC Server');
-  }
-
-  /**
-   * Observe for changes from a local and push them over IPC.
-   */
-  observeChannel(id: number, sender: IpcMainEventSender) {
-    this.observers.set(id, sender);
-    // TODO push deviceId
-  }
-
-  openChannel(sender: IpcMainEventSender): number {
-    const channel = this.hub.openChannel();
-    const id = channel.channelId;
-    this.channels.set(id, channel);
-    this.observeChannel(id, sender);
-    return id;
-  }
-
-  closeChannel(id: number) {
-    const channel = this.channels.get(id);
-    // pass async
-    channel.close();
-    // TODO dispose the deviceId monitor
-  }
-
-  /**
-   * Listen to IPC requests from the channels in the main thread and proxy the
-   * results from the local ones.
-   */
-  listen() {
-    // channel.open
-    ipcMain.on('channel.open', async (event: IpcMainEvent) => {
-      console.log('SERVER: channel.open req', event.sender)
-      const id = this.openChannel(event.sender);
-      console.log(`SERVER: channel ID ${id}`)
-      // return
-      event.sender.send('channel.open.result', id);
-    });
-    // channel.close
-    ipcMain.on('channel.close', (event: IpcMainEvent, channelId: number) => {
-      this.closeChannel(channelId);
-    });
-    // channel.getAccount
-    ipcMain.on(
-      'channel.getAccount',
-      async (event: IpcMainEvent, channelId: number, accountSlot: number) => {
-        const channel = this.channels.get(channelId);
-        const result = await channel.getAccount(accountSlot);
-        // return
-        event.sender.send('channel.getAccount.result', result);
-      }
-    );
-    // channel.confirmAccount
-    ipcMain.on(
-      'channel.confirmAccount',
-      async (event: IpcMainEvent, channelId: number, accountSlot: number) => {
-        const channel = this.channels.get(channelId);
-        const result = await channel.confirmAccount(accountSlot);
-        // return
-        event.sender.send('channel.confirmAccount.result', result);
-      }
-    );
-    // channel.signTransaction
-    ipcMain.on(
-      'channel.signTransaction',
-      async (
-        event: IpcMainEvent,
-        channelId: number,
-        accountSlot: number,
-        unsignedTx: RiseTransaction
-      ) => {
-        const channel = this.channels.get(channelId);
-        const result = await channel.signTransaction(accountSlot, unsignedTx);
-        // return
-        event.sender.send('channel.signTransaction.result', result);
-      }
-    );
-  }
-}
-
-/**
  * LedgerHub is an abstraction layer that serializes various API requests to the device
  * so that the UI layer wouldn't have to worry about the fact that Ledger doesn't handle
  * parallel requests.
@@ -401,7 +202,7 @@ export class LedgerIPCServer {
  * TODO loose observables
  */
 export default class LedgerHub implements LedgerTaskRunner {
-  @observable hasBrowserSupport: boolean | null = null;
+  @observable hasBrowserSupport: boolean = false;
   @observable deviceId: null | string = null;
 
   private processIntervalId: null | any = null;
@@ -416,10 +217,17 @@ export default class LedgerHub implements LedgerTaskRunner {
   private taskQueue: LedgerTask<{}>[] = [];
 
   constructor() {
+    // clear the task queue on USB changes
+    if (isElectron()) {
+      usbDetect.on('change', () => {
+        this.taskQueue = [];
+      });
+    }
     this.detectBrowserSupport();
   }
 
   processTasks() {
+    console.log('processTasks');
     const now = new Date();
 
     const activeTask = this.taskQueue.find(t => t.isExecuting);
@@ -443,6 +251,7 @@ export default class LedgerHub implements LedgerTaskRunner {
       this.lastPing === null ||
       now.getTime() - this.lastPing.getTime() > 3000
     ) {
+      console.log('ping');
       task = this.injectPingTask();
     }
 
@@ -526,7 +335,10 @@ export default class LedgerHub implements LedgerTaskRunner {
             .account(accountSlot);
 
           // @ts-ignore wrong d.ts
-          const transport = await getTransport().create();
+          const transport = await createTransport();
+          if (!transport) {
+            return;
+          }
           transport.setExchangeTimeout(5000);
 
           const comm = new DposLedger(transport);
@@ -551,7 +363,10 @@ export default class LedgerHub implements LedgerTaskRunner {
           .account(accountSlot);
 
         // @ts-ignore wrong d.ts
-        const transport = await getTransport().create();
+        const transport = await createTransport();
+        if (!transport) {
+          return;
+        }
         transport.setExchangeTimeout(30000);
 
         const comm = new DposLedger(transport);
@@ -598,7 +413,10 @@ export default class LedgerHub implements LedgerTaskRunner {
             .account(accountSlot);
 
           // @ts-ignore wrong d.ts
-          const transport = await getTransport().create();
+          const transport = await createTransport();
+          if (!transport) {
+            return;
+          }
           const comm = new DposLedger(transport);
 
           let account = this.accountCache[accountSlot];
@@ -652,8 +470,10 @@ export default class LedgerHub implements LedgerTaskRunner {
     // get the connected device id. Since there's no actual API present that would
     // provide us with the device ID, we rely on the account at path 44'/1120'/0'
     // to fingerprint the currently connected device.
+    // TODO extract
     const handleResponse = (value: null | LedgerAccount) => {
       const deviceId = value !== null ? value.publicKey.slice(0, 8) : null;
+      console.log('deviceId', deviceId);
 
       runInAction(() => {
         if (deviceId !== this.deviceId) {
@@ -680,8 +500,10 @@ export default class LedgerHub implements LedgerTaskRunner {
     const task = new LedgerTask(
       null,
       handleResponse,
-      () => {},
       // TODO error handler
+      reason => {
+        console.log(reason);
+      },
       // (reason) => handleResponse(null),
       async () => {
         const accountPath = new DposAccount()
@@ -689,7 +511,10 @@ export default class LedgerHub implements LedgerTaskRunner {
           .account(PING_ACCOUNT_SLOT);
 
         // @ts-ignore wrong d.ts
-        const transport = await getTransport().create();
+        const transport = await createTransport();
+        if (!transport) {
+          return;
+        }
         transport.setExchangeTimeout(5000);
 
         const comm = new DposLedger(transport);
@@ -719,13 +544,10 @@ const getDevices = function() {
 };
 
 const createTransportNodeHID = async () => {
-  const TransportNodeHid = getTransport();
-
   const devicesList = getDevices();
-  if (devicesList.length === 0) {
-    throw new Error('ledger-not-connected');
+  if (devicesList.length) {
+    return await getTransport().open(devicesList[0].path);
   }
-  return TransportNodeHid.open(devicesList[0].path);
 };
 
 /**

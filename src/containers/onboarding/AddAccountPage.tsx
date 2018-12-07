@@ -22,7 +22,7 @@ import LedgerStore from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
-import { ILedgerChannel } from '../../utils/ledgerHub';
+import { LedgerChannel } from '../../utils/ledgerHub';
 
 const riseIcon = require('../../images/rise_icon.svg');
 
@@ -51,7 +51,7 @@ const stylesDecorator = withStyles(styles, {
 @inject('ledgerStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
-  private ledger: ILedgerChannel;
+  private ledger: LedgerChannel;
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;

@@ -1,5 +1,7 @@
 // @ts-check
 
+global.electronRequire = require;
+
 // force webpack to ignore specifci `require` calls
 // without having the access to the config, by using `__non_webpack_require__`
 __non_webpack_require__ = require

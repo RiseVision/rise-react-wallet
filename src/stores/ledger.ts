@@ -1,26 +1,17 @@
-import isElectron from 'is-electron';
-import LedgerHub, {
-  ILedgerChannel,
-  LedgerChannelIPC
-} from '../utils/ledgerHub';
+import LedgerHub, { LedgerChannel } from '../utils/ledgerHub';
 
 /** TODO add connection status observables */
 export default class LedgerStore {
   // only in the browser
-  private hub: LedgerHub | null = null;
+  private hub: LedgerHub = new LedgerHub();
 
   get hasBrowserSupport() {
-    return isElectron() || this.hub.hasBrowserSupport;
+    return this.hub.hasBrowserSupport;
   }
 
-  constructor() {
-    if (!isElectron()) {
-      this.hub = new LedgerHub();
-    }
-  }
+  constructor() {}
 
-  openChannel(): ILedgerChannel {
-    debugger
-    return isElectron() ? new LedgerChannelIPC() : this.hub.openChannel();
+  openChannel(): LedgerChannel {
+    return this.hub.openChannel();
   }
 }
