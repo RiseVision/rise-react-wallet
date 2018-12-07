@@ -57,7 +57,11 @@ const styles = (theme: Theme) =>
       backgroundColor: theme.palette.action.hover
     },
     accountAvatar: {
-      backgroundColor: 'white'
+      backgroundColor: 'white',
+      border: '2px solid white',
+    },
+    accountAvatarSelected: {
+      borderColor: theme.palette.primary.dark,
     },
     accountName: {
       whiteSpace: 'nowrap',
@@ -194,7 +198,13 @@ class DrawerContent extends React.Component<DecoratedProps> {
                 button={true}
               >
                 <ListItemAvatar>
-                  <Avatar className={classes.accountAvatar}>
+                  <Avatar
+                    className={classNames(
+                      classes.accountAvatar,
+                      selectedAccount && selectedAccount.id === account.id
+                        ? classes.accountAvatarSelected : null,
+                    )}
+                  >
                     <AccountIcon size={24} address={account.id} />
                   </Avatar>
                 </ListItemAvatar>
