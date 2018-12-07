@@ -85,18 +85,18 @@ interface TranslationModule {
 }
 
 const translations: { [P in Locale]: () => Promise<TranslationModule> } = {
-  de: () => import('../translations/de'),
-  es: () => import('../translations/es'),
+  // de: () => import('../translations/de'),
+  // es: () => import('../translations/es'),
   et: () => import('../translations/et'),
-  fr: () => import('../translations/fr'),
-  it: () => import('../translations/it'),
-  hu: () => import('../translations/hu'),
-  nl: () => import('../translations/nl'),
-  pl: () => import('../translations/pl'),
-  ro: () => import('../translations/ro'),
-  ru: () => import('../translations/ru'),
-  uk: () => import('../translations/uk'),
-  zh: () => import('../translations/zh'),
+  // fr: () => import('../translations/fr'),
+  // it: () => import('../translations/it'),
+  // hu: () => import('../translations/hu'),
+  // nl: () => import('../translations/nl'),
+  // pl: () => import('../translations/pl'),
+  // ro: () => import('../translations/ro'),
+  // ru: () => import('../translations/ru'),
+  // uk: () => import('../translations/uk'),
+  // zh: () => import('../translations/zh'),
   // Project language doesn't need to load anything extra
   en: async () => ({
     default: {

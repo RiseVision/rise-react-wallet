@@ -72,15 +72,15 @@ describe('LangStore.constructor', () => {
 
   it('store the locale', () => {
     langStub.restore();
-    stub(stubs, navigator, 'languages', () => ['ro'], true);
+    stub(stubs, navigator, 'languages', () => ['et'], true);
     new LangStore();
-    expect(lstore.get('locale')).toEqual('ro');
+    expect(lstore.get('locale')).toEqual('et');
   });
 
   it('read the locale', () => {
-    lstore.set('locale', 'uk');
+    lstore.set('locale', 'et');
     const store = new LangStore();
-    expect(store.locale).toEqual('uk');
+    expect(store.locale).toEqual('et');
   });
 });
 
@@ -107,17 +107,17 @@ describe('LangStore', () => {
   });
 
   it('loadTranslation', async () => {
-    await store.loadTranslation('de');
+    await store.loadTranslation('et');
     // jump to the next tick
     await delay(100);
     // @ts-ignore sinon stub
-    expect(store.translations.get('de').test).toEqual('test');
+    expect(store.translations.get('et').test).toEqual('test');
   });
 
   it('changeLanguage', async () => {
-    await store.changeLanguage('uk');
-    expect(store.locale).toEqual('uk');
-    expect(lstore.get('locale')).toEqual('uk');
+    await store.changeLanguage('et');
+    expect(store.locale).toEqual('et');
+    expect(lstore.get('locale')).toEqual('et');
   });
 
   it('get', () => {

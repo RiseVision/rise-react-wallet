@@ -24,19 +24,19 @@ const riseIcon = require('../../images/rise_icon.svg');
 // Labels are hard-coded here as we want to load the actual localization data
 // after the user has selected the language, not before.
 const localeLabels: { [P in Locale]: string } = {
-  de: 'Weiter auf Deutsch',
+  // de: 'Weiter auf Deutsch',
   en: 'Continue in English',
-  es: 'Continuar en español',
+  // es: 'Continuar en español',
   et: 'Jätka eesti keeles',
-  fr: 'Continuer en français',
-  it: 'Continua in italiano',
-  hu: 'Folytatás magyarul',
-  nl: 'Ga door in het Nederlands',
-  pl: 'Kontynuuj po polsku',
-  ro: 'Continuați în română',
-  ru: 'Продолжить на русском',
-  uk: 'Продовжуйте по-українськи',
-  zh: '繼續用中文'
+  // fr: 'Continuer en français',
+  // it: 'Continua in italiano',
+  // hu: 'Folytatás magyarul',
+  // nl: 'Ga door in het Nederlands',
+  // pl: 'Kontynuuj po polsku',
+  // ro: 'Continuați în română',
+  // ru: 'Продолжить на русском',
+  // uk: 'Продовжуйте по-українськи',
+  // zh: '繼續用中文',
 };
 
 const styles = createStyles({
