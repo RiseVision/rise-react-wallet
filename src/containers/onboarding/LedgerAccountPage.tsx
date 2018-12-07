@@ -352,6 +352,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
     const { deviceId } = this.ledger;
 
     this.selectedAccount = null;
+    // TODO dispose the previous one
     this.accounts = observable.array();
     if (deviceId === null) {
       return;
