@@ -34,6 +34,7 @@ import {
 import AddressBookStore from '../../stores/addressBook';
 import { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
+import { AccountType } from '../../stores/account';
 import CreateContactDialog from './CreateContactDialog';
 import ModifyContactDialog from './ModifyContactDialog';
 import RemoveContactDialog from './RemoveContactDialog';
@@ -189,6 +190,7 @@ class AddressBook extends React.Component<DecoratedProps> {
     };
 
     const contacts = addressBookStore.asArray;
+    const selectedAccount = walletStore.selectedAccount;
 
     return (
       <div
@@ -259,23 +261,24 @@ class AddressBook extends React.Component<DecoratedProps> {
                     <TableCell
                       className={classNames(classes.cell, classes.actionsCell)}
                     >
-                      <Tooltip
-                        placement="left"
-                        title={intl.formatMessage(messages.sendFabTooltip)}
-                      >
-                        <Link
-                          route={accountSendRoute}
-                          params={{ id: walletStore.selectedAccount.id }}
-                          queryParams={{
-                            address: entry.id
-                          }}
+                      {selectedAccount.type !== AccountType.READONLY && (
+                        <Tooltip
+                          placement="left"
+                          title={intl.formatMessage(messages.sendFabTooltip)}
                         >
-                          <IconButton className={classes.actionButton}>
-                            <SendIcon fontSize="inherit" />
-                          </IconButton>
-                        </Link>
-                      </Tooltip>
-
+                          <Link
+                            route={accountSendRoute}
+                            params={{ id: selectedAccount.id }}
+                            queryParams={{
+                              address: entry.id
+                            }}
+                          >
+                            <IconButton className={classes.actionButton}>
+                              <SendIcon fontSize="inherit" />
+                            </IconButton>
+                          </Link>
+                        </Tooltip>
+                      )}
                       <Tooltip
                         title={intl.formatMessage(messages.actionModifyTooltip)}
                       >
