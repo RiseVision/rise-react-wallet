@@ -15,8 +15,12 @@
           // @ts-ignore
           window.process.type === 'renderer'
       ) {
-        window.electronRequire = require
+        // get the absolute path to local node_modules
         window.ipcRenderer = require('electron').ipcRenderer
+        const modulesPath = window.ipcRenderer.sendSync('modules-path')
+        // expose require under a different name (CPA's issue)
+        // and with the proper CWD
+        window.electronRequire = (module) => require(modulesPath + module)
       }
     </script>
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">

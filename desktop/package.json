@@ -6,17 +6,13 @@
     "yarn": "^1.10.1"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0",
     "@ledgerhq/hw-transport-node-hid": "^4.24.0",
-    "dpos-ledger-api": "^1.1.0",
-    "dpos-offline": "^2.0.2",
     "electron": "^3.0.10",
-    "mobx": "^5.7.0",
-    "node-hid": "^0.7.4"
+    "node-hid": "^0.7.4",
+    "usb-detection": "^4.1.0"
   },
   "scripts": {
-    "start": "electron src/main.js",
-    "postinstall": "electron-rebuild --force"
+    "start": "electron src/main.js"
   },
   "devDependencies": {
     "electron-rebuild": "^1.8.2"

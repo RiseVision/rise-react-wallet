@@ -26,11 +26,7 @@ import { AccountType } from '../../stores/account';
 import LedgerStore from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
-import {
-  LedgerAccount,
-  LedgerChannel,
-  ILedgerChannel
-} from '../../utils/ledgerHub';
+import { LedgerAccount, LedgerChannel } from '../../utils/ledgerHub';
 
 const styles = createStyles({
   content: {
@@ -106,11 +102,11 @@ const messages = defineMessages({
 class AccountData {
   @observable data: null | LedgerAccount = null;
 
-  constructor(ledger: ILedgerChannel, readonly slot: number) {
+  constructor(ledger: LedgerChannel, readonly slot: number) {
     this.load(ledger);
   }
 
-  private async load(ledger: ILedgerChannel) {
+  private async load(ledger: LedgerChannel) {
     try {
       const resp = await ledger.getAccount(this.slot);
       runInAction(() => {
@@ -128,7 +124,7 @@ class AccountData {
 @inject('ledgerStore')
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps> {
-  private ledger: ILedgerChannel;
+  private ledger: LedgerChannel;
   private disposeAccountLoader: null | IReactionDisposer = null;
   private countdownId: null | number = null;
 
@@ -346,6 +342,9 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
     }
   }
 
+  /**
+   * TODO move to LedgerStore
+   */
   private accountLoader = () => {
     const accountsToLoad = 5;
     const { walletStore } = this.injected;
@@ -367,6 +366,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
         importedAccounts.filter(({ hwSlot }) => hwSlot === slot).length > 0;
 
       if (!isImported) {
+        console.log('slot', slot);
         const acc = new AccountData(this.ledger, slot);
         this.accounts.push(acc);
       }
