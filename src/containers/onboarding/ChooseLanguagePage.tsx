@@ -2,7 +2,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import ChevronRight from '@material-ui/icons/ChevronRight';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import TranslateIcon from '@material-ui/icons/Translate';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -40,6 +41,9 @@ const localeLabels: { [P in Locale]: string } = {
 };
 
 const styles = createStyles({
+  languageList: {
+    maxWidth: 320,
+  },
   titleIcon: {
     margin: '-4px 4px'
   }
@@ -115,18 +119,45 @@ class ChooseLanguagePage extends React.Component<Props> {
             }}
           />
         </ModalPaperHeader>
-        <List>
-          {languages.map(lang => (
+        <List className={classes.languageList}>
+          {languages.map((lang, idx) => (
             <ListItem
               key={lang.locale}
               button={true}
+              divider={idx + 1 == languages.length}
               onClick={this.handleLanguageClicked.bind(this, lang.locale)}
             >
               <FlagIcon countryCode={lang.countryCode} />
               <ListItemText>{lang.label}</ListItemText>
-              <ChevronRight />
+              <ChevronRightIcon />
             </ListItem>
           ))}
+          <ListItem
+            key="help-us"
+            component="a"
+            button={true}
+            href="https://crowdin.com/project/rise-web-wallet"
+            target="_blank"
+          >
+            <TranslateIcon />
+            <ListItemText
+              primary={(
+                <FormattedMessage
+                  id="onboarding-choose-language.translate-cta-title"
+                  description="Translate wallet call to action title"
+                  defaultMessage="Missing your language?"
+                />
+              )}
+              secondary={(
+                <FormattedMessage
+                  id="onboarding-choose-language.translate-cta"
+                  description="Translate wallet call to action"
+                  defaultMessage="Help us translate RISE wallet!"
+                />
+              )}
+            />
+            <ChevronRightIcon />
+          </ListItem>
         </List>
       </ModalPaper>
     );
