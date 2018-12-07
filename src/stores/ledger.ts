@@ -20,6 +20,7 @@ export default class LedgerStore {
   }
 
   openChannel(): ILedgerChannel {
+    debugger
     return isElectron() ? new LedgerChannelIPC() : this.hub.openChannel();
   }
 }

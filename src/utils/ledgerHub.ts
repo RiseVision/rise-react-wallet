@@ -199,10 +199,7 @@ export class LedgerChannelIPC implements ILedgerChannel {
    * Connect to the LedgerIPCServer and get a channel ID.
    */
   async connect() {
-    // ask the server to create a new channel
-    ipcRenderer.send('channel.open');
-    // result
-    this.channelId =  await this.getResult<number>('channel.open');
+    this.channelId = await this.callIPC<number>('channel.open');
     // mark as open
     this.isOpen = true;
   }
@@ -224,6 +221,16 @@ export class LedgerChannelIPC implements ILedgerChannel {
     );
   }
 
+  async callIPC<T>(event: string, ...params): Promise<T> {
+    console.log(`call ${event}`, ...params);
+    // send the event
+    ipcRenderer.send(event, this.channelId, ...params);
+    // wait for the result
+    const ret = await this.getResult<T>(event);
+    console.log(`ret ${event}`, ret);
+    return ret;
+  }
+
   assertOpen() {
     if (!this.isOpen) {
       throw new LedgerUnreachableError();
@@ -232,18 +239,20 @@ export class LedgerChannelIPC implements ILedgerChannel {
 
   async getAccount(accountSlot: number): Promise<LedgerAccount> {
     this.assertOpen();
-    // call getAccount
-    ipcRenderer.send('channel.getAccount', this.channelId, accountSlot);
-    // return
-    return await this.getResult<LedgerAccount>('channel.getAccount');
+    return await this.callIPC<LedgerAccount>(
+      'channel.getAccount',
+      this.channelId,
+      accountSlot
+    );
   }
 
   async confirmAccount(accountSlot: number): Promise<boolean> {
     this.assertOpen();
-    // call confirmAccount
-    ipcRenderer.send('channel.confirmAccount', this.channelId, accountSlot);
-    // return
-    return await this.getResult<boolean>('channel.confirmAccount');
+    return await this.callIPC<boolean>(
+      'channel.confirmAccount',
+      this.channelId,
+      accountSlot
+    );
   }
 
   async signTransaction(
@@ -251,16 +260,11 @@ export class LedgerChannelIPC implements ILedgerChannel {
     unsignedTx: RiseTransaction
   ): Promise<null | PostableRiseTransaction> {
     this.assertOpen();
-    // call signTransaction
-    ipcRenderer.send(
+    return await this.callIPC<null | PostableRiseTransaction>(
       'channel.signTransaction',
       this.channelId,
       accountSlot,
       unsignedTx
-    );
-    // return
-    return await this.getResult<null | PostableRiseTransaction>(
-      'channel.signTransaction'
     );
   }
 
@@ -305,7 +309,7 @@ export class LedgerIPCServer {
   constructor() {
     this.hub = new LedgerHub();
     this.listen();
-    console.log('Started Ledger IPC Server')
+    console.log('Started Ledger IPC Server');
   }
 
   /**
@@ -313,7 +317,7 @@ export class LedgerIPCServer {
    */
   observeChannel(id: number, sender: IpcMainEventSender) {
     this.observers.set(id, sender);
-    // TODO deviceId
+    // TODO push deviceId
   }
 
   openChannel(sender: IpcMainEventSender): number {
@@ -338,12 +342,14 @@ export class LedgerIPCServer {
   listen() {
     // channel.open
     ipcMain.on('channel.open', async (event: IpcMainEvent) => {
+      console.log('SERVER: channel.open req', event.sender)
       const id = this.openChannel(event.sender);
+      console.log(`SERVER: channel ID ${id}`)
       // return
-      event.sender.send('channel.getAccount.result', id);
+      event.sender.send('channel.open.result', id);
     });
     // channel.close
-    ipcMain.on('channel.close', (event: 'channel.close', channelId: number) => {
+    ipcMain.on('channel.close', (event: IpcMainEvent, channelId: number) => {
       this.closeChannel(channelId);
     });
     // channel.getAccount

@@ -1,4 +1,5 @@
 const { app, BrowserWindow, webFrame } = require('electron');
+global.electronRequire = require
 // run the ledger hub and expose over IPC
 require('./ledgerIPC');
 
