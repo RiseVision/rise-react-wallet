@@ -7,6 +7,7 @@ import {
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,6 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SendIcon from '@material-ui/icons/Send';
+import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
@@ -43,6 +45,11 @@ const styles = (theme: Theme) => {
   return createStyles({
     content: {
       padding: theme.spacing.unit * 2
+    },
+    contentEmpty: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     fab: {
       position: 'fixed',
@@ -84,7 +91,21 @@ const styles = (theme: Theme) => {
       [normalLayout]: {
         display: 'none'
       }
-    }
+    },
+    emptyPlaceholder: {
+      textAlign: 'center',
+      maxWidth: 320,
+    },
+    emptyIcon: {
+      color: theme.palette.text.secondary,
+      fontSize: '4rem',
+      opacity: 0.35,
+    },
+    emptyTitle: {
+      marginBottom: 1 * theme.spacing.unit,
+    },
+    emptyText: {
+    },
   });
 };
 
@@ -139,7 +160,17 @@ const messages = defineMessages({
     id: 'wallet-address-book.delete-action-tooltip',
     description: 'Label for the delete contact action button',
     defaultMessage: 'Delete contact'
-  }
+  },
+  emptyTitle: {
+    id: 'wallet-address-book.empty-title',
+    description: 'Title for the empty address book placeholder',
+    defaultMessage: 'Your address book is empty'
+  },
+  emptyText: {
+    id: 'wallet-address-book.empty-text',
+    description: 'Text for the empty address book placeholder',
+    defaultMessage: 'You can create contacts in your address book to associate RISE addresses with easy to read names.'
+  },
 });
 
 @inject('addressBookStore')
@@ -157,8 +188,15 @@ class AddressBook extends React.Component<DecoratedProps> {
       route: addressBookRoute
     };
 
+    const contacts = addressBookStore.asArray;
+
     return (
-      <div className={classes.content}>
+      <div
+        className={classNames(
+          classes.content,
+          !contacts.length && classes.contentEmpty,
+        )}
+      >
         <CreateContactDialog navigateBackLink={backLink} />
         <ModifyContactDialog navigateBackLink={backLink} />
         <RemoveContactDialog navigateBackLink={backLink} />
@@ -172,101 +210,118 @@ class AddressBook extends React.Component<DecoratedProps> {
             </Button>
           </Link>
         </Tooltip>
-        <Paper>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  className={classNames(classes.cell, classes.onlyCompact)}
-                  children={intl.formatMessage(messages.compactColumnHeader)}
-                />
-                <TableCell
-                  className={classNames(classes.cell, classes.onlyNormal)}
-                  children={intl.formatMessage(messages.nameColumnHeader)}
-                />
-                <TableCell
-                  className={classNames(classes.cell, classes.onlyNormal)}
-                  children={intl.formatMessage(messages.addressColumnHeader)}
-                />
-                <TableCell
-                  className={classNames(classes.cell, classes.actionsCell)}
-                  children={intl.formatMessage(messages.actionsColumnHeader)}
-                />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {addressBookStore.asArray.map(entry => (
-                <TableRow key={entry.id}>
+        {contacts.length > 0 ? (
+          <Paper>
+            <Table>
+              <TableHead>
+                <TableRow>
                   <TableCell
                     className={classNames(classes.cell, classes.onlyCompact)}
-                  >
-                    <div
-                      className={classes.compactName}
-                      children={entry.name}
-                    />
-                    <div
-                      className={classes.compactAddress}
-                      children={entry.id}
-                    />
-                  </TableCell>
-                  <TableCell
-                    className={classNames(classes.cell, classes.onlyNormal)}
-                    children={entry.name}
+                    children={intl.formatMessage(messages.compactColumnHeader)}
                   />
                   <TableCell
                     className={classNames(classes.cell, classes.onlyNormal)}
-                    children={entry.id}
+                    children={intl.formatMessage(messages.nameColumnHeader)}
+                  />
+                  <TableCell
+                    className={classNames(classes.cell, classes.onlyNormal)}
+                    children={intl.formatMessage(messages.addressColumnHeader)}
                   />
                   <TableCell
                     className={classNames(classes.cell, classes.actionsCell)}
-                  >
-                    <Tooltip
-                      placement="left"
-                      title={intl.formatMessage(messages.sendFabTooltip)}
-                    >
-                      <Link
-                        route={accountSendRoute}
-                        params={{ id: walletStore.selectedAccount.id }}
-                        queryParams={{
-                          address: entry.id
-                        }}
-                      >
-                        <IconButton className={classes.actionButton}>
-                          <SendIcon fontSize="inherit" />
-                        </IconButton>
-                      </Link>
-                    </Tooltip>
-
-                    <Tooltip
-                      title={intl.formatMessage(messages.actionModifyTooltip)}
-                    >
-                      <Link
-                        route={addressBookModifyRoute}
-                        params={{ id: entry.id }}
-                      >
-                        <IconButton className={classes.actionButton}>
-                          <EditIcon fontSize="inherit" />
-                        </IconButton>
-                      </Link>
-                    </Tooltip>
-                    <Tooltip
-                      title={intl.formatMessage(messages.actionDeleteTooltip)}
-                    >
-                      <Link
-                        route={addressBookRemoveRoute}
-                        params={{ id: entry.id }}
-                      >
-                        <IconButton className={classes.actionButton}>
-                          <DeleteIcon fontSize="inherit" />
-                        </IconButton>
-                      </Link>
-                    </Tooltip>
-                  </TableCell>
+                    children={intl.formatMessage(messages.actionsColumnHeader)}
+                  />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
+              </TableHead>
+              <TableBody>
+                {contacts.map(entry => (
+                  <TableRow key={entry.id}>
+                    <TableCell
+                      className={classNames(classes.cell, classes.onlyCompact)}
+                    >
+                      <div
+                        className={classes.compactName}
+                        children={entry.name}
+                      />
+                      <div
+                        className={classes.compactAddress}
+                        children={entry.id}
+                      />
+                    </TableCell>
+                    <TableCell
+                      className={classNames(classes.cell, classes.onlyNormal)}
+                      children={entry.name}
+                    />
+                    <TableCell
+                      className={classNames(classes.cell, classes.onlyNormal)}
+                      children={entry.id}
+                    />
+                    <TableCell
+                      className={classNames(classes.cell, classes.actionsCell)}
+                    >
+                      <Tooltip
+                        placement="left"
+                        title={intl.formatMessage(messages.sendFabTooltip)}
+                      >
+                        <Link
+                          route={accountSendRoute}
+                          params={{ id: walletStore.selectedAccount.id }}
+                          queryParams={{
+                            address: entry.id
+                          }}
+                        >
+                          <IconButton className={classes.actionButton}>
+                            <SendIcon fontSize="inherit" />
+                          </IconButton>
+                        </Link>
+                      </Tooltip>
+
+                      <Tooltip
+                        title={intl.formatMessage(messages.actionModifyTooltip)}
+                      >
+                        <Link
+                          route={addressBookModifyRoute}
+                          params={{ id: entry.id }}
+                        >
+                          <IconButton className={classes.actionButton}>
+                            <EditIcon fontSize="inherit" />
+                          </IconButton>
+                        </Link>
+                      </Tooltip>
+                      <Tooltip
+                        title={intl.formatMessage(messages.actionDeleteTooltip)}
+                      >
+                        <Link
+                          route={addressBookRemoveRoute}
+                          params={{ id: entry.id }}
+                        >
+                          <IconButton className={classes.actionButton}>
+                            <DeleteIcon fontSize="inherit" />
+                          </IconButton>
+                        </Link>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
+        ) : (
+          <div className={classes.emptyPlaceholder}>
+            <PeopleIcon className={classes.emptyIcon} />
+            <Typography
+              className={classes.emptyTitle}
+              variant="body2"
+              color="textSecondary"
+              children={intl.formatMessage(messages.emptyTitle)}
+            />
+            <Typography
+              className={classes.emptyText}
+              color="textSecondary"
+              children={intl.formatMessage(messages.emptyText)}
+            />
+          </div>
+        )}
       </div>
     );
   }
