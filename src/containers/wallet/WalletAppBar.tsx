@@ -121,10 +121,6 @@ class WalletAppBar extends React.Component<DecoratedProps> {
           id: this.account.id
         }
       };
-    } else if (state === 'accountsList') {
-      return {
-        route: accountOverviewRoute
-      };
     } else {
       throw new Error('Invalid state for backLink');
     }
@@ -134,7 +130,9 @@ class WalletAppBar extends React.Component<DecoratedProps> {
     const { intl, classes } = this.injected;
     const state = this.appBarState();
 
-    const isTopRoute = state === 'accountOverview' || state === 'addressBook';
+    const isTopRoute = state === 'accountOverview'
+      || state === 'accountsList'
+      || state === 'addressBook';
 
     return (
       <AppBar className={this.injected.className} color="default">
@@ -189,7 +187,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
               <FormattedMessage
                 id="wallet-appbar.accounts-list-title"
                 description="Accounts list title"
-                defaultMessage="List of added accounts"
+                defaultMessage="All accounts"
               />
             )}
           </Typography>

@@ -163,7 +163,7 @@ const messages = defineMessages({
   removeAccount: {
     id: 'account-settings.remove-account',
     description: 'Label for remove account setting',
-    defaultMessage: 'Remove account from Wallet'
+    defaultMessage: 'Remove account from wallet'
   }
 });
 

@@ -1,20 +1,21 @@
-import Avatar from '@material-ui/core/Avatar/Avatar';
-import Button from '@material-ui/core/Button/Button';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List/List';
-import ListItem from '@material-ui/core/ListItem/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText/ListItemText';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
+import * as classNames from 'classnames';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from '../../components/AccountIcon';
@@ -26,9 +27,15 @@ import WalletStore from '../../stores/wallet';
 
 const styles = (theme: Theme) =>
   createStyles({
-    container: {},
+    content: {
+      backgroundColor: theme.palette.background.paper,
+    },
     accountAvatar: {
-      backgroundColor: 'white'
+      backgroundColor: 'white',
+      border: '2px solid white',
+    },
+    accountAvatarSelected: {
+      borderColor: theme.palette.primary.dark,
     },
     accountName: {
       whiteSpace: 'nowrap',
@@ -68,9 +75,9 @@ const messages = defineMessages({
     defaultMessage: 'Unnamed account'
   },
   addAccountTooltip: {
-    id: 'accounts-list.send-funds-fab-tooltip',
+    id: 'accounts-list.add-account-fab-tooltip',
     description: 'Tooltip for add account floating action button',
-    defaultMessage: 'Add Account'
+    defaultMessage: 'Add an account'
   }
 });
 
@@ -97,9 +104,10 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     const unnamedAccountLabel = intl.formatMessage(
       messages.unnamedAccountLabel
     );
+    const { selectedAccount } = walletStore;
 
     return (
-      <div className={classes.container}>
+      <div className={classes.content}>
         <List aria-label={intl.formatMessage(messages.accountsListAriaLabel)}>
           {orderBy(
             [...walletStore.accounts.values()],
@@ -115,7 +123,13 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
             >
               <ListItem button={true}>
                 <ListItemAvatar>
-                  <Avatar className={classes.accountAvatar}>
+                  <Avatar
+                    className={classNames(
+                      classes.accountAvatar,
+                      selectedAccount && selectedAccount.id === account.id
+                        ? classes.accountAvatarSelected : null,
+                    )}
+                  >
                     <AccountIcon size={24} address={account.id} />
                   </Avatar>
                 </ListItemAvatar>
@@ -130,7 +144,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
               </ListItem>
             </Link>
           ))}
-        </List>{' '}
+        </List>
         <Tooltip
           placement="left"
           title={intl.formatMessage(messages.addAccountTooltip)}

@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
@@ -258,14 +259,14 @@ class DrawerContent extends React.Component<DecoratedProps> {
               >
                 <ListItemAvatar>
                   <Avatar>
-                    <AddIcon />
+                    <AccountBalanceWalletIcon />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText>
                   <FormattedMessage
-                    id="drawer-content.more-accounts"
-                    description="More accounts drawer item"
-                    defaultMessage="More accounts"
+                    id="drawer-content.all-accounts"
+                    description="All accounts drawer item"
+                    defaultMessage="All accounts"
                   />
                 </ListItemText>
               </ListItem>
