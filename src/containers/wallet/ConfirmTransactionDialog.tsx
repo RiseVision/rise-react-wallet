@@ -415,7 +415,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   renderConfirmTxContent() {
     const { account, passphrasePublicKey, ledgerStore } = this.injected;
     const { transaction } = this.state;
-    const { ledger } = this;11
+    const { ledger } = this; 11;
 
     return (
       <ConfirmTransactionDialogContent

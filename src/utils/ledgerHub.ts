@@ -11,11 +11,10 @@ import { PostableRiseTransaction, RiseTransaction } from '../stores/wallet';
 import { ITransport } from 'dpos-ledger-api/dist/es5/ledger';
 
 let curLock: Promise<void> = Promise.resolve(void 0);
-async function acquireLock(): Promise<() => void> {
+function acquireLock(): Promise<() => void> {
   const curAwaitableLock = curLock;
   let release: () => void;
   curLock = new Promise((resolve) => release = resolve);
-  await curAwaitableLock;
   return curAwaitableLock.then(() => release);
 }
 export function WrapInSequence() {
@@ -37,7 +36,6 @@ export function WrapInSequence() {
     };
   };
 }
-
 
 export interface LedgerAccount {
   publicKey: string;
@@ -62,7 +60,6 @@ export class LedgerLockedError extends Error {
 let ledgerTransport: null | (ITransport & { close(): Promise<void>, setExchangeTimeout(timeout: number): void }) = null;
 
 // monitor USB changes and delete the transport cache
-
 
 async function createOrReuseTransport() {
   console.log('createOrReuseTransport');
@@ -185,7 +182,7 @@ export default class LedgerHub {
   }
 
   closeChannel(): void {
-    ; // Noop
+     // Noop
   }
 
   async getAccount(accountSlot: number, showOnLedger: boolean = false): Promise<LedgerAccount> {
@@ -204,7 +201,6 @@ export default class LedgerHub {
     }
     return this.accountCache[accountSlot];
   }
-
 
   async confirmAccount(accountSlot: number): Promise<boolean> {
     try {
