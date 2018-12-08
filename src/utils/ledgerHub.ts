@@ -36,7 +36,6 @@ export function WrapInSequence() {
   };
 }
 
-
 export interface LedgerAccount {
   publicKey: string;
   address: string;
@@ -75,9 +74,6 @@ async function createOrReuseTransport() {
 }
 
 export class LedgerChannel {
-  isOpen = true;
-
-  constructor(public hub: LedgerHub) {}
 
   get deviceId(): null | string {
     if (!this.isOpen) {
@@ -85,40 +81,7 @@ export class LedgerChannel {
     }
     return this.hub.deviceId;
   }
-
-  @WrapInSequence()
-  @LedgerChannel.handleChannelError()
-  @LedgerChannel.runOnlyIfOpen()
-  async getAccount(accountSlot: number): Promise<LedgerAccount> {
-    return this.hub.getAccount(accountSlot);
-  }
-
-  @WrapInSequence()
-  @LedgerChannel.handleChannelError()
-  @LedgerChannel.runOnlyIfOpen()
-  async confirmAccount(accountSlot: number): Promise<boolean> {
-    // baubau
-    return this.hub.confirmAccount(accountSlot);
-  }
-
-  @WrapInSequence()
-  @LedgerChannel.handleChannelError()
-  @LedgerChannel.runOnlyIfOpen()
-  async signTransaction(
-    accountSlot: number,
-    unsignedTx: RiseTransaction
-  ): Promise<null | PostableRiseTransaction> {
-    return this.hub.signTransaction(
-      accountSlot,
-      unsignedTx
-    );
-  }
-
-  async close() {
-    if (this.isOpen) {
-      this.isOpen = false;
-    }
-  }
+  isOpen = true;
 
   /**
    * Decorator to run underlying function only if channel is marked as open
@@ -156,6 +119,42 @@ export class LedgerChannel {
           });
       };
     };
+  }
+
+  constructor(public hub: LedgerHub) {}
+
+  @WrapInSequence()
+  @LedgerChannel.handleChannelError()
+  @LedgerChannel.runOnlyIfOpen()
+  async getAccount(accountSlot: number): Promise<LedgerAccount> {
+    return this.hub.getAccount(accountSlot);
+  }
+
+  @WrapInSequence()
+  @LedgerChannel.handleChannelError()
+  @LedgerChannel.runOnlyIfOpen()
+  async confirmAccount(accountSlot: number): Promise<boolean> {
+    // baubau
+    return this.hub.confirmAccount(accountSlot);
+  }
+
+  @WrapInSequence()
+  @LedgerChannel.handleChannelError()
+  @LedgerChannel.runOnlyIfOpen()
+  async signTransaction(
+    accountSlot: number,
+    unsignedTx: RiseTransaction
+  ): Promise<null | PostableRiseTransaction> {
+    return this.hub.signTransaction(
+      accountSlot,
+      unsignedTx
+    );
+  }
+
+  async close() {
+    if (this.isOpen) {
+      this.isOpen = false;
+    }
   }
 }
 
