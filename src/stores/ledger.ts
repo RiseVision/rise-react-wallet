@@ -5,8 +5,8 @@ export default class LedgerStore {
   // only in the browser
   private hub: LedgerHub = new LedgerHub();
 
-  get hasBrowserSupport() {
-    return this.hub.hasBrowserSupport;
+  get hasSupport() {
+    return this.hub.hasSupport;
   }
 
   constructor() {}

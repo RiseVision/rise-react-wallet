@@ -11,7 +11,8 @@ import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsF
 import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
 import RootStore from '../../stores/root';
-import LedgerStore, { LedgerChannel } from '../../utils/ledgerHub';
+import { LedgerChannel } from '../../utils/ledgerHub';
+import LedgerStore from '../../stores/ledger';
 import WalletStore, {
   PostableRiseTransaction,
   RiseTransaction,
@@ -279,10 +280,13 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     const { step } = this.state;
     const { ledger } = this;
 
+    console.log(ledgerStore);
+    console.log(ledgerStore.hasSupport);
+    console.log(ledger.deviceId);
     return (
       step === 'confirm' &&
       transaction !== null &&
-      ledgerStore.hasBrowserSupport &&
+      ledgerStore.hasSupport &&
       account.hwId !== null &&
       ledger.deviceId === account.hwId
     );
@@ -422,7 +426,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         senderAddress={account.id}
       >
         {account.type === AccountType.LEDGER ? (
-          !ledgerStore.hasBrowserSupport ? (
+          !ledgerStore.hasSupport ? (
             <ConfirmTxStatusFooter type="ledger-not-supported" />
           ) : ledger.deviceId === null ? (
             <ConfirmTxStatusFooter type="ledger-not-connected" />
