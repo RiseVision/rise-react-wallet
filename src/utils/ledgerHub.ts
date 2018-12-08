@@ -26,16 +26,16 @@ export function WrapInSequence() {
     descriptor.value = async function wrapInSequence(...args: any[]) {
       const release = await acquireLock();
       try {
-        const toRet = await oldValue.apply(this, args);
-        setTimeout(release, 1);
-        return toRet;
+        return await oldValue.apply(this, args);
       } catch (e) {
-        setTimeout(release, 1);
         throw e;
+      } finally {
+        setTimeout(release, 1);
       }
     };
   };
 }
+
 
 export interface LedgerAccount {
   publicKey: string;
@@ -77,7 +77,7 @@ async function createOrReuseTransport() {
 export class LedgerChannel {
   isOpen = true;
 
-  constructor(public hub: LedgerHub, public channelId: number) {}
+  constructor(public hub: LedgerHub) {}
 
   get deviceId(): null | string {
     if (!this.isOpen) {
@@ -87,29 +87,27 @@ export class LedgerChannel {
   }
 
   @WrapInSequence()
+  @LedgerChannel.handleChannelError()
+  @LedgerChannel.runOnlyIfOpen()
   async getAccount(accountSlot: number): Promise<LedgerAccount> {
-    if (!this.isOpen) {
-      return Promise.reject(new LedgerUnreachableError());
-    }
     return this.hub.getAccount(accountSlot);
   }
 
   @WrapInSequence()
+  @LedgerChannel.handleChannelError()
+  @LedgerChannel.runOnlyIfOpen()
   async confirmAccount(accountSlot: number): Promise<boolean> {
-    if (!this.isOpen) {
-      return Promise.reject(new LedgerUnreachableError());
-    }
+    // baubau
     return this.hub.confirmAccount(accountSlot);
   }
 
   @WrapInSequence()
+  @LedgerChannel.handleChannelError()
+  @LedgerChannel.runOnlyIfOpen()
   async signTransaction(
     accountSlot: number,
     unsignedTx: RiseTransaction
   ): Promise<null | PostableRiseTransaction> {
-    if (!this.isOpen) {
-      throw new LedgerUnreachableError();
-    }
     return this.hub.signTransaction(
       accountSlot,
       unsignedTx
@@ -118,9 +116,46 @@ export class LedgerChannel {
 
   async close() {
     if (this.isOpen) {
-      this.hub.closeChannel();
       this.isOpen = false;
     }
+  }
+
+  /**
+   * Decorator to run underlying function only if channel is marked as open
+   */
+  private static runOnlyIfOpen() {
+    return (target: LedgerChannel,
+            method: string,
+            descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>) => {
+      const oldValue = descriptor.value!;
+      descriptor.value = async function runOnlyIfOpen(...args: any[]) {
+        if (!(this as LedgerChannel).isOpen) {
+          return Promise.reject(new LedgerUnreachableError());
+        }
+        return oldValue.apply(this, args);
+      };
+    };
+  }
+
+  /**
+   * Handles U2F error 5 (apparently disconnection) to mark the channel as closed
+   */
+  private static handleChannelError() {
+    return (target: LedgerChannel,
+            method: string,
+            descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>) => {
+      const oldValue = descriptor.value!;
+      descriptor.value = async function wrapLedgerChannelMethod(...args: any[]) {
+        return oldValue.apply(this, args)
+          .catch(async (e: any) => {
+            if (e.id === 'U2F_5' || e instanceof LedgerUnreachableError) {
+              // Channel closed.
+              await (this as LedgerChannel).close();
+            }
+            throw e;
+          });
+      };
+    };
   }
 }
 
@@ -149,7 +184,6 @@ export default class LedgerHub {
       const self = this;
       electronRequire('@ledgerhq/hw-transport-node-hid').default.listen({
         async next(evt: {device: any, type: 'add'|'remove'}) {
-          console.log(evt.type);
           if (ledgerTransport) {
             await ledgerTransport.close();
             ledgerTransport = null;
@@ -157,18 +191,11 @@ export default class LedgerHub {
           if (evt.type === 'add') {
             ledgerTransport = await electronRequire('@ledgerhq/hw-transport-node-hid')
               .default.open(evt.device.path);
-            runInAction(() => {
-              self.hasSupport = true;
-              self.deviceId = null;
-            });
-
+            runInAction(() => self.deviceId = null);
             await self.ping();
           } else {
             // no more usb devices attached.
-            runInAction(() => {
-              self.hasSupport = false;
-              self.deviceId = null;
-            });
+            runInAction(() => self.deviceId = null);
           }
         }
       });
@@ -178,18 +205,14 @@ export default class LedgerHub {
   }
 
   openChannel(): LedgerChannel {
-    return new LedgerChannel(this, 1);
-  }
-
-  closeChannel(): void {
-     // Noop
+    return new LedgerChannel(this);
   }
 
   async getAccount(accountSlot: number, showOnLedger: boolean = false): Promise<LedgerAccount> {
     if (this.deviceId === null) {
       throw new LedgerUnreachableError();
     }
-    if (!this.accountCache[accountSlot]) {
+    if (!this.accountCache[accountSlot] || showOnLedger) {
       const accountPath = new DposAccount()
         .coinIndex(SupportedCoin.RISE)
         .account(accountSlot);
@@ -207,6 +230,9 @@ export default class LedgerHub {
       await this.getAccount(accountSlot, true);
       return true;
     } catch (e) {
+      if (e.statusCode !== 0x6985) {
+        console.log('Error when confirming account', e);
+      }
       return false;
     }
   }
@@ -238,7 +264,7 @@ export default class LedgerHub {
         accountPath,
         txBytes,
         false
-      )) as Buffer & As<'signature'>;
+      ).catch(this.remapLedgerError())) as Buffer & As<'signature'>;
       signedTx = Rise.txs.toPostable(unsignedTx);
     } catch (ex) {
       if (ex.statusCode === 0x6985) {
