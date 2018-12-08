@@ -171,7 +171,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             defaultMessage="Import a Ledger account"
           />
         </ModalPaperHeader>
-        {ledgerStore.hasBrowserSupport === false ? (
+        {ledgerStore.hasSupport === false ? (
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography

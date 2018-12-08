@@ -263,7 +263,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
         onCloseRoute={navigateBackLink}
         onClose={this.onClose}
       >
-        {!ledgerStore.hasBrowserSupport ? (
+        {!ledgerStore.hasSupport ? (
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography
