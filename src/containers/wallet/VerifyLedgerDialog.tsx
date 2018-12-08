@@ -77,9 +77,9 @@ const messages = defineMessages({
   unsupportedBrowser: {
     id: 'verify-ledger-address.unsupported-browser',
     description:
-      "Message when trying to use a browser that doesn't support Ledger devices",
+      'Message when trying to use a browser that doesn\'t support Ledger devices',
     defaultMessage:
-      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
+      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
       'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
@@ -171,9 +171,9 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     this.disposeLedgerChangeMonitor = reaction(() => {
       console.log(this.ledger.deviceId);
       return this.ledger.deviceId;
-    }, this.handleVerifyLedger);
+    },                                         this.handleVerifyLedger);
     this.handleVerifyLedger();
-  };
+  }
 
   onClose = () => {
     console.log('onClose');
@@ -188,7 +188,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
 
     this.ledger.close();
     this.setState({ confirmed: false });
-  };
+  }
 
   @action
   updateSelectionCountdown = () => {
@@ -207,7 +207,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  };
+  }
 
   handleVerifyLedger = async () => {
     console.log('handleVerifyLedger');
@@ -224,12 +224,12 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     } catch {
       // silent
     }
-  };
+  }
 
   handleCloseButton = () => {
     this.onClose();
     this.injected.store.navigateTo(this.injected.navigateBackLink);
-  };
+  }
 
   render() {
     const {
@@ -254,7 +254,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       confirmed = this.state.confirmed;
     } else if (this.open) {
       // TODO dialog doesnt call onClose if onCloseRoute is passed along
-      this.onClose()
+      this.onClose();
     }
 
     return (

@@ -67,9 +67,9 @@ const messages = defineMessages({
   unsupportedBrowser: {
     id: 'onboarding-ledger-account.unsupported-browser',
     description:
-      "Message when trying to use a browser that doesn't support Ledger devices",
+      'Message when trying to use a browser that doesn\'t support Ledger devices',
     defaultMessage:
-      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
+      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
       'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
@@ -296,7 +296,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  };
+  }
 
   private async confirmImport(account: AccountData) {
     const { walletStore, routerStore } = this.injected;
@@ -371,7 +371,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
         this.accounts.push(acc);
       }
     }
-  };
+  }
 }
 
 export default stylesDecorator(injectIntl(LedgerAccountPage));
