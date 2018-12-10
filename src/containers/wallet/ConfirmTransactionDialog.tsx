@@ -280,9 +280,6 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     const { step } = this.state;
     const { ledger } = this;
 
-    console.log(ledgerStore);
-    console.log(ledgerStore.hasSupport);
-    console.log(ledger.deviceId);
     return (
       step === 'confirm' &&
       transaction !== null &&

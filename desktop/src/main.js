@@ -2,9 +2,6 @@
 
 const { app, BrowserWindow, webFrame, ipcMain } = require('electron');
 
-// run the ledger hub and expose over IPC
-// require('./ledgerIPC');
-
 exposeModulesPath()
 
 function createWindow() {

@@ -87,6 +87,14 @@ const messages = defineMessages({
     description: 'Status text when attempting to connect to the Ledger device',
     defaultMessage: 'Trying to connect...'
   },
+  statusConnectingHelp: {
+    id: 'onboarding-ledger-account.status-connecting-help',
+    description: 'Link to the help page regarding Ledger connection problems',
+    defaultMessage:
+      'In case of problems please <a href="https://support.ledger.com/hc/' +
+      'en-us/articles/115005165269-Fix-connection-issues" target="_blank">' +
+      'visit the support page</a>.'
+  },
   accountNrLabel: {
     id: 'verify-ledger-address.account-nr-label',
     description: 'Label for the account number available for import',
@@ -169,14 +177,12 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
 
     // TODO observe the store
     this.disposeLedgerChangeMonitor = reaction(() => {
-      console.log(this.ledger.deviceId);
       return this.ledger.deviceId;
     },                                         this.handleVerifyLedger);
     this.handleVerifyLedger();
   }
 
   onClose = () => {
-    console.log('onClose');
     if (!this.open) {
       return;
     }
@@ -210,7 +216,6 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
   }
 
   handleVerifyLedger = async () => {
-    console.log('handleVerifyLedger');
     if (!this.ledger.deviceId || this.state.confirmed) {
       return;
     }
@@ -286,6 +291,11 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
             <Grid item={true} xs={12}>
               <Typography
                 children={intl.formatMessage(messages.statusConnecting)}
+              />
+              <Typography
+                dangerouslySetInnerHTML={{
+                  __html: intl.formatHTMLMessage(messages.statusConnectingHelp)
+                }}
               />
             </Grid>
           </Grid>

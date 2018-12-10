@@ -6,7 +6,6 @@
 # electron
 desktop/node_modules
 desktop/app
-desktop/ledgerHub
 
 # testing
 /coverage

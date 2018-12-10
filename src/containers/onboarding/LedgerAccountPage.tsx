@@ -77,6 +77,14 @@ const messages = defineMessages({
     description: 'Status text when attempting to connect to the Ledger device',
     defaultMessage: 'Trying to connect...'
   },
+  statusConnectingHelp: {
+    id: 'onboarding-ledger-account.status-connecting-help',
+    description: 'Link to the help page regarding Ledger connection problems',
+    defaultMessage:
+      'In case of problems please <a href="https://support.ledger.com/hc/' +
+      'en-us/articles/115005165269-Fix-connection-issues" target="_blank">' +
+      'visit the support page</a>.'
+  },
   accountNrLabel: {
     id: 'onboarding-ledger-account.account-nr-label',
     description: 'Label for the account number available for import',
@@ -194,6 +202,11 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             <Grid item={true} xs={12}>
               <Typography
                 children={intl.formatMessage(messages.statusConnecting)}
+              />
+              <Typography
+                dangerouslySetInnerHTML={{
+                  __html: intl.formatHTMLMessage(messages.statusConnectingHelp)
+                }}
               />
             </Grid>
           </Grid>
@@ -366,7 +379,6 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
         importedAccounts.filter(({ hwSlot }) => hwSlot === slot).length > 0;
 
       if (!isImported) {
-        console.log('slot', slot);
         const acc = new AccountData(this.ledger, slot);
         this.accounts.push(acc);
       }

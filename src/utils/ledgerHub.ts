@@ -14,15 +14,20 @@ let curLock: Promise<void> = Promise.resolve(void 0);
 function acquireLock(): Promise<() => void> {
   const curAwaitableLock = curLock;
   let release: () => void;
-  curLock = new Promise((resolve) => release = resolve);
+  curLock = new Promise(resolve => (release = resolve));
   return curAwaitableLock.then(() => release);
 }
 export function WrapInSequence() {
-  return (target: any,
-          method: string,
-          descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>) => {
+  return (
+    // tslint:disable-next-line:no-any
+    target: any,
+    method: string,
+    // tslint:disable-next-line:no-any
+    descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>
+  ) => {
     const oldValue = descriptor.value!;
 
+    // tslint:disable-next-line:no-any
     descriptor.value = async function wrapInSequence(...args: any[]) {
       const release = await acquireLock();
       try {
@@ -34,6 +39,12 @@ export function WrapInSequence() {
       }
     };
   };
+}
+
+/** Simple logging util (linter friendly) */
+// tslint:disable-next-line:no-unused-expression
+function log(...msg: string[]) {
+  // console.log(...msg)
 }
 
 export interface LedgerAccount {
@@ -56,12 +67,17 @@ export class LedgerLockedError extends Error {
 }
 
 // cache the transport
-let ledgerTransport: null | (ITransport & { close(): Promise<void>, setExchangeTimeout(timeout: number): void }) = null;
+let ledgerTransport:
+  | null
+  | (ITransport & {
+      close(): Promise<void>;
+      setExchangeTimeout(timeout: number): void;
+    }) = null;
 
 // monitor USB changes and delete the transport cache
 
 async function createOrReuseTransport() {
-  console.log('createOrReuseTransport');
+  log('createOrReuseTransport');
   // cached
   if (ledgerTransport) {
     return ledgerTransport;
@@ -74,7 +90,6 @@ async function createOrReuseTransport() {
 }
 
 export class LedgerChannel {
-
   get deviceId(): null | string {
     if (!this.isOpen) {
       return null;
@@ -87,10 +102,14 @@ export class LedgerChannel {
    * Decorator to run underlying function only if channel is marked as open
    */
   private static runOnlyIfOpen() {
-    return (target: LedgerChannel,
-            method: string,
-            descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>) => {
+    return (
+      target: LedgerChannel,
+      method: string,
+      // tslint:disable-next-line:no-any
+      descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>
+    ) => {
       const oldValue = descriptor.value!;
+      // tslint:disable-next-line:no-any
       descriptor.value = async function runOnlyIfOpen(...args: any[]) {
         if (!(this as LedgerChannel).isOpen) {
           return Promise.reject(new LedgerUnreachableError());
@@ -102,21 +121,29 @@ export class LedgerChannel {
 
   /**
    * Handles U2F error 5 (apparently disconnection) to mark the channel as closed
+   *
+   * TODO use error codes directly from the Transport's enum
    */
   private static handleChannelError() {
-    return (target: LedgerChannel,
-            method: string,
-            descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>) => {
+    return (
+      target: LedgerChannel,
+      method: string,
+      // tslint:disable-next-line:no-any
+      descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>
+    ) => {
       const oldValue = descriptor.value!;
-      descriptor.value = async function wrapLedgerChannelMethod(...args: any[]) {
-        return oldValue.apply(this, args)
-          .catch(async (e: any) => {
-            if (e.id === 'U2F_5' || e instanceof LedgerUnreachableError) {
-              // Channel closed.
-              await (this as LedgerChannel).close();
-            }
-            throw e;
-          });
+      descriptor.value = async function wrapLedgerChannelMethod(
+        // tslint:disable-next-line:no-any
+        ...args: any[]
+      ) {
+        // tslint:disable-next-line:no-any
+        return oldValue.apply(this, args).catch(async (e: any) => {
+          if (e.id === 'U2F_5' || e instanceof LedgerUnreachableError) {
+            // Channel closed.
+            await (this as LedgerChannel).close();
+          }
+          throw e;
+        });
       };
     };
   }
@@ -145,10 +172,7 @@ export class LedgerChannel {
     accountSlot: number,
     unsignedTx: RiseTransaction
   ): Promise<null | PostableRiseTransaction> {
-    return this.hub.signTransaction(
-      accountSlot,
-      unsignedTx
-    );
+    return this.hub.signTransaction(accountSlot, unsignedTx);
   }
 
   async close() {
@@ -181,20 +205,23 @@ export default class LedgerHub {
 
     if (isElectron()) {
       const self = this;
-      electronRequire('@ledgerhq/hw-transport-node-hid').default.listen({
-        async next(evt: {device: any, type: 'add'|'remove'}) {
+      getTransport().listen({
+        // tslint:disable-next-line:no-any
+        async next(evt: { device: any; type: 'add' | 'remove' }) {
           if (ledgerTransport) {
             await ledgerTransport.close();
             ledgerTransport = null;
           }
           if (evt.type === 'add') {
-            ledgerTransport = await electronRequire('@ledgerhq/hw-transport-node-hid')
-              .default.open(evt.device.path);
-            runInAction(() => self.deviceId = null);
+            // ledgerTransport = await electronRequire(
+            //   '@ledgerhq/hw-transport-node-hid'
+            // ).default.open(evt.device.path);
+            ledgerTransport = await createTransportNodeHID();
+            runInAction(() => (self.deviceId = null));
             await self.ping();
           } else {
             // no more usb devices attached.
-            runInAction(() => self.deviceId = null);
+            runInAction(() => (self.deviceId = null));
           }
         }
       });
@@ -207,7 +234,10 @@ export default class LedgerHub {
     return new LedgerChannel(this);
   }
 
-  async getAccount(accountSlot: number, showOnLedger: boolean = false): Promise<LedgerAccount> {
+  async getAccount(
+    accountSlot: number,
+    showOnLedger: boolean = false
+  ): Promise<LedgerAccount> {
     if (this.deviceId === null) {
       throw new LedgerUnreachableError();
     }
@@ -216,9 +246,10 @@ export default class LedgerHub {
         .coinIndex(SupportedCoin.RISE)
         .account(accountSlot);
 
-      const comm = await this.getDposLedger(showOnLedger ? 'long' : 'short' );
+      const comm = await this.getDposLedger(showOnLedger ? 'long' : 'short');
 
-      this.accountCache[accountSlot] = await comm.getPubKey(accountPath, showOnLedger)
+      this.accountCache[accountSlot] = await comm
+        .getPubKey(accountPath, showOnLedger)
         .catch(this.remapLedgerError());
     }
     return this.accountCache[accountSlot];
@@ -230,7 +261,7 @@ export default class LedgerHub {
       return true;
     } catch (e) {
       if (e.statusCode !== 0x6985) {
-        console.log('Error when confirming account', e);
+        log('Error when confirming account', e);
       }
       return false;
     }
@@ -240,7 +271,6 @@ export default class LedgerHub {
     accountSlot: number,
     unsignedTx: RiseTransaction
   ): Promise<null | PostableRiseTransaction> {
-
     if (this.deviceId === null) {
       throw new LedgerUnreachableError();
     }
@@ -259,11 +289,9 @@ export default class LedgerHub {
     let signedTx: null | PostableRiseTransaction;
     const comm = await this.getDposLedger('long');
     try {
-      unsignedTx.signature = (await comm.signTX(
-        accountPath,
-        txBytes,
-        false
-      ).catch(this.remapLedgerError())) as Buffer & As<'signature'>;
+      unsignedTx.signature = (await comm
+        .signTX(accountPath, txBytes, false)
+        .catch(this.remapLedgerError())) as Buffer & As<'signature'>;
       signedTx = Rise.txs.toPostable(unsignedTx);
     } catch (ex) {
       if (ex.statusCode === 0x6985) {
@@ -292,7 +320,7 @@ export default class LedgerHub {
     try {
       const value = await comm.getPubKey(accountPath, false);
 
-      const {address: deviceId} = value;
+      const { address: deviceId } = value;
       runInAction(() => {
         if (deviceId !== this.deviceId) {
           this.deviceId = deviceId;
@@ -303,15 +331,17 @@ export default class LedgerHub {
         }
       });
     } catch (e) {
-      console.log('error in ping');
+      log('error in ping');
     }
   }
 
-  private async getDposLedger(operationType: 'short'|'long' = 'short'): Promise<DposLedger> {
+  private async getDposLedger(
+    operationType: 'short' | 'long' = 'short'
+  ): Promise<DposLedger> {
     // @ts-ignore wrong d.ts
     const transport = await createOrReuseTransport();
     if (!transport) {
-      console.log('no-transport');
+      log('no-transport');
       throw new Error('No valid transports found for ledger');
     }
     transport.setExchangeTimeout(operationType === 'short' ? 5000 : 30000);
@@ -320,6 +350,7 @@ export default class LedgerHub {
   }
 
   private remapLedgerError() {
+    // tslint:disable-next-line:no-any
     return async (ex: any) => {
       // Map known errors to new exception types
       if (ex.id === 'U2F_5') {
@@ -358,6 +389,7 @@ function isElectron() {
   if (
     typeof process !== 'undefined' &&
     typeof process.versions === 'object' &&
+    // @ts-ignore
     !!process.versions.electron
   ) {
     return true;
@@ -373,4 +405,31 @@ function isElectron() {
   }
 
   return false;
+}
+
+// Until https://github.com/LedgerHQ/ledgerjs/issues/213 is fixed
+// tslint:disable-next-line:no-any
+function filterInterface(device: any) {
+  return ['win32', 'darwin'].includes(process.platform)
+    ? device.usagePage === 0xffa0
+    : device.interface === 0 || device.interface === -1;
+}
+
+function getDevices() {
+  const HID = electronRequire('node-hid');
+  return HID.devices(0x2c97, 0x0).filter(filterInterface);
+}
+
+async function createTransportNodeHID() {
+  const devicesList = getDevices();
+  if (devicesList.length) {
+    return await getTransport().open(devicesList[0].path);
+  }
+}
+
+function getTransport() {
+  if (isElectron()) {
+    return electronRequire('@ledgerhq/hw-transport-node-hid').default;
+  }
+  return TransportU2F;
 }
