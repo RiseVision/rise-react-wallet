@@ -6,6 +6,8 @@
 # electron
 desktop/node_modules
 desktop/app
+desktop/dist
+desktop/*.tgz
 
 # testing
 /coverage

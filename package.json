@@ -1,7 +1,6 @@
 {
   "name": "rise-wallet",
   "version": "0.1.0",
-  "private": true,
   "engines": {
     "yarn": "^1.10.1"
   },
@@ -72,9 +71,11 @@
     "prettier": "prettier src/**.{ts,tsx} --write",
     "serve": "node src/serve.js & local-ssl-proxy --source 3000 --target 5000",
     "encrypt-fixtures": "travis encrypt-file cypress/fixtures/accounts.json cypress/fixtures/accounts.json.enc --add",
-    "electron": "yarn build && rm -Rf desktop/app && cp -R build desktop/app && yarn electron-start",
-    "electron-build-ledger": "rm -rf tmp/transpiled/; tsc --target esnext --module commonjs; mkdir -p desktop/ledgerHub; cp tmp/transpiled/utils/ledgerHub.js desktop/ledgerHub",
-    "electron-start": "cd desktop && yarn install && yarn start"
+    "electron": "yarn electron-build && yarn electron-start",
+    "electron-build": "yarn build && rm -Rf desktop/app && cp -R build desktop/app && cd desktop && yarn install",
+    "electron-start": "cd desktop && NODE_ENV=production yarn start",
+    "electron-start-dev": "cd desktop && yarn start",
+    "electron-dist": "yarn electron-build && cd desktop && yarn dist"
   },
   "pre-commit": [
     "precommit"

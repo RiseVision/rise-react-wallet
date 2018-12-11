@@ -1,47 +1,45 @@
 // @ts-check
 
 const { app, BrowserWindow, webFrame, ipcMain } = require('electron');
+require('./serve')
 
-exposeModulesPath()
+exposeModulesPath();
 
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 800,
-    // TODO only for testing
-    webPreferences: {
-      webSecurity: false,
-      allowRunningInsecureContent: true
-    }
+    // required for NODE_ENV=development
+    ...(process.env.NODE_ENV !== 'production'
+      ? {
+          webPreferences: {
+            webSecurity: false,
+            allowRunningInsecureContent: true
+          }
+        }
+      : null)
   });
 
-  // TODO only for testing
-  mainWindow.webContents.openDevTools();
-  // TODO only for testing
-  mainWindow.loadURL('https://localhost:3000');
-  // console.log(`file://${__dirname}/../app/index.html`)
-  // mainWindow.loadURL(`file://${__dirname}/../app/index.html`)
+  if (process.env.NODE_ENV === 'production') {
+    // mainWindow.webContents.openDevTools();
+    mainWindow.loadURL('http://localhost:5000');
+  } else {
+    // load the local instance
+    mainWindow.webContents.openDevTools();
+    mainWindow.loadURL('https://localhost:3000');
+  }
 
-  // Emitted when the window is closed.
   mainWindow.on('closed', function() {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     mainWindow = null;
   });
 }
 
 let mainWindow;
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-// https://stackoverflow.com/questions/38986692/
-//   how-do-i-trust-a-self-signed-certificate-from-an-electron-app
-// SSL/TSL: this is the self signed certificate support
+// required for NODE_ENV=development
 app.on(
   'certificate-error',
   (event, webContents, url, error, certificate, callback) => {
@@ -52,30 +50,20 @@ app.on(
   }
 );
 
-// Quit when all windows are closed.
 app.on('window-all-closed', function() {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
 app.on('activate', function() {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow();
   }
 });
 
-/**
- * Expose the abs path to local node_modules via IPC. Required to have `require`
- * working for when serving over HTTP
- * https://stackoverflow.com/questions/39370530/require-node-module-from-electron-renderer-process-served-over-http
- */
 function exposeModulesPath() {
-  let nodeModDir = require.resolve('electron');
+  let nodeModDir = require.resolve('express');
   const dirnm = 'node_modules';
   const pos = nodeModDir.lastIndexOf(dirnm);
   if (pos != -1) {
@@ -86,6 +74,3 @@ function exposeModulesPath() {
     event.returnValue = nodeModDir;
   });
 }
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

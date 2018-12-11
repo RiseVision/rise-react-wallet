@@ -1,19 +1,41 @@
 {
   "name": "rise-wallet",
+  "description": "Rise Wallet",
   "version": "0.1.0",
-  "private": true,
+  "author": "rise.vision",
   "engines": {
     "yarn": "^1.10.1"
   },
+  "main": "src/main.js",
+  "homepage": "https://wallet.rise.vision",
   "dependencies": {
+    "@babel/polyfill": "^7.0.0",
     "@ledgerhq/hw-transport-node-hid": "^4.24.0",
-    "electron": "^3.0.10"
+    "babel-runtime": "^6.26.0",
+    "express": "^4.16.4"
   },
   "scripts": {
     "start": "electron src/main.js",
-    "postinstall": "electron-rebuild --force"
+    "postinstall": "electron-builder install-app-deps",
+    "rebuild-native": "electron-rebuild --force",
+    "dist": "rm -R dist; electron-builder -mwl"
   },
   "devDependencies": {
+    "electron": "^3.0.10",
+    "electron-builder": "^20.38.2",
     "electron-rebuild": "^1.8.2"
+  },
+  "build": {
+    "appId": "vision.rise.wallet",
+    "files": [
+      "app/**/*",
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "resources"
+    },
+    "publish": null
   }
 }
