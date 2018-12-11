@@ -50,6 +50,7 @@
   },
   "scripts": {
     "start": "react-scripts-ts start",
+    "start-http": "HTTPS=0 react-scripts-ts start",
     "build": "react-scripts-ts build",
     "deploy-nightly": "npm run build && gh-pages -d build -m \"Updated the nightly\"",
     "deploy-now": "yarn build; cd build && now && now alias rise-wallet",
