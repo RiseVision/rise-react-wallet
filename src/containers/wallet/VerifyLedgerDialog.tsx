@@ -88,7 +88,7 @@ const messages = defineMessages({
     defaultMessage: 'Trying to connect...'
   },
   statusConnectingHelp: {
-    id: 'onboarding-ledger-account.status-connecting-help',
+    id: 'verify-ledger-address.status-connecting-help',
     description: 'Link to the help page regarding Ledger connection problems',
     defaultMessage:
       'In case of problems please <a href="https://support.ledger.com/hc/' +
