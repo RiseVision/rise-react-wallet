@@ -1,4 +1,4 @@
-const { app, Menu, shell } = require('electron');
+import { Menu, shell } from 'electron';
 
 const template = [
   {
@@ -64,6 +64,7 @@ if (process.platform === 'darwin') {
   });
 
   // Edit menu
+  // @ts-ignore
   template[1].submenu.push(
     { type: 'separator' },
     {
@@ -87,7 +88,8 @@ if (process.platform === 'darwin') {
   ];
 }
 
-exports.buildMenus = function() {
+export function buildMenus() {
+  // @ts-ignore
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 };

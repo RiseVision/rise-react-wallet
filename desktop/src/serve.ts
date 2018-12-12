@@ -1,13 +1,13 @@
-const express = require('express');
-const { join } = require('path');
-const fs = require('fs');
-const app = express();
+import * as express from 'express';
+import { join } from 'path';
+import * as fs from 'fs';
 
+const app = express();
 const path = join('..', 'app');
 
 app.use(express.static(join(__dirname, path)));
 
-app.get('/*', function(req, res) {
+app.get('/*', (req, res) => {
   let file = join(__dirname, path, req.url);
   if (!fs.existsSync(file)) {
     file = join(__dirname, path, 'index.html');

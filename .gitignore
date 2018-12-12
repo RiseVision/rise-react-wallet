@@ -8,6 +8,7 @@ desktop/node_modules
 desktop/app
 desktop/dist
 desktop/*.tgz
+desktop/src/**/*.js
 
 # testing
 /coverage

@@ -1,7 +1,7 @@
 // @ts-check
 
-const { app, BrowserWindow, ipcMain } = require('electron');
-const { buildMenus } = require('./menu');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { buildMenus } from './menu';
 
 // serve only in production
 if (process.env.NODE_ENV === 'production') {
@@ -42,7 +42,7 @@ function createWindow() {
   buildMenus();
 }
 
-let mainWindow;
+let mainWindow: BrowserWindow | null;
 
 app.on('ready', createWindow);
 
@@ -77,7 +77,7 @@ function exposeModulesPath() {
     nodeModDir = nodeModDir.substr(0, pos + dirnm.length + 1);
   }
 
-  ipcMain.on('modules-path', event => {
+  ipcMain.on('modules-path', (event: { returnValue: string }) => {
     event.returnValue = nodeModDir;
   });
 }
