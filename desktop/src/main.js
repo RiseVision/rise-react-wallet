@@ -1,7 +1,12 @@
 // @ts-check
 
-const { app, BrowserWindow, webFrame, ipcMain } = require('electron');
-require('./serve')
+const { app, BrowserWindow, ipcMain } = require('electron');
+const { buildMenus } = require('./menu');
+
+// serve only in production
+if (process.env.NODE_ENV === 'production') {
+  require('./serve');
+}
 
 exposeModulesPath();
 
@@ -33,6 +38,8 @@ function createWindow() {
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
+
+  buildMenus();
 }
 
 let mainWindow;

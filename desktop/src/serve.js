@@ -1,15 +1,16 @@
 const express = require('express');
-const path = require('path');
+const { join } = require('path');
 const fs = require('fs');
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'build')));
+const path = join('..', 'app');
 
-// TODO path.resolve
+app.use(express.static(join(__dirname, path)));
+
 app.get('/*', function(req, res) {
-  let file = path.join(__dirname, '../app', req.url);
+  let file = join(__dirname, path, req.url);
   if (!fs.existsSync(file)) {
-    file = path.join(__dirname, '../app', 'index.html');
+    file = join(__dirname, path, 'index.html');
   }
   res.sendFile(file);
 });

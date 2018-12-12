@@ -1,7 +1,7 @@
 {
   "name": "rise-wallet",
   "description": "Rise Wallet",
-  "version": "0.1.0",
+  "version": "1.0.0-beta.4",
   "author": "rise.vision",
   "engines": {
     "yarn": "^1.10.1"
@@ -27,9 +27,14 @@
   },
   "build": {
     "appId": "vision.rise.wallet",
+    "productName": "RISE Wallet",
+    "mac": {
+      "category": "public.app-category.finance"
+    },
     "files": [
       "app/**/*",
       "src/**/*",
+      "resources/**/*",
       "node_modules/**/*",
       "package.json"
     ],
