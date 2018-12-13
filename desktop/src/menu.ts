@@ -1,95 +1,130 @@
 import { Menu, shell } from 'electron';
+import { observe } from 'mobx';
+import { defineMessages } from 'react-intl';
+import LangStore from './lang';
 
-const template = [
-  {
-    label: 'Edit',
-    submenu: [
-      { role: 'undo' },
-      { role: 'redo' },
-      { type: 'separator' },
-      { role: 'cut' },
-      { role: 'copy' },
-      { role: 'paste' },
-      { role: 'pasteandmatchstyle' },
-      { role: 'delete' },
-      { role: 'selectall' }
-    ]
+const messages = defineMessages({
+  edit: {
+    id: 'desktop-menu.edit',
+    description: 'Edit menu',
+    defaultMessage: 'Edit'
   },
-  {
-    label: 'View',
-    submenu: [
-      { role: 'reload' },
-      { role: 'forcereload' },
-      { role: 'toggledevtools' },
-      { type: 'separator' },
-      { role: 'resetzoom' },
-      { role: 'zoomin' },
-      { role: 'zoomout' },
-      { type: 'separator' },
-      { role: 'togglefullscreen' }
-    ]
+  view: {
+    id: 'desktop-menu.view',
+    description: 'View menu',
+    defaultMessage: 'dasdasdasd'
   },
-  {
-    role: 'window',
-    submenu: [{ role: 'minimize' }, { role: 'close' }]
+  learnMode: {
+    id: 'desktop-menu.learn-more',
+    description: 'Menu Help - Learn More',
+    defaultMessage: 'Learn More'
   },
-  {
-    role: 'help',
-    submenu: [
-      {
-        label: 'Learn More',
-        click() {
-          shell.openExternal('https://rise.vision');
-        }
-      }
-    ]
+  riseWallet: {
+    id: 'desktop-menu.rise-wallet',
+    description: 'First menu on MacOS, app title',
+    defaultMessage: 'RISE Wallet'
   }
-];
+});
 
-if (process.platform === 'darwin') {
-  template.unshift({
-    // label: app.getName(),
-    label: 'Rise Wallet',
-    submenu: [
-      { role: 'about' },
-      { type: 'separator' },
-      { role: 'services' },
-      { type: 'separator' },
-      { role: 'hide' },
-      { role: 'hideothers' },
-      { role: 'unhide' },
-      { type: 'separator' },
-      { role: 'quit' }
-    ]
-  });
-
-  // Edit menu
-  // @ts-ignore
-  template[1].submenu.push(
-    { type: 'separator' },
+function getTemplate(lang: LangStore) {
+  const template = [
     {
-      label: 'Speech',
+      label: lang.get(messages.edit),
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'pasteandmatchstyle' },
+        { role: 'delete' },
+        { role: 'selectall' }
+      ]
+    },
+    {
+      label: lang.get(messages.view),
+      submenu: [
+        { role: 'reload' },
+        { role: 'forcereload' },
+        { role: 'toggledevtools' },
+        { type: 'separator' },
+        { role: 'resetzoom' },
+        { role: 'zoomin' },
+        { role: 'zoomout' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+    {
+      role: 'window',
+      submenu: [{ role: 'minimize' }, { role: 'close' }]
+    },
+    {
+      role: 'help',
       submenu: [
         {
-          role: 'startspeaking'
-        },
-        { role: 'stopspeaking' }
+          label: lang.get(messages.learnMode),
+          click() {
+            shell.openExternal('https://rise.vision');
+          }
+        }
       ]
     }
-  );
-
-  // Window menu
-  template[3].submenu = [
-    { role: 'close' },
-    { role: 'minimize' },
-    { role: 'zoom' },
-    { type: 'separator' },
-    { role: 'front' }
   ];
+
+  if (process.platform === 'darwin') {
+    template.unshift({
+      label: lang.get(messages.riseWallet),
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    });
+
+    // Edit menu
+    // @ts-ignore
+    template[1].submenu.push(
+      { type: 'separator' },
+      {
+        label: 'Speech',
+        submenu: [
+          {
+            role: 'startspeaking'
+          },
+          { role: 'stopspeaking' }
+        ]
+      }
+    );
+
+    // Window menu
+    template[3].submenu = [
+      { role: 'close' },
+      { role: 'minimize' },
+      { role: 'zoom' },
+      { type: 'separator' },
+      { role: 'front' }
+    ];
+  }
+
+  return template;
 }
 
-export function buildMenus() {
+export function buildMenus(lang: LangStore) {
+  // rebuild menus when the lang changes
+  observe(lang, 'locale', () => {
+    // @ts-ignore
+    const menu = Menu.buildFromTemplate(getTemplate(lang));
+    Menu.setApplicationMenu(menu);
+  });
   // @ts-ignore
-  const menu = Menu.buildFromTemplate(template);
+  const menu = Menu.buildFromTemplate(getTemplate(lang));
   Menu.setApplicationMenu(menu);
-};
+}

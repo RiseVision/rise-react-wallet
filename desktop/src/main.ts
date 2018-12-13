@@ -2,6 +2,9 @@
 
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { buildMenus } from './menu';
+import LangStore from './lang';
+
+const lang = new LangStore();
 
 // serve only in production
 if (process.env.NODE_ENV === 'production') {
@@ -39,7 +42,7 @@ function createWindow() {
     mainWindow = null;
   });
 
-  buildMenus();
+  buildMenus(lang);
 }
 
 let mainWindow: BrowserWindow | null;

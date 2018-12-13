@@ -9,6 +9,7 @@ desktop/app
 desktop/dist
 desktop/*.tgz
 desktop/src/**/*.js
+desktop/src/translations
 
 # testing
 /coverage
