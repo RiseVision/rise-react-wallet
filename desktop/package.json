@@ -7,6 +7,7 @@
     "yarn": "^1.10.1"
   },
   "main": "src/main.js",
+  "license": "GPL-3.0-only",
   "homepage": "https://wallet.rise.vision",
   "dependencies": {
     "@babel/polyfill": "^7.0.0",

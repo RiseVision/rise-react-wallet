@@ -1,3 +1,6 @@
+///<reference path="../../desktop/node_modules/electron/electron.d.ts"/>
+
+declare const ipcRenderer: Electron.IpcRenderer;
 // absolute modules path for electronRequire
 declare const modulesPath: string;
 // tslint:disable-next-line:no-any

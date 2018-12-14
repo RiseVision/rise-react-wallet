@@ -12,7 +12,7 @@ const messages = defineMessages({
   view: {
     id: 'desktop-menu.view',
     description: 'View menu',
-    defaultMessage: 'dasdasdasd'
+    defaultMessage: 'View'
   },
   learnMode: {
     id: 'desktop-menu.learn-more',

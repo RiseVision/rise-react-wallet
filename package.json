@@ -4,6 +4,7 @@
   "engines": {
     "yarn": "^1.10.1"
   },
+  "license": "GPL-3.0-only",
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "@ledgerhq/hw-transport-u2f": "^4.28.0",
@@ -75,7 +76,7 @@
     "electron-build": "yarn build && rm -Rf desktop/app && cp -R build desktop/app && cd desktop && yarn install",
     "electron-start": "cd desktop && NODE_ENV=production yarn start",
     "electron-start-dev": "cd desktop && yarn start",
-    "electron-dist": "yarn electron-build && cd desktop && yarn dist"
+    "electron-release": "yarn electron-build && cd desktop && yarn dist"
   },
   "pre-commit": [
     "precommit"

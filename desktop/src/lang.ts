@@ -1,3 +1,4 @@
+import { ipcMain } from 'electron';
 import { observable, runInAction } from 'mobx';
 import { Locale as LocaleData, FormattedMessage } from 'react-intl';
 import MessageDescriptor = FormattedMessage.MessageDescriptor;
@@ -37,13 +38,15 @@ export default class LangStore {
     runInAction(() => {
       this.locale = locale;
     });
+    // listen to lang changes from the renderer process
+    ipcMain.on('locale-change', (event: {}, locale: Locale) => {
+      this.changeLanguage(locale);
+    });
   }
 
-  async changeLanguage(locale: Locale) {
+  changeLanguage(locale: Locale) {
     // alter the store
-    runInAction(() => {
-      this.locale = locale;
-    });
+    this.locale = locale;
   }
 
   /**
@@ -51,11 +54,13 @@ export default class LangStore {
    * TODO support formatMessage
    */
   get(msg: MessageDescriptor): string {
+    const messages = this.translations[this.locale].messages;
+
     const id = msg.id;
     const fallback = msg.defaultMessage;
-    const fallbackEN = this.translations['en'].messages[id];
-    const messages = this.translations[this.locale];
-    return (messages && messages[id]) || fallback || fallbackEN || id;
+    const message = messages && messages[id]
+
+    return message || fallback || id;
   }
 }
 
