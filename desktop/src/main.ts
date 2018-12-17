@@ -1,6 +1,5 @@
 // @ts-check
 
-import 'dotenv';
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { buildMenus } from './menu';
 import LangStore from './lang';
@@ -9,7 +8,7 @@ import serve from './serve';
 const lang = new LangStore();
 
 // serve only in production
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV !== 'development') {
   serve();
 }
 
@@ -21,7 +20,7 @@ function createWindow() {
     width: 1000,
     height: 800,
     // required for NODE_ENV=development
-    ...(process.env.NODE_ENV !== 'production'
+    ...(process.env.NODE_ENV === 'development'
       ? {
           webPreferences: {
             webSecurity: false,
@@ -31,13 +30,13 @@ function createWindow() {
       : null)
   });
 
-  if (process.env.NODE_ENV === 'production') {
-    // mainWindow.webContents.openDevTools();
-    mainWindow.loadURL('http://localhost:5000');
-  } else {
+  if (process.env.NODE_ENV === 'development') {
     // load the local instance
     // mainWindow.webContents.openDevTools();
     mainWindow.loadURL('https://localhost:3000');
+  } else {
+    // mainWindow.webContents.openDevTools();
+    mainWindow.loadURL('http://localhost:5000');
   }
 
   mainWindow.on('closed', function() {
