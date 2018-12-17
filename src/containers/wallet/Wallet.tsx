@@ -18,6 +18,8 @@ import Dialog from '../../components/Dialog';
 import SignOutDialogContent from '../../components/content/SignOutDialogContent';
 import { onboardingAddAccountRoute } from '../../routes';
 import WalletStore from '../../stores/wallet';
+// @ts-ignore
+import { version } from '../../../package.json';
 
 const drawerWidth = 280;
 
@@ -42,8 +44,8 @@ const styles = (theme: Theme) =>
     permanentDrawerContainer: {
       display: 'flex',
       [theme.breakpoints.down('sm')]: {
-        display: 'none',
-      },
+        display: 'none'
+      }
     },
     drawerPaper: {
       width: drawerWidth,
@@ -63,6 +65,13 @@ const styles = (theme: Theme) =>
         flex: 1,
         overflow: 'auto'
       }
+    },
+    footer: {
+      position: 'absolute',
+      bottom: 0,
+      textAlign: 'center',
+      width: '100%',
+      color: theme.palette.grey["500"]
     }
   });
 
@@ -126,10 +135,13 @@ class Wallet extends React.Component<DecoratedProps, State> {
     const { mobileDrawerOpen, signOutOpen } = this.state;
 
     const drawer = (
-      <DrawerContent
-        onSignOutClick={this.handleOpenSignOutPrompt}
-        onAfterNavigate={this.handleAfterNavigate}
-      />
+      <>
+        <DrawerContent
+          onSignOutClick={this.handleOpenSignOutPrompt}
+          onAfterNavigate={this.handleAfterNavigate}
+        />
+        <footer className={classes.footer}>v{version}</footer>
+      </>
     );
 
     return (
@@ -167,10 +179,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
           <div className={classes.toolbar} />
           {this.props.children}
         </main>
-        <Dialog
-          open={signOutOpen}
-          onClose={this.handleCancelSignOutPrompt}
-        >
+        <Dialog open={signOutOpen} onClose={this.handleCancelSignOutPrompt}>
           <SignOutDialogContent
             onConfirm={this.handleConfirmSignOut}
             onCancel={this.handleCancelSignOutPrompt}
@@ -184,37 +193,37 @@ class Wallet extends React.Component<DecoratedProps, State> {
     this.setState({
       mobileDrawerOpen: !this.state.mobileDrawerOpen
     });
-  }
+  };
 
   handleConfirmSignOut = () => {
     const { walletStore, routerStore } = this.injected;
 
     this.setState({
-      signOutOpen: false,
+      signOutOpen: false
     });
 
     walletStore.signout();
     routerStore.goTo(onboardingAddAccountRoute);
-  }
+  };
 
   handleCancelSignOutPrompt = () => {
     this.setState({
-      signOutOpen: false,
+      signOutOpen: false
     });
-  }
+  };
 
   handleOpenSignOutPrompt = () => {
     this.setState({
       mobileDrawerOpen: false,
-      signOutOpen: true,
+      signOutOpen: true
     });
-  }
+  };
 
   handleAfterNavigate = () => {
     this.setState({
-      mobileDrawerOpen: false,
+      mobileDrawerOpen: false
     });
-  }
+  };
 }
 
 export default stylesDecorator(themeDecorator(Wallet));
