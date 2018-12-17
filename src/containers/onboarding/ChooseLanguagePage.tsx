@@ -124,7 +124,7 @@ class ChooseLanguagePage extends React.Component<Props> {
             <ListItem
               key={lang.locale}
               button={true}
-              divider={idx + 1 == languages.length}
+              divider={idx + 1 === languages.length}
               onClick={this.handleLanguageClicked.bind(this, lang.locale)}
             >
               <FlagIcon countryCode={lang.countryCode} />
