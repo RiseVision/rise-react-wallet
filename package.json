@@ -74,8 +74,9 @@
     "encrypt-fixtures": "travis encrypt-file cypress/fixtures/accounts.json cypress/fixtures/accounts.json.enc --add",
     "electron": "yarn electron-build && yarn electron-start",
     "electron-build": "yarn build && rm -Rf desktop/app && cp -R build desktop/app && cd desktop && yarn install",
-    "electron-start": "cd desktop && NODE_ENV=production yarn start",
-    "electron-start-dev": "cd desktop && yarn start",
+    "electron-rebuild-native": "cd desktop && yarn rebuild-native",
+    "electron-start-prod": "cd desktop && NODE_ENV=production yarn start",
+    "electron-start": "cd desktop && NODE_ENV=development yarn start",
     "electron-release": "yarn electron-build && cd desktop && yarn dist"
   },
   "pre-commit": [
