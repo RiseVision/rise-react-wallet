@@ -73,10 +73,10 @@
     "serve": "node src/serve.js & local-ssl-proxy --source 3000 --target 5000",
     "encrypt-fixtures": "travis encrypt-file cypress/fixtures/accounts.json cypress/fixtures/accounts.json.enc --add",
     "electron": "yarn electron-build && yarn electron-start",
-    "electron-build": "yarn build && rm -Rf desktop/app && cp -R build desktop/app && cd desktop && yarn install",
+    "electron-build": "yarn build && rm -Rf desktop/app && cp -R build desktop/app && cd desktop && yarn install && yarn build",
     "electron-rebuild-native": "cd desktop && yarn rebuild-native",
-    "electron-start-prod": "cd desktop && yarn start",
-    "electron-start": "cd desktop && NODE_ENV=development yarn start",
+    "electron-start-prod": "cd desktop && tsc && yarn start",
+    "electron-start": "cd desktop && tsc && NODE_ENV=development yarn start",
     "electron-release": "yarn electron-build && cd desktop && yarn dist"
   },
   "pre-commit": [
