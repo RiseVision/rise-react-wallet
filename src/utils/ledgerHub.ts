@@ -79,10 +79,8 @@ let ledgerTransport:
 async function createOrReuseTransport() {
   log('createOrReuseTransport');
   // cached
-  if (ledgerTransport) {
-    return ledgerTransport;
-  }
-  if (!isElectron()) {
+  if (!ledgerTransport) {
+    log('miss cache');
     // @ts-ignore
     ledgerTransport = await TransportU2F.create();
   }
@@ -201,33 +199,9 @@ export default class LedgerHub {
   } = {};
   constructor() {
     // @ts-ignore missing d.ts
-    this.hasSupport = isElectron() || TransportU2F.isSupported();
+    this.hasSupport = TransportU2F.isSupported();
 
-    if (isElectron()) {
-      const self = this;
-      getTransport().listen({
-        // tslint:disable-next-line:no-any
-        async next(evt: { device: any; type: 'add' | 'remove' }) {
-          if (ledgerTransport) {
-            await ledgerTransport.close();
-            ledgerTransport = null;
-          }
-          if (evt.type === 'add') {
-            // ledgerTransport = await electronRequire(
-            //   '@ledgerhq/hw-transport-node-hid'
-            // ).default.open(evt.device.path);
-            ledgerTransport = await createTransportNodeHID();
-            runInAction(() => (self.deviceId = null));
-            await self.ping();
-          } else {
-            // no more usb devices attached.
-            runInAction(() => (self.deviceId = null));
-          }
-        }
-      });
-    } else {
-      setInterval(() => this.ping(), 500);
-    }
+    setInterval(() => this.ping(), 1000);
   }
 
   openChannel(): LedgerChannel {
@@ -331,6 +305,7 @@ export default class LedgerHub {
         }
       });
     } catch (e) {
+      log(e);
       log('error in ping');
     }
   }
@@ -365,71 +340,4 @@ export default class LedgerHub {
       }
     };
   }
-}
-
-/**
- * Required because of differences in handling of default imports in
- * CRA vs TS+node.
- *
- * https://github.com/electron/electron/issues/2288
- */
-function isElectron() {
-  // Renderer process
-  if (
-    typeof window !== 'undefined' &&
-    // @ts-ignore
-    typeof window.process === 'object' &&
-    // @ts-ignore
-    window.process.type === 'renderer'
-  ) {
-    return true;
-  }
-
-  // Main process
-  if (
-    typeof process !== 'undefined' &&
-    typeof process.versions === 'object' &&
-    // @ts-ignore
-    !!process.versions.electron
-  ) {
-    return true;
-  }
-
-  // Detect the user agent when the `nodeIntegration` option is set to true
-  if (
-    typeof navigator === 'object' &&
-    typeof navigator.userAgent === 'string' &&
-    navigator.userAgent.indexOf('Electron') >= 0
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
-// Until https://github.com/LedgerHQ/ledgerjs/issues/213 is fixed
-// tslint:disable-next-line:no-any
-function filterInterface(device: any) {
-  return ['win32', 'darwin'].includes(process.platform)
-    ? device.usagePage === 0xffa0
-    : device.interface === 0 || device.interface === -1;
-}
-
-function getDevices() {
-  const HID = electronRequire('node-hid');
-  return HID.devices(0x2c97, 0x0).filter(filterInterface);
-}
-
-async function createTransportNodeHID() {
-  const devicesList = getDevices();
-  if (devicesList.length) {
-    return await getTransport().open(devicesList[0].path);
-  }
-}
-
-function getTransport() {
-  if (isElectron()) {
-    return electronRequire('@ledgerhq/hw-transport-node-hid').default;
-  }
-  return TransportU2F;
 }
