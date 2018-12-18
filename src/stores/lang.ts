@@ -1,4 +1,3 @@
-import isElectron from 'is-electron';
 import { action, autorun, observable, runInAction } from 'mobx';
 import { addLocaleData, Locale as LocaleData } from 'react-intl';
 import * as lstore from 'store';
@@ -19,9 +18,6 @@ export default class LangStore {
     }
     this.loadTranslation(locale);
     this.locale = locale;
-    if (isElectron()) {
-      ipcRenderer.send('locale-change', locale);
-    }
     autorun(() => lstore.set('locale', this.locale));
   }
 
@@ -57,9 +53,6 @@ export default class LangStore {
   @action
   async changeLanguage(locale: Locale) {
     await this.loadTranslation(locale);
-    if (isElectron()) {
-      ipcRenderer.send('locale-change', locale);
-    }
     // alter the store
     runInAction(() => {
       this.locale = locale;

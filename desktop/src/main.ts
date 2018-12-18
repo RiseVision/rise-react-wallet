@@ -16,7 +16,7 @@ async function run() {
         width: 1000,
         height: 500,
         channel: ['canary', 'stable'],
-        icon: path.join(__dirname, '/build/icon-64.png'),
+        icon: path.join(__dirname, '/../build/icon-64.png'),
         args: process.env.DEV === 'true' ? ['--auto-open-devtools-for-tabs'] : [],
         localDataDir: path.join(os.homedir(), '.carlosysteminfo'),
 
@@ -29,7 +29,7 @@ async function run() {
   }
   app.on('exit', () => process.exit());
   // New windows are opened when this app is started again from command line.
-  app.serveFolder(path.join(__dirname, 'build'));
+  app.serveFolder(path.join(__dirname, '..', 'build'));
   app.on('window', window => window.load('index.html'));
   // await app.exposeFunction('systeminfo', systeminfo);
   await app.load('index.html');

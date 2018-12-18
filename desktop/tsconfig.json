@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "sourceMap": false,
+    "lib": ["es6", "dom", "es7", "es2017.object"],
+    "skipLibCheck": true,
+    "experimentalDecorators": true
+  },
+  "files": ["src/main.ts"],
+  "exclude": ["node_modules", "../node_modules"]
+}
