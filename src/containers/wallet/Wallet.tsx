@@ -137,7 +137,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
     const { mobileDrawerOpen, signOutOpen } = this.state;
 
     const drawer = (
-      <>
+      <React.Fragment>
         <DrawerContent
           onSignOutClick={this.handleOpenSignOutPrompt}
           onAfterNavigate={this.handleAfterNavigate}
@@ -149,7 +149,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
           aria-hidden={true}
           children={`v${version}`}
         />
-      </>
+      </React.Fragment>
     );
 
     return (
