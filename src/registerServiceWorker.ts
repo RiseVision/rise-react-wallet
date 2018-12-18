@@ -9,6 +9,7 @@
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
 
+import { runInAction } from 'mobx';
 import RootStore from './stores/root';
 
 const isLocalhost = Boolean(
@@ -63,7 +64,9 @@ function registerValidSW(store: RootStore, swUrl: string) {
                 // the fresh content will have been added to the cache.
                 // It's the perfect time to display a 'New content is
                 // available; please refresh.' message in your web app.
-                store.updateAvailable = true;
+                runInAction(() => {
+                  store.updateAvailable = true;
+                });
                 console.log('New content is available; please refresh.');
               } else {
                 // At this point, everything has been precached.

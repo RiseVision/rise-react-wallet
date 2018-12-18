@@ -1,4 +1,3 @@
-import { Snackbar } from '@material-ui/core';
 import * as keyboardJS from 'keyboardjs';
 import { KeyEvent } from 'keyboardjs';
 import { inject, observer } from 'mobx-react';
@@ -7,26 +6,33 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import LoadingIndicator from '../components/LoadingIndicator';
+import UpdateAvailableSnackbar from '../components/UpdateAvailableSnackbar';
 import { accountSendNoIDRoute } from '../routes';
 import LangStore from '../stores/lang';
 import RootStore from '../stores/root';
 import ThemeProvider from './ThemeProvider';
 
 interface Props {
-  langStore?: LangStore;
-  store?: RootStore;
+}
+
+interface PropsInjected extends Props {
+  store: RootStore;
+  langStore: LangStore;
 }
 
 interface State {}
 
 @inject('langStore')
-@inject('store')
 @observer
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
     this.state = {};
+  }
+
+  get injected(): PropsInjected {
+    return this.props as PropsInjected;
   }
 
   componentDidMount() {
@@ -38,19 +44,17 @@ class App extends React.Component<Props, State> {
   }
 
   handlerOpenSendDialog = (e: KeyEvent) => {
+    const { store } = this.injected;
     e.preventDefault();
     e.stopPropagation();
-    this.props.store!.router.goTo(accountSendNoIDRoute);
+    store.router.goTo(accountSendNoIDRoute);
   }
 
   render() {
-    // TODO `get injected`
-    const { updateAvailable } = this.props!.store!;
-
     let currentError = null;
     let isLoading = false;
 
-    const langStore = this.props.langStore!;
+    const { langStore } = this.injected;
     let locale = langStore.locale;
 
     let translations = langStore.translations.get(locale);
@@ -92,21 +96,7 @@ class App extends React.Component<Props, State> {
             />
             {content}
             <MobxRouter />
-
-            {updateAvailable && (
-              <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                open={true}
-                ContentProps={{
-                  'aria-describedby': 'message-id'
-                }}
-                message={
-                  <span id="update-available">
-                    Update available, please refresh
-                  </span>
-                }
-              />
-            )}
+            <UpdateAvailableSnackbar />
           </React.Fragment>
         </IntlProvider>
       </ThemeProvider>
