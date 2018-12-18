@@ -103,6 +103,9 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
     removeInput1: false
   };
 
+  // We rely on ref based access to the input elements here because
+  // iOS safari auto-fill doesn't work too well with regular onChange
+  // and state updates.
   passphraseRef: HTMLInputElement;
   mnemonicRef: HTMLInputElement;
 
