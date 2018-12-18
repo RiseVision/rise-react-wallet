@@ -9,10 +9,16 @@
   "main": "src/main.js",
   "license": "GPL-3.0-only",
   "homepage": "https://wallet.rise.vision",
-  "dependencies": {},
+  "dependencies": {
+    "dotenv": "^6.2.0"
+  },
   "scripts": {
+    "build": "tsc",
     "prestuff": "rm -rf build; cp -Rf ../build build; tsc",
-    "bundle": "yarn prestuff && pkg ."
+    "set-env": "echo RELEASE=$1 > .env",
+    "bundle:testnet": "yarn set-env testnet; pkg .",
+    "bundle:mainnet": "yarn set-env mainnet; pkg .",
+    "bundle": "yarn prestuff && yarn build && yarn bundle:mainnet"
   },
   "devDependencies": {
     "carlo": "^0.9.43",

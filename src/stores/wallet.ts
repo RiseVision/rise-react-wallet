@@ -46,6 +46,7 @@ export type RiseTransaction<T = any> = GenericRiseTransaction<T>;
 export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<
   T
 >;
+declare var riseRelease: string | null;
 
 export default class WalletStore {
   dposAPI: typeof dposAPI;
@@ -80,7 +81,7 @@ export default class WalletStore {
    */
   get nodeAddress() {
     const location = window.location;
-    if (location.hostname.startsWith(`wallet.${this.config.domain}`)) {
+    if ((riseRelease === 'mainnet') || location.hostname.startsWith(`wallet.${this.config.domain}`)) {
       return this.config.api_url;
     }
     return this.config.api_url_testnet;

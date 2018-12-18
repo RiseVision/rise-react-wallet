@@ -10,26 +10,43 @@ import registerServiceWorker from './registerServiceWorker';
 import * as routes from './routes';
 import { TConfig, TStores } from './stores';
 import RootStore from './stores/root';
-
+declare var carlo: any;
+declare global {
+  interface Window {
+    riseRelease: string | null;
+  }
+}
 // tslint:disable-next-line:no-any
-const store = new RootStore((config as any) as TConfig);
-startRouter(routes, store, { strict: false });
 
-const stores: TStores = {
-  store,
-  langStore: store.lang,
-  onboardingStore: store.onboarding,
-  walletStore: store.wallet,
-  routerStore: store.router,
-  addressBookStore: store.addressBook,
-  ledgerStore: store.ledger
-};
+let promise = Promise.resolve();
+if (typeof carlo !== 'undefined') {
+  promise = carlo.loadParams().then((loadedParams: any[]) => {
+    window.riseRelease = loadedParams[0];
+  });
+} else {
+  window.riseRelease = null;
+}
 
-const root = (
-  <Provider {...stores}>
-    <App />
-  </Provider>
-);
+promise.then(() => {
+  const store = new RootStore((config as any) as TConfig);
+  startRouter(routes, store, { strict: false });
 
-ReactDOM.render(root, document.getElementById('root') as HTMLElement);
-registerServiceWorker(store);
+  const stores: TStores = {
+    store,
+    langStore: store.lang,
+    onboardingStore: store.onboarding,
+    walletStore: store.wallet,
+    routerStore: store.router,
+    addressBookStore: store.addressBook,
+    ledgerStore: store.ledger
+  };
+
+  const root = (
+    <Provider {...stores}>
+      <App />
+    </Provider>
+  );
+
+  ReactDOM.render(root, document.getElementById('root') as HTMLElement);
+  registerServiceWorker(store);
+});

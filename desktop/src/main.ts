@@ -1,10 +1,10 @@
 // tslint:disable
 
 'use strict';
-
 const carlo = require('carlo');
 const os = require('os');
 const path = require('path');
+const result = require('dotenv').config();
 
 async function run() {
   let app;
@@ -18,7 +18,7 @@ async function run() {
         channel: ['canary', 'stable'],
         icon: path.join(__dirname, '/../build/icon-64.png'),
         args: process.env.DEV === 'true' ? ['--auto-open-devtools-for-tabs'] : [],
-        localDataDir: path.join(os.homedir(), '.carlosysteminfo'),
+        localDataDir: path.join(os.homedir(), '.risewallet'),
 
       });
   } catch(e) {
@@ -31,9 +31,8 @@ async function run() {
   // New windows are opened when this app is started again from command line.
   app.serveFolder(path.join(__dirname, '..', 'build'));
   app.on('window', window => window.load('index.html'));
-  // await app.exposeFunction('systeminfo', systeminfo);
-  await app.load('index.html');
+  await app.load('index.html', result.parsed.RELEASE);
+
   return app;
 }
-
 run();
