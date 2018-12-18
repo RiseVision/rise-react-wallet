@@ -1,5 +1,6 @@
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
+import Typography from '@material-ui/core/Typography';
 import {
   createStyles,
   Theme,
@@ -66,12 +67,13 @@ const styles = (theme: Theme) =>
         overflow: 'auto'
       }
     },
-    footer: {
-      position: 'absolute',
-      bottom: 0,
+    drawerSpacer: {
+      flex: 1,
+    },
+    versionFooter: {
       textAlign: 'center',
-      width: '100%',
-      color: theme.palette.grey["500"]
+      color: theme.palette.grey['500'],
+      fontSize: theme.typography.pxToRem(12),
     }
   });
 
@@ -140,7 +142,13 @@ class Wallet extends React.Component<DecoratedProps, State> {
           onSignOutClick={this.handleOpenSignOutPrompt}
           onAfterNavigate={this.handleAfterNavigate}
         />
-        <footer className={classes.footer}>v{version}</footer>
+        <div className={classes.drawerSpacer} />
+        <Typography
+          className={classes.versionFooter}
+          component='footer'
+          aria-hidden={true}
+          children={`v${version}`}
+        />
       </>
     );
 
@@ -193,7 +201,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
     this.setState({
       mobileDrawerOpen: !this.state.mobileDrawerOpen
     });
-  };
+  }
 
   handleConfirmSignOut = () => {
     const { walletStore, routerStore } = this.injected;
@@ -204,26 +212,26 @@ class Wallet extends React.Component<DecoratedProps, State> {
 
     walletStore.signout();
     routerStore.goTo(onboardingAddAccountRoute);
-  };
+  }
 
   handleCancelSignOutPrompt = () => {
     this.setState({
       signOutOpen: false
     });
-  };
+  }
 
   handleOpenSignOutPrompt = () => {
     this.setState({
       mobileDrawerOpen: false,
       signOutOpen: true
     });
-  };
+  }
 
   handleAfterNavigate = () => {
     this.setState({
       mobileDrawerOpen: false
     });
-  };
+  }
 }
 
 export default stylesDecorator(themeDecorator(Wallet));
