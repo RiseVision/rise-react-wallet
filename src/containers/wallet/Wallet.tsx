@@ -145,7 +145,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
         <div className={classes.drawerSpacer} />
         <Typography
           className={classes.versionFooter}
-          component='footer'
+          component="footer"
           aria-hidden={true}
           children={`v${version}`}
         />
