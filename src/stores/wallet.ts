@@ -27,7 +27,7 @@ import { RawAmount } from '../utils/amounts';
 import {
   normalizeAddress,
   TAddressRecord,
-  TAddressSource
+  TAddressSource, isMainnet
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
@@ -46,7 +46,6 @@ export type RiseTransaction<T = any> = GenericRiseTransaction<T>;
 export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<
   T
 >;
-declare var riseRelease: string | null;
 
 export default class WalletStore {
   dposAPI: typeof dposAPI;
@@ -80,8 +79,7 @@ export default class WalletStore {
    * - anything else goes to testnet
    */
   get nodeAddress() {
-    const location = window.location;
-    if ((riseRelease === 'mainnet') || location.hostname.startsWith(`wallet.${this.config.domain}`)) {
+    if (isMainnet(this.config.domain)) {
       return this.config.api_url;
     }
     return this.config.api_url_testnet;

@@ -7,3 +7,8 @@ declare const modulesPath: string;
 declare function __non_webpack_require__(module: string): any;
 // tslint:disable-next-line:no-any
 declare function electronRequire(module: string): any;
+
+declare var carlo: any;
+interface Window {
+  riseRelease: string | null;
+}
