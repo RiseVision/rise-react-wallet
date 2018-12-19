@@ -5,11 +5,10 @@
 
 # electron
 desktop/node_modules
-desktop/app
+desktop/build
 desktop/dist
 desktop/*.tgz
 desktop/src/**/*.js
-desktop/src/translations
 
 # testing
 /coverage
