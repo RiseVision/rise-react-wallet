@@ -103,6 +103,9 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
     removeInput1: false
   };
 
+  // We rely on ref based access to the input elements here because
+  // iOS safari auto-fill doesn't work too well with regular onChange
+  // and state updates.
   passphraseRef: HTMLInputElement;
   mnemonicRef: HTMLInputElement;
 
@@ -229,9 +232,11 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
       mnemonic,
       mnemonicInvalid,
       passphrase,
-      passphraseInvalid
+      passphraseInvalid,
+      removeInput1,
     } = this.state;
     const isPassphraseSet = !!secondPublicKey;
+    const showMnemonicInput = !isPassphraseSet || !removeInput1;
 
     return (
       <Grid
@@ -264,9 +269,10 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
             )}
           </Typography>
         </Grid>
-        {!this.state.removeInput1 && (
-          <Grid item={true} xs={12}>
+        <Grid item={true} xs={12}>
+          {showMnemonicInput ? (
             <TextField
+              key="mnemonic"
               type="password"
               label={
                 <FormattedMessage
@@ -284,31 +290,28 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
               fullWidth={true}
               inputRef={ref => (this.mnemonicRef = ref)}
             />
-          </Grid>
-        )}
-        {this.state.removeInput1 &&
-          isPassphraseSet && (
-            <Grid item={true} xs={12}>
-              <TextField
-                type="password"
-                label={
-                  <FormattedMessage
-                    id="confirm-tx-enter-secrets-footer.passphrase-input-label"
-                    description="Label for 2nd passphrase text field."
-                    defaultMessage="Second passphrase"
-                  />
-                }
-                autoFocus={true}
-                value={passphrase}
-                onChange={this.handlePassphraseChange}
-                onBlur={this.handlePassphraseBlur}
-                error={passphraseInvalid}
-                helperText={passphraseInvalid ? this.passphraseError() : ''}
-                fullWidth={true}
-                inputRef={ref => (this.passphraseRef = ref)}
-              />
-            </Grid>
+          ) : (
+            <TextField
+              key="passphrase"
+              type="password"
+              label={
+                <FormattedMessage
+                  id="confirm-tx-enter-secrets-footer.passphrase-input-label"
+                  description="Label for 2nd passphrase text field."
+                  defaultMessage="Second passphrase"
+                />
+              }
+              autoFocus={true}
+              value={passphrase}
+              onChange={this.handlePassphraseChange}
+              onBlur={this.handlePassphraseBlur}
+              error={passphraseInvalid}
+              helperText={passphraseInvalid ? this.passphraseError() : ''}
+              fullWidth={true}
+              inputRef={ref => (this.passphraseRef = ref)}
+            />
           )}
+        </Grid>
         <Grid item={true} xs={12}>
           <Button type="submit" fullWidth={true}>
             <FormattedMessage
