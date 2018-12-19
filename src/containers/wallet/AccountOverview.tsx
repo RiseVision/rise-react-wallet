@@ -1,4 +1,5 @@
 import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import {
   createStyles,
   Theme,
@@ -70,7 +71,10 @@ const styles = (theme: Theme) =>
       marginBottom: theme.spacing.unit,
       ['&:first-child']: {
         marginTop: 0
-      }
+      },
+      ...theme.typography.body2,
+      color: theme.palette.text.secondary,
+      fontWeight: 500,
     },
     loadMore: {
       textAlign: 'center',
@@ -258,9 +262,9 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                 id: this.account.id
               }}
             >
-              <Button variant="fab" className={classes.fab} color="secondary">
+              <Fab classes={{ root: classes.fab }} color="secondary">
                 <SendIcon />
-              </Button>
+              </Fab>
             </Link>
           </Tooltip>
         )}
@@ -279,11 +283,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
           {toPairs(recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
               <React.Fragment key={`${this.account.id}-${group}`}>
-                <Typography
-                  className={classes.dateGroupTitle}
-                  variant="body2"
-                  color="textSecondary"
-                >
+                <Typography className={classes.dateGroupTitle}>
                   {group}
                 </Typography>
                 <div>

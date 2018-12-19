@@ -1,4 +1,4 @@
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import {
@@ -104,6 +104,7 @@ const styles = (theme: Theme) => {
     },
     emptyTitle: {
       marginBottom: 1 * theme.spacing.unit,
+      fontWeight: 500,
     },
     emptyText: {
     },
@@ -207,9 +208,9 @@ class AddressBook extends React.Component<DecoratedProps> {
           title={intl.formatMessage(messages.newContactFabTooltip)}
         >
           <Link route={addressBookCreateRoute}>
-            <Button variant="fab" className={classes.fab} color="secondary">
+            <Fab classes={{ root: classes.fab }} color="secondary">
               <PersonAddIcon />
-            </Button>
+            </Fab>
           </Link>
         </Tooltip>
         {contacts.length > 0 ? (

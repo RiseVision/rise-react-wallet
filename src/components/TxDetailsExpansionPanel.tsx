@@ -70,6 +70,10 @@ const styles = (theme: Theme) => {
       marginRight: 2 * theme.spacing.unit,
       wordBreak: 'break-word'
     },
+    summaryAmount: {
+      ...theme.typography.body2,
+      fontWeight: 500,
+    },
     summaryIncomingAmount: {
       color: green[800]
     },
@@ -105,6 +109,7 @@ const styles = (theme: Theme) => {
     },
     detailsRowLabel: {
       ...theme.typography.body2,
+      fontWeight: 500,
       order: 1,
       lineHeight: '28px',
       [theme.breakpoints.down('xs')]: {
@@ -832,18 +837,16 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
           </Typography>
           <div>
             <Typography
-              className={classNames(classes.longText, {
+              className={classNames(classes.summaryAmount, classes.longText, {
                 [classes.summaryIncomingAmount]: amount.gt(RawAmount.ZERO)
               })}
-              variant="body2"
             >
               {amountLong}
             </Typography>
             <Typography
-              className={classNames(classes.shortText, {
+              className={classNames(classes.summaryAmount, classes.shortText, {
                 [classes.summaryIncomingAmount]: amount.gt(RawAmount.ZERO)
               })}
-              variant="body2"
               aria-label={amountLong}
             >
               {/* Use the long summary instead of short one for screen readers */}

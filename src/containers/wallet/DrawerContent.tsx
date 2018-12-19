@@ -171,7 +171,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
       <React.Fragment>
         <Typography
           className={classNames(classes.toolbar, classes.header)}
-          variant="title"
+          variant="h6"
           noWrap={true}
           align="center"
         >

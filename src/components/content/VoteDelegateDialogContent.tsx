@@ -33,7 +33,12 @@ const styles = (theme: Theme) =>
     content: {
       padding: theme.spacing.unit * 2,
       textAlign: 'center'
-    }
+    },
+    searchTitle: {
+      ...theme.typography.body2,
+      color: theme.palette.text.secondary,
+      fontWeight: 500,
+    },
   });
 
 const stylesDecorator = withStyles(styles, {
@@ -178,8 +183,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
             </Grid>
             <Grid item={true} xs={12}>
               <Typography
-                variant="body2"
-                color="textSecondary"
+                className={classes.searchTitle}
                 align="left"
                 component="p"
               >

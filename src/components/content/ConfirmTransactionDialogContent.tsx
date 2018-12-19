@@ -98,7 +98,8 @@ const styles = (theme: Theme) =>
       textAlign: 'right'
     },
     accountAlias: {
-      ...theme.typography.body2
+      ...theme.typography.body2,
+      fontWeight: 500,
     },
     accountAddress: {},
     txDetails: {

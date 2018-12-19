@@ -108,7 +108,7 @@ class ModalPaperHeader extends React.Component<DecoratedProps> {
             !showBack && showClose && classes.withoutBack,
             showBack && !showClose && classes.withoutClose
           )}
-          variant="headline"
+          variant="h5"
           align="center"
         >
           {children}

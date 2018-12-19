@@ -75,7 +75,7 @@ const styles = (theme: Theme) => {
       }
     },
     primary_text: {
-      ...theme.typography.subheading,
+      ...theme.typography.subtitle1,
       color: theme.palette.text.primary
     },
     secondary_text: {

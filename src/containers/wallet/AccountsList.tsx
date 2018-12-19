@@ -1,5 +1,5 @@
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -150,9 +150,9 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
           title={intl.formatMessage(messages.addAccountTooltip)}
         >
           <Link route={onboardingAddAccountRoute}>
-            <Button variant="fab" className={classes.fab} color="secondary">
+            <Fab classes={{ root: classes.fab }} color="secondary">
               <AddIcon />
-            </Button>
+            </Fab>
           </Link>
         </Tooltip>
       </div>

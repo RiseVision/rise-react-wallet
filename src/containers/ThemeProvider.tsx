@@ -14,13 +14,16 @@ const theme = createMuiTheme({
       contrastText: '#fff'
     }
   },
+  typography: {
+    useNextVariants: true,
+  },
   overrides: {
     MuiAppBar: {
       colorDefault: {
         backgroundColor: '#eee'
       }
     }
-  }
+  },
 });
 
 interface Props {

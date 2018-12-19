@@ -42,14 +42,15 @@ const styles = (theme: Theme) =>
       textAlign: 'left'
     },
     delegateName: {
-      ...theme.typography.body2
+      ...theme.typography.body2,
+      fontWeight: 500,
     },
     delegateAddress: {},
     delegateStats: {
       margin: 0,
       padding: 0,
       listStyleType: 'none',
-      ...theme.typography.body1,
+      ...theme.typography.body2,
       display: 'flex',
       flexDirection: 'row',
       '& > *': {

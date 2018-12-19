@@ -235,7 +235,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
             <Grid item={true} xs={12} aria-hidden={true}>
               <Typography
                 component="p"
-                variant="title"
+                variant="h6"
                 className={classes.mnemonic}
               >
                 {words.map((state, idx) => (
