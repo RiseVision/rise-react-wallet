@@ -10,18 +10,19 @@
   "license": "GPL-3.0-only",
   "homepage": "https://wallet.rise.vision",
   "dependencies": {
-    "dotenv": "^6.2.0"
+    "dotenv": "^6.2.0",
+    "carlo": "^0.9.43"
   },
   "scripts": {
     "build": "tsc",
-    "prestuff": "rm -rf build; cp -Rf ../build build; tsc",
+    "prepare": "rm -rf build; cp -Rf ../build build; tsc",
     "set-env": "echo RELEASE=$1 > .env",
-    "bundle:testnet": "yarn set-env testnet; pkg .",
-    "bundle:mainnet": "yarn set-env mainnet; pkg .",
-    "bundle": "yarn prestuff && yarn build && yarn bundle:mainnet"
+    "dist:testnet": "yarn set-env testnet; pkg . --out-path=dist",
+    "dist:mainnet": "yarn set-env mainnet; pkg . --out-path=dist",
+    "dist": "yarn prepare && yarn build && yarn dist:mainnet",
+    "start": "yarn set-env testnet; yarn prepare; node src/main.js"
   },
   "devDependencies": {
-    "carlo": "^0.9.43",
     "pkg": "^4.3.5",
     "typescript": "^3.2.2"
   },
