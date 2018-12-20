@@ -76,8 +76,15 @@ describe('TransactionsStore', () => {
   });
 
   it('loadMore', async () => {
+    // TODO generate transactions with current dates
+    const txs = parseTransactionsReponse(
+      // @ts-ignore mocked wallet
+      wallet,
+      id,
+      serverTransactionsConfirmed
+    );
     // @ts-ignore sinon stub
-    wallet.fetchTransactions.returns(serverTransactionsConfirmed);
+    wallet.fetchTransactions.returns(txs);
     await store.loadMore();
     // @ts-ignore sinon stub
     expect(wallet.fetchTransactions.calledWith(id, 16));
