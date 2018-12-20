@@ -1,6 +1,12 @@
 {
     "defaultSeverity": "warning",
     "extends": "./node_modules/tslint-react/tslint-react.json",
+    "linterOptions": {
+        "exclude": [
+            "./src/package.json",
+            "./src/config.json"
+        ]
+    },
     "rules": {
         "align": [
             true,

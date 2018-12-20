@@ -19,8 +19,7 @@ import Dialog from '../../components/Dialog';
 import SignOutDialogContent from '../../components/content/SignOutDialogContent';
 import { onboardingAddAccountRoute } from '../../routes';
 import WalletStore from '../../stores/wallet';
-// @ts-ignore
-import { version } from '../../../package.json';
+import { version } from '../../package.json';
 
 const drawerWidth = 280;
 

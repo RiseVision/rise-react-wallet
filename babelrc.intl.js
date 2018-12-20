@@ -3,7 +3,7 @@
   "plugins": [
     "syntax-dynamic-import",
     ["react-intl", {
-      "messagesDir": "./tmp/messages/"
+      "messagesDir": "./tmp/intl/messages/"
     }]
   ]
 }

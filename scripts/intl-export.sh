@@ -10,7 +10,7 @@ dups=$(jq -sr '[.[][]]
   | map(select(.messages | length > 1))
   | map("  - \(.id)")
   | join("\n")
-' $(find tmp/messages/ -iname "*.json"))
+' $(find tmp/intl/messages/ -iname "*.json"))
 if [ ! -z "$dups" ]; then
   echo "Error: Found duplicate IDs"
   echo "$dups"
@@ -18,11 +18,11 @@ if [ ! -z "$dups" ]; then
 fi
 
 # Generate the messages file to be translated
-output="tmp/messages.json"
+output="tmp/intl/messages.json"
 jq -s 'reduce .[][] as $i ({};
   "\($i.defaultMessage) | \($i.description)" as $id
   | .[$id] = {
     message: $i.defaultMessage,
     description: $i.description
   }
-)' $(find tmp/messages/ -iname "*.json") > $output
+)' $(find tmp/intl/messages/ -iname "*.json") > $output

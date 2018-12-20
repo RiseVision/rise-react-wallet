@@ -7,16 +7,16 @@ if [ ! -f "$archive" ]; then
 fi
 
 # Generate locale "template" file
-template="tmp/messages-template.json"
+template="tmp/intl/messages-template.json"
 jq -s 'reduce .[][] as $i ({};
   .[$i.id] = "\($i.defaultMessage) | \($i.description)"
-)' $(find tmp/messages/ -iname "*.json") > $template
+)' $(find tmp/intl/messages/ -iname "*.json") > $template
 
 # Find translated data files from the zip file
 unzip -Z1 $archive messages/*.json | while read -r path; do
   file=$(basename -- "$path")
   country=${file%.*}
-  translations="tmp/messages.$country.json"
+  translations="tmp/intl/messages.$country.json"
   output="src/translations/locales/$country.json"
 
   echo "Importing $path to $output"

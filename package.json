@@ -57,14 +57,14 @@
     "test-cypress": "cypress run",
     "test-cypress:record": "cypress run --record",
     "test-unit": "jest",
-    "test-unit:prepare": "rm -rf tmp/transpiled/; tsc --module commonjs --target es2017",
-    "test-unit:prepare-watch": "rm -rf tmp/transpiled/; tsc --watch --module commonjs --target es2017",
+    "test-unit:prepare": "rm -rf tmp/unit-test/; tsc --project tsconfig.test.json",
+    "test-unit:prepare-watch": "rm -rf tmp/unit-test/; tsc --watch --project tsconfig.test.json",
     "eject": "react-scripts-ts eject",
     "release": "yarn build && rm -f release.zip && cd build && zip -r ../release.zip *",
-    "intl:prepare": "rm -rf tmp/transpiled/ tmp/messages/; tsc --jsx preserve && babel tmp/transpiled/ -o tmp/transpiled-bundle.js",
+    "intl:prepare": "rm -rf tmp/intl/; tsc --project tsconfig.intl.json && cp babelrc.intl.js tmp/intl/.babelrc && babel tmp/intl/transpiled/ -o tmp/intl/transpiled-bundle.js",
     "intl:export": "bash scripts/intl-export.sh",
     "intl:import": "bash scripts/intl-import.sh",
-    "tsc": "tsc --project tsconfig.prod.json --noEmit",
+    "tsc": "tsc --project tsconfig.prod.json",
     "tslint": "tslint --fix --project tslint.prod.json 'src/**/*.{ts,tsx}'",
     "precommit": "npm run tsc && npm run prettier && npm run tslint && npm run test-unit:prepare && npm run test-unit",
     "prettier": "prettier src/**.{ts,tsx} --write",
@@ -109,8 +109,8 @@
   "jest": {
     "verbose": true,
     "testMatch": [
-      "<rootDir>/tmp/transpiled/**/__tests__/**/*.js?(x)",
-      "<rootDir>/tmp/transpiled/**/?(*.)+(spec|test).js?(x)"
+      "<rootDir>/tmp/unit-test/transpiled/**/__tests__/**/*.js?(x)",
+      "<rootDir>/tmp/unit-test/transpiled/**/?(*.)+(spec|test).js?(x)"
     ],
     "testEnvironment": "jsdom",
     "setupFiles": [

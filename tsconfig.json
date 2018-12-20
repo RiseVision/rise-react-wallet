@@ -1,10 +1,13 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "tmp/transpiled/",
     "module": "esnext",
     "target": "es5",
-    "lib": ["es6", "dom", "es7", "es2017.object"],
+    "lib": [
+      "es6",
+      "dom",
+      "es7",
+      "es2017.object"
+    ],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
@@ -20,18 +23,19 @@
     "noUnusedLocals": true,
     "preserveConstEnums": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": false,
+    "strict": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
   },
   "exclude": [
-    "node_modules",
-    "tmp",
-    "cypress",
-    "desktop",
-    "build",
-    "scripts",
-    "acceptance-tests",
-    "webpack",
-    "jest",
-    "src/setupTests.ts"
+    "src/setupTests.ts",
+    "src/serve.js"
+  ],
+  "include": [
+    "src"
   ]
 }

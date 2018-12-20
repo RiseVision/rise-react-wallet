@@ -1,6 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs"
+    "target": "es2017",
+    "module": "commonjs",
+    "noEmit": false,
+    "outDir": "tmp/unit-test/transpiled/"
   }
 }
