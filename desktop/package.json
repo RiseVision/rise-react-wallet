@@ -17,9 +17,9 @@
     "build": "tsc",
     "prepare": "rm -rf build; cp -Rf ../build build; tsc",
     "set-env": "echo RELEASE=$1 > .env",
-    "dist:testnet": "yarn set-env testnet; pkg . --out-path=dist",
-    "dist:mainnet": "yarn set-env mainnet; pkg . --out-path=dist",
-    "dist": "yarn prepare && yarn build && yarn dist:mainnet",
+    "release:testnet": "yarn set-env testnet; pkg . --out-path=dist",
+    "release:mainnet": "yarn set-env mainnet; pkg . --out-path=dist",
+    "release": "yarn prepare && yarn build && yarn release:mainnet",
     "start": "yarn set-env testnet; yarn prepare; node src/main.js"
   },
   "devDependencies": {
