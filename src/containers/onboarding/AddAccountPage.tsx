@@ -15,7 +15,8 @@ import {
   onboardingExistingAccountRoute,
   onboardingLedgerAccount,
   onboardingSecurityNoticeRoute,
-  accountOverviewNoIDRoute
+  accountOverviewNoIDRoute,
+  onboardingChooseNetworkRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
 import LedgerStore from '../../stores/ledger';
@@ -70,7 +71,7 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  }
+  };
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
@@ -179,6 +180,24 @@ class AddAccountPage extends React.Component<Props> {
           </Link>
           <Link
             route={onboardingChooseLanguageRoute}
+            onBeforeNavigate={this.handleBeforeNavigate}
+          >
+            <ListItem button={true}>
+              <FlagIcon
+                countryCode={getMainCountryForLocale(langStore.locale)}
+              />
+              <ListItemText>
+                <FormattedMessage
+                  id="onboarding-add-account.change-language"
+                  description="Change language button label"
+                  defaultMessage="Change language"
+                />
+              </ListItemText>
+              <ChevronRight />
+            </ListItem>
+          </Link>
+          <Link
+            route={onboardingChooseNetworkRoute}
             onBeforeNavigate={this.handleBeforeNavigate}
           >
             <ListItem button={true}>

@@ -63,6 +63,22 @@ export const onboardingChooseLanguageRoute = new Route<RootStore>({
   )
 });
 
+export const onboardingChooseNetworkRoute = new Route<RootStore>({
+  path: '/onboarding/choose-network',
+  component: (
+    <AsyncComponent
+      name="./containers/onboarding"
+      resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.ChooseNetworkPage />
+        </components.Onboarding>
+      )}
+    />
+  )
+});
+
 export const onboardingExistingAccountRoute = new Route<RootStore>({
   path: '/onboarding/existing-account',
   component: (

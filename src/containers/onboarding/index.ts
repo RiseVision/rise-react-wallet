@@ -10,6 +10,7 @@ import NoMnemonicNoticePage from './NoMnemonicNoticePage';
 import Onboarding from './Onboarding';
 import SecurityNoticePage from './SecurityNoticePage';
 import VerifyMnemonicPage from './VerifyMnemonicPage';
+import ChooseNetworkPage from './ChooseNetworkPage';
 
 export {
   Onboarding,
@@ -23,5 +24,6 @@ export {
   AddAccountPage,
   AccountCreatedPage,
   MnemonicAccountPage,
-  LedgerAccountPage
+  LedgerAccountPage,
+  ChooseNetworkPage
 };
