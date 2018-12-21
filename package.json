@@ -69,7 +69,8 @@
     "precommit": "npm run tsc && npm run prettier && npm run tslint && npm run test-unit:prepare && npm run test-unit",
     "prettier": "prettier src/**.{ts,tsx} --write",
     "serve": "node src/serve.js & local-ssl-proxy --source 3000 --target 5000",
-    "encrypt-fixtures": "travis encrypt-file cypress/fixtures/accounts.json cypress/fixtures/accounts.json.enc --add"
+    "encrypt-fixtures": "travis encrypt-file cypress/fixtures/accounts.json cypress/fixtures/accounts.json.enc --add",
+    "release:desktop": "yarn build; cd desktop && yarn release"
   },
   "pre-commit": [
     "precommit"
