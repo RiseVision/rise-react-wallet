@@ -22,5 +22,5 @@
     "noEmit": true
   },
   "exclude": ["src/setupTests.ts", "src/serve.js"],
-  "include": ["src/**/*.{ts,tsx}"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
