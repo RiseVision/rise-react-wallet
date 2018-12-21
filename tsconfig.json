@@ -3,25 +3,14 @@
     "baseUrl": ".",
     "module": "esnext",
     "target": "es5",
-    "lib": [
-      "es6",
-      "dom",
-      "es7",
-      "es2017.object"
-    ],
+    "lib": ["es6", "dom", "es7", "es2017.object"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
     "moduleResolution": "node",
-    "rootDir": "src",
     "downlevelIteration": true,
     "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": true,
     "preserveConstEnums": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
@@ -32,11 +21,6 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "exclude": [
-    "src/setupTests.ts",
-    "src/serve.js"
-  ],
-  "include": [
-    "src"
-  ]
+  "exclude": ["src/setupTests.ts", "src/serve.js"],
+  "include": ["src/**/*.{ts,tsx}"]
 }
