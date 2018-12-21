@@ -3,7 +3,7 @@
     "extends": "./node_modules/tslint-react/tslint-react.json",
     "linterOptions": {
         "exclude": [
-            "./src/package.json",
+            "./package.json",
             "./src/config.json"
         ]
     },
