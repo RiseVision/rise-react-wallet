@@ -71,11 +71,30 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  };
+  }
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
     const showClose = [...walletStore.accounts.keys()].length > 0;
+    let network;
+
+    switch (walletStore.getNetwork()) {
+      case 'mainnet':
+        network = 'Main Net';
+        break;
+      case 'testnet':
+        network = 'Test Net';
+        break;
+      case 'custom':
+        network = (
+          <FormattedMessage
+            id="onboarding-add-account.custom-network"
+            description="Label for a custom network"
+            defaultMessage="Custom"
+          />
+        );
+        break;
+    }
 
     return (
       <ModalPaper open={true}>
@@ -201,14 +220,12 @@ class AddAccountPage extends React.Component<Props> {
             onBeforeNavigate={this.handleBeforeNavigate}
           >
             <ListItem button={true}>
-              <FlagIcon
-                countryCode={getMainCountryForLocale(langStore.locale)}
-              />
               <ListItemText>
                 <FormattedMessage
                   id="onboarding-add-account.change-language"
                   description="Change language button label"
-                  defaultMessage="Change language"
+                  defaultMessage="Network: {name}"
+                  values={{ name: network }}
                 />
               </ListItemText>
               <ChevronRight />

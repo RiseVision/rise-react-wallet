@@ -108,12 +108,5 @@ export function isMainnet(domain?: string): boolean {
   if (location && domain && location.hostname.startsWith(`wallet.${domain}`)) {
     return true;
   }
-  // carlo (desktop) env
-  if (
-    typeof window.riseRelease !== 'undefined' &&
-    window.riseRelease === 'mainnet'
-  ) {
-    return true;
-  }
   return false;
 }

@@ -1,4 +1,3 @@
-import { RadioGroup } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Radio from '@material-ui/core/es/Radio';
 import TextField from '@material-ui/core/es/TextField';
@@ -10,11 +9,12 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import * as lstore from 'store';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute } from '../../routes';
-import LangStore from '../../stores/lang';
-import { Locale } from '../../utils/i18n';
+import WalletStore, { NetworkType } from '../../stores/wallet';
+import { isMainnet } from '../../utils/utils';
 
 const styles = createStyles({
   languageList: {
@@ -28,35 +28,91 @@ const styles = createStyles({
 interface Props extends WithStyles<typeof styles> {}
 
 interface PropsInjected extends Props {
-  langStore: LangStore;
+  walletStore: WalletStore;
   routerStore: RouterStore;
+}
+
+interface State {
+  network: NetworkType;
+  url?: string;
+  urlError?: boolean;
 }
 
 const stylesDecorator = withStyles(styles, {
   name: 'OnboardingChooseLanguagePage'
 });
 
-@inject('langStore')
+@inject('walletStore')
 @inject('routerStore')
 @observer
-class ChooseLanguagePage extends React.Component<Props> {
+class ChooseNetworkPage extends React.Component<Props, State> {
+  state: State = {
+    network: 'mainnet'
+  };
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
   }
 
-  handleLanguageClicked = async (locale: Locale) => {
-    const { routerStore, langStore } = this.injected;
-    await langStore.changeLanguage(locale);
+  constructor(props: Props) {
+    super(props);
+    const { walletStore } = this.injected;
+    const { type = null, url = null } = lstore.get('network') || {};
+    // set from settings
+    if (type) {
+      this.state = {
+        network: type,
+        url
+      };
+    } else {
+      // auto detect
+      this.state.network = isMainnet(walletStore.config.domain)
+        ? 'mainnet'
+        : 'testnet';
+    }
+  }
+
+  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ network: event.target.value as NetworkType });
+  }
+
+  handleSetNetwork = (network: NetworkType) => () => {
+    this.setState({ network });
+  }
+
+  handleCustomURL = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      url: event.target.value,
+      urlError: false
+    });
+  }
+
+  handleSubmit = async () => {
+    const { routerStore, walletStore } = this.injected;
+    const { url, network } = this.state;
+    // TODO verify the address
+    // if (network === 'custom') {
+    //   try {
+    //     const nethash = await walletStore.checkNodesNethash(url);
+    //     if (!nethash) {
+    //       throw new Error();
+    //     }
+    //   } catch {
+    //     this.setState({
+    //       urlError: true
+    //     });
+    //   }
+    // }
+    walletStore.setNetwork(network, url);
     routerStore.goTo(onboardingAddAccountRoute);
-  };
+  }
 
   render() {
-    // const { classes } = this.injected;
+    const { network, url, urlError } = this.state;
 
     return (
       <ModalPaper open={true}>
-        <form>
+        <form onSubmit={this.handleSubmit}>
           <ModalPaperHeader>
             <FormattedMessage
               id="onboarding-choose-network.title"
@@ -64,45 +120,74 @@ class ChooseLanguagePage extends React.Component<Props> {
               defaultMessage="Choose network"
             />
           </ModalPaperHeader>
-          <RadioGroup
-            aria-label="Network"
-            /*
-              className={classes.group}
-              value={this.state.value}
-              onChange={this.handleChange}
-            */
-          >
-            <List>
-              <ListItem button={true}>
-                <ListItemText>
-                  <Radio name="network" /> Main Net
-                </ListItemText>
-              </ListItem>
-              <ListItem button={true}>
-                <ListItemText>
-                  <Radio name="network" /> Test Net
-                </ListItemText>
-              </ListItem>
-              <ListItem button={true}>
-                <ListItemText>
-                  <Radio name="network" /> <TextField label="Custom node" />
-                </ListItemText>
-              </ListItem>
-              <ListItem>
-                <Button type="submit" fullWidth={true}>
-                  <FormattedMessage
-                    id="send-coins-dialog-content.send-button"
-                    description="Send button label"
-                    defaultMessage="Set network"
-                  />
-                </Button>
-              </ListItem>
-            </List>
-          </RadioGroup>
+          <List>
+            <ListItem button={true} onClick={this.handleSetNetwork('mainnet')}>
+              <ListItemText>
+                <Radio
+                  name="network"
+                  value="mainnet"
+                  onChange={this.handleChange}
+                  checked={network === 'mainnet'}
+                />{' '}
+                Main Net
+              </ListItemText>
+            </ListItem>
+            <ListItem button={true} onClick={this.handleSetNetwork('testnet')}>
+              <ListItemText>
+                <Radio
+                  name="network"
+                  value="testnet"
+                  onChange={this.handleChange}
+                  checked={network === 'testnet'}
+                />{' '}
+                Test Net
+              </ListItemText>
+            </ListItem>
+            <ListItem button={true}>
+              <ListItemText onClick={this.handleSetNetwork('custom')}>
+                <Radio
+                  name="network"
+                  value="custom"
+                  onChange={this.handleChange}
+                  checked={network === 'custom'}
+                />{' '}
+                <TextField
+                  onFocus={this.handleSetNetwork('custom')}
+                  label={
+                    this.state.urlError ? (
+                      <FormattedMessage
+                        id="choose-network.url-error"
+                        description="Custom URL text field error"
+                        defaultMessage="Wrong URL"
+                      />
+                    ) : (
+                      <FormattedMessage
+                        id="choose-network.custom-url"
+                        description="Custom URL text field label"
+                        defaultMessage="Custom URL"
+                      />
+                    )
+                  }
+                  onChange={this.handleCustomURL}
+                  error={urlError}
+                  value={url}
+                />
+              </ListItemText>
+            </ListItem>
+            <ListItem>
+              <Button type="submit" fullWidth={true}>
+                <FormattedMessage
+                  id="choose-network.submit-button"
+                  description="Set network submit button"
+                  defaultMessage="Set network"
+                />
+              </Button>
+            </ListItem>
+          </List>
         </form>
       </ModalPaper>
     );
   }
 }
 
-export default stylesDecorator(ChooseLanguagePage);
+export default stylesDecorator(ChooseNetworkPage);

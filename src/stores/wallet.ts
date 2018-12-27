@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import { Moment } from 'moment';
 import * as moment from 'moment';
-import { Delegate, rise as dposAPI, TransactionType } from 'risejs';
+import { Delegate, rise as dposAPI, TransactionType, APIWrapper } from 'risejs';
 import {
   RiseTransaction as GenericRiseTransaction,
   PostableRiseTransaction as GenericPostableRiseTransaction,
@@ -27,7 +27,8 @@ import { RawAmount } from '../utils/amounts';
 import {
   normalizeAddress,
   TAddressRecord,
-  TAddressSource, isMainnet
+  TAddressSource,
+  isMainnet
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
@@ -37,6 +38,8 @@ import * as queryString from 'query-string';
 import { Transaction } from './transactions';
 import { As } from 'type-tagger';
 import * as io from 'socket.io-client';
+
+export type NetworkType = 'mainnet' | 'testnet' | 'custom';
 
 // TODO move to /utils/utils.ts
 // TODO proper type instead of any
@@ -48,7 +51,7 @@ export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<
 >;
 
 export default class WalletStore {
-  dposAPI: typeof dposAPI;
+  dposAPI: APIWrapper;
   delegateCache: DelegateCache;
   io: SocketIOClient.Socket;
 
@@ -79,10 +82,21 @@ export default class WalletStore {
    * - anything else goes to testnet
    */
   get nodeAddress() {
-    if (isMainnet(this.config.domain)) {
-      return this.config.api_url;
+    const { url = null } = lstore.get('network') || {};
+    switch (this.getNetwork()) {
+      case 'mainnet':
+        return this.config.api_url;
+      case 'testnet':
+        return this.config.api_url_testnet;
+      case 'custom':
+        return url;
+      default:
+        // auto detect based on the domain name
+        if (isMainnet(this.config.domain)) {
+          return this.config.api_url;
+        }
+        return this.config.api_url_testnet;
     }
-    return this.config.api_url_testnet;
   }
 
   constructor(
@@ -92,8 +106,7 @@ export default class WalletStore {
     public lang: LangStore
   ) {
     this.config = config;
-    dposAPI.nodeAddress = this.nodeAddress;
-    this.dposAPI = dposAPI;
+    this.dposAPI = dposAPI.newWrapper(this.nodeAddress);
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
     const accounts = this.storedAccounts();
@@ -120,6 +133,24 @@ export default class WalletStore {
     this.connectSocket();
     // pass async
     this.fetchFiatData();
+  }
+
+  setNetwork(type: NetworkType, url?: string) {
+    lstore.set('network', { type, url });
+  }
+
+  getNetwork(): NetworkType {
+    const { type = null } = lstore.get('network') || {};
+    switch (type as NetworkType) {
+      case null:
+        // auto detect based on the domain name
+        if (isMainnet(this.config.domain)) {
+          return 'mainnet';
+        }
+        return 'testnet';
+      default:
+        return type;
+    }
   }
 
   connectSocket() {
@@ -175,6 +206,12 @@ export default class WalletStore {
         this.fees.set(fee as TFeeTypes, new RawAmount(value));
       }
     });
+  }
+
+  // TODO use fetch directly
+  async checkNodesNethash(url: string) {
+    const wrapper = dposAPI.newWrapper(url);
+    return await wrapper.blocks.getNethash();
   }
 
   /**
@@ -719,6 +756,7 @@ export default class WalletStore {
 
   @action
   signout() {
+    lstore.remove('network');
     lstore.remove('accounts');
     lstore.remove('lastSelectedAccount');
     lstore.remove('contacts');
@@ -869,7 +907,7 @@ class DelegateCache {
         };
   } = {};
 
-  constructor(private api: typeof dposAPI) {}
+  constructor(private api: APIWrapper) {}
 
   // TODO `opts.reload` -> `force`
   async get(
