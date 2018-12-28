@@ -7,6 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
+import { FormEvent } from 'react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import * as lstore from 'store';
@@ -74,38 +75,44 @@ class ChooseNetworkPage extends React.Component<Props, State> {
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ network: event.target.value as NetworkType });
-  }
+  };
 
   handleSetNetwork = (network: NetworkType) => () => {
     this.setState({ network });
-  }
+  };
 
   handleCustomURL = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       url: event.target.value,
       urlError: false
     });
-  }
+  };
 
-  handleSubmit = async () => {
+  handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     const { routerStore, walletStore } = this.injected;
     const { url, network } = this.state;
-    // TODO verify the address
-    // if (network === 'custom') {
-    //   try {
-    //     const nethash = await walletStore.checkNodesNethash(url);
-    //     if (!nethash) {
-    //       throw new Error();
-    //     }
-    //   } catch {
-    //     this.setState({
-    //       urlError: true
-    //     });
-    //   }
-    // }
-    walletStore.setNetwork(network, url);
-    routerStore.goTo(onboardingAddAccountRoute);
-  }
+    let error = false;
+    if (network === 'custom') {
+      try {
+        const nethash = await walletStore.checkNodesNethash(url);
+        if (!nethash) {
+          throw new Error();
+        }
+      } catch {
+        error = true;
+      }
+    }
+    if (error) {
+      this.setState({
+        urlError: true
+      });
+    } else {
+      walletStore.setNetwork(network, url);
+      routerStore.goTo(onboardingAddAccountRoute);
+    }
+  };
 
   render() {
     const { network, url, urlError } = this.state;

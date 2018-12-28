@@ -217,10 +217,10 @@ export default class WalletStore {
     });
   }
 
-  // TODO use fetch directly
-  async checkNodesNethash(url: string) {
-    const wrapper = dposAPI.newWrapper(url);
-    return await wrapper.blocks.getNethash();
+  async checkNodesNethash(nodeURL: string) {
+    const url = `${nodeURL}/api/blocks/nethash`;
+    const rawRes = await this.fetch(url);
+    return await rawRes.json();
   }
 
   /**
