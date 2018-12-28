@@ -75,30 +75,33 @@ class ChooseNetworkPage extends React.Component<Props, State> {
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ network: event.target.value as NetworkType });
-  };
+  }
 
   handleSetNetwork = (network: NetworkType) => () => {
     this.setState({ network });
-  };
+  }
 
   handleCustomURL = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       url: event.target.value,
       urlError: false
     });
-  };
+  }
 
   handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const { routerStore, walletStore } = this.injected;
-    const { url, network } = this.state;
+    const { url = '', network } = this.state;
     let error = false;
     if (network === 'custom') {
       try {
+        if (!url) {
+          throw new Error('No URL');
+        }
         const nethash = await walletStore.checkNodesNethash(url);
         if (!nethash) {
-          throw new Error();
+          throw new Error('Nethash filed');
         }
       } catch {
         error = true;
@@ -112,7 +115,7 @@ class ChooseNetworkPage extends React.Component<Props, State> {
       walletStore.setNetwork(network, url);
       routerStore.goTo(onboardingAddAccountRoute);
     }
-  };
+  }
 
   render() {
     const { network, url, urlError } = this.state;

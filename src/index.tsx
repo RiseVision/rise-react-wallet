@@ -11,35 +11,24 @@ import * as routes from './routes';
 import { TConfig, TStores } from './stores';
 import RootStore from './stores/root';
 
-let promise = Promise.resolve();
-if (typeof carlo !== 'undefined') {
-  promise = carlo.loadParams().then((loadedParams: any[]) => {
-    window.riseRelease = loadedParams[0];
-  });
-} else {
-  window.riseRelease = null;
-}
+const store = new RootStore((config as any) as TConfig);
+startRouter(routes, store, { strict: false });
 
-promise.then(() => {
-  const store = new RootStore((config as any) as TConfig);
-  startRouter(routes, store, { strict: false });
+const stores: TStores = {
+  store,
+  langStore: store.lang,
+  onboardingStore: store.onboarding,
+  walletStore: store.wallet,
+  routerStore: store.router,
+  addressBookStore: store.addressBook,
+  ledgerStore: store.ledger
+};
 
-  const stores: TStores = {
-    store,
-    langStore: store.lang,
-    onboardingStore: store.onboarding,
-    walletStore: store.wallet,
-    routerStore: store.router,
-    addressBookStore: store.addressBook,
-    ledgerStore: store.ledger
-  };
+const root = (
+  <Provider {...stores}>
+    <App />
+  </Provider>
+);
 
-  const root = (
-    <Provider {...stores}>
-      <App />
-    </Provider>
-  );
-
-  ReactDOM.render(root, document.getElementById('root') as HTMLElement);
-  registerServiceWorker(store);
-});
+ReactDOM.render(root, document.getElementById('root') as HTMLElement);
+registerServiceWorker(store);

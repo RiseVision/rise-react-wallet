@@ -111,6 +111,7 @@ export default class WalletStore {
       return;
     }
     this.reload();
+    observe(this, 'accounts', () => this.connectSocket());
   }
 
   reload() {
@@ -163,6 +164,9 @@ export default class WalletStore {
   }
 
   connectSocket() {
+    if (!this.accounts.size) {
+      return;
+    }
     this.io = io.connect(this.config.api_url);
     // TODO get types from rise-node
     type TTransactionChange = { senderId: string; recipientId: string };
@@ -217,8 +221,8 @@ export default class WalletStore {
     });
   }
 
-  async checkNodesNethash(nodeURL: string) {
-    const url = `${nodeURL}/api/blocks/nethash`;
+  async checkNodesNethash(nodeURL: string): Promise<string> {
+    const url = `${nodeURL}/api/transactions/unconfirmed`;
     const rawRes = await this.fetch(url);
     return await rawRes.json();
   }
@@ -620,7 +624,8 @@ export default class WalletStore {
   selectAccount(id: string) {
     const account = this.accounts.get(id);
     if (!account) {
-      throw new Error('Unknown account');
+      // throw new Error('Unknown account');
+      return;
     }
     if (this.selectedAccount) {
       this.selectedAccount.selected = false;

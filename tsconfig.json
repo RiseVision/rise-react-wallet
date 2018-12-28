@@ -10,7 +10,6 @@
     "moduleResolution": "node",
     "downlevelIteration": true,
     "suppressImplicitAnyIndexErrors": true,
-    "forceConsistentCasingInFileNames": true,
     "preserveConstEnums": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
@@ -19,7 +18,13 @@
     "strict": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true
   },
   "exclude": ["src/setupTests.ts", "src/serve.js"],
   "include": ["src/**/*.ts", "src/**/*.tsx"]

@@ -1,7 +1,7 @@
 {
   "name": "rise-wallet-desktop",
   "description": "Rise Wallet",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.6",
   "author": "rise.vision",
   "engines": {
     "yarn": "^1.10.1"
@@ -10,16 +10,12 @@
   "license": "GPL-3.0-only",
   "homepage": "https://wallet.rise.vision",
   "dependencies": {
-    "dotenv": "^6.2.0",
     "carlo": "^0.9.43"
   },
   "scripts": {
     "build": "tsc",
     "prepare": "rm -rf build; cp -Rf ../build build; tsc",
-    "set-env": "echo RELEASE=$1 > .env",
-    "release:testnet": "yarn set-env testnet; pkg . --out-path=dist",
-    "release:mainnet": "yarn set-env mainnet; pkg . --out-path=dist",
-    "release": "yarn prepare && yarn build && yarn release:mainnet",
+    "release": "yarn prepare && yarn build && pkg . --out-path=dist",
     "start": "yarn set-env testnet; yarn prepare; node src/main.js"
   },
   "devDependencies": {

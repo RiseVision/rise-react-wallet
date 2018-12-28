@@ -108,5 +108,9 @@ export function isMainnet(domain?: string): boolean {
   if (location && domain && location.hostname.startsWith(`wallet.${domain}`)) {
     return true;
   }
+  // carlo (desktop) env
+  if (typeof carlo !== 'undefined') {
+    return true;
+  }
   return false;
 }
