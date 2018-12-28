@@ -106,17 +106,25 @@ export default class WalletStore {
     public lang: LangStore
   ) {
     this.config = config;
-    this.dposAPI = dposAPI.newWrapper(this.nodeAddress);
-    // tslint:disable-next-line:no-use-before-declare
-    this.delegateCache = new DelegateCache(this.dposAPI);
-    const accounts = this.storedAccounts();
-    if (!accounts.length) {
+    if (!this.storedAccounts().length) {
       router.goTo(onboardingAddAccountRoute);
       return;
     }
+    this.reload();
+  }
+
+  reload() {
+    // dispose
+    if (this.io) {
+      this.io.disconnect();
+    }
+    // init the API
+    this.dposAPI = dposAPI.newWrapper(this.nodeAddress);
+    // tslint:disable-next-line:no-use-before-declare
+    this.delegateCache = new DelegateCache(this.dposAPI);
     const lastSelectedID = lstore.get('lastSelectedAccount');
     // login all stored accounts
-    for (const account of accounts) {
+    for (const account of this.storedAccounts()) {
       // login and merge-in local data
       this.login(account.id, account);
     }
@@ -137,6 +145,7 @@ export default class WalletStore {
 
   setNetwork(type: NetworkType, url?: string) {
     lstore.set('network', { type, url });
+    this.reload();
   }
 
   getNetwork(): NetworkType {
