@@ -645,3 +645,11 @@ export const homeRoute = new Route<RootStore>({
     }
   }
 });
+
+// add an alias for `/` to make a direct filesystem work
+export const fileRoute = new Route<RootStore>({
+  path: '/index.html',
+  onEnter: (route: Route<RootStore>, params: {}, store: RootStore) => {
+    store.router.goTo(homeRoute);
+  }
+});

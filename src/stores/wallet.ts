@@ -106,15 +106,25 @@ export default class WalletStore {
     public lang: LangStore
   ) {
     this.config = config;
+    this.reload();
+    observe(this, 'accounts', () => this.connect());
+    this.observeSelectedAccount();
     if (!this.storedAccounts().length) {
       router.goTo(onboardingAddAccountRoute);
       return;
     }
-    this.reload();
-    observe(this, 'accounts', () => this.connectSocket());
+  }
+
+  connect() {
+    // pass async
+    this.updateFees();
+    this.connectSocket();
+    // pass async
+    this.fetchFiatData();
   }
 
   reload() {
+    const storedAccount = this.storedAccounts();
     // dispose
     if (this.io) {
       this.io.disconnect();
@@ -123,25 +133,23 @@ export default class WalletStore {
     this.dposAPI = dposAPI.newWrapper(this.nodeAddress);
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
-    const lastSelectedID = lstore.get('lastSelectedAccount');
-    // login all stored accounts
-    for (const account of this.storedAccounts()) {
-      // login and merge-in local data
-      this.login(account.id, account);
+
+    // only when there's added accounts
+    if (storedAccount.length) {
+      const lastSelectedID = lstore.get('lastSelectedAccount');
+      // login all stored accounts
+      for (const account of storedAccount) {
+        // login and merge-in local data
+        this.login(account.id, account);
+      }
+      // select the last selected one
+      if (this.accounts.has(lastSelectedID)) {
+        this.selectAccount(lastSelectedID);
+      } else {
+        // or the first one
+        this.selectAccount([...this.accounts.keys()][0]);
+      }
     }
-    this.observeSelectedAccount();
-    // select the last selected one
-    if (this.accounts.has(lastSelectedID)) {
-      this.selectAccount(lastSelectedID);
-    } else {
-      // or the first one
-      this.selectAccount([...this.accounts.keys()][0]);
-    }
-    // pass async
-    this.updateFees();
-    this.connectSocket();
-    // pass async
-    this.fetchFiatData();
   }
 
   setNetwork(type: NetworkType, url?: string) {
@@ -164,7 +172,7 @@ export default class WalletStore {
   }
 
   connectSocket() {
-    if (!this.accounts.size) {
+    if (!this.accounts.size || this.io) {
       return;
     }
     this.io = io.connect(this.config.api_url);

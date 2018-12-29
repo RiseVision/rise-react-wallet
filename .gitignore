@@ -40,3 +40,5 @@ yarn-error.log*
 /cypress/examples
 /cypress/screenshots
 /cypress/videos
+
+/sync

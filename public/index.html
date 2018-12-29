@@ -6,23 +6,6 @@
           content="user-scalable=0, initial-scale=1, minimum-scale=1, width=device-width, height=device-height">
     <meta name="theme-color" content="#000000">
 
-    <script type="application/javascript">
-      // Renderer process
-      if (
-          typeof window !== 'undefined' &&
-          // @ts-ignore
-          typeof window.process === 'object' &&
-          // @ts-ignore
-          window.process.type === 'renderer'
-      ) {
-        // get the absolute path to local node_modules
-        window.ipcRenderer = require('electron').ipcRenderer
-        const modulesPath = window.ipcRenderer.sendSync('modules-path')
-        // expose require under a different name (CPA's issue)
-        // and with the proper CWD
-        window.electronRequire = (module) => require(modulesPath + module)
-      }
-    </script>
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     <link rel="icon" href="%PUBLIC_URL%/icon-180.png" size="180x180">
