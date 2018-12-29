@@ -16,7 +16,7 @@ interface Props {
 }
 
 interface PropsInjected extends Props {
-  routerStore: RootStore;
+  routerStore: RouterStore;
   langStore: LangStore;
 }
 
