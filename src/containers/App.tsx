@@ -16,13 +16,14 @@ interface Props {
 }
 
 interface PropsInjected extends Props {
-  store: RootStore;
+  routerStore: RootStore;
   langStore: LangStore;
 }
 
 interface State {}
 
 @inject('langStore')
+@inject('routerStore')
 @observer
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -44,10 +45,10 @@ class App extends React.Component<Props, State> {
   }
 
   handlerOpenSendDialog = (e: KeyEvent) => {
-    const { store } = this.injected;
+    const { routerStore } = this.injected;
     e.preventDefault();
     e.stopPropagation();
-    store.router.goTo(accountSendNoIDRoute);
+    routerStore.goTo(accountSendNoIDRoute);
   }
 
   render() {
