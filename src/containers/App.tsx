@@ -1,7 +1,7 @@
 import * as keyboardJS from 'keyboardjs';
 import { KeyEvent } from 'keyboardjs';
 import { inject, observer } from 'mobx-react';
-import { MobxRouter } from 'mobx-router-rise';
+import { MobxRouter, RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
@@ -9,11 +9,9 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import UpdateAvailableSnackbar from '../components/UpdateAvailableSnackbar';
 import { accountSendNoIDRoute } from '../routes';
 import LangStore from '../stores/lang';
-import RootStore from '../stores/root';
 import ThemeProvider from './ThemeProvider';
 
-interface Props {
-}
+interface Props {}
 
 interface PropsInjected extends Props {
   routerStore: RouterStore;
@@ -49,7 +47,7 @@ class App extends React.Component<Props, State> {
     e.preventDefault();
     e.stopPropagation();
     routerStore.goTo(accountSendNoIDRoute);
-  }
+  };
 
   render() {
     let currentError = null;
