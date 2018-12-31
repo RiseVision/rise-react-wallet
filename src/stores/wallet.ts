@@ -1004,7 +1004,8 @@ export function parseAccountReponse(
     ...parsed,
     ...local,
     // always take the public key from the server (ex virgin accounts)
-    ...(parsed.publicKey ? { publicKey: parsed.publicKey } : {})
+    publicKey: parsed.publicKey || (local ? local.publicKey : null),
+    broadcastedPublicKey: parsed.publicKey || null,
   } as TAccount;
 }
 
@@ -1088,6 +1089,7 @@ export type TStoredAccount = {
 };
 
 export type TAccount = TStoredAccount & {
+  broadcastedPublicKey: string | null;
   balance: RawAmount;
   unconfirmedBalance: RawAmount;
   secondPublicKey: string | null;

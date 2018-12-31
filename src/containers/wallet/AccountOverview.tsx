@@ -23,6 +23,7 @@ import CreateContactDialog from './CreateContactDialog';
 import ModifyContactDialog from './ModifyContactDialog';
 import SendCoinsDialog from './SendCoinsDialog';
 import AccountOverviewHeader from '../../components/AccountOverviewHeader';
+import AccountTip from '../../components/AccountTip';
 import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import Link from '../../components/Link';
@@ -31,6 +32,8 @@ import { accountStore } from '../../stores';
 import AccountStore, { AccountType } from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
 import WalletStore from '../../stores/wallet';
+
+const HIGH_VALUE_ACCOUNT_THRESHOLD = RawAmount.fromUnit(1000);
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -51,6 +54,7 @@ const styles = (theme: Theme) =>
       }
     },
     headerInline: {
+      marginBottom: theme.spacing.unit * 2,
       [theme.breakpoints.up('sm')]: {
         display: 'none'
       }
@@ -102,6 +106,22 @@ const messages = defineMessages({
     id: 'wallet-account-overview.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
     defaultMessage: 'Unnamed account'
+  },
+  noPubkeyAccountTip: {
+    id: 'wallet-account-overview.no-pubkey-account-tip',
+    description: 'Tip about increasing the security of the account by making a transaction',
+    defaultMessage:
+      'You should make a transaction (send some RISE or cast a vote) to bind ' +
+      'your public key with this account to incrase the security of your funds.',
+  },
+  highValueAccountTip: {
+    id: 'wallet-account-overview.high-value-account-tip',
+    description: 'Tip about using more secure ways to store RISE for high value accounts',
+    defaultMessage:
+      'You have quite a few RISE in this account. You should consider using a ' +
+      'hardware wallet for added security. If that is not an option, at the very ' +
+      'least you should start using the RISE desktop application instead of the ' +
+      'web app.',
   },
   sendFabTooltip: {
     id: 'wallet-account-overview.send-funds-fab-tooltip',
@@ -277,6 +297,23 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
             key="__header__"
             className={classNames(classes.header, classes.headerInline)}
             {...headerProps}
+          />
+          <AccountTip
+            key="__no_pubkey_tip__"
+            open={
+              this.account.balance.gt(RawAmount.ZERO)
+              && !this.account.broadcastedPublicKey
+            }
+            message={intl.formatMessage(messages.noPubkeyAccountTip)}
+          />
+          <AccountTip
+            key="__high_value_acc_tip__"
+            open={
+              this.account.balance.gt(HIGH_VALUE_ACCOUNT_THRESHOLD)
+              && this.account.type === AccountType.MNEMONIC
+              && typeof carlo === 'undefined'
+            }
+            message={intl.formatMessage(messages.highValueAccountTip)}
           />
           {recentTransactions.items.length === 0 &&
             recentTransactions.isLoading && <LoadingIndicator />}
