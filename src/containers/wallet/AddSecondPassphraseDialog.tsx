@@ -27,7 +27,6 @@ interface PropsInjected extends Props {
 }
 
 interface State extends ICloseInterruptControllerState {
-  formChanged?: boolean;
   step: 'form' | 'transaction';
   transaction: null | {
     passphrase: string;
@@ -52,8 +51,13 @@ class AddSecondPassphraseDialog extends React.Component<Props, State>
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
-    if (!this.state.formChanged) {
-      return false;
+    // @ts-ignore
+    const tagName = ev.currentTarget.tagName;
+    const isButton =
+      tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
+
+    if (this.state.formChanged && !isButton) {
+      return true;
     }
 
     const { navigateBackLink, store } = this.injected;
