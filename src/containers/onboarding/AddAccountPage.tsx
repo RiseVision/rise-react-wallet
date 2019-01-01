@@ -3,6 +3,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import ChevronRight from '@material-ui/icons/ChevronRight';
+import ServerNetworkIcon from 'mdi-material-ui/ServerNetwork';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -23,6 +24,7 @@ import LedgerStore from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
+import { isOfficialWeb } from '../../utils/utils';
 import { LedgerChannel } from '../../utils/ledgerHub';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -30,7 +32,11 @@ const riseIcon = require('../../images/rise_icon.svg');
 const styles = createStyles({
   titleIcon: {
     margin: '-4px 4px'
-  }
+  },
+  nodeIcon: {
+    margin: '0 3px',
+    color: '#999',
+  },
 });
 
 interface Props extends WithStyles<typeof styles> {}
@@ -80,17 +86,29 @@ class AddAccountPage extends React.Component<Props> {
 
     switch (walletStore.getNetwork()) {
       case 'mainnet':
-        network = 'Main Net';
+        network = (
+          <FormattedMessage
+            id="onboarding-add-account.official-main-network"
+            description="Label for a main network"
+            defaultMessage="official mainnet"
+          />
+        );
         break;
       case 'testnet':
-        network = 'Test Net';
+        network = (
+          <FormattedMessage
+            id="onboarding-add-account.official-test-network"
+            description="Label for a test network"
+            defaultMessage="official testnet"
+          />
+        );
         break;
       case 'custom':
         network = (
           <FormattedMessage
             id="onboarding-add-account.custom-network"
             description="Label for a custom network"
-            defaultMessage="Custom"
+            defaultMessage="custom"
           />
         );
         break;
@@ -215,22 +233,25 @@ class AddAccountPage extends React.Component<Props> {
               <ChevronRight />
             </ListItem>
           </Link>
-          <Link
-            route={onboardingChooseNetworkRoute}
-            onBeforeNavigate={this.handleBeforeNavigate}
-          >
-            <ListItem button={true}>
-              <ListItemText>
-                <FormattedMessage
-                  id="onboarding-add-account.change-language"
-                  description="Change language button label"
-                  defaultMessage="Network: {name}"
-                  values={{ name: network }}
-                />
-              </ListItemText>
-              <ChevronRight />
-            </ListItem>
-          </Link>
+          {!isOfficialWeb() && (
+            <Link
+              route={onboardingChooseNetworkRoute}
+              onBeforeNavigate={this.handleBeforeNavigate}
+            >
+              <ListItem button={true}>
+                <ServerNetworkIcon className={classes.nodeIcon} />
+                <ListItemText>
+                  <FormattedMessage
+                    id="onboarding-add-account.select-node"
+                    description="Change node button label"
+                    defaultMessage="Change node ({name})"
+                    values={{ name: network }}
+                  />
+                </ListItemText>
+                <ChevronRight />
+              </ListItem>
+            </Link>
+          )}
         </List>
       </ModalPaper>
     );

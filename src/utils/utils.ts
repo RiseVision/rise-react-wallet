@@ -99,6 +99,17 @@ export enum TAddressSource {
   DELEGATE
 }
 
+export function isOfficialWeb(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  const location = window.location;
+  return location && (
+    location.hostname === 'wallet.rise.vision'
+    || location.hostname === 'twallet.rise.vision'
+  );
+}
+
 export function isMainnet(domain?: string): boolean {
   if (typeof window === 'undefined') {
     return false;

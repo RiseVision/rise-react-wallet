@@ -23,7 +23,11 @@ const styles = createStyles({
   },
   titleIcon: {
     margin: '-4px 4px'
-  }
+  },
+  radio: {
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
 });
 
 interface Props extends WithStyles<typeof styles> {}
@@ -47,9 +51,6 @@ const stylesDecorator = withStyles(styles, {
 @inject('routerStore')
 @observer
 class ChooseNetworkPage extends React.Component<Props, State> {
-  state: State = {
-    network: 'mainnet'
-  };
   get injected(): PropsInjected {
     // @ts-ignore
     return this.props;
@@ -67,9 +68,11 @@ class ChooseNetworkPage extends React.Component<Props, State> {
       };
     } else {
       // auto detect
-      this.state.network = isMainnet(walletStore.config.domain)
-        ? 'mainnet'
-        : 'testnet';
+      this.state = {
+        network: isMainnet(walletStore.config.domain)
+          ? 'mainnet'
+          : 'testnet',
+      };
     }
   }
 
@@ -101,7 +104,7 @@ class ChooseNetworkPage extends React.Component<Props, State> {
         }
         const nethash = await walletStore.checkNodesNethash(url);
         if (!nethash) {
-          throw new Error('Nethash filed');
+          throw new Error('Nethash check failed');
         }
       } catch {
         error = true;
@@ -118,39 +121,50 @@ class ChooseNetworkPage extends React.Component<Props, State> {
   }
 
   render() {
+    const { classes } = this.injected;
     const { network, url, urlError } = this.state;
 
     return (
       <ModalPaper open={true}>
+        <ModalPaperHeader backLink={{ route: onboardingAddAccountRoute }}>
+          <FormattedMessage
+            id="onboarding-choose-network.title"
+            description="Choose network screen title"
+            defaultMessage="Change node"
+          />
+        </ModalPaperHeader>
         <form onSubmit={this.handleSubmit}>
-          <ModalPaperHeader>
-            <FormattedMessage
-              id="onboarding-choose-network.title"
-              description="Choose network screen title"
-              defaultMessage="Choose network"
-            />
-          </ModalPaperHeader>
           <List>
             <ListItem button={true} onClick={this.handleSetNetwork('mainnet')}>
               <ListItemText>
                 <Radio
+                  className={classes.radio}
                   name="network"
                   value="mainnet"
                   onChange={this.handleChange}
                   checked={network === 'mainnet'}
-                />{' '}
-                Main Net
+                />
+                <FormattedMessage
+                  id="onboarding-choose-network.official-main-network"
+                  description="Label for official main network"
+                  defaultMessage="Official mainnet"
+                />
               </ListItemText>
             </ListItem>
             <ListItem button={true} onClick={this.handleSetNetwork('testnet')}>
               <ListItemText>
                 <Radio
+                  className={classes.radio}
                   name="network"
                   value="testnet"
                   onChange={this.handleChange}
                   checked={network === 'testnet'}
-                />{' '}
-                Test Net
+                />
+                <FormattedMessage
+                  id="onboarding-choose-network.official-test-network"
+                  description="Label for official test network"
+                  defaultMessage="Official testnet"
+                />
               </ListItemText>
             </ListItem>
             <ListItem button={true}>
@@ -160,21 +174,21 @@ class ChooseNetworkPage extends React.Component<Props, State> {
                   value="custom"
                   onChange={this.handleChange}
                   checked={network === 'custom'}
-                />{' '}
+                />
                 <TextField
                   onFocus={this.handleSetNetwork('custom')}
                   label={
                     this.state.urlError ? (
                       <FormattedMessage
-                        id="choose-network.url-error"
+                        id="choose-network.invalid-custom-url"
                         description="Custom URL text field error"
-                        defaultMessage="Wrong URL"
+                        defaultMessage="Invalid node URL"
                       />
                     ) : (
                       <FormattedMessage
                         id="choose-network.custom-url"
                         description="Custom URL text field label"
-                        defaultMessage="Custom URL"
+                        defaultMessage="Custom node URL"
                       />
                     )
                   }
@@ -188,8 +202,8 @@ class ChooseNetworkPage extends React.Component<Props, State> {
               <Button type="submit" fullWidth={true}>
                 <FormattedMessage
                   id="choose-network.submit-button"
-                  description="Set network submit button"
-                  defaultMessage="Set network"
+                  description="Select node submit button"
+                  defaultMessage="Select node"
                 />
               </Button>
             </ListItem>
