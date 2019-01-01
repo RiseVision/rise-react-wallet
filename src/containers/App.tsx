@@ -3,9 +3,9 @@ import { KeyEvent } from 'keyboardjs';
 import { inject, observer } from 'mobx-react';
 import { MobxRouter, RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import LoadingIndicator from '../components/LoadingIndicator';
+import AppHelmet from '../components/AppHelmet';
 import UpdateAvailableSnackbar from '../components/UpdateAvailableSnackbar';
 import { accountSendNoIDRoute } from '../routes';
 import LangStore from '../stores/lang';
@@ -88,11 +88,7 @@ class App extends React.Component<Props, State> {
       <ThemeProvider>
         <IntlProvider key={locale} locale={locale} messages={translations}>
           <React.Fragment>
-            <Helmet
-              htmlAttributes={{
-                lang: locale
-              }}
-            />
+            <AppHelmet locale={locale} />
             {content}
             <MobxRouter />
             <UpdateAvailableSnackbar />
