@@ -20,14 +20,16 @@ async function run() {
     // New window is opened in the running instance.
     return;
   }
+  const entryPoint = '/index.html';
+
   app.on('exit', () => process.exit());
 
   // New windows are opened when this app is started again from command line.
-  app.on('window', window => window.load('/'));
+  app.on('window', window => window.load(entryPoint));
 
   // app.serveOrigin('https://localhost:3000');
   app.serveFolder(path.join(__dirname, '..', 'build'));
-  await app.load('/index.html');
+  await app.load(entryPoint);
 
   return app;
 }
