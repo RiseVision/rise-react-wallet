@@ -44,7 +44,7 @@ export function WrapInSequence() {
 /** Simple logging util (linter friendly) */
 // tslint:disable-next-line:no-unused-expression
 function log(...msg: string[]) {
-  // console.log(...msg)
+   console.log(...msg);
 }
 
 export interface LedgerAccount {
@@ -298,11 +298,14 @@ export default class LedgerHub {
 
     const comm = await this.getDposLedger();
 
+    let value: LedgerAccount | null = null;
     try {
-      const value = await comm.getPubKey(accountPath, false);
-
-      const { address: deviceId } = value;
+      value = await comm.getPubKey(accountPath, false);
+    } catch (e) {
+      log('Error pinging the device', e);
+    } finally {
       runInAction(() => {
+        const deviceId = value !== null ? value.address : null;
         if (deviceId !== this.deviceId) {
           this.deviceId = deviceId;
           this.accountCache = {};
@@ -311,9 +314,6 @@ export default class LedgerHub {
           }
         }
       });
-    } catch (e) {
-      log(e);
-      log('error in ping');
     }
   }
 
