@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as config from './config.json';
 import App from './containers/App';
-import registerServiceWorker from './registerServiceWorker';
+import * as serviceWorker from './registerServiceWorker';
 import * as routes from './routes';
 import { TConfig, TStores } from './stores';
 import RootStore from './stores/root';
@@ -31,4 +31,10 @@ const root = (
 );
 
 ReactDOM.render(root, document.getElementById('root') as HTMLElement);
-registerServiceWorker(store);
+
+const isDesktop = typeof carlo !== undefined;
+if (!isDesktop) {
+  serviceWorker.register(store);
+} else {
+  serviceWorker.unregister();
+}
