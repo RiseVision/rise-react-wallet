@@ -10,7 +10,7 @@ async function run() {
       title: 'RISE Wallet',
       width: 1000,
       height: 800,
-      channel: ['canary', 'stable'],
+      channel: ['stable', 'chromium'],
       icon: path.join(__dirname, '/../build/icon-64.png'),
       args: process.env.DEV === 'true' ? ['--auto-open-devtools-for-tabs'] : [],
       localDataDir: path.join(os.homedir(), '.risewallet')
