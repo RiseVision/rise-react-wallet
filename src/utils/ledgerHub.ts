@@ -194,6 +194,7 @@ export default class LedgerHub {
   @observable hasSupport: boolean = false;
   @observable deviceId: null | string = null;
 
+  private lastPing?: number;
   private accountCache: {
     [slot: number]: LedgerAccount;
   } = {};
@@ -284,7 +285,13 @@ export default class LedgerHub {
     // get the connected device id. Since there's no actual API present that would
     // provide us with the device ID, we rely on the account at path 44'/1120'/0'
     // to fingerprint the currently connected device.
-    // TODO extract
+    const now = new Date().getTime();
+    if (this.lastPing && (now - this.lastPing) < 500) {
+      log('Skipping pinging, too soon...');
+      return;
+    }
+    this.lastPing = now;
+
     const accountPath = new DposAccount()
       .coinIndex(SupportedCoin.RISE)
       .account(PING_ACCOUNT_SLOT);
