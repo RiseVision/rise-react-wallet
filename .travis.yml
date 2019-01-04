@@ -25,7 +25,7 @@ jobs:
   - stage: test
     name: Release Carlo
     script:
-    - yarn release:dekstop
+    - yarn release:desktop
   - stage: test
     name: Translations
     script:
