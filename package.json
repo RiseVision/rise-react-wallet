@@ -60,7 +60,7 @@
     "test-unit:prepare": "rm -rf tmp/unit-test/; tsc --project tsconfig.test.json",
     "test-unit:prepare-watch": "rm -rf tmp/unit-test/; tsc --watch --project tsconfig.test.json",
     "eject": "react-scripts-ts eject",
-    "release": "yarn build && rm -f release.zip && cd build && zip -r ../release.zip *",
+    "release": "yarn build && rm -f release.zip && mkdir -p releases; cd build && zip -r ../releases/rise-wallet-web-$(node -p \"require('../package.json').version\").zip *",
     "intl:prepare": "rm -rf tmp/intl/; tsc --project tsconfig.intl.json && cp babelrc.intl.js tmp/intl/.babelrc && babel tmp/intl/transpiled/ -o tmp/intl/transpiled-bundle.js",
     "intl:export": "bash scripts/intl-export.sh",
     "intl:import": "bash scripts/intl-import.sh",
@@ -70,7 +70,7 @@
     "prettier": "prettier src/**.{ts,tsx} --write",
     "serve": "node src/serve.js & local-ssl-proxy --source 3000 --target 5000",
     "encrypt-fixtures": "travis encrypt-file cypress/fixtures/accounts.json cypress/fixtures/accounts.json.enc --add",
-    "release:desktop": "yarn build; cd desktop && yarn release"
+    "release:desktop": "mkdir -p releases; cd desktop && yarn release && mv dist/rise-wallet-desktop-win.exe ../releases/rise-wallet-win-$(node -p \"require('../package.json').version\").exe  && mv dist/rise-wallet-desktop-linux ../releases/rise-wallet-linux-$(node -p \"require('../package.json').version\") && mv dist/rise-wallet-desktop-macos ../releases/rise-wallet-macos-$(node -p \"require('../package.json').version\")"
   },
   "pre-commit": [
     "precommit"
