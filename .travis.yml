@@ -22,25 +22,26 @@ jobs:
   - stage: build
     name: Build
     script:
+    - yarn build
+  - stage: deploy
+    name: Release
+    script:
     - yarn release
-  - stage: test
-    name: Release Carlo
-    script:
     - yarn release:desktop
-  - stage: test
-    name: Translations
-    script:
-    - yarn intl:prepare
-    - yarn intl:export
-  - stage: test
-    name: Unit tests
-    script:
-    - yarn test-unit:prepare
-    - yarn test-unit
-  - stage: test
-    name: E2E tests
-    script:
-    - yarn run test-ci
+#  - stage: test
+#    name: Translations
+#    script:
+#    - yarn intl:prepare
+#    - yarn intl:export
+#  - stage: test
+#    name: Unit tests
+#    script:
+#    - yarn test-unit:prepare
+#    - yarn test-unit
+#  - stage: test
+#    name: E2E tests
+#    script:
+#    - yarn run test-ci
 deploy:
   provider: releases
   api_key:
