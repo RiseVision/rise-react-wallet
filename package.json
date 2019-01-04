@@ -70,7 +70,7 @@
     "prettier": "prettier src/**.{ts,tsx} --write",
     "serve": "node src/serve.js & local-ssl-proxy --source 3000 --target 5000",
     "encrypt-fixtures": "travis encrypt-file cypress/fixtures/accounts.json cypress/fixtures/accounts.json.enc --add",
-    "release:desktop": "mkdir -p releases; cd desktop && yarn release && mv dist/rise-wallet-desktop-win.exe ../releases/rise-wallet-win-$(node -p \"require('../package.json').version\").exe  && mv dist/rise-wallet-desktop-linux ../releases/rise-wallet-linux-$(node -p \"require('../package.json').version\") && mv dist/rise-wallet-desktop-macos ../releases/rise-wallet-macos-$(node -p \"require('../package.json').version\")"
+    "release:desktop": "mkdir -p releases; cd desktop && yarn install && yarn release && mv dist/rise-wallet-desktop-win.exe ../releases/rise-wallet-win-$(node -p \"require('../package.json').version\").exe  && mv dist/rise-wallet-desktop-linux ../releases/rise-wallet-linux-$(node -p \"require('../package.json').version\") && mv dist/rise-wallet-desktop-macos ../releases/rise-wallet-macos-$(node -p \"require('../package.json').version\")"
   },
   "pre-commit": [
     "precommit"
