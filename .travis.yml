@@ -28,21 +28,20 @@ jobs:
       script:
         - yarn release
         - yarn release:desktop
-
-#  - stage: test
-#    name: Translations
-#    script:
-#    - yarn intl:prepare
-#    - yarn intl:export
-#  - stage: test
-#    name: Unit tests
-#    script:
-#    - yarn test-unit:prepare
-#    - yarn test-unit
-#  - stage: test
-#    name: E2E tests
-#    script:
-#    - yarn run test-ci
+    - stage: test
+      name: Translations
+      script:
+        - yarn intl:prepare
+        - yarn intl:export
+    - stage: test
+      name: Unit tests
+      script:
+        - yarn test-unit:prepare
+        - yarn test-unit
+    - stage: test
+      name: E2E tests
+      script:
+        - yarn run test-ci
 
 deploy:
   provider: releases
@@ -52,7 +51,6 @@ deploy:
   file_glob: true
   file:
     - "releases/rise-wallet-*"
-    - release.zip
   draft: true
   on:
     tags: true

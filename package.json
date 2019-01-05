@@ -59,7 +59,7 @@
     "test-unit": "jest",
     "test-unit:prepare": "rm -rf tmp/unit-test/; tsc --project tsconfig.test.json",
     "test-unit:prepare-watch": "rm -rf tmp/unit-test/; tsc --watch --project tsconfig.test.json",
-    "eject": "react-scripts-ts eject ",
+    "eject": "react-scripts-ts eject",
     "release": "yarn build && rm -f release.zip && mkdir -p releases; cd build && zip -r ../releases/rise-wallet-web-$(node -p \"require('../package.json').version\").zip *",
     "intl:prepare": "rm -rf tmp/intl/; tsc --project tsconfig.intl.json && cp babelrc.intl.js tmp/intl/.babelrc && babel tmp/intl/transpiled/ -o tmp/intl/transpiled-bundle.js",
     "intl:export": "bash scripts/intl-export.sh",
