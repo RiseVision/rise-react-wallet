@@ -48,6 +48,9 @@ deploy
   api_key:
     secure: nNDz2VK4K2hksmMVWp2+y28HTgRvxdw7q22UbaqNHUPT/ZWEVtlRmsfMWX4xhmvRElbu43YfkM4JpWz5KYx9h0ABCnhTD6ZvQVpGD/pJcMtfJy70PDuWXG4jDvQ9Iha2CpxKrurVcbzAw8lTJRwP/TOFxrEVk9t1efD0OqVF9OuuYGYEHsKYInsK6eCQ+u92xGB/82kqX/gWZir5/01E4MMzBMhqu5HA9pVSH0YD0bzwxDbSChuotGw55Mq1x2o4+pTXiXGkFnB+xpscbrf43z2/XC9meY6/zBCuYTO4YujhmRPz30ttW7BEoBbCYuTIh6wpjuk9ohGiMtwwnsOxdXjzLvyZOuGzGAv7oEnC7NVb/Rtz8ZLUjfUpLUD9E/5whAxXtVvuE/UD/rBLt3iyBSZwjc63h7Mqz29pyrUtnDTXiovISyZT3pYeIzBq/NsnRvARy+2dyEV4gl1AV0MG+MXpVDY/J443WbdMnMundoOZ9H9ZSaE49TzOzAmQHJX1OvVWF92rw66/cs1N0uvS7UMXdGA+266rYFo2eoO4BF40AkOyRWzdufXf+/IikNv6ORHy8D7NzlyVOdQbKb65sNfXhCEb043imkr4lwpvW5q5xrbW74V/OJSOdFQsWXSg+Q59kCyxJaVqaE1OBRAWxILjVcaZX9yoNX+KsWJBcTs=
   file_glob: true
-  file: "releases/rise-wallet-*"
+  file:
+  - "releases/rise-wallet-*"
+  - release.zip
+  draft: true
   on:
     tags: true
