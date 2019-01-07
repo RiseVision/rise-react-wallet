@@ -31,13 +31,18 @@ export function fillOnboardingInput(pos: number = 0, text: string) {
     .type(text);
 }
 
-export function getDialog(child: string = '', timeout?: number) {
-  return cy.get(`div[role="dialog"] ${child}`, { timeout });
+export function getDialog(child: string | string[] = '', timeout?: number) {
+  return Array.isArray(child)
+    ? cy.get(child.map(c => `div[role="dialog"] ${c}`).join(', '), { timeout })
+    : cy.get(`div[role="dialog"] ${child}`, { timeout });
 }
 
 export function getDialogContent(child: string = '') {
-  // TODO should query a form element
-  return getDialog(`> div:nth-child(2) > div:nth-child(2) ${child}`);
+  // TODO should query a form element only
+  return getDialog([
+    `form ${child}`,
+    `> div:nth-child(2) > div:nth-child(1) > div:nth-child(2) ${child}`
+  ]);
 }
 
 export function getDialogHeader() {
@@ -92,7 +97,7 @@ export function fillConfirmationDialog(mnemonic?: string, passphrase?: string) {
   }
   // type in the mnemonic
   const first = fillDialogInput(0, mnemonic!);
-  cy.wait(100)
+  cy.wait(100);
   // in case the password isnt set
   if (!passphrase) {
     return first;

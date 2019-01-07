@@ -30,6 +30,7 @@ export function stub<T>(
   isGetter: boolean = false
 ) {
   const toStub = sinon.stub(object, method);
+  // @ts-ignore
   const ret = isGetter ? toStub.get(fn) : toStub.callsFake(fn);
   stubs.push(ret);
   return ret;

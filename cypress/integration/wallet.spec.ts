@@ -204,7 +204,7 @@ context('Wallet', () => {
     // assert the url
     cy.url().should('contain', '/address-book');
     // assert the header
-    cy.get('h2')
+    cy.get('h6')
       .contains('Address book')
       .should('have.length', 1);
   });
@@ -617,7 +617,7 @@ context('Dialog navigation', function() {
     clickDialogSubmit();
     clickDialogBackButton();
     getDialog()
-      .contains('h1', 'Send RISE')
+      .contains('h5', 'Send RISE')
       .should('have.length', 1);
     closeDialog();
   });
