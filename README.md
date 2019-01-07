@@ -3,11 +3,12 @@
 [![Build Status](https://travis-ci.org/RiseVision/rise-react-wallet.svg?branch=master)](https://travis-ci.org/RiseVision/rise-react-wallet)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/rise-web-wallet/localized.svg)](https://crowdin.com/project/rise-web-wallet)
 
-This repository contains a _Work-In-Progress_ web wallet for the **RISE** DPoS blockchain. It's build on **TypeScript**, **React** and **Material UI**.
+RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using **TypeScript**, **React** and **Material UI**.
 
-### Nightly build
+### URLs
 
-There's a **[nightly build (testnet)](http://risevision.github.io/rise-react-wallet/index.html)** in case you'd like to give it a spin.
+- [mainnet](https://wallet-beta.rise.vision/)
+- [testnet](https://twallet-beta.rise.vision/)
 
 ### Status
 
@@ -22,17 +23,17 @@ There's a **[nightly build (testnet)](http://risevision.github.io/rise-react-wal
 
 ### Contributing
 
-Run the app:
+Running:
 1. Clone the repo
 1. Run `yarn start`
 
-Build the app:
+Building:
 1. Clone the repo
 1. Run `yarn build`
 
 ### Custom backend
 
-To get the wallet working with a custom RISE deployment, you need to:
+To get the wallet working with a custom RISE deployment by default, you need to:
 1. Checkout a working copy
 1. Edit `src/config.json` and change both `api_url` and `api_url_testnet`
 1. Build a release with `yarn build` or `yarn run release`
