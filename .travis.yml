@@ -20,10 +20,6 @@ env:
 jobs:
   include:
     - stage: build
-      name: Build
-      script:
-        - yarn build
-    - stage: deploy
       name: Release
       script:
         - yarn release
