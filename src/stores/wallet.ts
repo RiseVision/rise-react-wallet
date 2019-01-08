@@ -130,7 +130,8 @@ export default class WalletStore {
       this.io.disconnect();
     }
     // init the API
-    this.dposAPI = dposAPI.newWrapper(this.nodeAddress);
+    dposAPI.nodeAddress = this.nodeAddress;
+    this.dposAPI = dposAPI;
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
 

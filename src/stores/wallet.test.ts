@@ -137,8 +137,7 @@ describe('accounts', () => {
     const saved = last(Object.values(lstore.get('accounts'))) as TStoredAccount;
     expect(saved.name).toEqual(name);
   });
-  // TODO
-  it.skip('loadAccount', async () => {
+  it('loadAccount', async () => {
     const id = storedAccounts[0].id;
     const balance = 983475;
     // @ts-ignore restore to wrap again
@@ -153,8 +152,7 @@ describe('accounts', () => {
     const response = await wallet.loadAccount(id);
     expect(response.account).toEqual({ address: id, balance });
   });
-  // TODO
-  it.skip('refreshAccount', async () => {
+  it('refreshAccount', async () => {
     const id = storedAccounts[0].id;
     const balance = 983475;
     // @ts-ignore restore to wrap again
@@ -169,7 +167,7 @@ describe('accounts', () => {
     expect(wallet.accounts.get(id)!.balance.toNumber()).toEqual(balance);
   });
   // TODO
-  it.skip('login', async () => {
+  it('login', async () => {
     const id = storedAccounts[0].id;
     // @ts-ignore restore to wrap again
     wallet.dposAPI.accounts.getAccount.restore();

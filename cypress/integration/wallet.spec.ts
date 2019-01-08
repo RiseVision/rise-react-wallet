@@ -211,7 +211,7 @@ context('Wallet', () => {
 });
 
 context('Server errors', () => {
-  it.skip('error messages', () => {
+  it('error messages', () => {
     const id = lstore.get('accounts')[1].id;
     // stab the route
     cy.route({
@@ -234,7 +234,7 @@ context('Server errors', () => {
     assertUnsuccessfulDialog('test reason');
   });
 
-  it.skip('retry', () => {
+  it('retry', () => {
     const id = lstore.get('accounts')[1].id;
     // stab the route
     cy.route({
