@@ -283,7 +283,7 @@ context('Settings', () => {
     goToSettings();
   });
 
-  it.skip('register delegate (stabbed)', () => {
+  it('register delegate (stabbed)', () => {
     // stab the route
     cy.route({
       method: 'PUT',
@@ -312,7 +312,7 @@ context('Settings', () => {
     });
   });
 
-  it.skip('2nd passphrase (stabbed)', () => {
+  it('2nd passphrase (stabbed)', () => {
     // stab the route
     cy.route({
       method: 'PUT',
@@ -346,7 +346,7 @@ context('Settings', () => {
     });
   });
 
-  it.skip('vote delegate when already voted (stabbed)', () => {
+  it('vote delegate when already voted (stabbed)', () => {
     const query = 'test';
     // stab the route
     cy.route({
