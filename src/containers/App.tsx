@@ -43,6 +43,13 @@ class App extends React.Component<Props, State> {
   }
 
   handlerOpenSendDialog = (e: KeyEvent) => {
+    // skip for inputs
+    if (
+      e.target &&
+      (e.target as HTMLElement).tagName.toLocaleLowerCase() === 'input'
+    ) {
+      return;
+    }
     const { routerStore } = this.injected;
     e.preventDefault();
     e.stopPropagation();
