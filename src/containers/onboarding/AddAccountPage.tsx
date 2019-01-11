@@ -24,7 +24,6 @@ import LedgerStore from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
-import { isOfficialWeb } from '../../utils/utils';
 import { LedgerChannel } from '../../utils/ledgerHub';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -35,8 +34,8 @@ const styles = createStyles({
   },
   nodeIcon: {
     margin: '0 3px',
-    color: '#999',
-  },
+    color: '#999'
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {}
@@ -233,25 +232,23 @@ class AddAccountPage extends React.Component<Props> {
               <ChevronRight />
             </ListItem>
           </Link>
-          {!isOfficialWeb() && (
-            <Link
-              route={onboardingChooseNetworkRoute}
-              onBeforeNavigate={this.handleBeforeNavigate}
-            >
-              <ListItem button={true}>
-                <ServerNetworkIcon className={classes.nodeIcon} />
-                <ListItemText>
-                  <FormattedMessage
-                    id="onboarding-add-account.select-node"
-                    description="Change node button label"
-                    defaultMessage="Change node ({name})"
-                    values={{ name: network }}
-                  />
-                </ListItemText>
-                <ChevronRight />
-              </ListItem>
-            </Link>
-          )}
+          <Link
+            route={onboardingChooseNetworkRoute}
+            onBeforeNavigate={this.handleBeforeNavigate}
+          >
+            <ListItem button={true}>
+              <ServerNetworkIcon className={classes.nodeIcon} />
+              <ListItemText>
+                <FormattedMessage
+                  id="onboarding-add-account.select-node"
+                  description="Change node button label"
+                  defaultMessage="Change node ({name})"
+                  values={{ name: network }}
+                />
+              </ListItemText>
+              <ChevronRight />
+            </ListItem>
+          </Link>
         </List>
       </ModalPaper>
     );
