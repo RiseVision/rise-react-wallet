@@ -364,7 +364,7 @@ const messages = defineMessages({
   summaryVoteRemoveShort: {
     id: 'tx-details-expansion-panel.summary-vote-remove-short',
     description: 'Summary text for remove vote tx (short version)',
-    defaultMessage: 'Remove vote form {username} ({address})'
+    defaultMessage: 'Remove vote from {username} ({address})'
   },
   summaryVoteGenericLong: {
     id: 'tx-details-expansion-panel.summary-vote-generic-long',
