@@ -199,10 +199,24 @@ export default class LedgerHub {
     [slot: number]: LedgerAccount;
   } = {};
   constructor() {
-    // @ts-ignore missing d.ts
-    this.hasSupport = TransportU2F.isSupported();
+    // pass async
+    this.init();
+  }
 
-    setInterval(() => this.ping(), 1000);
+  async init() {
+    try {
+      // @ts-ignore missing d.ts
+      this.hasSupport = await TransportU2F.isSupported();
+    } catch (e) {
+      // catch non-supported browsers
+      if (!e.id || e.id !== 'U2FNotSupported') {
+        throw e;
+      }
+    }
+
+    if (this.hasSupport) {
+      setInterval(() => this.ping(), 1000);
+    }
   }
 
   openChannel(): LedgerChannel {
@@ -286,7 +300,7 @@ export default class LedgerHub {
     // provide us with the device ID, we rely on the account at path 44'/1120'/0'
     // to fingerprint the currently connected device.
     const now = new Date().getTime();
-    if (this.lastPing && (now - this.lastPing) < 500) {
+    if (this.lastPing && now - this.lastPing < 500) {
       log('Skipping pinging, too soon...');
       return;
     }
