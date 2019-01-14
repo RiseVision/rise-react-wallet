@@ -487,7 +487,9 @@ context('Settings dialogs autofocus', () => {
     assertAutofocus();
   });
 
-  it('2nd passphrase', () => {
+  // TODO sometimes selects the first account, which has the passphrase set,
+  //   thus the test times out on 'Not set'
+  it.skip('2nd passphrase', () => {
     // use the second account
     selectAccount(getAccount(1).id);
     cy.wait(1000);
