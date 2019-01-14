@@ -22,6 +22,7 @@ export enum AccountType {
 
 type ImportableFields =
   | 'id'
+  | 'localId'
   | 'publicKey'
   | 'broadcastedPublicKey'
   | 'type'
@@ -44,6 +45,7 @@ export default class AccountStore {
   @observable loaded: boolean = false;
 
   @observable id: string;
+  @observable localId: number;
   @observable publicKey: string | null = null;
   @observable broadcastedPublicKey: string | null = null;
 
