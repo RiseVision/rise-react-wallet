@@ -72,7 +72,7 @@ const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'accounts-list.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
-    defaultMessage: 'Unnamed account'
+    defaultMessage: 'Unnamed account ({id})'
   },
   addAccountTooltip: {
     id: 'accounts-list.add-account-fab-tooltip',
@@ -100,10 +100,6 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
 
   render() {
     const { walletStore, classes, intl } = this.injected;
-
-    const unnamedAccountLabel = intl.formatMessage(
-      messages.unnamedAccountLabel
-    );
     const { selectedAccount } = walletStore;
 
     return (
@@ -138,7 +134,10 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                   classes={{
                     primary: classes.accountName
                   }}
-                  primary={account.name || unnamedAccountLabel}
+                  primary={account.name || intl.formatMessage(
+                    messages.unnamedAccountLabel,
+                    { id: account.localId }
+                  )}
                   secondary={account.id}
                 />
               </ListItem>

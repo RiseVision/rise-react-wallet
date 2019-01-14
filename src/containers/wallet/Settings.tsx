@@ -87,7 +87,7 @@ const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'account-settings.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
-    defaultMessage: 'Unnamed account'
+    defaultMessage: 'Unnamed account ({id})'
   },
   accountName: {
     id: 'account-settings.account-name',
@@ -268,7 +268,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                   primary={intl.formatMessage(messages.accountName)}
                   secondary={
                     account.name ||
-                    intl.formatMessage(messages.unnamedAccountLabel)
+                    intl.formatMessage(
+                      messages.unnamedAccountLabel,
+                      { id: this.account.localId }
+                    )
                   }
                 />
               </ListItem>

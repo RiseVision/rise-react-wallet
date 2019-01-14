@@ -105,7 +105,7 @@ const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'wallet-account-overview.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
-    defaultMessage: 'Unnamed account'
+    defaultMessage: 'Unnamed account ({id})'
   },
   noPubkeyAccountTip: {
     id: 'wallet-account-overview.no-pubkey-account-tip',
@@ -249,14 +249,14 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     // mark the current account as viewed
     this.account.viewed = true;
     const { intl, classes } = this.injected;
-    const unnamedAccountLabel = intl.formatMessage(
-      messages.unnamedAccountLabel
-    );
 
     const readOnly = this.account && this.account.type === AccountType.READONLY;
     const headerProps = {
       address: this.account.id,
-      alias: this.account.name || unnamedAccountLabel,
+      alias: this.account.name || intl.formatMessage(
+        messages.unnamedAccountLabel,
+        { id: this.account.localId }
+      ),
       balance: this.account.balance,
       balanceFiat: this.account.balanceFiat,
       fiatCurrency: this.account.fiatCurrency

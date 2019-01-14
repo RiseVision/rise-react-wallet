@@ -94,7 +94,7 @@ const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
     description: 'Label for accounts that user hasn\'t named yet',
-    defaultMessage: 'Unnamed account'
+    defaultMessage: 'Unnamed account ({id})'
   },
   accountsListAriaLabel: {
     id: 'drawer-content.accounts-list-aria-label',
@@ -157,9 +157,6 @@ class DrawerContent extends React.Component<DecoratedProps> {
       walletStore
     } = this.injected;
 
-    const unnamedAccountLabel = intl.formatMessage(
-      messages.unnamedAccountLabel
-    );
     const { selectedAccount } = walletStore;
 
     let selection: 'addressBook' | 'account' = 'account';
@@ -228,7 +225,10 @@ class DrawerContent extends React.Component<DecoratedProps> {
                   classes={{
                     primary: classes.accountName
                   }}
-                  primary={account.name || unnamedAccountLabel}
+                  primary={account.name || intl.formatMessage(
+                    messages.unnamedAccountLabel,
+                    { id: account.localId }
+                  )}
                   secondary={account.id}
                 />
               </ListItem>
