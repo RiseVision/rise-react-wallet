@@ -420,6 +420,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         data={transaction!}
         fee={this.fee}
         senderName={account.name}
+        senderLocalId={account.localId}
         senderAddress={account.id}
       >
         {account.type === AccountType.LEDGER ? (
@@ -457,6 +458,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         data={transaction!}
         fee={this.fee}
         senderName={account.name}
+        senderLocalId={account.localId}
         senderAddress={account.id}
       >
         <ConfirmTxStatusFooter type="broadcasting" />
@@ -476,6 +478,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         data={transaction!}
         fee={this.fee}
         senderName={account.name}
+        senderLocalId={account.localId}
         senderAddress={account.id}
       >
         <ConfirmTxStatusFooter
@@ -498,6 +501,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         data={transaction!}
         fee={this.fee}
         senderName={account.name}
+        senderLocalId={account.localId}
         senderAddress={account.id}
       >
         <ConfirmTxStatusFooter

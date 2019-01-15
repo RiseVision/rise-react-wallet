@@ -137,7 +137,7 @@ const messages = defineMessages({
   unnamedSender: {
     id: 'confirm-tx-dialog-content.unnamed-sender',
     description: 'Unnamed sender account',
-    defaultMessage: 'Unnamed account'
+    defaultMessage: 'Unnamed account ({id})'
   },
   unnamedRecipient: {
     id: 'confirm-tx-dialog-content.unnamed-recipient',
@@ -222,6 +222,7 @@ interface Props extends BaseProps, ICloseInterruptFormProps {
   data: TxData;
   fee: RawAmount;
   senderName: string | null;
+  senderLocalId: number;
   senderAddress: string;
 }
 
@@ -254,7 +255,10 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
     const recipientAddress = data.kind === 'send' ? data.recipientAddress : '';
     let senderName = this.props.senderName;
     if (!senderName) {
-      senderName = intl.formatMessage(messages.unnamedSender);
+      senderName = intl.formatMessage(
+        messages.unnamedSender,
+        { id: this.props.senderLocalId}
+      );
     }
     let recipientName = data.kind === 'send' ? data.recipientName : null;
     if (!recipientName) {

@@ -6,6 +6,7 @@ import * as assert from 'assert';
 export const storedAccounts = [
   {
     id: '2655711995542512317R',
+    localId: 1,
     publicKey:
       '023bab3e17365565d7a796291f8d3bb6878a3083ea520fbd163db713d51b44f9',
     type: 1,
@@ -17,6 +18,7 @@ export const storedAccounts = [
   },
   {
     id: '5932278668828702947R',
+    localId: 2,
     publicKey:
       '491e09b538aa8d44a613bc5d23e2b6a4f93126b89c8fb8766016708af519fded',
     type: 1,
@@ -28,6 +30,7 @@ export const storedAccounts = [
   },
   {
     id: '11543739950532038814R',
+    localId: 3,
     publicKey:
       '63a12d153b3c72ed71392da9aac6b897c4b908f9ff17201794d69b4622d30aee',
     type: 1,
@@ -39,6 +42,7 @@ export const storedAccounts = [
   },
   {
     id: '10317456780953445784R',
+    localId: 4,
     publicKey:
       'e9ae239743b47125305a3f339937661368a7f8d810ae53d79e5c4de001356563',
     type: 1,

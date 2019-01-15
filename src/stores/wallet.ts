@@ -50,6 +50,12 @@ export type PostableRiseTransaction<T = any> = GenericPostableRiseTransaction<
   T
 >;
 
+function nextAccountLocalId(): number {
+  const accountId = lstore.get('nextAccountId') || 1;
+  lstore.set('nextAccountId', accountId + 1);
+  return accountId;
+}
+
 export default class WalletStore {
   dposAPI: APIWrapper;
   delegateCache: DelegateCache;
@@ -243,7 +249,7 @@ export default class WalletStore {
     return lstore.get('accounts') || [];
   }
 
-  storedAccountbyID(id: string): TStoredAccount | null {
+  storedAccountByID(id: string): TStoredAccount | null {
     return this.storedAccounts().find(a => a.id === id) || null;
   }
 
@@ -255,6 +261,7 @@ export default class WalletStore {
     // field of TStoredAccount
     const fields = [
       'id',
+      'localId',
       'publicKey',
       'type',
       'hwId',
@@ -466,7 +473,7 @@ export default class WalletStore {
   async refreshAccount(...ids: string[]) {
     for (const id of ids) {
       // refresh only already added accounts
-      const local = this.storedAccountbyID(id);
+      const local = this.storedAccountByID(id);
       if (!local) {
         continue;
       }
@@ -534,7 +541,7 @@ export default class WalletStore {
   @action
   async login(
     id: string,
-    local?: Partial<TAccount>,
+    local: Partial<TAccount> = {},
     select: boolean = false
   ): Promise<true> {
     if (!id) {
@@ -543,6 +550,9 @@ export default class WalletStore {
     id = normalizeAddress(id);
     if (!id) {
       throw Error('Invalid address');
+    }
+    if (!local.localId) {
+      local.localId = nextAccountLocalId();
     }
     const account = new AccountStore(this.config, { id, ...local }, this);
     this.accounts.set(id, account);
@@ -1080,6 +1090,7 @@ export type TTransactionsResponse = {
 
 export type TStoredAccount = {
   id: string;
+  localId: number;
   publicKey: string;
   type: AccountType;
   hwId: null | string;
