@@ -1,52 +1,62 @@
 language: node_js
 node_js:
-  - lts/*
+- lts/*
 cache:
   yarn: true
   directories:
-    - node_modules
-    - desktop/node_modules
-    - "~/.cache/Cypress"
-    - build
+  - node_modules
+  - desktop/node_modules
+  - "~/.cache/Cypress"
+  - build
 before_install:
-  - openssl aes-256-cbc -K $encrypted_63d69a2d54d1_key -iv $encrypted_63d69a2d54d1_iv
-    -in cypress/fixtures/accounts.json.enc -out cypress/fixtures/accounts.json -d
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH="$HOME/.yarn/bin:$PATH"
+- openssl aes-256-cbc -K $encrypted_63d69a2d54d1_key -iv $encrypted_63d69a2d54d1_iv
+  -in cypress/fixtures/accounts.json.enc -out cypress/fixtures/accounts.json -d
+- curl -o- -L https://yarnpkg.com/install.sh | bash
+- export PATH="$HOME/.yarn/bin:$PATH"
 env:
   global:
-    - CI=false
-    - secure: UAme/V5A6bu56r6dwNj2SEuHard4ukmPr1k5DrddBPp9EQbFwPHQDHgzCZJBg5t1eu0QAaaywilzU5eHC45Pbirhd7B1tKaW7Xl/FfCQZepeOv0ZENtZ/Hid0/JrLGu0DnK3+jWTfdc5WOHDvAjojRw9FLxRlyyaG9hnKLWsDX020QUrEz1etqg2mz5bSPzeGj8kK8fLub/LCX5vTZHQikq2LFIx2LquDw0/A4mLorboBp8QExWp+7XmQrJqEQNI9Hn0sI+xGgJHgjK+HRQ/HtYIJiYvpBcDkq2NobXlrvfDExSdcb4nlEq3wotXPHfkDpMMFL4id9rZPB/TT/qfcQOlK3gYC3asy/Lkd8d/Nm8rNZytf4j62Z/vfFlydDRWox6wtHt1JpkSonLqSPAUGEsFAHH9K1SXbt9gtCobpys0QVIFDUfShMbexBN334383hFKLeshiv5EjoDSSHAiKSD3/OyOTg+HcLmNAFNfg4i6malrOXmRb/s5xSgqH/XR25cBlJYyEYQz2vCdCh8rZqvfyvfe3p2Q/lko0ojdhjYsmTej2F9JUBF1PW9nn0avwFhPZq9RALmex0vXg2AapD5+J0YECO2cRq+tuUDQlFBqAmYvuT2s1Z/HbxI7asrQou/L0trUsLmGRp1lbznxC6oFDjHB9mJ1LlbFxZPjuK8=
+  - CI=false
+  - secure: UAme/V5A6bu56r6dwNj2SEuHard4ukmPr1k5DrddBPp9EQbFwPHQDHgzCZJBg5t1eu0QAaaywilzU5eHC45Pbirhd7B1tKaW7Xl/FfCQZepeOv0ZENtZ/Hid0/JrLGu0DnK3+jWTfdc5WOHDvAjojRw9FLxRlyyaG9hnKLWsDX020QUrEz1etqg2mz5bSPzeGj8kK8fLub/LCX5vTZHQikq2LFIx2LquDw0/A4mLorboBp8QExWp+7XmQrJqEQNI9Hn0sI+xGgJHgjK+HRQ/HtYIJiYvpBcDkq2NobXlrvfDExSdcb4nlEq3wotXPHfkDpMMFL4id9rZPB/TT/qfcQOlK3gYC3asy/Lkd8d/Nm8rNZytf4j62Z/vfFlydDRWox6wtHt1JpkSonLqSPAUGEsFAHH9K1SXbt9gtCobpys0QVIFDUfShMbexBN334383hFKLeshiv5EjoDSSHAiKSD3/OyOTg+HcLmNAFNfg4i6malrOXmRb/s5xSgqH/XR25cBlJYyEYQz2vCdCh8rZqvfyvfe3p2Q/lko0ojdhjYsmTej2F9JUBF1PW9nn0avwFhPZq9RALmex0vXg2AapD5+J0YECO2cRq+tuUDQlFBqAmYvuT2s1Z/HbxI7asrQou/L0trUsLmGRp1lbznxC6oFDjHB9mJ1LlbFxZPjuK8=
+  matrix:
+    secure: AKWAzLtONDcYEu2rkCeHkIelQbsBW2QdjKQJaPh6Qb7+s2lyHdrgGLxoTm6dxTF4x4dVhxL4fCqunjG3o+NCLoqzp+yDH+p7uI9+JlkTDn7RgqoAczWOjwZ8sofH/l3+MfIi5VyjR9C4wijEBu9bpCbNU+5T1eYlLHWlqpHwnTYXRQEe3S5vDJogVVGSgZnE9vNE14VgJQbU8m2L1wakqd5hcCum4TZl194Ji1KfH1odaXHimAqu6L4N2o5Vb5LOls/jt/W3BIjXv+I3SEPDLEzddCida4ht8BjGPfDfmwtBgtKpH0iKyZd7uaF1doxaGf+QaHTi3g137YakanXzen+3u6nsfkLi7UT128qEAF99OiBmgSRzf2/XLUeLURpWFowxw2jrOkQQoYNFGfSUNIew8B9GwRMXLl7urd/nW3j9opAeBDQVGhn8QSLptpepdZ/NsWUg4Z9ZCnkgpVmuWITEEbOow7yfJLirJY67E9GFEbaAMjRKQcJ4g8SSIaavtoMteWRwhe7HP+g+XJHEQaWm7hVYor9ldvWIMBP2BeOCWoOwT2gX0AfUVgnkJ0ojY+KJlGBFUUT8jIypTAk0mu5ZZWDIpRBkalH5WQTK7bWKzFoMsF1xzQ8F+/qwa8W1iGb7ZOmZxYqT1JQoGFGI/6fYH/+MOMhZRsJu86tgBlA=
 jobs:
   include:
-    - stage: build
-      name: Release
-      script:
-        - yarn release
-        - yarn release:desktop
-    - stage: test
-      name: Translations
-      script:
-        - yarn intl:prepare
-        - yarn intl:export
-    - stage: test
-      name: Unit tests
-      script:
-        - yarn test-unit:prepare
-        - yarn test-unit
-    - stage: test
-      name: E2E tests
-      script:
-        - yarn run test-ci
-
+  - stage: build
+    name: Release
+    script:
+    - yarn release
+    - yarn release:desktop
+  - stage: test
+    name: Translations
+    script:
+    - yarn intl:prepare
+    - yarn intl:export
+  - stage: test
+    name: Unit tests
+    script:
+    - yarn test-unit:prepare
+    - yarn test-unit
+  - stage: test
+    name: E2E tests
+    script:
+    - yarn run test-ci
+    -
 deploy:
-  provider: releases
-  skip_cleanup: true
-  api_key:
-    secure: nNDz2VK4K2hksmMVWp2+y28HTgRvxdw7q22UbaqNHUPT/ZWEVtlRmsfMWX4xhmvRElbu43YfkM4JpWz5KYx9h0ABCnhTD6ZvQVpGD/pJcMtfJy70PDuWXG4jDvQ9Iha2CpxKrurVcbzAw8lTJRwP/TOFxrEVk9t1efD0OqVF9OuuYGYEHsKYInsK6eCQ+u92xGB/82kqX/gWZir5/01E4MMzBMhqu5HA9pVSH0YD0bzwxDbSChuotGw55Mq1x2o4+pTXiXGkFnB+xpscbrf43z2/XC9meY6/zBCuYTO4YujhmRPz30ttW7BEoBbCYuTIh6wpjuk9ohGiMtwwnsOxdXjzLvyZOuGzGAv7oEnC7NVb/Rtz8ZLUjfUpLUD9E/5whAxXtVvuE/UD/rBLt3iyBSZwjc63h7Mqz29pyrUtnDTXiovISyZT3pYeIzBq/NsnRvARy+2dyEV4gl1AV0MG+MXpVDY/J443WbdMnMundoOZ9H9ZSaE49TzOzAmQHJX1OvVWF92rw66/cs1N0uvS7UMXdGA+266rYFo2eoO4BF40AkOyRWzdufXf+/IikNv6ORHy8D7NzlyVOdQbKb65sNfXhCEb043imkr4lwpvW5q5xrbW74V/OJSOdFQsWXSg+Q59kCyxJaVqaE1OBRAWxILjVcaZX9yoNX+KsWJBcTs=
-  file_glob: true
-  file:
-    - "releases/rise-wallet-*"
-  draft: true
-  on:
-    tags: true
+  - provider: releases
+    skip_cleanup: true
+    api_key:
+      secure: nNDz2VK4K2hksmMVWp2+y28HTgRvxdw7q22UbaqNHUPT/ZWEVtlRmsfMWX4xhmvRElbu43YfkM4JpWz5KYx9h0ABCnhTD6ZvQVpGD/pJcMtfJy70PDuWXG4jDvQ9Iha2CpxKrurVcbzAw8lTJRwP/TOFxrEVk9t1efD0OqVF9OuuYGYEHsKYInsK6eCQ+u92xGB/82kqX/gWZir5/01E4MMzBMhqu5HA9pVSH0YD0bzwxDbSChuotGw55Mq1x2o4+pTXiXGkFnB+xpscbrf43z2/XC9meY6/zBCuYTO4YujhmRPz30ttW7BEoBbCYuTIh6wpjuk9ohGiMtwwnsOxdXjzLvyZOuGzGAv7oEnC7NVb/Rtz8ZLUjfUpLUD9E/5whAxXtVvuE/UD/rBLt3iyBSZwjc63h7Mqz29pyrUtnDTXiovISyZT3pYeIzBq/NsnRvARy+2dyEV4gl1AV0MG+MXpVDY/J443WbdMnMundoOZ9H9ZSaE49TzOzAmQHJX1OvVWF92rw66/cs1N0uvS7UMXdGA+266rYFo2eoO4BF40AkOyRWzdufXf+/IikNv6ORHy8D7NzlyVOdQbKb65sNfXhCEb043imkr4lwpvW5q5xrbW74V/OJSOdFQsWXSg+Q59kCyxJaVqaE1OBRAWxILjVcaZX9yoNX+KsWJBcTs=
+    file_glob: true
+    file:
+      - "releases/rise-wallet-*"
+    draft: true
+    on:
+      tags: true
+  - provider: pages
+    local-dir: build
+    verbose: true
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+    keep-history: true
+    on:
+      branch: master
