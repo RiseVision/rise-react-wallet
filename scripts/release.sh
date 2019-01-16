@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-echo $(pwd)
 VERSION=$(node -p "require('./package.json').version")
 
 yarn build
@@ -10,5 +9,5 @@ mkdir -p releases
 pushd build
 zip -r ../releases/rise-wallet-web-$VERSION.zip *
 popd
-# put CNAME file for a custom domain for nightly in gh-pages
-echo "gh-wallet.rise.vision\n" > build/CNAME
+# create a CNAME file for a custom domain in gh-pages
+printf "gh-wallet.rise.vision\n" > build/CNAME
