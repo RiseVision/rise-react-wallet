@@ -69,7 +69,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   };
 
   open: boolean = false;
-  private ledger: LedgerChannel;
+  private ledger: null | LedgerChannel = null;
   private lastLedgerSignId = 0;
   private disposeLedgerMonitor: null | IReactionDisposer = null;
 
@@ -124,17 +124,11 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       return true;
     }
 
-    // ledger part
+    // mark the dialog as closed
     if (!this.open) {
       return false;
     }
-    this.open = false;
-    if (this.disposeLedgerMonitor !== null) {
-      this.disposeLedgerMonitor();
-      this.disposeLedgerMonitor = null;
-    }
-
-    this.ledger.close();
+    this.dialogWillClose();
 
     // navigation part
     const { store, onClose, onCloseRoute } = this.injected;
@@ -261,18 +255,42 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     return walletStore.fees.get(feeMap[transaction.kind])!;
   }
 
-  onOpen() {
+  dialogWillOpen() {
     if (this.open) {
       return;
     }
     this.open = true;
-    const { ledgerStore } = this.injected;
-    this.ledger = ledgerStore.openChannel();
+    const { account, ledgerStore } = this.injected;
 
-    this.disposeLedgerMonitor = reaction(
-      this.canSignOnLedger,
-      this.beginLedgerSigning
-    );
+    if (account.type === AccountType.LEDGER) {
+      this.ledger = ledgerStore.openChannel();
+
+      this.disposeLedgerMonitor = reaction(
+        this.canSignOnLedger,
+        this.beginLedgerSigning
+      );
+    }
+  }
+
+  dialogWillClose() {
+    if (!this.open) {
+      return;
+    }
+    this.open = false;
+
+    if (this.disposeLedgerMonitor !== null) {
+      this.disposeLedgerMonitor();
+      this.disposeLedgerMonitor = null;
+    }
+
+    if (this.ledger !== null) {
+      this.ledger.close();
+      this.ledger = null;
+    }
+  }
+
+  componentWillUnmount() {
+    this.dialogWillClose();
   }
 
   canSignOnLedger = () => {
@@ -285,6 +303,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       transaction !== null &&
       ledgerStore.hasSupport &&
       account.hwId !== null &&
+      ledger !== null &&
       ledger.deviceId === account.hwId
     );
   }
@@ -295,7 +314,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
 
     const ledgerSignId = ++this.lastLedgerSignId;
 
-    if (!this.canSignOnLedger() || account.hwSlot === null) {
+    if (ledger === null || !this.canSignOnLedger() || account.hwSlot === null) {
       return;
     }
     const accountSlot = account.hwSlot || 0;
@@ -337,7 +356,9 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     const { open } = this.injected;
 
     if (open) {
-      this.onOpen();
+      this.dialogWillOpen();
+    } else {
+      this.dialogWillClose();
     }
 
     return <Dialog open={open} {...this.dialogProps} />;
@@ -424,7 +445,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         senderAddress={account.id}
       >
         {account.type === AccountType.LEDGER ? (
-          !ledgerStore.hasSupport ? (
+          ledger === null || !ledgerStore.hasSupport ? (
             <ConfirmTxStatusFooter type="ledger-not-supported" />
           ) : ledger.deviceId === null ? (
             <ConfirmTxStatusFooter type="ledger-not-connected" />
