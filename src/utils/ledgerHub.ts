@@ -87,14 +87,21 @@ async function createOrReuseTransport() {
   return ledgerTransport;
 }
 
+type CloseChannelCallback = (ch: LedgerChannel) => void;
+
 export class LedgerChannel {
+  private closeCallback: null | CloseChannelCallback;
+
   get deviceId(): null | string {
     if (!this.isOpen) {
       return null;
     }
     return this.hub.deviceId;
   }
-  isOpen = true;
+
+  get isOpen(): boolean {
+    return this.closeCallback !== null;
+  }
 
   /**
    * Decorator to run underlying function only if channel is marked as open
@@ -146,7 +153,9 @@ export class LedgerChannel {
     };
   }
 
-  constructor(public hub: LedgerHub) {}
+  constructor(public hub: LedgerHub, closeCallback: CloseChannelCallback) {
+    this.closeCallback = closeCallback;
+  }
 
   @WrapInSequence()
   @LedgerChannel.handleChannelError()
@@ -174,8 +183,9 @@ export class LedgerChannel {
   }
 
   async close() {
-    if (this.isOpen) {
-      this.isOpen = false;
+    if (this.closeCallback !== null) {
+      this.closeCallback(this);
+      this.closeCallback = null;
     }
   }
 }
@@ -194,6 +204,8 @@ export default class LedgerHub {
   @observable hasSupport: boolean = false;
   @observable deviceId: null | string = null;
 
+  private pingInterval: null | number = null;
+  private channelCount = 0;
   private lastPing?: number;
   private accountCache: {
     [slot: number]: LedgerAccount;
@@ -215,15 +227,35 @@ export default class LedgerHub {
       if (!e.id || e.id !== 'U2FNotSupported') {
         throw e;
       }
+    } finally {
+      this.schedulePing();
     }
+  }
 
-    if (this.hasSupport) {
-      setInterval(() => this.ping(), 1000);
+  schedulePing() {
+    const shouldPing = this.hasSupport && this.channelCount > 0;
+
+    if (shouldPing && this.pingInterval === null) {
+      log('Starting pinging device periodically...');
+      this.pingInterval = window.setInterval(() => this.ping(), 1000);
+      // Fire off initial ping immediately
+      this.ping();
+    } else if (!shouldPing && this.pingInterval !== null) {
+      log('Stopping pinging device...');
+      window.clearInterval(this.pingInterval);
+      this.pingInterval = null;
     }
   }
 
   openChannel(): LedgerChannel {
-    return new LedgerChannel(this);
+    this.channelCount += 1;
+    this.schedulePing();
+
+    return new LedgerChannel(this, () => {
+      // Close the channel
+      this.channelCount -= 1;
+      this.schedulePing();
+    });
   }
 
   async getAccount(
@@ -302,6 +334,11 @@ export default class LedgerHub {
     // get the connected device id. Since there's no actual API present that would
     // provide us with the device ID, we rely on the account at path 44'/1120'/0'
     // to fingerprint the currently connected device.
+    if (this.channelCount < 1) {
+      log('Skipping pinging, no channels open...');
+      return;
+    }
+
     const now = new Date().getTime();
     if (this.lastPing && now - this.lastPing < 500) {
       log('Skipping pinging, too soon...');
