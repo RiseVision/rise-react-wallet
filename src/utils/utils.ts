@@ -108,7 +108,7 @@ export function isMainnet(domain?: string): boolean {
   if (
     location &&
     domain &&
-    location.hostname.match(/`wallet[^.]*.${domain}`/)
+    location.hostname.match(new RegExp(`wallet[^.]*.${domain}`))
   ) {
     return true;
   }
