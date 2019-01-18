@@ -26,9 +26,9 @@ RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using
 
 Automatic nightly builds are provided directly from `master`:
 - [gh-wallet.rise.vision](https://gh-wallet.rise.vision/onboarding/add-account)
-- [Windows](https://gh-wallet.rise.vision/rise-wallet-win-nightly.exe)
-- [Linux](https://gh-wallet.rise.vision/rise-wallet-linux-nightly)
-- [MacOS](https://gh-wallet.rise.vision/rise-wallet-macos-nightly)
+- [Windows](https://gh-wallet.rise.vision/rise-wallet-win-nightly.zip)
+- [Linux](https://gh-wallet.rise.vision/rise-wallet-linux-nightly.tar.gz)
+- [MacOS](https://gh-wallet.rise.vision/rise-wallet-macos-nightly.tar.gz)
 
 ### Contributing
 
