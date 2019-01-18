@@ -16,10 +16,19 @@ RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using
 - [x] Account page
 - [x] Settings
 - [x] Sending Coins
+- [x] Delegates support
 - [x] Address book
 - [x] Ledger hardware wallet support
 - [x] Unit tests
 - [x] End-to-end tests
+
+### Nightly builds
+
+Automatic nightly builds are provided directly from `master`:
+- [gh-wallet.rise.vision](https://gh-wallet.rise.vision/onboarding/add-account)
+- [Windows](https://gh-wallet.rise.vision/rise-wallet-win-nightly.exe)
+- [Linux](https://gh-wallet.rise.vision/rise-wallet-linux-nightly)
+- [MacOS](https://gh-wallet.rise.vision/rise-wallet-macos-nightly)
 
 ### Contributing
 
@@ -33,10 +42,12 @@ Building:
 
 ### Custom backend
 
-To get the wallet working with a custom RISE deployment by default, you need to:
+To get the wallet working with a custom RISE deployment by default:
 1. Checkout a working copy
 1. Edit `src/config.json` and change both `api_url` and `api_url_testnet`
 1. Build a release with `yarn build` or `yarn run release`
+
+Keep in mind that you can simply use Node Switcher to connect to your node manually.
 
 
 ### About RISE
