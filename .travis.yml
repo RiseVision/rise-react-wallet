@@ -52,6 +52,7 @@ deploy:
     draft: true
     on:
       tags: true
+      condition: $TRAVIS_JOB_NAME = Release
   - provider: pages
     verbose: true
     local-dir: build
@@ -59,3 +60,4 @@ deploy:
     github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
     on:
       branch: master
+      condition: $TRAVIS_JOB_NAME = Release
