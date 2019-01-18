@@ -4,7 +4,8 @@ VERSION=$(node -p "require('./package.json').version")
 
 yarn build
 rm -f release.zip
-mkdir -p releases
+rm -rf releases
+mkdir releases
 # place the web release archive in /releases with a proper version number
 pushd build
 zip -r ../releases/rise-wallet-web-$VERSION.zip *
