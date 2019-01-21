@@ -37,7 +37,7 @@ const messages = defineMessages({
   },
   short: {
     id: 'transaction.group-date-short',
-    description: 'Grouping by date, eg "16th of Sep"',
+    description: 'Grouping by date, eg "16th of Sep". See https://momentjs.com/docs/#/displaying/format/ format tokens.',
     defaultMessage: 'Do of MMM'
   }
 });
