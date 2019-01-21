@@ -1,7 +1,6 @@
 import * as assert from 'assert';
-import { Moment } from 'moment';
-import * as moment from 'moment';
-import { Delegate, rise as dposAPI, TransactionType, APIWrapper } from 'risejs';
+import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
+import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
 import {
   RiseTransaction as GenericRiseTransaction,
   PostableRiseTransaction as GenericPostableRiseTransaction,
@@ -19,9 +18,13 @@ import {
   runInAction
 } from 'mobx';
 import { RouterStore } from 'mobx-router-rise';
+import * as moment from 'moment';
+import { Moment } from 'moment';
+import * as queryString from 'query-string';
+import { Delegate, rise as dposAPI, TransactionType, APIWrapper } from 'risejs';
+import * as io from 'socket.io-client';
 import * as lstore from 'store';
-import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
-import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
+import { As } from 'type-tagger';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';
 import {
@@ -32,12 +35,9 @@ import {
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
-import LangStore from './lang';
 import { TConfig } from './index';
-import * as queryString from 'query-string';
+import LangStore from './lang';
 import { Transaction } from './transactions';
-import { As } from 'type-tagger';
-import * as io from 'socket.io-client';
 
 export type NetworkType = 'mainnet' | 'testnet' | 'custom';
 
@@ -113,7 +113,6 @@ export default class WalletStore {
   ) {
     this.config = config;
     this.reload();
-    observe(this, 'accounts', () => this.connect());
     this.observeSelectedAccount();
     if (!this.storedAccounts().length) {
       router.goTo(onboardingAddAccountRoute);
@@ -555,6 +554,10 @@ export default class WalletStore {
       local.localId = nextAccountLocalId();
     }
     const account = new AccountStore(this.config, { id, ...local }, this);
+    // connect on the first account
+    if (!this.accounts.size) {
+      this.connect();
+    }
     this.accounts.set(id, account);
     if (select) {
       this.selectAccount(id);
@@ -764,7 +767,7 @@ export default class WalletStore {
       publicKey: wallet.publicKey.toString('hex'),
       type: AccountType.MNEMONIC
     };
-    // TODO: this is a promise. await?
+    // pass async
     this.login(account.id, account, true);
     return account.id;
   }
@@ -1016,7 +1019,7 @@ export function parseAccountReponse(
     ...local,
     // always take the public key from the server (ex virgin accounts)
     publicKey: parsed.publicKey || (local ? local.publicKey : null),
-    broadcastedPublicKey: parsed.publicKey || null,
+    broadcastedPublicKey: parsed.publicKey || null
   } as TAccount;
 }
 

@@ -166,7 +166,6 @@ describe('accounts', () => {
     await wallet.refreshAccount(id);
     expect(wallet.accounts.get(id)!.balance.toNumber()).toEqual(balance);
   });
-  // TODO
   it('login', async () => {
     const id = storedAccounts[0].id;
     // @ts-ignore restore to wrap again
@@ -174,13 +173,20 @@ describe('accounts', () => {
     // stub the API response
     // TODO extract
     stub(stubs, wallet.dposAPI.accounts, 'getAccount', () => serverAccounts[0]);
+    // stub the connect method
+    stub(stubs, wallet, 'connect', () => {
+      // empty
+    })
     // delete existing accounts
     wallet.accounts.clear();
     await wallet.login(id, storedAccounts[0]);
     const account = wallet.accounts.get(id);
+    // check balance
     expect(account!.balance.toString()).toEqual(
       serverAccounts[0].account!.balance
     );
+    // @ts-ignore check the websocket / fiat connection
+    expect(wallet.connect.called).toBeTruthy()
   });
   it('selectAccount', () => {
     const id = storedAccounts[1].id;
@@ -206,15 +212,11 @@ describe('accounts', () => {
     const addr = Rise.calcAddress(liskWallet.publicKey);
     // stub wallet.login
     stub(stubs, wallet, 'login', () => true);
-    const account = {
-      id: addr,
-      publicKey: liskWallet.publicKey.toString('hex')
-    };
     expect(wallet.registerAccount(mnemonic.split(' '))).toEqual(
       addr
     );
     // @ts-ignore
-    expect(wallet.login.calledWith(account));
+    expect(wallet.login.calledWithMatch(addr)).toBeTruthy();
   });
   it('removeAccount', () => {
     const id = storedAccounts[0].id;
@@ -365,7 +367,7 @@ describe('API calls', () => {
     });
     wallet.searchDelegates(q);
     // @ts-ignore sinon spy
-    expect(wallet.dposAPI.delegates.search.calledWith({ q }));
+    expect(wallet.dposAPI.delegates.search.calledWith({ q })).toBeTruthy();
   });
   it('loadVotedDelegate', async () => {
     const account = wallet.selectedAccount;
@@ -374,7 +376,7 @@ describe('API calls', () => {
     });
     await wallet.loadVotedDelegate(account.id);
     // @ts-ignore sinon spy
-    expect(wallet.dposAPI.accounts.getDelegates.called);
+    expect(wallet.dposAPI.accounts.getDelegates.called).toBeTruthy();
     expect(account.votedDelegateState).toEqual(LoadingState.LOADED);
     expect(account.votedDelegate).toMatchObject(
       serverAccountsDelegates.delegates[0]
@@ -387,7 +389,7 @@ describe('API calls', () => {
     });
     await wallet.loadRegisteredDelegate(account.id);
     // @ts-ignore sinon spy
-    expect(wallet.dposAPI.delegates.getByPublicKey.called);
+    expect(wallet.dposAPI.delegates.getByPublicKey.called).toBeTruthy();
     expect(account.registeredDelegateState).toEqual(LoadingState.LOADED);
     expect(account.registeredDelegate).toMatchObject(
       serverDelegatesGetByPublicKey.delegate
