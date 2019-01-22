@@ -179,7 +179,7 @@ export default class WalletStore {
   }
 
   connectSocket() {
-    if (!this.accounts.size || this.io) {
+    if (this.io) {
       return;
     }
     this.io = io.connect(this.config.api_url);
