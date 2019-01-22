@@ -206,7 +206,10 @@ export default class LedgerHub {
   async init() {
     try {
       // @ts-ignore missing d.ts
-      this.hasSupport = await TransportU2F.isSupported();
+      const hasSupport = await TransportU2F.isSupported();
+      runInAction(() => {
+        this.hasSupport = hasSupport;
+      });
     } catch (e) {
       // catch non-supported browsers
       if (!e.id || e.id !== 'U2FNotSupported') {
