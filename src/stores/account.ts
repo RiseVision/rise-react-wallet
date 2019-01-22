@@ -8,6 +8,7 @@ import { RawAmount } from '../utils/amounts';
 import { As } from 'type-tagger';
 import { Address, SenderType } from 'dpos-offline';
 
+// TODO rename to ProgressState (NOT_STARTED, STARTED, DONE)
 export enum LoadingState {
   NOT_LOADED,
   LOADING,

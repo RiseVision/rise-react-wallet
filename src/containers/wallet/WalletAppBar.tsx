@@ -29,6 +29,7 @@ import {
 } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
+import ConnectionStatus from './ConnectionStatus';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -193,25 +194,28 @@ class WalletAppBar extends React.Component<DecoratedProps> {
             )}
           </Typography>
           {state === 'accountOverview' && (
-            <Tooltip
-              title={intl.formatMessage(messages.accountSettingsTooltip)}
-            >
-              <Link
-                route={accountSettingsRoute}
-                params={{
-                  id: this.account.id
-                }}
+            <React.Fragment>
+              <ConnectionStatus />
+              <Tooltip
+                title={intl.formatMessage(messages.accountSettingsTooltip)}
               >
-                <IconButton
-                  aria-label={intl.formatMessage(
-                    messages.accountSettingsTooltip
-                  )}
-                  color="inherit"
+                <Link
+                  route={accountSettingsRoute}
+                  params={{
+                    id: this.account.id
+                  }}
                 >
-                  <SettingsOutlinedIcon />
-                </IconButton>
-              </Link>
-            </Tooltip>
+                  <IconButton
+                    aria-label={intl.formatMessage(
+                      messages.accountSettingsTooltip
+                    )}
+                    color="inherit"
+                  >
+                    <SettingsOutlinedIcon />
+                  </IconButton>
+                </Link>
+              </Tooltip>
+            </React.Fragment>
           )}
         </Toolbar>
       </AppBar>
