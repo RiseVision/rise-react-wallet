@@ -78,7 +78,7 @@ export default class WalletStore {
   suggestedDelegatesPromise: Promise<Delegate[]> | null;
 
   fiatPrices: { [currency: string]: number } = {};
-  connected: LoadingState = LoadingState.NOT_LOADED;
+  @observable connected: LoadingState = LoadingState.NOT_LOADED;
 
   /**
    * Returns node's URL, depending on the current location.
@@ -178,23 +178,29 @@ export default class WalletStore {
     }
   }
 
+  @action
+  setConnected(status: LoadingState) {
+    this.connected = status;
+  }
+
   connectSocket() {
     if (this.io) {
       return;
     }
     this.io = io.connect(this.config.api_url);
-    this.io.on('connect', () => {
-      this.connected = LoadingState.LOADED;
-    });
-    this.io.on('connecting', () => {
-      this.connected = LoadingState.LOADING;
-    });
-    this.io.on('reconnecting', () => {
-      this.connected = LoadingState.LOADING;
-    });
-    this.io.on('disconnect', () => {
-      this.connected = LoadingState.NOT_LOADED;
-    });
+    this.io.on('connect', this.setConnected.bind(this, LoadingState.LOADED));
+    this.io.on(
+      'connecting',
+      this.setConnected.bind(this, LoadingState.LOADING)
+    );
+    this.io.on(
+      'reconnecting',
+      this.setConnected.bind(this, LoadingState.LOADING)
+    );
+    this.io.on(
+      'disconnect',
+      this.setConnected.bind(this, LoadingState.NOT_LOADED)
+    );
     // TODO get types from rise-node
     type TTransactionChange = { senderId: string; recipientId: string };
     // TODO get types from rise-node

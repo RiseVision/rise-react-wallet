@@ -86,7 +86,7 @@ class ConnectionStatus extends React.Component<DecoratedProps> {
         return (
           <React.Fragment>
             <span
-              className={classNames(classes.connected, classes.connectionIcon)}
+              className={classNames(classes.connecting, classes.connectionIcon)}
             />
             {intl.formatMessage(messages.connectingStatus)}
           </React.Fragment>
