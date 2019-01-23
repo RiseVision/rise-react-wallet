@@ -32,7 +32,7 @@ const root = (
 
 ReactDOM.render(root, document.getElementById('root') as HTMLElement);
 
-const isDesktop = typeof carlo !== undefined;
+const isDesktop = typeof carlo !== 'undefined';
 if (!isDesktop) {
   serviceWorker.register(store);
 } else {
