@@ -201,6 +201,11 @@ export default class WalletStore {
       'disconnect',
       this.setConnected.bind(this, LoadingState.NOT_LOADED)
     );
+    // react to browser events
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', this.io.connect.bind(this.io));
+      window.addEventListener('offline', this.io.disconnect.bind(this.io));
+    }
     // TODO get types from rise-node
     type TTransactionChange = { senderId: string; recipientId: string };
     // TODO get types from rise-node
