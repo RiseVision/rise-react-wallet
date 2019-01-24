@@ -607,6 +607,7 @@ export default class WalletStore {
         this.calculateFiat(id);
       }
     };
+    // TODO extract
     const balanceChanged = (change: IValueDidChange<RawAmount>) => {
       calculateFiat();
       // skip when already loading
@@ -628,6 +629,7 @@ export default class WalletStore {
       // pass async
       account.recentTransactions.load();
     };
+    // TODO extract
     const viewedChanged = () => {
       // refresh only for viewed accounts (don't pre-fetch)
       // and with already downloaded publicKey
@@ -664,6 +666,18 @@ export default class WalletStore {
         dispose();
       }
     });
+    // mark as dirty when offline
+    if (typeof window !== 'undefined') {
+      // TODO dispose listeners
+      window.addEventListener('offline', () => {
+        account.isDirty = true;
+      });
+      window.addEventListener('online', () => {
+        this.refreshAccount(account.id);
+        // refresh transactions only for viewed accounts
+        viewedChanged()
+      });
+    }
   }
 
   @action
@@ -804,6 +818,7 @@ export default class WalletStore {
     this.accounts.delete(id);
     // TODO observer
     lstore.set('accounts', this.storedAccounts().filter(a => a.id !== id));
+    // TODO remove accounts cache
     // select a first account if case the removed one was selected
     const ids = [...this.accounts.keys()];
     if (wasSelected && ids.length) {
@@ -820,6 +835,7 @@ export default class WalletStore {
     lstore.remove('accounts');
     lstore.remove('lastSelectedAccount');
     lstore.remove('contacts');
+    lstore.remove('cache');
     this.accounts.clear();
     // @ts-ignore
     this.selectedAccount = null;

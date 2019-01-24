@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import { Delegate } from 'dpos-api-wrapper';
-import { action, observable } from 'mobx';
+import { action, observable, runInAction } from 'mobx';
+import * as lstore from 'store';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
 import WalletStore from './wallet';
@@ -73,25 +74,88 @@ export default class AccountStore {
   @observable recentTransactions: TransactionsStore;
   @observable selected: boolean = false;
 
+  /**
+   * Data is potentially dirty and need to be re-downloaded from the server.
+   * This happens after being offline.
+   */
+  set isDirty(value: boolean) {
+    if (value) {
+      runInAction(() => {
+        // mark the recent transactions as dirty
+        this.recentTransactions.isDirty = true;
+        this.recentTransactions.isLoading = false;
+      });
+    }
+    this.isDirty_ = true;
+  }
+
+  get isDirty() {
+    return this.isDirty_;
+  }
+
+  protected isDirty_ = false;
+
   constructor(
     config: TConfig,
     account: Partial<Pick<AccountStore, ImportableFields>>,
     wallet: WalletStore
   ) {
     assert(account.id, 'Account ID is missing');
-    this.importData(account);
+    this.importData(account, false);
     this.config = config;
     this.recentTransactions = new TransactionsStore(
       this.config,
       account.id!,
       wallet
     );
+    this.loadCache();
+  }
+
+  saveCache() {
+    const skipFields = ['recentTransactions', 'selected', 'config'];
+    const data: Partial<AccountStore> = {};
+    for (const field in this) {
+      if (skipFields.includes(field)) {
+        continue;
+      }
+      if (this[field] instanceof RawAmount) {
+        // @ts-ignore
+        data[field] = this[field].toNumber();
+      } else {
+        // @ts-ignore
+        data[field] = this[field];
+      }
+    }
+    const cache = lstore.get('cache') || {};
+    cache[this.id] = data;
+    lstore.set('cache', cache);
+    console.log('cache updated', this.id, data);
+  }
+
+  loadCache() {
+    const cache = lstore.get('cache') || {};
+    if (!cache[this.id]) {
+      return;
+    }
+    for (const field in cache[this.id]) {
+      if (this[field] instanceof RawAmount) {
+        this[field] = new RawAmount(cache[this.id][field]);
+      } else {
+        this[field] = cache[this.id][field];
+      }
+    }
   }
 
   @action
-  importData(account: Partial<Pick<AccountStore, ImportableFields>>) {
+  importData(
+    account: Partial<Pick<AccountStore, ImportableFields>>,
+    saveCache: boolean = true
+  ) {
     for (const [name, value] of Object.entries(account)) {
       this[name] = value;
+    }
+    if (saveCache) {
+      this.saveCache();
     }
   }
 

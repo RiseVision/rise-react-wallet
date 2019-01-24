@@ -52,6 +52,12 @@ export default class TransactionsStore {
   @observable hasMore = false;
   @observable expanded = observable.array<string>();
 
+  /**
+   * Data is potentially dirty and need to be re-downloaded from the server.
+   * This happens after being offline.
+   */
+  isDirty = false;
+
   @computed
   get groupedByDay(): TGroupedTransactions {
     const msg = (desc: MessageDescriptor) => {
@@ -85,10 +91,7 @@ export default class TransactionsStore {
   ) {}
 
   /**
-   * TODO
-   * - dont re-download previous transactions
-   * - recognize that there's no more transactions to load
-   *
+   * TODO marge with the previous results when possible
    * @param amount
    */
   @action
@@ -107,6 +110,8 @@ export default class TransactionsStore {
       this.items.push(...transactions);
       this.hasMore = transactions.length === amount;
     });
+    this.isDirty = false;
+    this.saveCache();
   }
 
   @action
@@ -125,7 +130,10 @@ export default class TransactionsStore {
       this.items.push(...page);
       this.hasMore = page.length === amount;
     });
+    this.saveCache();
   }
+
+  saveCache() {}
 }
 
 export class Transaction {
