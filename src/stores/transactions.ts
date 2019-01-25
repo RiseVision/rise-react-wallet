@@ -186,14 +186,6 @@ export default class TransactionsStore {
 }
 
 export class Transaction {
-
-  get senderName(): string | null {
-    return this.wallet.idToName(this.senderId);
-  }
-
-  get recipientName(): string | null {
-    return this.wallet.getRecipientName(this.type, this.recipientId);
-  }
   asset: {
     signature?: {};
     votes?: string[];
