@@ -112,7 +112,7 @@ export default class AccountStore {
   }
 
   saveCache() {
-    const skipFields = ['recentTransactions', 'selected', 'config'];
+    const skipFields = ['recentTransactions', 'selected', 'config', 'isDirty'];
     const data: Partial<AccountStore> = {};
     for (const field in this) {
       if (skipFields.includes(field)) {
@@ -127,32 +127,38 @@ export default class AccountStore {
       }
     }
     const cache = lstore.get('cache') || {};
-    cache[this.id] = data;
+    cache.accounts = cache.accounts || {}
+    cache.accounts[this.id] = data;
     lstore.set('cache', cache);
-    console.log('cache updated', this.id, data);
   }
 
   loadCache() {
     const cache = lstore.get('cache') || {};
-    if (!cache[this.id]) {
+    cache.accounts = cache.accounts || {}
+    if (!cache.accounts[this.id]) {
       return;
     }
     for (const field in cache[this.id]) {
       if (this[field] instanceof RawAmount) {
-        this[field] = new RawAmount(cache[this.id][field]);
+        this[field] = new RawAmount(cache.accounts[this.id][field]);
       } else {
-        this[field] = cache[this.id][field];
+        this[field] = cache.accounts[this.id][field];
       }
     }
+    this.isDirty = true
   }
 
   @action
   importData(
     account: Partial<Pick<AccountStore, ImportableFields>>,
-    saveCache: boolean = true
+    saveCache: boolean = true,
+    markAsLoaded: boolean = true
   ) {
     for (const [name, value] of Object.entries(account)) {
       this[name] = value;
+    }
+    if (markAsLoaded) {
+      this.loaded = true
     }
     if (saveCache) {
       this.saveCache();

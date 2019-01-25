@@ -3,6 +3,7 @@ import { computed, observable, runInAction, action } from 'mobx';
 import * as moment from 'moment/min/moment-with-locales';
 import { defineMessages } from 'react-intl';
 import { TransactionType } from 'risejs';
+import * as lstore from 'store';
 import { RawAmount } from '../utils/amounts';
 import { timestampToUnix } from '../utils/utils';
 import { TConfig } from './index';
@@ -12,6 +13,7 @@ import WalletStore, {
   APITransaction
 } from './wallet';
 import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
+import { get } from 'lodash';
 
 const messages = defineMessages({
   lastWeek: {
@@ -88,15 +90,17 @@ export default class TransactionsStore {
     public config: TConfig,
     public accountID: string,
     public wallet: WalletStore
-  ) {}
+  ) {
+    this.loadCache();
+  }
 
   /**
-   * TODO marge with the previous results when possible
    * @param amount
    */
   @action
-  async load(amount: number = 8) {
+  async load(amount: number = this.items.length) {
     this.isLoading = true;
+    amount = amount || 8;
 
     const transactions = await this.wallet.fetchTransactions(
       this.accountID,
@@ -133,7 +137,37 @@ export default class TransactionsStore {
     this.saveCache();
   }
 
-  saveCache() {}
+  saveCache() {
+    if (!this.items.length) {
+      return;
+    }
+    const data: Partial<TransactionsStore> = {};
+    for (const field in this) {
+      if (this[field] instanceof RawAmount) {
+        // @ts-ignore
+        data[field] = this[field].toNumber();
+      } else {
+        // @ts-ignore
+        data[field] = this[field];
+      }
+    }
+    const cache = lstore.get('cache') || {};
+    cache.transactions = cache.transactions || {};
+    cache.transactions[this.accountID] = this.items.map(t => t.serialize());
+    lstore.set('cache', cache);
+  }
+
+  loadCache() {
+    const cache = lstore.get('cache') || {};
+    const items = get(cache, ['transactions', this.accountID]);
+    if (!items) {
+      return;
+    }
+    for (const item of items) {
+      this.items.push(new Transaction(this.wallet, this.accountID, item));
+    }
+    this.isDirty = true;
+  }
 }
 
 export class Transaction {
@@ -161,6 +195,7 @@ export class Transaction {
   amount: RawAmount;
   amountFee: RawAmount;
   fee: RawAmount;
+  /** TODO may be a problem when keeping the same transaction for 2 users */
   isIncoming: boolean;
   time: string;
   // should never be null / undefined
@@ -200,7 +235,13 @@ export class Transaction {
     accountID: string,
     raw: APITransaction
   ) {
-    this.importRaw(raw);
+    this.importRaw(raw, accountID);
+  }
+
+  private importRaw(raw: APITransaction, accountID: string) {
+    for (const field of this.rawFields) {
+      this[field] = raw[field];
+    }
     const amount = new RawAmount(raw.amount || 0);
     const fee = new RawAmount(raw.fee);
     this.timestamp = timestampToUnix(raw.timestamp);
@@ -211,12 +252,23 @@ export class Transaction {
     this.time = moment
       .utc(timestampToUnix(raw.timestamp))
       .local()
-      .format(wallet.config.date_format);
+      .format(this.wallet.config.date_format);
   }
 
-  private importRaw(raw: APITransaction) {
-    for (const field of this.rawFields) {
-      this[field] = raw[field];
+  serialize(): Partial<Transaction> {
+    const data: Partial<Transaction> = {};
+    for (const field in this) {
+      if (['wallet', 'rawFields'].includes(field)) {
+        continue;
+      }
+      if (this[field] instanceof RawAmount) {
+        // @ts-ignore
+        data[field] = this[field].toNumber();
+      } else {
+        // @ts-ignore
+        data[field] = this[field];
+      }
     }
+    return data;
   }
 }

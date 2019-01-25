@@ -11,7 +11,7 @@ import {
   serverTransactionsConfirmed
 } from './fixtures';
 import TransactionsStore, { Transaction } from './transactions';
-import WalletStore, { parseTransactionsReponse } from './wallet';
+import WalletStore, { parseTransactionsResponse } from './wallet';
 import * as sinon from 'sinon';
 import { TransactionType } from 'risejs';
 
@@ -60,7 +60,7 @@ describe('TransactionsStore', () => {
     // @ts-ignore mocked wallet
     store = new TransactionsStore(config, id, wallet);
     // TODO generate transactions with current dates
-    const txs = parseTransactionsReponse(
+    const txs = parseTransactionsResponse(
       // @ts-ignore mocked wallet
       wallet,
       id,
@@ -77,7 +77,7 @@ describe('TransactionsStore', () => {
 
   it('loadMore', async () => {
     // TODO generate transactions with current dates
-    const txs = parseTransactionsReponse(
+    const txs = parseTransactionsResponse(
       // @ts-ignore mocked wallet
       wallet,
       id,

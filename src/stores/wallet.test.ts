@@ -34,7 +34,7 @@ import {
 import Wallet, {
   TStoredAccount,
   parseAccountReponse,
-  parseTransactionsReponse
+  parseTransactionsResponse
 } from './wallet';
 
 let stubs: sinon.SinonStub[];
@@ -408,7 +408,7 @@ describe('API calls', () => {
     stub(stubs, wallet.dposAPI.delegates, 'getByPublicKey', () => {
       return serverDelegatesGetByPublicKey;
     });
-    let tx = parseTransactionsReponse(
+    let tx = parseTransactionsResponse(
       wallet,
       account.id,
       serverTransactionDelegates

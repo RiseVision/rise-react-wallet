@@ -588,8 +588,7 @@ export default class WalletStore {
     }
     this.observeAccount(id);
     const res = await this.loadAccount(id);
-    account.importData(parseAccountReponse(res, local));
-    account.loaded = true;
+    account.importData(parseAccountReponse(res, local), true, true);
     return true;
   }
 
@@ -875,7 +874,7 @@ export default class WalletStore {
     if (!res.success) {
       throw new Error((res as TErrorResponse).error);
     }
-    const txs = parseTransactionsReponse(this, accountID, res);
+    const txs = parseTransactionsResponse(this, accountID, res);
 
     // load votes
     await Promise.all(txs.map(tx => this.loadTransactionDelegates(tx)));
@@ -1063,7 +1062,7 @@ export function parseAccountReponse(
   } as TAccount;
 }
 
-export function parseTransactionsReponse(
+export function parseTransactionsResponse(
   wallet: WalletStore,
   accountID: string,
   res: TTransactionsResponse
