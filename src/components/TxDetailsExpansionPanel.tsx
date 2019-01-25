@@ -692,10 +692,10 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
         );
       } else {
         summaryLong = intl.formatMessage(
-          messages[`summary${msgStatus}PassphraseGenericLong`]
+          messages[`summary${msgStatus}DelegateGenericLong`]
         );
         summaryShort = intl.formatMessage(
-          messages[`summary${msgStatus}PassphraseGenericShort`]
+          messages[`summary${msgStatus}DelegateGenericShort`]
         );
       }
     } else if (tx.type === TransactionType.VOTE) {
