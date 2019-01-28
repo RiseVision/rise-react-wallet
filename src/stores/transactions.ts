@@ -99,41 +99,56 @@ export default class TransactionsStore {
    */
   @action
   async load(amount: number = this.items.length) {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
     amount = amount || 8;
 
-    const transactions = await this.wallet.fetchTransactions(
-      this.accountID,
-      amount
-    );
+    try {
+      const transactions = await this.wallet.fetchTransactions(
+        this.accountID,
+        amount
+      );
 
-    runInAction(() => {
-      this.isLoading = false;
-      this.fetched = true;
-      this.items.length = 0;
-      this.items.push(...transactions);
-      this.hasMore = transactions.length === amount;
-    });
+      runInAction(() => {
+        this.fetched = true;
+        this.items.length = 0;
+        this.items.push(...transactions);
+        this.hasMore = transactions.length === amount;
+      });
+    } finally {
+      runInAction(() => {
+        this.isLoading = true;
+      });
+    }
     this.isDirty = false;
     this.saveCache();
   }
 
   @action
   async loadMore(amount: number = 8) {
-    this.isLoading = true;
-
-    const page = await this.wallet.fetchTransactions(
-      this.accountID,
-      amount,
-      this.items.length
-    );
-
     runInAction(() => {
-      this.isLoading = false;
-      this.fetched = true;
-      this.items.push(...page);
-      this.hasMore = page.length === amount;
+      this.isLoading = true;
     });
+
+    try {
+      const page = await this.wallet.fetchTransactions(
+        this.accountID,
+        amount,
+        this.items.length
+      );
+
+      runInAction(() => {
+        this.isLoading = false;
+        this.fetched = true;
+        this.items.push(...page);
+        this.hasMore = page.length === amount;
+      });
+    } finally {
+      runInAction(() => {
+        this.isLoading = true;
+      });
+    }
     this.saveCache();
   }
 
@@ -227,7 +242,8 @@ export class Transaction {
     'fee',
     'signatures',
     'assets',
-    'recipientPublicKey'
+    'recipientPublicKey',
+    'votes'
   ];
 
   constructor(
