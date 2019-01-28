@@ -198,7 +198,8 @@ export class Transaction {
   /** TODO may be a problem when keeping the same transaction for 2 users */
   isIncoming: boolean;
   time: string;
-  votes: TTransactionVote[];
+  // should never be null / undefined
+  votes: TTransactionVote[] = [];
 
   get senderName(): string | null {
     return this.wallet.idToName(this.senderId);
