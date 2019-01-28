@@ -176,7 +176,7 @@ describe('accounts', () => {
     // stub the connect method
     stub(stubs, wallet, 'connect', () => {
       // empty
-    })
+    });
     // delete existing accounts
     wallet.accounts.clear();
     await wallet.login(id, storedAccounts[0]);
@@ -186,7 +186,7 @@ describe('accounts', () => {
       serverAccounts[0].account!.balance
     );
     // @ts-ignore check the websocket / fiat connection
-    expect(wallet.connect.called).toBeTruthy()
+    expect(wallet.connect.called).toBeTruthy();
   });
   it('selectAccount', () => {
     const id = storedAccounts[1].id;
