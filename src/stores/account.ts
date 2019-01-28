@@ -127,14 +127,14 @@ export default class AccountStore {
       }
     }
     const cache = lstore.get('cache') || {};
-    cache.accounts = cache.accounts || {}
+    cache.accounts = cache.accounts || {};
     cache.accounts[this.id] = data;
     lstore.set('cache', cache);
   }
 
   loadCache() {
     const cache = lstore.get('cache') || {};
-    cache.accounts = cache.accounts || {}
+    cache.accounts = cache.accounts || {};
     if (!cache.accounts[this.id]) {
       return;
     }
@@ -145,7 +145,7 @@ export default class AccountStore {
         this[field] = cache.accounts[this.id][field];
       }
     }
-    this.isDirty = true
+    this.isDirty = true;
   }
 
   @action
@@ -158,7 +158,7 @@ export default class AccountStore {
       this[name] = value;
     }
     if (markAsLoaded) {
-      this.loaded = true
+      this.loaded = true;
     }
     if (saveCache) {
       this.saveCache();

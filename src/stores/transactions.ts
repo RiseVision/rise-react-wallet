@@ -186,6 +186,14 @@ export default class TransactionsStore {
 }
 
 export class Transaction {
+
+  get senderName(): string | null {
+    return this.wallet.idToName(this.senderId);
+  }
+
+  get recipientName(): string | null {
+    return this.wallet.getRecipientName(this.type, this.recipientId);
+  }
   asset: {
     signature?: {};
     votes?: string[];
@@ -215,14 +223,6 @@ export class Transaction {
   time: string;
   // should never be null / undefined
   votes: TTransactionVote[] = [];
-
-  get senderName(): string | null {
-    return this.wallet.idToName(this.senderId);
-  }
-
-  get recipientName(): string | null {
-    return this.wallet.getRecipientName(this.type, this.recipientId);
-  }
 
   protected rawFields = [
     'blockId',
@@ -254,23 +254,6 @@ export class Transaction {
     this.importRaw(raw, accountID);
   }
 
-  private importRaw(raw: APITransaction, accountID: string) {
-    for (const field of this.rawFields) {
-      this[field] = raw[field];
-    }
-    const amount = new RawAmount(raw.amount || 0);
-    const fee = new RawAmount(raw.fee);
-    this.timestamp = timestampToUnix(raw.timestamp);
-    this.amount = amount;
-    this.amountFee = amount.plus(fee);
-    this.fee = fee;
-    this.isIncoming = raw.senderId !== accountID;
-    this.time = moment
-      .utc(timestampToUnix(raw.timestamp))
-      .local()
-      .format(this.wallet.config.date_format);
-  }
-
   serialize(): Partial<Transaction> {
     const data: Partial<Transaction> = {};
     for (const field in this) {
@@ -286,5 +269,22 @@ export class Transaction {
       }
     }
     return data;
+  }
+
+  private importRaw(raw: APITransaction, accountID: string) {
+    for (const field of this.rawFields) {
+      this[field] = raw[field];
+    }
+    const amount = new RawAmount(raw.amount || 0);
+    const fee = new RawAmount(raw.fee);
+    this.timestamp = timestampToUnix(raw.timestamp);
+    this.amount = amount;
+    this.amountFee = amount.plus(fee);
+    this.fee = fee;
+    this.isIncoming = raw.senderId !== accountID;
+    this.time = moment
+      .utc(timestampToUnix(raw.timestamp))
+      .local()
+      .format(this.wallet.config.date_format);
   }
 }

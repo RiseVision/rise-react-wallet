@@ -674,7 +674,7 @@ export default class WalletStore {
       window.addEventListener('online', () => {
         this.refreshAccount(account.id);
         // refresh transactions only for viewed accounts
-        viewedChanged()
+        viewedChanged();
       });
     }
   }
