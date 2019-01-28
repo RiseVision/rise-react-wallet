@@ -154,7 +154,8 @@ export class Transaction {
   fee: RawAmount;
   isIncoming: boolean;
   time: string;
-  votes: TTransactionVote[];
+  // should never be null / undefined
+  votes: TTransactionVote[] = [];
 
   get senderName(): string | null {
     return this.wallet.idToName(this.senderId);
