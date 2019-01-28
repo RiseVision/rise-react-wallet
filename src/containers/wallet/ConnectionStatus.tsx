@@ -50,17 +50,17 @@ const stylesDecorator = withStyles(styles, { name: 'ConnectionStatus' });
 
 const messages = defineMessages({
   connectedStatus: {
-    id: 'wallet-appbar.account-connected-status',
+    id: 'wallet-connection.connected-status',
     description: 'Connection status when connected',
     defaultMessage: 'Connected'
   },
   disconnectedStatus: {
-    id: 'wallet-appbar.account-disconnected-status',
+    id: 'wallet-connection.disconnected-status',
     description: 'Connection status when disconnected',
     defaultMessage: 'Disconnected'
   },
   connectingStatus: {
-    id: 'wallet-appbar.account-connecting-status',
+    id: 'wallet-connection.connecting-status',
     description: 'Connection status when connecting',
     defaultMessage: 'Connecting'
   }
