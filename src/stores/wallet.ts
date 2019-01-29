@@ -190,18 +190,21 @@ export default class WalletStore {
     }
     this.io = io.connect(this.config.api_url);
     this.io.on('connect', this.setConnected.bind(this, LoadingState.LOADED));
-    this.io.on(
-      'connecting',
-      this.setConnected.bind(this, LoadingState.LOADING)
-    );
-    this.io.on(
-      'reconnecting',
-      this.setConnected.bind(this, LoadingState.LOADING)
-    );
+    this.io.on('connecting', () => {
+      if (navigator.onLine) {
+        this.setConnected(LoadingState.LOADING);
+      }
+    });
+    this.io.on('reconnecting', () => {
+      if (navigator.onLine) {
+        this.setConnected(LoadingState.LOADING);
+      }
+    });
     this.io.on(
       'disconnect',
       this.setConnected.bind(this, LoadingState.NOT_LOADED)
     );
+    this.io.on('error', this.setConnected.bind(this, LoadingState.NOT_LOADED));
     // react to browser events
     if (typeof window !== 'undefined') {
       window.addEventListener('online', this.io.connect.bind(this.io));
