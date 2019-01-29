@@ -74,6 +74,8 @@ export default class AccountStore {
   @observable recentTransactions: TransactionsStore;
   @observable selected: boolean = false;
 
+  protected isDirty_ = false;
+
   /**
    * Data is potentially dirty and need to be re-downloaded from the server.
    * This happens after being offline.
@@ -92,8 +94,6 @@ export default class AccountStore {
   get isDirty() {
     return this.isDirty_;
   }
-
-  protected isDirty_ = false;
 
   constructor(
     config: TConfig,

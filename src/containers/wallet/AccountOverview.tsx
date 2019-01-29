@@ -29,7 +29,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import Link from '../../components/Link';
 import { accountOverviewRoute, accountSendRoute } from '../../routes';
 import { accountStore } from '../../stores';
-import AccountStore, { AccountType } from '../../stores/account';
+import AccountStore, { AccountType, LoadingState } from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
 import WalletStore from '../../stores/wallet';
 
@@ -250,7 +250,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
   render() {
     // mark the current account as viewed
     this.account.viewed = true;
-    const { intl, classes } = this.injected;
+    const { intl, classes, walletStore } = this.injected;
 
     const readOnly = this.account && this.account.type === AccountType.READONLY;
     const headerProps = {
@@ -349,7 +349,10 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
           {recentTransactions.hasMore && (
             <div className={classes.loadMore}>
               <Button
-                disabled={recentTransactions.isLoading}
+                disabled={
+                  recentTransactions.isLoading ||
+                  walletStore.connected !== LoadingState.LOADED
+                }
                 onClick={this.handleLoadMore}
               >
                 Load more

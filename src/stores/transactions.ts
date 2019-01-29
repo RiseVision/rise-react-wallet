@@ -117,7 +117,7 @@ export default class TransactionsStore {
       });
     } finally {
       runInAction(() => {
-        this.isLoading = true;
+        this.isLoading = false;
       });
     }
     this.isDirty = false;
@@ -145,7 +145,7 @@ export default class TransactionsStore {
       });
     } finally {
       runInAction(() => {
-        this.isLoading = true;
+        this.isLoading = false;
       });
     }
     this.saveCache();
@@ -167,19 +167,22 @@ export default class TransactionsStore {
     }
     const cache = lstore.get('cache') || {};
     cache.transactions = cache.transactions || {};
-    cache.transactions[this.accountID] = this.items.map(t => t.serialize());
+    cache.transactions[this.accountID] = {
+      items: this.items.map(t => t.serialize()),
+      hasMore: this.hasMore
+    };
     lstore.set('cache', cache);
   }
 
   loadCache() {
-    const cache = lstore.get('cache') || {};
-    const items = get(cache, ['transactions', this.accountID]);
-    if (!items) {
+    const cache = get(lstore.get('cache'), ['transactions', this.accountID]);
+    if (!cache) {
       return;
     }
-    for (const item of items) {
+    for (const item of cache.items) {
       this.items.push(new Transaction(this.wallet, this.accountID, item));
     }
+    this.hasMore = cache.hasMore;
     this.isDirty = true;
   }
 }
