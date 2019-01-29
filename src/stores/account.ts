@@ -88,7 +88,7 @@ export default class AccountStore {
         this.recentTransactions.isLoading = false;
       });
     }
-    this.isDirty_ = true;
+    this.isDirty_ = value;
   }
 
   get isDirty() {
