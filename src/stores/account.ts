@@ -135,14 +135,16 @@ export default class AccountStore {
   loadCache() {
     const cache = lstore.get('cache') || {};
     cache.accounts = cache.accounts || {};
-    if (!cache.accounts[this.id]) {
+    const accountCache = cache.accounts[this.id];
+    if (!accountCache) {
       return;
     }
-    for (const field in cache[this.id]) {
+
+    for (const field in accountCache) {
       if (this[field] instanceof RawAmount) {
-        this[field] = new RawAmount(cache.accounts[this.id][field]);
+        this[field] = new RawAmount(accountCache[field]);
       } else {
-        this[field] = cache.accounts[this.id][field];
+        this[field] = accountCache[field];
       }
     }
     this.isDirty = true;
