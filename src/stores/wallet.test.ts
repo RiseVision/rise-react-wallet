@@ -149,7 +149,7 @@ describe('accounts', () => {
       success: true
     }));
     // @ts-ignore protected
-    const response = await wallet.loadAccount(id);
+    const response = await wallet.fetchAccountData(id);
     expect(response.account).toEqual({ address: id, balance });
   });
   it('refreshAccount', async () => {

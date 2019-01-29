@@ -5,7 +5,6 @@ import { defineMessages } from 'react-intl';
 import { TransactionType } from 'risejs';
 import * as lstore from 'store';
 import { RawAmount } from '../utils/amounts';
-import { timestampToUnix } from '../utils/utils';
 import { TConfig } from './index';
 import WalletStore, {
   TGroupedTransactions,
@@ -257,7 +256,14 @@ export class Transaction {
   serialize(): Partial<Transaction> {
     const data: Partial<Transaction> = {};
     for (const field in this) {
-      if (['wallet', 'rawFields'].includes(field)) {
+      const skipFields = [
+        'wallet',
+        'rawFields',
+        'time',
+        'amountFee',
+        'isIncoming'
+      ];
+      if (skipFields.includes(field)) {
         continue;
       }
       if (this[field] instanceof RawAmount) {
@@ -277,13 +283,12 @@ export class Transaction {
     }
     const amount = new RawAmount(raw.amount || 0);
     const fee = new RawAmount(raw.fee);
-    this.timestamp = timestampToUnix(raw.timestamp);
     this.amount = amount;
     this.amountFee = amount.plus(fee);
     this.fee = fee;
     this.isIncoming = raw.senderId !== accountID;
     this.time = moment
-      .utc(timestampToUnix(raw.timestamp))
+      .utc(this.timestamp)
       .local()
       .format(this.wallet.config.date_format);
   }
