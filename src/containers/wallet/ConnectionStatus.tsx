@@ -1,3 +1,4 @@
+import { Typography } from '@material-ui/core';
 import greenColor from '@material-ui/core/colors/green';
 import redColor from '@material-ui/core/colors/red';
 import yellowColor from '@material-ui/core/colors/yellow';
@@ -84,9 +85,9 @@ class ConnectionStatus extends React.Component<DecoratedProps> {
             <span
               className={classNames(classes.connected, classes.connectionIcon)}
             />
-            <span className={classes.text}>
+            <Typography className={classes.text}>
               {intl.formatMessage(messages.connectedStatus)}
-            </span>
+            </Typography>
           </React.Fragment>
         );
       case LoadingState.LOADING:
@@ -95,9 +96,9 @@ class ConnectionStatus extends React.Component<DecoratedProps> {
             <span
               className={classNames(classes.connecting, classes.connectionIcon)}
             />
-            <span className={classes.text}>
+            <Typography className={classes.text}>
               {intl.formatMessage(messages.connectingStatus)}
-            </span>
+            </Typography>
           </React.Fragment>
         );
       default:
@@ -109,9 +110,9 @@ class ConnectionStatus extends React.Component<DecoratedProps> {
                 classes.connectionIcon
               )}
             />
-            <span className={classes.text}>
+            <Typography className={classes.text}>
               {intl.formatMessage(messages.disconnectedStatus)}
-            </span>
+            </Typography>
           </React.Fragment>
         );
     }
