@@ -259,6 +259,9 @@ export class Transaction {
   serialize(): Partial<Transaction> {
     const data: Partial<Transaction> = {};
     for (const field in this) {
+      if (!this.hasOwnProperty(field)) {
+        continue
+      }
       const skipFields = [
         'wallet',
         'rawFields',
