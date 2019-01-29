@@ -31,7 +31,8 @@ import {
   normalizeAddress,
   TAddressRecord,
   TAddressSource,
-  isMainnet
+  isMainnet,
+  timestampToUnix
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
@@ -300,7 +301,7 @@ export default class WalletStore {
     lstore.set('accounts', stored);
   }
 
-  protected async loadAccount(id: string): Promise<TAccountResponse> {
+  protected async fetchAccountData(id: string): Promise<TAccountResponse> {
     const res:
       | TAccountResponse
       | TErrorResponse = await this.dposAPI.accounts.getAccount(id);
@@ -500,7 +501,7 @@ export default class WalletStore {
       if (!local) {
         continue;
       }
-      const data = await this.loadAccount(id);
+      const data = await this.fetchAccountData(id);
       const ret = parseAccountReponse(data, local);
       this.accounts.get(id)!.importData(ret);
     }
@@ -587,7 +588,7 @@ export default class WalletStore {
       this.selectAccount(id);
     }
     this.observeAccount(id);
-    const res = await this.loadAccount(id);
+    const res = await this.fetchAccountData(id);
     account.importData(parseAccountReponse(res, local), true, true);
     return true;
   }
@@ -1068,6 +1069,8 @@ export function parseTransactionsResponse(
   res: TTransactionsResponse
 ): Transaction[] {
   return res.transactions.map(raw => {
+    // fix server time
+    raw.timestamp = timestampToUnix(raw.timestamp);
     return new Transaction(wallet, accountID, raw);
   });
 }
