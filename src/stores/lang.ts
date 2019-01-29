@@ -88,7 +88,7 @@ const translations: { [P in Locale]: () => Promise<TranslationModule> } = {
   // de: () => import('../translations/de'),
   // es: () => import('../translations/es'),
   et: () => import('../translations/et'),
-  // fr: () => import('../translations/fr'),
+  fr: () => import('../translations/fr'),
   // it: () => import('../translations/it'),
   // hu: () => import('../translations/hu'),
   // nl: () => import('../translations/nl'),

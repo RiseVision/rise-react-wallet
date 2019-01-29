@@ -2,8 +2,8 @@ export type Locale =
   | 'en'
   // | 'de'
   // | 'es'
-  | 'et';
-  // | 'fr'
+  | 'et'
+  | 'fr';
   // | 'it'
   // | 'hu'
   // | 'nl'
@@ -17,8 +17,8 @@ export type CountryCode =
   // | 'de'
   | 'gb'
   // | 'es'
-  | 'ee';
-  // | 'fr'
+  | 'ee'
+  | 'fr';
   // | 'it'
   // | 'hu'
   // | 'nl'
@@ -37,7 +37,7 @@ const localeInfo: {
   // de: { mainCountry: 'de' },
   // es: { mainCountry: 'es' },
   et: { mainCountry: 'ee' },
-  // fr: { mainCountry: 'fr' },
+  fr: { mainCountry: 'fr' },
   // it: { mainCountry: 'it' },
   // hu: { mainCountry: 'hu' },
   // nl: { mainCountry: 'nl' },
