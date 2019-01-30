@@ -158,8 +158,13 @@ export default class AccountStore {
     account: Partial<Pick<AccountStore, ImportableFields>>,
     options?: { saveCache: boolean; markAsLoaded: boolean }
   ) {
-    const markAsLoaded = options && options.markAsLoaded || true;
-    const saveCache = options && options.saveCache || true;
+    const { markAsLoaded, saveCache } = Object.assign(
+      {
+        markAsLoaded: true,
+        saveCache: true
+      },
+      options
+    );
 
     for (const [name, value] of Object.entries(account)) {
       this[name] = value;
