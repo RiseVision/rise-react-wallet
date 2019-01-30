@@ -101,7 +101,10 @@ export default class AccountStore {
     wallet: WalletStore
   ) {
     assert(account.id, 'Account ID is missing');
-    this.importData(account, false);
+    this.importData(account, {
+      markAsLoaded: false,
+      saveCache: false
+    });
     this.config = config;
     this.recentTransactions = new TransactionsStore(
       this.config,
@@ -153,9 +156,11 @@ export default class AccountStore {
   @action
   importData(
     account: Partial<Pick<AccountStore, ImportableFields>>,
-    saveCache: boolean = true,
-    markAsLoaded: boolean = true
+    options?: { saveCache: boolean; markAsLoaded: boolean }
   ) {
+    const markAsLoaded = options && options.markAsLoaded || true;
+    const saveCache = options && options.saveCache || true;
+
     for (const [name, value] of Object.entries(account)) {
       this[name] = value;
     }

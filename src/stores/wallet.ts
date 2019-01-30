@@ -592,7 +592,7 @@ export default class WalletStore {
     }
     this.observeAccount(id);
     const res = await this.fetchAccountData(id);
-    account.importData(parseAccountReponse(res, local), true, true);
+    account.importData(parseAccountReponse(res, local));
     return true;
   }
 
