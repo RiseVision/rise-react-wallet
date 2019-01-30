@@ -213,7 +213,9 @@ export class Transaction {
   amount: RawAmount;
   amountFee: RawAmount;
   fee: RawAmount;
-  /** TODO may be a problem when keeping the same transaction for 2 users */
+  /**
+   * TODO may be a problem when keeping the same transaction for 2 users #191
+   */
   isIncoming: boolean;
   time: string;
   // should never be null / undefined
