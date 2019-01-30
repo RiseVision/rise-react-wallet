@@ -179,6 +179,7 @@ export default class TransactionsStore {
     if (!cache) {
       return;
     }
+    this.items.length = 0;
     for (const item of cache.items) {
       this.items.push(new Transaction(this.wallet, this.accountID, item));
     }
@@ -260,7 +261,7 @@ export class Transaction {
     const data: Partial<Transaction> = {};
     for (const field in this) {
       if (!this.hasOwnProperty(field)) {
-        continue
+        continue;
       }
       const skipFields = [
         'wallet',

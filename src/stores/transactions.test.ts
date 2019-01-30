@@ -1,6 +1,7 @@
 // tslint:disable:no-unused-expression
 // tslint:disable:no-shadowed-variable
 import * as lstore from 'store';
+import { RawAmount } from '../utils/amounts';
 import { mockStoredContacts, stub } from '../utils/testHelpers';
 import { timestampToUnix } from '../utils/utils';
 import LangStore from './lang';
@@ -88,6 +89,46 @@ describe('TransactionsStore', () => {
     await store.loadMore();
     // @ts-ignore sinon stub
     expect(wallet.fetchTransactions.calledWith(id, 16));
+  });
+
+  it('loadCache', async () => {
+    const cache = {
+      transactions: {
+        '2655711995542512317R': {
+          items: [
+            {
+              blockId: '10843499946461977343',
+              confirmations: 3183,
+              senderId: '2655711995542512317R',
+              type: 0,
+              amount: 100000000,
+              senderPublicKey:
+                '023bab3e17365565d7a796291f8d3bb6878a3083ea520fbd163db713d51b44f9',
+              requesterPublicKey: null,
+              timestamp: 1548772228000,
+              asset: null,
+              recipientId: '1859812488441241535R',
+              signature:
+                '7dfb2ff184c94310a8f98c4dd127717e4f4c313c9b5c08cad9900a7048f6e3dad3b4395efc60047c85ae7604df116a212c8a63d0bf6b37643c688e04b0698508',
+              id: '2538278872511854573',
+              fee: 10000000,
+              signatures: []
+            }
+          ],
+          hasMore: false
+        }
+      }
+    };
+    lstore.set('cache', cache);
+    store.loadCache();
+    expect(store.items).toHaveLength(1);
+    expect(store.hasMore).toBeFalsy();
+    // assert the timestamp isn't shifted
+    expect(store.items[0].timestamp).toEqual(
+      cache.transactions['2655711995542512317R'].items[0].timestamp
+    );
+    // assert proper class instances
+    expect(store.items[0].amount).toBeInstanceOf(RawAmount);
   });
 });
 
