@@ -72,7 +72,7 @@ const styles = (theme: Theme) => {
     },
     summaryAmount: {
       ...theme.typography.body2,
-      fontWeight: 500,
+      fontWeight: 500
     },
     summaryIncomingAmount: {
       color: green[800]

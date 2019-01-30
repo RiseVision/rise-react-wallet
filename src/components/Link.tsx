@@ -3,14 +3,19 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import RootStore, { RouteLink } from '../stores/root';
 
-type BaseProps = Overwrite<RouteLink, {
-  route?: RouteLink['route'];
-}>;
+type BaseProps = Overwrite<
+  RouteLink,
+  {
+    route?: RouteLink['route'];
+  }
+>;
 
 interface Props extends BaseProps {
-  children: React.ReactElement<React.AnchorHTMLAttributes<HTMLAnchorElement> & {
-    component: React.ReactType;
-  }>;
+  children: React.ReactElement<
+    React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+      component: React.ReactType;
+    }
+  >;
 }
 
 interface PropsInjected extends Props {
@@ -45,7 +50,7 @@ class Link extends React.Component<Props> {
         params,
         queryParams,
         onBeforeNavigate,
-        onAfterNavigate,
+        onAfterNavigate
       };
     } else {
       return null;
@@ -86,13 +91,13 @@ class Link extends React.Component<Props> {
       overrideProps = {
         component: 'a',
         href: store.linkUrl(routeLink),
-        onClick: this.handleClick,
+        onClick: this.handleClick
       };
     }
 
     return React.cloneElement(children, {
       ...passthroughProps,
-      ...overrideProps,
+      ...overrideProps
     });
   }
 }

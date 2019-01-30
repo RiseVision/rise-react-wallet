@@ -4,14 +4,14 @@ export type Locale =
   // | 'es'
   | 'et'
   | 'fr';
-  // | 'it'
-  // | 'hu'
-  // | 'nl'
-  // | 'pl'
-  // | 'ro'
-  // | 'ru'
-  // | 'uk'
-  // | 'zh';
+// | 'it'
+// | 'hu'
+// | 'nl'
+// | 'pl'
+// | 'ro'
+// | 'ru'
+// | 'uk'
+// | 'zh';
 
 export type CountryCode =
   // | 'de'
@@ -19,14 +19,14 @@ export type CountryCode =
   // | 'es'
   | 'ee'
   | 'fr';
-  // | 'it'
-  // | 'hu'
-  // | 'nl'
-  // | 'pl'
-  // | 'ro'
-  // | 'ru'
-  // | 'ua'
-  // | 'cn';
+// | 'it'
+// | 'hu'
+// | 'nl'
+// | 'pl'
+// | 'ro'
+// | 'ru'
+// | 'ua'
+// | 'cn';
 
 const localeInfo: {
   [P in Locale]: {
@@ -37,7 +37,7 @@ const localeInfo: {
   // de: { mainCountry: 'de' },
   // es: { mainCountry: 'es' },
   et: { mainCountry: 'ee' },
-  fr: { mainCountry: 'fr' },
+  fr: { mainCountry: 'fr' }
   // it: { mainCountry: 'it' },
   // hu: { mainCountry: 'hu' },
   // nl: { mainCountry: 'nl' },

@@ -44,13 +44,11 @@ class RemoveAccountDialog extends React.Component<Props> {
   render() {
     const { account, navigateBackLink, routerStore, open } = this.injected;
 
-    const isOpen = open || routerStore.currentView === accountSettingsRemoveRoute;
+    const isOpen =
+      open || routerStore.currentView === accountSettingsRemoveRoute;
 
     return (
-      <Dialog
-          open={isOpen}
-          onCloseRoute={navigateBackLink}
-      >
+      <Dialog open={isOpen} onCloseRoute={navigateBackLink}>
         <RemoveAccountDialogContent
           name={account.name}
           address={account.id}

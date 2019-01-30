@@ -26,27 +26,27 @@ const styles = (theme: Theme) => {
       alignItems: 'center',
       flexWrap: 'wrap',
       padding: '6px 24px',
-      marginBottom: theme.spacing.unit,
+      marginBottom: theme.spacing.unit
     },
     icon: {
-      fontSize: 20,
+      fontSize: 20
     },
     messageIcon: {
       opacity: 0.9,
-      marginRight: theme.spacing.unit,
+      marginRight: theme.spacing.unit
     },
     message: {
       padding: '8px 0',
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     action: {
       display: 'flex',
       alignItems: 'center',
       marginLeft: 'auto',
       paddingLeft: 24,
-      marginRight: -8,
-    },
+      marginRight: -8
+    }
   });
 };
 
@@ -65,20 +65,14 @@ const messages = defineMessages({
     id: 'account-tip.dismiss-aria-label',
     description: 'Accessibility label for dismiss tip button',
     defaultMessage: 'Dismiss'
-  },
+  }
 });
 
 class AccountTip extends React.Component<DecoratedProps> {
   @autoId accountTipMessageId: string;
 
   render() {
-    const {
-      intl,
-      classes,
-      open,
-      message,
-      onDismiss,
-    } = this.props;
+    const { intl, classes, open, message, onDismiss } = this.props;
 
     if (!open) {
       return null;

@@ -101,7 +101,7 @@ export default class AccountStore {
     }
 
     return {
-      address  : this.id as Address,
+      address: this.id as Address,
       publicKey: Buffer.from(publicKey, 'hex') as Buffer & As<'publicKey'>
     };
   }

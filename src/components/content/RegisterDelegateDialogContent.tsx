@@ -25,17 +25,19 @@ import autoId from '../../utils/autoId';
 import { RawAmount } from '../../utils/amounts';
 import { normalizeAddress, normalizeUsername } from '../../utils/utils';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center'
-  }
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    }
+  });
+
+const stylesDecorator = withStyles(styles, {
+  name: 'RegisterDelegateDialogContent'
 });
 
-const stylesDecorator = withStyles(styles, { name: 'RegisterDelegateDialogContent' });
-
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps, ICloseInterruptFormProps {
   onSubmit: () => void;
@@ -89,18 +91,21 @@ const messages = defineMessages({
   }
 });
 
-class RegisterDelegateDialogContent extends React.Component<DecoratedProps, State> {
+class RegisterDelegateDialogContent extends React.Component<
+  DecoratedProps,
+  State
+> {
   @autoId dialogContentId: string;
 
   state: State = {
-    usernameInvalid: false,
+    usernameInvalid: false
   };
 
   constructor(props: DecoratedProps) {
     super(props);
 
     this.state = {
-      usernameInvalid: false,
+      usernameInvalid: false
     };
   }
 
@@ -109,7 +114,7 @@ class RegisterDelegateDialogContent extends React.Component<DecoratedProps, Stat
     const { onUsernameChange, onFormChanged } = this.props;
 
     this.setState({
-      usernameInvalid: false,
+      usernameInvalid: false
     });
 
     onUsernameChange(username);
@@ -159,7 +164,7 @@ class RegisterDelegateDialogContent extends React.Component<DecoratedProps, Stat
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 

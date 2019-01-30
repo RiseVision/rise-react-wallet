@@ -50,7 +50,7 @@ const styles = (theme: Theme) => {
     contentEmpty: {
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     fab: {
       position: 'fixed',
@@ -95,19 +95,18 @@ const styles = (theme: Theme) => {
     },
     emptyPlaceholder: {
       textAlign: 'center',
-      maxWidth: 320,
+      maxWidth: 320
     },
     emptyIcon: {
       color: theme.palette.text.secondary,
       fontSize: '4rem',
-      opacity: 0.35,
+      opacity: 0.35
     },
     emptyTitle: {
       marginBottom: 1 * theme.spacing.unit,
-      fontWeight: 500,
+      fontWeight: 500
     },
-    emptyText: {
-    },
+    emptyText: {}
   });
 };
 
@@ -171,8 +170,9 @@ const messages = defineMessages({
   emptyText: {
     id: 'wallet-address-book.empty-text',
     description: 'Text for the empty address book placeholder',
-    defaultMessage: 'You can create contacts in your address book to associate RISE addresses with easy to read names.'
-  },
+    defaultMessage:
+      'You can create contacts in your address book to associate RISE addresses with easy to read names.'
+  }
 });
 
 @inject('addressBookStore')
@@ -197,7 +197,7 @@ class AddressBook extends React.Component<DecoratedProps> {
       <div
         className={classNames(
           classes.content,
-          !contacts.length && classes.contentEmpty,
+          !contacts.length && classes.contentEmpty
         )}
       >
         <CreateContactDialog navigateBackLink={backLink} />

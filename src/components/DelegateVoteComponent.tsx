@@ -43,7 +43,7 @@ const styles = (theme: Theme) =>
     },
     delegateName: {
       ...theme.typography.body2,
-      fontWeight: 500,
+      fontWeight: 500
     },
     delegateAddress: {},
     delegateStats: {

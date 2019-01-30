@@ -77,7 +77,7 @@ class RemoveAccountDialogContent extends React.Component<
     this.state = {
       addressInput: '',
       addressInvalid: false,
-      saveContact: !!this.props.name,
+      saveContact: !!this.props.name
     };
   }
 

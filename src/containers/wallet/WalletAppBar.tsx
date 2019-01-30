@@ -130,9 +130,10 @@ class WalletAppBar extends React.Component<DecoratedProps> {
     const { intl, classes } = this.injected;
     const state = this.appBarState();
 
-    const isTopRoute = state === 'accountOverview'
-      || state === 'accountsList'
-      || state === 'addressBook';
+    const isTopRoute =
+      state === 'accountOverview' ||
+      state === 'accountsList' ||
+      state === 'addressBook';
 
     return (
       <AppBar className={this.injected.className} color="default">

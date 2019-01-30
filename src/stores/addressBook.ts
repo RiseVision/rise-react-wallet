@@ -1,8 +1,4 @@
-import {
-  observable,
-  computed,
-  action,
-} from 'mobx';
+import { observable, computed, action } from 'mobx';
 import * as lstore from 'store';
 
 export type TStoredContact = { id: string; name: string };

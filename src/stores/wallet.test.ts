@@ -176,7 +176,7 @@ describe('accounts', () => {
     // stub the connect method
     stub(stubs, wallet, 'connect', () => {
       // empty
-    })
+    });
     // delete existing accounts
     wallet.accounts.clear();
     await wallet.login(id, storedAccounts[0]);
@@ -186,7 +186,7 @@ describe('accounts', () => {
       serverAccounts[0].account!.balance
     );
     // @ts-ignore check the websocket / fiat connection
-    expect(wallet.connect.called).toBeTruthy()
+    expect(wallet.connect.called).toBeTruthy();
   });
   it('selectAccount', () => {
     const id = storedAccounts[1].id;
@@ -212,9 +212,7 @@ describe('accounts', () => {
     const addr = Rise.calcAddress(liskWallet.publicKey);
     // stub wallet.login
     stub(stubs, wallet, 'login', () => true);
-    expect(wallet.registerAccount(mnemonic.split(' '))).toEqual(
-      addr
-    );
+    expect(wallet.registerAccount(mnemonic.split(' '))).toEqual(addr);
     // @ts-ignore
     expect(wallet.login.calledWithMatch(addr)).toBeTruthy();
   });
@@ -236,8 +234,12 @@ describe('accounts', () => {
   });
   it('getContacts', () => {
     const compareById = (a: { id: string }, b: { id: string }) => {
-      if (a.id < b.id) { return -1; }
-      if (a.id > b.id) { return 1; }
+      if (a.id < b.id) {
+        return -1;
+      }
+      if (a.id > b.id) {
+        return 1;
+      }
       return 0;
     };
 
@@ -251,10 +253,14 @@ describe('accounts', () => {
     const { ADDRESS_BOOK, WALLET } = TAddressSource;
     const expected = [
       { id: '12525095472804841547R', name: 'DE AD', source: ADDRESS_BOOK },
-      { id: '5399275477602875017R', name: 'test fixture 2', source: ADDRESS_BOOK },
+      {
+        id: '5399275477602875017R',
+        name: 'test fixture 2',
+        source: ADDRESS_BOOK
+      },
       { id: '5932278668828702947R', name: 'test-2', source: WALLET },
       { id: '11543739950532038814R', name: '', source: WALLET },
-      { id: '10317456780953445784R', name: 'test-3', source: WALLET },
+      { id: '10317456780953445784R', name: 'test-3', source: WALLET }
     ];
     expected.sort(compareById);
 
@@ -306,7 +312,9 @@ describe('transactions', () => {
     expect(tx.type).toEqual(TransactionType.SIGNATURE);
     expect(tx.asset).toBeDefined();
     if (tx.asset) {
-      expect(tx.asset.signature.publicKey).toEqual(wallet2.publicKey.toString('hex'));
+      expect(tx.asset.signature.publicKey).toEqual(
+        wallet2.publicKey.toString('hex')
+      );
     }
   });
   it('createVoteTx', async () => {

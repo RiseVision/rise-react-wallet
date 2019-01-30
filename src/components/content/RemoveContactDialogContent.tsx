@@ -18,18 +18,20 @@ import {
 import { DialogContentProps, SetDialogContent } from '../Dialog';
 import autoId from '../../utils/autoId';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    maxWidth: 360,
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center'
-  }
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      maxWidth: 360,
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    }
+  });
+
+const stylesDecorator = withStyles(styles, {
+  name: 'RemoveContactDialogContent'
 });
 
-const stylesDecorator = withStyles(styles, { name: 'RemoveContactDialogContent' });
-
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps {
   onConfirm: () => void;
@@ -43,7 +45,7 @@ const messages = defineMessages({
   dialogTitle: {
     id: 'remove-contact-dialog-content.dialog-title',
     description: 'Remove contact dialog title',
-    defaultMessage: 'Remove contact?',
+    defaultMessage: 'Remove contact?'
   }
 });
 
@@ -62,7 +64,7 @@ class RemoveContactDialogContent extends React.Component<DecoratedProps> {
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 

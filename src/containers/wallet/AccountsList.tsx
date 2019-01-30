@@ -28,14 +28,14 @@ import WalletStore from '../../stores/wallet';
 const styles = (theme: Theme) =>
   createStyles({
     content: {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: theme.palette.background.paper
     },
     accountAvatar: {
       backgroundColor: 'white',
-      border: '2px solid white',
+      border: '2px solid white'
     },
     accountAvatarSelected: {
-      borderColor: theme.palette.primary.dark,
+      borderColor: theme.palette.primary.dark
     },
     accountName: {
       whiteSpace: 'nowrap',
@@ -123,7 +123,8 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                     className={classNames(
                       classes.accountAvatar,
                       selectedAccount && selectedAccount.id === account.id
-                        ? classes.accountAvatarSelected : null,
+                        ? classes.accountAvatarSelected
+                        : null
                     )}
                   >
                     <AccountIcon size={24} address={account.id} />
@@ -134,10 +135,12 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                   classes={{
                     primary: classes.accountName
                   }}
-                  primary={account.name || intl.formatMessage(
-                    messages.unnamedAccountLabel,
-                    { id: account.localId }
-                  )}
+                  primary={
+                    account.name ||
+                    intl.formatMessage(messages.unnamedAccountLabel, {
+                      id: account.localId
+                    })
+                  }
                   secondary={account.id}
                 />
               </ListItem>

@@ -78,7 +78,7 @@ const styles = (theme: Theme) =>
       },
       ...theme.typography.body2,
       color: theme.palette.text.secondary,
-      fontWeight: 500,
+      fontWeight: 500
     },
     loadMore: {
       textAlign: 'center',
@@ -109,19 +109,21 @@ const messages = defineMessages({
   },
   noPubkeyAccountTip: {
     id: 'wallet-account-overview.no-pubkey-account-tip',
-    description: 'Tip about increasing the security of the account by making a transaction',
+    description:
+      'Tip about increasing the security of the account by making a transaction',
     defaultMessage:
       'You should make a transaction (send some RISE or cast a vote) to bind ' +
-      'your public key with this account to incrase the security of your funds.',
+      'your public key with this account to incrase the security of your funds.'
   },
   highValueAccountTip: {
     id: 'wallet-account-overview.high-value-account-tip',
-    description: 'Tip about using more secure ways to store RISE for high value accounts',
+    description:
+      'Tip about using more secure ways to store RISE for high value accounts',
     defaultMessage:
       'You have quite a few RISE in this account. You should consider using a ' +
       'hardware wallet for added security. If that is not an option, at the very ' +
       'least you should start using the RISE desktop application instead of the ' +
-      'web app.',
+      'web app.'
   },
   sendFabTooltip: {
     id: 'wallet-account-overview.send-funds-fab-tooltip',
@@ -177,7 +179,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     const backLink: RouteLink = {
       route: accountOverviewRoute,
       params: {
-        id: this.account.id,
+        id: this.account.id
       },
       onBeforeNavigate: () => {
         this.setState({
@@ -253,10 +255,11 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     const readOnly = this.account && this.account.type === AccountType.READONLY;
     const headerProps = {
       address: this.account.id,
-      alias: this.account.name || intl.formatMessage(
-        messages.unnamedAccountLabel,
-        { id: this.account.localId }
-      ),
+      alias:
+        this.account.name ||
+        intl.formatMessage(messages.unnamedAccountLabel, {
+          id: this.account.localId
+        }),
       balance: this.account.balance,
       balanceFiat: this.account.balanceFiat,
       fiatCurrency: this.account.fiatCurrency
@@ -301,17 +304,17 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
           <AccountTip
             key="__no_pubkey_tip__"
             open={
-              this.account.balance.gt(RawAmount.ZERO)
-              && !this.account.broadcastedPublicKey
+              this.account.balance.gt(RawAmount.ZERO) &&
+              !this.account.broadcastedPublicKey
             }
             message={intl.formatMessage(messages.noPubkeyAccountTip)}
           />
           <AccountTip
             key="__high_value_acc_tip__"
             open={
-              this.account.balance.gt(HIGH_VALUE_ACCOUNT_THRESHOLD)
-              && this.account.type === AccountType.MNEMONIC
-              && typeof carlo === 'undefined'
+              this.account.balance.gt(HIGH_VALUE_ACCOUNT_THRESHOLD) &&
+              this.account.type === AccountType.MNEMONIC &&
+              typeof carlo === 'undefined'
             }
             message={intl.formatMessage(messages.highValueAccountTip)}
           />

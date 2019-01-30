@@ -24,17 +24,19 @@ import {
 import autoId from '../../utils/autoId';
 import { RawAmount } from '../../utils/amounts';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center'
-  }
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    }
+  });
+
+const stylesDecorator = withStyles(styles, {
+  name: 'AddSecondPassphraseDialogContent'
 });
 
-const stylesDecorator = withStyles(styles, { name: 'AddSecondPassphraseDialogContent' });
-
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps, ICloseInterruptFormProps {
   onSubmit: (passphrase: string) => void;
@@ -64,7 +66,10 @@ const messages = defineMessages({
   }
 });
 
-class AddSecondPassphraseDialogContent extends React.Component<DecoratedProps, State> {
+class AddSecondPassphraseDialogContent extends React.Component<
+  DecoratedProps,
+  State
+> {
   @autoId dialogContentId: string;
 
   state: State = {
@@ -123,7 +128,7 @@ class AddSecondPassphraseDialogContent extends React.Component<DecoratedProps, S
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 

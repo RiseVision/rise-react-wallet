@@ -15,7 +15,7 @@ const theme = createMuiTheme({
     }
   },
   typography: {
-    useNextVariants: true,
+    useNextVariants: true
   },
   overrides: {
     MuiAppBar: {
@@ -23,7 +23,7 @@ const theme = createMuiTheme({
         backgroundColor: '#eee'
       }
     }
-  },
+  }
 });
 
 interface Props {

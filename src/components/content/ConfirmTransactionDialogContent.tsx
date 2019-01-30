@@ -32,10 +32,10 @@ const styles = (theme: Theme) =>
       paddingBottom: theme.spacing.unit,
       textAlign: 'center',
       '&:first-child': {
-        paddingTop: theme.spacing.unit * 2,
+        paddingTop: theme.spacing.unit * 2
       },
       '&:last-child': {
-        paddingBottom: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing.unit * 2
       }
     },
     viz: {
@@ -99,7 +99,7 @@ const styles = (theme: Theme) =>
     },
     accountAlias: {
       ...theme.typography.body2,
-      fontWeight: 500,
+      fontWeight: 500
     },
     accountAddress: {},
     txDetails: {
@@ -126,7 +126,9 @@ const styles = (theme: Theme) =>
     }
   });
 
-const stylesDecorator = withStyles(styles, { name: 'ConfirmTransactionDialogContent' });
+const stylesDecorator = withStyles(styles, {
+  name: 'ConfirmTransactionDialogContent'
+});
 
 const messages = defineMessages({
   dialogTitle: {
@@ -215,8 +217,7 @@ function throwInvalidTxKind(tx: TxData) {
   throw new Error(`Invalid transaction kind ${tx.kind}`);
 }
 
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps, ICloseInterruptFormProps {
   data: TxData;
@@ -233,19 +234,12 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
     const { intl } = this.props;
 
     SetDialogContent(this, {
-      title: intl.formatMessage(messages.dialogTitle),
+      title: intl.formatMessage(messages.dialogTitle)
     });
   }
 
   render() {
-    const {
-      intl,
-      classes,
-      data,
-      fee,
-      senderAddress,
-      children
-    } = this.props;
+    const { intl, classes, data, fee, senderAddress, children } = this.props;
 
     // TODO extract
     const formatAmount = (amount: RawAmount) =>
@@ -255,10 +249,9 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
     const recipientAddress = data.kind === 'send' ? data.recipientAddress : '';
     let senderName = this.props.senderName;
     if (!senderName) {
-      senderName = intl.formatMessage(
-        messages.unnamedSender,
-        { id: this.props.senderLocalId}
-      );
+      senderName = intl.formatMessage(messages.unnamedSender, {
+        id: this.props.senderLocalId
+      });
     }
     let recipientName = data.kind === 'send' ? data.recipientName : null;
     if (!recipientName) {
@@ -282,11 +275,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
 
     return (
       <React.Fragment>
-        <Grid
-          className={classes.content}
-          container={true}
-          spacing={16}
-        >
+        <Grid className={classes.content} container={true} spacing={16}>
           <Grid
             item={true}
             xs={12}
@@ -361,10 +350,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
           <React.Fragment>
             <Divider aria-hidden={true} />
             <Grid
-              className={classNames(
-                classes.content,
-                classes.txDetails,
-              )}
+              className={classNames(classes.content, classes.txDetails)}
               container={true}
               spacing={16}
               aria-label={intl.formatMessage(messages.txDetailsAria)}
@@ -436,11 +422,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
           </React.Fragment>
         )}
         <Divider aria-hidden={true} />
-        <Grid
-          className={classes.content}
-          container={true}
-          spacing={16}
-        >
+        <Grid className={classes.content} container={true} spacing={16}>
           <Grid
             item={true}
             xs={12}
@@ -484,13 +466,17 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
 
 export default stylesDecorator(injectIntl(ConfirmTransactionDialogContent));
 
-function emphasizeAndJoin(labels: string[], separator: string = ', '): JSX.Element {
+function emphasizeAndJoin(
+  labels: string[],
+  separator: string = ', '
+): JSX.Element {
   return (
-      <React.Fragment>
-        {labels
-          .map(u => <em key={u}>{u}</em>)
-          .reduce((a, u) => a.concat(a.length ? ', ' : null, u),
-                  [] as Array<null | string | JSX.Element>)}
-      </React.Fragment>
+    <React.Fragment>
+      {labels
+        .map(u => <em key={u}>{u}</em>)
+        .reduce((a, u) => a.concat(a.length ? ', ' : null, u), [] as Array<
+          null | string | JSX.Element
+        >)}
+    </React.Fragment>
   );
 }
