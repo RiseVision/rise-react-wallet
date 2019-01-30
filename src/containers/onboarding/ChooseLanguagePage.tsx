@@ -29,7 +29,7 @@ const localeLabels: { [P in Locale]: string } = {
   en: 'Continue in English',
   // es: 'Continuar en español',
   et: 'Jätka eesti keeles',
-  fr: 'Continuer en français',
+  fr: 'Continuer en français'
   // it: 'Continua in italiano',
   // hu: 'Folytatás magyarul',
   // nl: 'Ga door in het Nederlands',
@@ -42,7 +42,7 @@ const localeLabels: { [P in Locale]: string } = {
 
 const styles = createStyles({
   languageList: {
-    maxWidth: 320,
+    maxWidth: 320
   },
   titleIcon: {
     margin: '-4px 4px'
@@ -141,20 +141,20 @@ class ChooseLanguagePage extends React.Component<Props> {
           >
             <TranslateIcon />
             <ListItemText
-              primary={(
+              primary={
                 <FormattedMessage
                   id="onboarding-choose-language.translate-cta-title"
                   description="Translate wallet call to action title"
                   defaultMessage="Missing your language?"
                 />
-              )}
-              secondary={(
+              }
+              secondary={
                 <FormattedMessage
                   id="onboarding-choose-language.translate-cta"
                   description="Translate wallet call to action"
                   defaultMessage="Help us translate RISE wallet!"
                 />
-              )}
+              }
             />
             <ChevronRightIcon />
           </ListItem>

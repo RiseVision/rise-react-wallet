@@ -39,7 +39,7 @@ const stylesDecorator = withStyles(styles, {
 @observer
 class AccountCreatedPage extends React.Component<Props, State> {
   state = {
-    accountAddress: '',
+    accountAddress: ''
   };
 
   get injected(): PropsInjected {
@@ -118,7 +118,7 @@ class AccountCreatedPage extends React.Component<Props, State> {
             <Link
               route={accountOverviewRoute}
               params={{
-                id: accountAddress,
+                id: accountAddress
               }}
             >
               <Button fullWidth={true}>

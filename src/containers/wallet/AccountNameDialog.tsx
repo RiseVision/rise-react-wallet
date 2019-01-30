@@ -2,8 +2,7 @@ import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import AccountNameDialogContent
-  from '../../components/content/AccountNameDialogContent';
+import AccountNameDialogContent from '../../components/content/AccountNameDialogContent';
 import Dialog, {
   ICloseInterruptController,
   ICloseInterruptControllerState
@@ -23,8 +22,7 @@ interface InjectedProps extends Props {
   routerStore: RouterStore;
 }
 
-interface State extends ICloseInterruptControllerState {
-}
+interface State extends ICloseInterruptControllerState {}
 
 @inject('store')
 @inject('routerStore')

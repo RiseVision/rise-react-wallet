@@ -67,12 +67,12 @@ const styles = (theme: Theme) =>
       }
     },
     drawerSpacer: {
-      flex: 1,
+      flex: 1
     },
     versionFooter: {
       textAlign: 'center',
       color: theme.palette.grey['500'],
-      fontSize: theme.typography.pxToRem(12),
+      fontSize: theme.typography.pxToRem(12)
     }
   });
 

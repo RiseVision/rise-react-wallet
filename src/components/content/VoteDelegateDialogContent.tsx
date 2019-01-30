@@ -37,8 +37,8 @@ const styles = (theme: Theme) =>
     searchTitle: {
       ...theme.typography.body2,
       color: theme.palette.text.secondary,
-      fontWeight: 500,
-    },
+      fontWeight: 500
+    }
   });
 
 const stylesDecorator = withStyles(styles, {

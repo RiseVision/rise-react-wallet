@@ -26,8 +26,8 @@ const styles = createStyles({
   },
   radio: {
     paddingTop: 0,
-    paddingBottom: 0,
-  },
+    paddingBottom: 0
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {}
@@ -69,9 +69,7 @@ class ChooseNetworkPage extends React.Component<Props, State> {
     } else {
       // auto detect
       this.state = {
-        network: isMainnet(walletStore.config.domain)
-          ? 'mainnet'
-          : 'testnet',
+        network: isMainnet(walletStore.config.domain) ? 'mainnet' : 'testnet'
       };
     }
   }

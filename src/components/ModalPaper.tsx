@@ -79,14 +79,10 @@ const ModalPaper = stylesDecorator(
               // but TS typedef don't reflect that. Modal component does
               // various detections based on it's child props, so this is
               // a hacky way around the TS compiler to make everything work.
-              role: role || 'dialog',
+              role: role || 'dialog'
             }}
           >
-            <div
-              className={classes.content}
-              aria-modal={true}
-              {...other}
-            >
+            <div className={classes.content} aria-modal={true} {...other}>
               <Paper className={classes.paper}>{children}</Paper>
             </div>
           </Fade>

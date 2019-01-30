@@ -268,10 +268,9 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                   primary={intl.formatMessage(messages.accountName)}
                   secondary={
                     account.name ||
-                    intl.formatMessage(
-                      messages.unnamedAccountLabel,
-                      { id: this.account.localId }
-                    )
+                    intl.formatMessage(messages.unnamedAccountLabel, {
+                      id: this.account.localId
+                    })
                   }
                 />
               </ListItem>

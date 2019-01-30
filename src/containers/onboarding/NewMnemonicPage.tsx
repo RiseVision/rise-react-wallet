@@ -153,11 +153,7 @@ class NewMnemonicPage extends React.Component<Props, State> {
             </Typography>
           </Grid>
           <Grid item={true} xs={12}>
-            <Typography
-              className={classes.mnemonic}
-              component="p"
-              variant="h6"
-            >
+            <Typography className={classes.mnemonic} component="p" variant="h6">
               {mnemonic.map((word, idx) => (
                 <React.Fragment key={idx}>
                   {idx > 0 && ' '}

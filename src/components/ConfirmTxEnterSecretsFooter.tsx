@@ -233,7 +233,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
       mnemonicInvalid,
       passphrase,
       passphraseInvalid,
-      removeInput1,
+      removeInput1
     } = this.state;
     const isPassphraseSet = !!secondPublicKey;
     const showMnemonicInput = !isPassphraseSet || !removeInput1;

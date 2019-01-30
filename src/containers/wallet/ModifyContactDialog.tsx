@@ -4,7 +4,8 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import { addressBookModifyRoute } from '../../routes';
 import Dialog, {
-  ICloseInterruptControllerState, ICloseInterruptController
+  ICloseInterruptControllerState,
+  ICloseInterruptController
 } from '../../components/Dialog';
 import AddressBookStore from '../../stores/addressBook';
 import RootStore, { RouteLink } from '../../stores/root';

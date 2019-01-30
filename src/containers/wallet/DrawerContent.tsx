@@ -59,10 +59,10 @@ const styles = (theme: Theme) =>
     },
     accountAvatar: {
       backgroundColor: 'white',
-      border: '2px solid white',
+      border: '2px solid white'
     },
     accountAvatarSelected: {
-      borderColor: theme.palette.primary.dark,
+      borderColor: theme.palette.primary.dark
     },
     accountName: {
       whiteSpace: 'nowrap',
@@ -214,7 +214,8 @@ class DrawerContent extends React.Component<DecoratedProps> {
                     className={classNames(
                       classes.accountAvatar,
                       selectedAccount && selectedAccount.id === account.id
-                        ? classes.accountAvatarSelected : null,
+                        ? classes.accountAvatarSelected
+                        : null
                     )}
                   >
                     <AccountIcon size={24} address={account.id} />
@@ -225,10 +226,12 @@ class DrawerContent extends React.Component<DecoratedProps> {
                   classes={{
                     primary: classes.accountName
                   }}
-                  primary={account.name || intl.formatMessage(
-                    messages.unnamedAccountLabel,
-                    { id: account.localId }
-                  )}
+                  primary={
+                    account.name ||
+                    intl.formatMessage(messages.unnamedAccountLabel, {
+                      id: account.localId
+                    })
+                  }
                   secondary={account.id}
                 />
               </ListItem>

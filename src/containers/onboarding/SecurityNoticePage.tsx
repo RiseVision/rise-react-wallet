@@ -70,21 +70,24 @@ class SecurityNoticePage extends React.Component<Props, State> {
       React.createRef(),
       React.createRef(),
       React.createRef(),
-      React.createRef(),
+      React.createRef()
     ];
   }
 
   handleNextTipClick = () => {
-    this.setState(prevState => {
-      return { currentTip: prevState.currentTip + 1 };
-    },            () => {
-      // Focus the revealed tip (mainly for screen readers)
-      const { currentTip } = this.state;
-      const el = this.tipRefs[currentTip].current;
-      if (el) {
-        el.focus();
+    this.setState(
+      prevState => {
+        return { currentTip: prevState.currentTip + 1 };
+      },
+      () => {
+        // Focus the revealed tip (mainly for screen readers)
+        const { currentTip } = this.state;
+        const el = this.tipRefs[currentTip].current;
+        if (el) {
+          el.focus();
+        }
       }
-    });
+    );
   }
 
   render() {
@@ -170,7 +173,10 @@ class SecurityNoticePage extends React.Component<Props, State> {
               in={idx <= currentTip}
               aria-hidden={idx > currentTip}
             >
-              <div tabIndex={idx <= currentTip ? 0 : -1} ref={this.tipRefs[idx]}>
+              <div
+                tabIndex={idx <= currentTip ? 0 : -1}
+                ref={this.tipRefs[idx]}
+              >
                 <Typography
                   className={classNames(
                     classes.tipText,
@@ -195,10 +201,7 @@ class SecurityNoticePage extends React.Component<Props, State> {
             </Button>
           ) : (
             <Link route={onboardingNewMnemonicRoute}>
-              <Button
-                className={classes.button}
-                fullWidth={true}
-              >
+              <Button className={classes.button} fullWidth={true}>
                 <FormattedMessage
                   id="onboarding-security-notice.continue"
                   description="Button label for when all of the tips have been seen"

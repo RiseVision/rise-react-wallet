@@ -13,15 +13,12 @@ const messages = defineMessages({
     id: 'app-helmet.title',
     description: 'Browser tab title',
     defaultMessage: 'RISE wallet'
-  },
+  }
 });
 
 class AppHelmet extends React.Component<DecoratedProps> {
   render() {
-    const {
-      intl,
-      locale,
-    } = this.props;
+    const { intl, locale } = this.props;
 
     return (
       <Helmet

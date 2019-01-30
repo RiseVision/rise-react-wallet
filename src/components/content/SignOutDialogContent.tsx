@@ -17,17 +17,17 @@ import {
 import { DialogContentProps, SetDialogContent } from '../Dialog';
 import autoId from '../../utils/autoId';
 
-const styles = (theme: Theme) => createStyles({
-  content: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center'
-  }
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing.unit * 2,
+      textAlign: 'center'
+    }
+  });
 
 const stylesDecorator = withStyles(styles, { name: 'SignOutDialogContent' });
 
-type BaseProps = WithStyles<typeof styles>
-  & DialogContentProps;
+type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps {
   onConfirm: () => void;
@@ -36,15 +36,14 @@ interface Props extends BaseProps {
 
 type DecoratedProps = Props & InjectedIntlProps;
 
-interface State {
-}
+interface State {}
 
 const messages = defineMessages({
   dialogTitle: {
     id: 'sign-out-dialog-content.dialog-title',
     description: 'Sign out dialog title',
-    defaultMessage: 'Sign out?',
-  },
+    defaultMessage: 'Sign out?'
+  }
 });
 
 class SignOutDialogContent extends React.Component<DecoratedProps, State> {
@@ -55,7 +54,7 @@ class SignOutDialogContent extends React.Component<DecoratedProps, State> {
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId,
+      contentId: this.dialogContentId
     });
   }
 
@@ -63,11 +62,7 @@ class SignOutDialogContent extends React.Component<DecoratedProps, State> {
     const { classes, onConfirm, onCancel } = this.props;
 
     return (
-      <Grid
-        className={classes.content}
-        container={true}
-        spacing={16}
-      >
+      <Grid className={classes.content} container={true} spacing={16}>
         <Grid item={true} xs={12}>
           <Typography id={this.dialogContentId}>
             <FormattedMessage

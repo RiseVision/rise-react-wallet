@@ -86,10 +86,7 @@ class NoMnemonicNoticePage extends React.Component<Props> {
             />
           </Typography>
           <Link route={accountOverviewNoIDRoute}>
-            <Button
-              className={classes.button}
-              fullWidth={true}
-            >
+            <Button className={classes.button} fullWidth={true}>
               <FormattedMessage
                 id="onboarding-no-mnemonic-notice.continue"
                 description="Continue button label"
