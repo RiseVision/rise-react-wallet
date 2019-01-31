@@ -16,6 +16,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { formatAmount } from '../../utils/utils';
 import {
   DialogContentProps,
   SetDialogContent,
@@ -136,9 +137,6 @@ class AddSecondPassphraseDialogContent extends React.Component<
     const { intl, classes, error, passphraseFee } = this.props;
     const { passphrase, passphraseInvalid } = this.state;
 
-    const formatAmount = (amount: RawAmount) =>
-      `${intl.formatNumber(amount.unit.toNumber())} RISE`;
-
     return (
       <Grid
         className={classes.content}
@@ -180,7 +178,7 @@ class AddSecondPassphraseDialogContent extends React.Component<
                   'of {fee} to setup a 2nd passphrase!'
                 }
                 values={{
-                  fee: formatAmount(passphraseFee)
+                  fee: formatAmount(intl, passphraseFee)
                 }}
               />
             </Typography>
