@@ -1,6 +1,6 @@
 {
   "name": "rise-wallet",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "engines": {
     "yarn": "^1.10.1"
   },
