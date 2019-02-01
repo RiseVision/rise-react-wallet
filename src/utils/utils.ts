@@ -3,6 +3,7 @@ import * as moment from 'moment/min/moment-with-locales';
 import BigNumber from 'bignumber.js';
 import { InjectedIntl } from 'react-intl';
 import { isNaN } from 'lodash';
+import { RawAmount } from './amounts';
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
@@ -117,4 +118,28 @@ export function isMainnet(domain?: string): boolean {
     return true;
   }
   return false;
+}
+
+export function formatAmount(
+  intl: InjectedIntl,
+  amount: RawAmount,
+  addSuffix: boolean = true
+) {
+  const formatted = intl.formatNumber(amount.unit.toNumber(), {
+    maximumFractionDigits: 10,
+    style: 'decimal'
+  });
+  return addSuffix ? formatted + ' RISE' : formatted;
+}
+
+export function formatFiat(
+  intl: InjectedIntl,
+  amount: number,
+  currency: string
+) {
+  return intl.formatNumber(amount, {
+    maximumFractionDigits: 2,
+    style: 'currency',
+    currency
+  });
 }
