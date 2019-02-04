@@ -211,14 +211,18 @@ export default class WalletStore {
       window.addEventListener('offline', this.io.disconnect.bind(this.io));
     }
     // TODO get types from rise-node
-    type TTransactionChange = { senderId: string; recipientId: string };
-    // TODO get types from rise-node
-    type TBlocksChange = { transactions: TTransactionChange[] };
+    type TBlocksChange = { transactions: APITransaction[] };
     // update all accounts involved in the listed transactions
     this.io.on('blocks/change', (change: TBlocksChange) => {
-      for (const t of change.transactions) {
+      for (const tx of change.transactions) {
         // pass async
-        this.refreshAccount(t.senderId, t.recipientId);
+        this.refreshAccount(tx.senderId);
+        this.refreshTransaction(tx, tx.senderId);
+        // pass async
+        if (tx.recipientId) {
+          this.refreshAccount(tx.recipientId);
+          this.refreshTransaction(tx, tx.recipientId);
+        }
       }
     });
     // possible delegates ranking change
@@ -229,14 +233,12 @@ export default class WalletStore {
       this.suggestedDelegatesTime = null;
     });
     // new unconfirmed transactions
-    this.io.on('transactions/change', (t: TTransactionChange) => {
-      for (const account of this.accounts.values()) {
-        if ([t.senderId, t.recipientId].includes(account.id)) {
-          // pass async
-          account.recentTransactions.load();
-        }
+    this.io.on(
+      'transactions/change',
+      (tx: APITransaction | APIUncofirmedTransaction) => {
+        this.refreshTransaction(tx, tx.senderId);
       }
-    });
+    );
   }
 
   observeSelectedAccount() {
@@ -507,6 +509,29 @@ export default class WalletStore {
       const data = await this.fetchAccountData(id);
       const ret = parseAccountReponse(data, local);
       this.accounts.get(id)!.importData(ret);
+    }
+  }
+
+  @action
+  refreshTransaction(
+    raw: APITransaction | APIUncofirmedTransaction,
+    accountID: string
+  ) {
+    // clone
+    const parsed = Object.create(raw);
+    parsed.timestamp = timestampToUnix(parsed.timestamp);
+    const account = this.accounts.get(accountID);
+    if (!accountID) {
+      return;
+    }
+    const items = account!.recentTransactions.items;
+    const tx = new Transaction(this, account!.id, parsed);
+    const i = items.findIndex(t => t.id === tx.id);
+    // replace of add (for unconfirmed)
+    if (i !== -1) {
+      items[i] = tx;
+    } else {
+      items.push(tx);
     }
   }
 
@@ -856,6 +881,7 @@ export default class WalletStore {
       // @ts-ignore TODO type errors in dposAPI
       res = await this.dposAPI.transactions.getList(params);
       if (!res.success) {
+        // @ts-ignore
         throw new Error((res as TErrorResponse).error);
       }
     } else if (!params.senderPublicKey) {
@@ -1088,9 +1114,24 @@ export type TGroupedTransactions = {
   [group: string]: Transaction[];
 };
 
-// TODO get from `risejs` once types complete
-export type APITransaction = {
+// TODO get from `risejs` once available
+export type APIUncofirmedTransaction = {
+  // TODO never null?
   amount: null | number | string;
+  // TODO never a number?
+  fee: number | string;
+  id: string;
+  recipientId?: string;
+  recipientPublicKey?: string;
+  senderId: string;
+  senderPublicKey: string;
+  signature: string;
+  timestamp: number;
+  type: TransactionType;
+};
+
+// TODO get from `risejs` once available
+export type APITransaction = APIUncofirmedTransaction & {
   asset: {
     signature?: {};
     votes?: string[];
@@ -1100,20 +1141,7 @@ export type APITransaction = {
   };
   blockId: string;
   confirmations: number;
-  fee: number | string;
   height: number;
-  id: string;
-  // TODO non-optional for type === SEND
-  recipientId?: string;
-  recipientPublicKey?: string;
-  senderId: string;
-  senderPublicKey: string;
-  signature: string;
-  // TODO
-  // tslint:disable-next-line:no-any
-  signatures: any[];
-  timestamp: number;
-  type: TransactionType;
 };
 
 export type TTransactionVote = {

@@ -9,7 +9,8 @@ import { TConfig } from './index';
 import WalletStore, {
   TGroupedTransactions,
   TTransactionVote,
-  APITransaction
+  APITransaction,
+  APIUncofirmedTransaction
 } from './wallet';
 import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
 import { get } from 'lodash';
@@ -197,7 +198,7 @@ export class Transaction {
     };
   };
   blockId: string;
-  confirmations: number;
+  confirmations: number = 0;
   height: number;
   id: string;
   recipientId?: string;
@@ -254,7 +255,7 @@ export class Transaction {
   constructor(
     public wallet: WalletStore,
     accountID: string,
-    raw: APITransaction
+    raw: APITransaction | APIUncofirmedTransaction
   ) {
     this.importRaw(raw, accountID);
   }
@@ -286,7 +287,10 @@ export class Transaction {
     return data;
   }
 
-  private importRaw(raw: APITransaction, accountID: string) {
+  private importRaw(
+    raw: APITransaction | APIUncofirmedTransaction,
+    accountID: string
+  ) {
     for (const field of this.rawFields) {
       this[field] = raw[field];
     }
