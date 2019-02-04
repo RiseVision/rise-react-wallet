@@ -15,6 +15,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { formatAmount } from '../../utils/utils';
 import {
   DialogContentProps,
   SetDialogContent,
@@ -241,10 +242,6 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
   render() {
     const { intl, classes, data, fee, senderAddress, children } = this.props;
 
-    // TODO extract
-    const formatAmount = (amount: RawAmount) =>
-      `${intl.formatNumber(amount.unit.toNumber())} RISE`;
-
     const total = fee.plus(data.kind === 'send' ? data.amount : RawAmount.ZERO);
     const recipientAddress = data.kind === 'send' ? data.recipientAddress : '';
     let senderName = this.props.senderName;
@@ -261,7 +258,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
     let txTitleAria = '';
     if (data.kind === 'send') {
       txTitleAria = intl.formatMessage(messages.sendTxTitleAria, {
-        amount: formatAmount(data.amount)
+        amount: formatAmount(intl, data.amount)
       });
     } else if (data.kind === 'passphrase') {
       txTitleAria = intl.formatMessage(messages.passphraseTxTitleAria);
@@ -286,7 +283,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
             <div className={classes.vizArrow}>
               {data.kind === 'send' && (
                 <Typography className={classes.vizAmount} aria-hidden={true}>
-                  {formatAmount(data.amount)}
+                  {formatAmount(intl, data.amount)}
                 </Typography>
               )}
               <div
@@ -436,7 +433,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
                   description="Label for transfer amount in transaction breakdown."
                   defaultMessage="Transfer amount:"
                 />{' '}
-                <span>{formatAmount(data.amount)}</span>
+                <span>{formatAmount(intl, data.amount)}</span>
               </Typography>
             )}
             <Typography>
@@ -445,7 +442,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
                 description="Label for network fee in transaction breakdown."
                 defaultMessage="Network fee:"
               />{' '}
-              <span>{formatAmount(fee)}</span>
+              <span>{formatAmount(intl, fee)}</span>
             </Typography>
             <Typography>
               <FormattedMessage
@@ -453,7 +450,9 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
                 description="Label for total cost in transaction breakdown."
                 defaultMessage="Total:"
               />{' '}
-              <span className={classes.totalAmount}>{formatAmount(total)}</span>
+              <span className={classes.totalAmount}>
+                {formatAmount(intl, total)}
+              </span>
             </Typography>
           </Grid>
         </Grid>

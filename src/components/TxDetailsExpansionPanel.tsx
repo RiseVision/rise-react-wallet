@@ -24,6 +24,7 @@ import { TransactionType } from 'dpos-api-wrapper';
 import * as moment from 'moment/min/moment-with-locales';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import { formatAmount } from '../utils/utils';
 import Link from './Link';
 import { Transaction } from '../stores/transactions';
 import { RawAmount } from '../utils/amounts';
@@ -759,12 +760,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
     if (amount.gt(RawAmount.ZERO)) {
       amountSign = '+';
     }
-    let amountShort = `${amountSign}${intl.formatNumber(
-      amount.unit.toNumber(),
-      {
-        style: 'decimal'
-      }
-    )}`;
+    let amountShort = amountSign + formatAmount(intl, amount, false);
     let amountLong = `${amountShort} RISE`;
 
     return { summaryShort, summaryLong, amount, amountLong, amountShort };
@@ -1009,10 +1005,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
                 children={fmt(msg.detailsSendAmountLabel)}
               />
               <span className={classes.detailsRowValue}>
-                {intl.formatNumber(tx.amount.unit.toNumber(), {
-                  style: 'decimal'
-                })}{' '}
-                RISE
+                {formatAmount(intl, tx.amount)}
               </span>
               <span className={classes.detailsRowActions} />
             </Typography>
@@ -1080,10 +1073,7 @@ class TxDetailsExpansionPanel extends React.Component<DecoratedProps> {
               children={fmt(msg.detailsNetworkFeeLabel)}
             />
             <span className={classes.detailsRowValue}>
-              {intl.formatNumber(tx.fee.unit.toNumber(), {
-                style: 'decimal'
-              })}{' '}
-              RISE
+              {formatAmount(intl, tx.fee)}
             </span>
             <span className={classes.detailsRowActions} />
           </Typography>

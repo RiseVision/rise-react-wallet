@@ -19,6 +19,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { formatAmount } from '../../utils/utils';
 import {
   DialogContentProps,
   SetDialogContent,
@@ -124,9 +125,6 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
       content
     } = this.props;
 
-    const formatAmount = (amount: RawAmount) =>
-      `${intl.formatNumber(amount.unit.toNumber())} RISE`;
-
     return (
       <Grid className={classes.content} container={true} spacing={16}>
         <Grid item={true} xs={12}>
@@ -147,7 +145,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
                     ' network fee of {fee} for casting a vote for a delegate!'
                   }
                   values={{
-                    fee: formatAmount(voteFee)
+                    fee: formatAmount(intl, voteFee)
                   }}
                 />
               </Typography>

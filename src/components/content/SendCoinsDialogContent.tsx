@@ -23,7 +23,8 @@ import {
   normalizeAddress,
   normalizeNumber,
   TAddressRecord,
-  TAddressSource
+  TAddressSource,
+  formatAmount
 } from '../../utils/utils';
 import AddressSuggestionsMenu from '../../components/AddressSuggestionsMenu';
 import { deburr, take } from 'lodash';
@@ -154,7 +155,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
       this.state.normalizedAddress = normalizeAddress(recipientID);
     }
     if (amount) {
-      this.state.amount = intl.formatNumber(amount.unit.toNumber());
+      this.state.amount = formatAmount(intl, amount, false);
       this.state.parsedAmount = amount;
     }
   }
@@ -366,9 +367,6 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
       amountInvalid
     } = this.state;
 
-    const formatAmount = (value: RawAmount) =>
-      `${intl.formatNumber(value.unit.toNumber())} RISE`;
-
     return (
       <Grid
         className={classes.content}
@@ -470,8 +468,8 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
               description="Account balance & network fee label"
               defaultMessage="Balance: {balance} | Fee: {fee}"
               values={{
-                balance: formatAmount(this.props.balance),
-                fee: formatAmount(this.props.sendFee)
+                balance: formatAmount(intl, this.props.balance),
+                fee: formatAmount(intl, this.props.sendFee)
               }}
             />
           </Typography>

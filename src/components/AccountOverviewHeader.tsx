@@ -13,6 +13,7 @@ import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from '../components/AccountIcon';
 import { RawAmount } from '../utils/amounts';
+import { formatAmount, formatFiat } from '../utils/utils';
 
 const styles = (theme: Theme) => {
   const step = 5;
@@ -130,9 +131,6 @@ const AccountOverviewHeader = stylesDecorator(
           fiatCurrency
         } = this.props;
 
-        const formatAmount = (value: RawAmount) =>
-          `${intl.formatNumber(value.unit.toNumber())} RISE`;
-
         return (
           <Paper
             square={true}
@@ -165,14 +163,12 @@ const AccountOverviewHeader = stylesDecorator(
                 className={classes.primary_text}
                 aria-label={intl.formatMessage(messages.balanceAriaLabel)}
               >
-                {formatAmount(balance)}
+                {formatAmount(intl, balance)}
               </Typography>
               {!!balanceFiat && (
                 <Typography className={classes.secondary_text}>
                   <Tooltip title="Powered by CoinGecko">
-                    <span>
-                      {intl.formatNumber(balanceFiat)} {fiatCurrency}
-                    </span>
+                    <span>{formatFiat(intl, balanceFiat, fiatCurrency)}</span>
                   </Tooltip>
                 </Typography>
               )}

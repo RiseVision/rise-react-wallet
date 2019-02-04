@@ -23,7 +23,11 @@ import {
 } from '../Dialog';
 import autoId from '../../utils/autoId';
 import { RawAmount } from '../../utils/amounts';
-import { normalizeAddress, normalizeUsername } from '../../utils/utils';
+import {
+  normalizeAddress,
+  normalizeUsername,
+  formatAmount
+} from '../../utils/utils';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -179,9 +183,6 @@ class RegisterDelegateDialogContent extends React.Component<
     } = this.props;
     const { usernameInvalid } = this.state;
 
-    const formatAmount = (amount: RawAmount) =>
-      `${intl.formatNumber(amount.unit.toNumber())} RISE`;
-
     return (
       <Grid
         className={classes.content}
@@ -214,7 +215,7 @@ class RegisterDelegateDialogContent extends React.Component<
                   'You don\'t have enough funds in your account to pay the network fee ' +
                   'of {fee} for registering as a delegate!'
                 }
-                values={{ fee: formatAmount(delegateFee) }}
+                values={{ fee: formatAmount(intl, delegateFee) }}
               />
             </Typography>
           </Grid>
