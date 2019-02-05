@@ -521,11 +521,11 @@ export default class WalletStore {
     const parsed = Object.create(raw);
     parsed.timestamp = timestampToUnix(parsed.timestamp);
     const account = this.accounts.get(accountID);
-    if (!accountID) {
+    if (!account) {
       return;
     }
-    const items = account!.recentTransactions.items;
-    const tx = new Transaction(this, account!.id, parsed);
+    const items = account.recentTransactions.items;
+    const tx = new Transaction(this, account.id, parsed);
     const i = items.findIndex(t => t.id === tx.id);
     // replace of add (for unconfirmed)
     if (i !== -1) {
