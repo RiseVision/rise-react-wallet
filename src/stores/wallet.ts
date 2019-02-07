@@ -11,7 +11,6 @@ import { get, pick } from 'lodash';
 import {
   action,
   autorun,
-  IValueDidChange,
   IValueWillChange,
   observable,
   observe,
@@ -636,32 +635,15 @@ export default class WalletStore {
       }
     };
     // TODO extract
-    const balanceChanged = (change: IValueDidChange<RawAmount>) => {
-      calculateFiat();
-      // skip when already loading
-      if (account.recentTransactions.isLoading) {
-        return;
-      }
-      // refresh only when balance changes, but only if downloaded at least once
-      if (
-        change.oldValue!.toNumber() === change.newValue.toNumber() &&
-        account.recentTransactions.fetched
-      ) {
-        return;
-      }
-      // refresh only for viewed accounts (don't pre-fetch)
+    const refreshRecentTransactions = () => {
+      // refresh only for the visible account (dont pre-fetch)
       // and with already downloaded publicKey
-      if (!account.viewed || !account.loaded) {
+      if (!account.visible) {
         return;
       }
-      // pass async
-      account.recentTransactions.load();
-    };
-    // TODO extract
-    const viewedChanged = () => {
-      // refresh only for viewed accounts (don't pre-fetch)
-      // and with already downloaded publicKey
-      if (!account.viewed || !account.loaded) {
+      // when coming from offline OR for the first time
+      const recent = account.recentTransactions;
+      if (recent.fetched && !recent.isDirty) {
         return;
       }
       // skip when already loading
@@ -672,13 +654,10 @@ export default class WalletStore {
       account.recentTransactions.load();
     };
     const disposers: Array<() => void> = [];
-    // @ts-ignore issue with mobx d.ts
-    disposers.push(observe(account, 'balance', balanceChanged));
-    // @ts-ignore issue with mobx d.ts
+    disposers.push(observe(account, 'balance', calculateFiat));
     disposers.push(observe(account, 'fiatCurrency', calculateFiat));
-    // @ts-ignore issue with mobx d.ts
-    disposers.push(observe(account, 'viewed', viewedChanged));
-    disposers.push(observe(account, 'loaded', viewedChanged));
+    disposers.push(observe(account, 'visible', refreshRecentTransactions));
+    disposers.push(observe(account, 'loaded', refreshRecentTransactions));
     this.accounts.observe(change => {
       // only deletions
       if (change.type !== 'delete') {
@@ -703,7 +682,7 @@ export default class WalletStore {
       window.addEventListener('online', () => {
         this.refreshAccount(account.id);
         // refresh transactions only for viewed accounts
-        viewedChanged();
+        refreshRecentTransactions();
       });
     }
   }

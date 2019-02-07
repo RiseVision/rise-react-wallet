@@ -41,8 +41,8 @@ type ImportableFields =
 export default class AccountStore {
   config: TConfig;
 
-  // account overview has been viewed at least once
-  @observable viewed: boolean = false;
+  // account overview currently visible, or the last one viewed
+  @observable visible: boolean = false;
   /** account data has been fetched from the server */
   @observable loaded: boolean = false;
 
@@ -144,6 +144,10 @@ export default class AccountStore {
     }
 
     for (const field in accountCache) {
+      // skip the UI-only fields
+      if (field === 'visible') {
+        continue;
+      }
       if (this[field] instanceof RawAmount) {
         this[field] = new RawAmount(accountCache[field]);
       } else {

@@ -10,7 +10,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import SendIcon from '@material-ui/icons/Send';
 import { toPairs } from 'lodash';
-import { action } from 'mobx';
+import { action, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as classNames from 'classnames';
@@ -248,9 +248,14 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
   }
 
   render() {
-    // mark the current account as viewed
-    this.account.viewed = true;
     const { intl, classes, walletStore } = this.injected;
+
+    // mark the current account as visible and umark others
+    for (const account of walletStore.accounts.values()) {
+      runInAction(() => {
+        account.visible = account.id === this.account.id;
+      });
+    }
 
     const readOnly = this.account && this.account.type === AccountType.READONLY;
     const headerProps = {
