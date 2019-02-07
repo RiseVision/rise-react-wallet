@@ -225,9 +225,14 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
   }
 
   handleAmountBlur = () => {
-    const { amount } = this.state;
-    const amountInvalid = !!amount && !!this.amountError();
-    this.setState({ amountInvalid });
+    const amountInvalid = !!this.state.amount && !!this.amountError();
+    const amount = this.state.parsedAmount
+      ? this.state.parsedAmount.unit.toNumber().toString()
+      : '';
+    this.setState({
+      amountInvalid,
+      amount
+    });
   }
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {

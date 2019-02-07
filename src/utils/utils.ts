@@ -71,6 +71,7 @@ export function normalizeNumber(intl: InjectedIntl, value: string): string {
   const decimalSep = intl.formatNumber(1.11).replace(/1/g, '');
   value = value.replace(new RegExp(` |\\${thousandSep}`, 'g'), '');
   value = value.replace(new RegExp(`\\${decimalSep}`, 'g'), '.');
+  value = value.replace(/(\.\d{1,10})\d*/, '$1');
 
   try {
     const n = new BigNumber(value);
