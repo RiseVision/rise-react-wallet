@@ -122,8 +122,8 @@ class DrawerContent extends React.Component<DecoratedProps> {
 
     const allAccounts = orderBy(
       [...walletStore.accounts.values()],
-      ['pinned', 'name'],
-      ['desc', 'asc']
+      ['pinned', (a) => Boolean(a.name), 'name'],
+      ['desc', 'desc', 'asc']
     );
     const pinnedCount = allAccounts.filter(a => a.pinned).length;
 
