@@ -59,7 +59,7 @@ function nextAccountLocalId(): number {
 export default class WalletStore {
   dposAPI: APIWrapper;
   delegateCache: DelegateCache;
-  io: SocketIOClient.Socket;
+  io: SocketIOClient.Socket | null;
 
   // TODO type as not null
   @observable
@@ -129,11 +129,19 @@ export default class WalletStore {
     this.fetchFiatData();
   }
 
+  /**
+   * Perform a full reload of the wallet, including:
+   * - accounts
+   * - websocket connections
+   * - dpos config
+   * - delegate cache
+   */
   reload() {
     const storedAccount = this.storedAccounts();
     // dispose
     if (this.io) {
       this.io.disconnect();
+      this.io = null;
     }
     // init the API
     dposAPI.nodeAddress = this.nodeAddress;
@@ -142,25 +150,31 @@ export default class WalletStore {
     this.delegateCache = new DelegateCache(this.dposAPI);
 
     // only when there's added accounts
-    if (storedAccount.length) {
-      const lastSelectedID = lstore.get('lastSelectedAccount');
-      // login all stored accounts
-      for (const account of storedAccount) {
-        // login and merge-in local data
-        this.login(account.id, account);
-      }
-      // select the last selected one
-      if (this.accounts.has(lastSelectedID)) {
-        this.selectAccount(lastSelectedID);
-      } else {
-        // or the first one
-        this.selectAccount([...this.accounts.keys()][0]);
-      }
+    if (!storedAccount.length) {
+      return;
+    }
+    // clear added accounts
+    this.accounts.clear();
+    const lastSelectedID = lstore.get('lastSelectedAccount');
+    // login all stored accounts
+    for (const account of storedAccount) {
+      // login and merge-in local data
+      this.login(account.id, account);
+    }
+    // select the last selected one
+    if (this.accounts.has(lastSelectedID)) {
+      this.selectAccount(lastSelectedID);
+    } else {
+      // or the first one
+      this.selectAccount([...this.accounts.keys()][0]);
     }
   }
 
   setNetwork(type: NetworkType, url?: string) {
+    // remember the choice
     lstore.set('network', { type, url });
+    // invalidate cache
+    lstore.remove('cache');
     this.reload();
   }
 
