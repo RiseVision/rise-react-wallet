@@ -3353,10 +3353,10 @@ dpos-api-wrapper@^1.3.2:
   dependencies:
     axios "^0.16.2"
 
-dpos-ledger-api@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/dpos-ledger-api/-/dpos-ledger-api-1.1.0.tgz#edb8845224fb8a36359ea76c92fe6bdc5573c1c7"
-  integrity sha512-CzYwl/DG41kTIiCGbaMbxpIp50V6R/Di96lZ4IilEVfEQK4yCGbhKHeNW7dCwa2/Qd3C4pvqkMNDmiYm5Wew1w==
+dpos-ledger-api@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/dpos-ledger-api/-/dpos-ledger-api-2.0.0.tgz#110653fb5761497b75edd44eaa4d1fbfba9b88a6"
+  integrity sha512-WQ3TuemxfHdgsn+YgH39CosCnB5FpF31UiiEQpYKbtczsoJPWruaxTO3l+cfk8eyOB+rYkabQr40rooDkTTacQ==
   dependencies:
     bip32-path "^0.4.2"
     crc "^3.5.0"
