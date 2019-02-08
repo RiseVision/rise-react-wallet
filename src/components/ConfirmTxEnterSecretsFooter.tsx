@@ -17,6 +17,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import AccountTip from './AccountTip';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -69,6 +70,11 @@ const messages = defineMessages({
     description: 'Error label for an invalid passphrase',
     defaultMessage:
       'Incorrect passphrase. The passphrase you entered is not associated with this account.'
+  },
+  mnemonicOK: {
+    id: 'confirm-tx-enter-secrets-footer.mnemonic-ok',
+    description: 'Info about auto-accepted mnemonic',
+    defaultMessage: 'Entered mnemonic is correct'
   }
 });
 
@@ -227,7 +233,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
   }
 
   render() {
-    const { classes, secondPublicKey } = this.props;
+    const { classes, secondPublicKey, intl } = this.props;
     const {
       mnemonic,
       mnemonicInvalid,
@@ -291,25 +297,32 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
               inputRef={ref => (this.mnemonicRef = ref)}
             />
           ) : (
-            <TextField
-              key="passphrase"
-              type="password"
-              label={
-                <FormattedMessage
-                  id="confirm-tx-enter-secrets-footer.passphrase-input-label"
-                  description="Label for 2nd passphrase text field."
-                  defaultMessage="Second passphrase"
-                />
-              }
-              autoFocus={true}
-              value={passphrase}
-              onChange={this.handlePassphraseChange}
-              onBlur={this.handlePassphraseBlur}
-              error={passphraseInvalid}
-              helperText={passphraseInvalid ? this.passphraseError() : ''}
-              fullWidth={true}
-              inputRef={ref => (this.passphraseRef = ref)}
-            />
+            <React.Fragment>
+              <AccountTip
+                key="__mnemonic_ok__"
+                open={true}
+                message={intl.formatMessage(messages.mnemonicOK)}
+              />
+              <TextField
+                key="passphrase"
+                type="password"
+                label={
+                  <FormattedMessage
+                    id="confirm-tx-enter-secrets-footer.passphrase-input-label"
+                    description="Label for 2nd passphrase text field."
+                    defaultMessage="Second passphrase"
+                  />
+                }
+                autoFocus={true}
+                value={passphrase}
+                onChange={this.handlePassphraseChange}
+                onBlur={this.handlePassphraseBlur}
+                error={passphraseInvalid}
+                helperText={passphraseInvalid ? this.passphraseError() : ''}
+                fullWidth={true}
+                inputRef={ref => (this.passphraseRef = ref)}
+              />
+            </React.Fragment>
           )}
         </Grid>
         <Grid item={true} xs={12}>

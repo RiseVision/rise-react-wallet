@@ -113,7 +113,7 @@ const messages = defineMessages({
       'Tip about increasing the security of the account by making a transaction',
     defaultMessage:
       'You should make a transaction (send some RISE or cast a vote) to bind ' +
-      'your public key with this account to incrase the security of your funds.'
+      'your public key with this account to increase the security of your funds.'
   },
   highValueAccountTip: {
     id: 'wallet-account-overview.high-value-account-tip',
