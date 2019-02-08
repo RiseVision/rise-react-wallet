@@ -1,13 +1,16 @@
-import Grid from '@material-ui/core/Grid';
+import { Checkbox } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import * as bip39 from 'bip39';
 import * as React from 'react';
 import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
 import {
@@ -16,20 +19,27 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { RawAmount } from '../../utils/amounts';
+import autoId from '../../utils/autoId';
 import { formatAmount } from '../../utils/utils';
 import {
   DialogContentProps,
   SetDialogContent,
   ICloseInterruptFormProps
 } from '../Dialog';
-import autoId from '../../utils/autoId';
-import { RawAmount } from '../../utils/amounts';
 
 const styles = (theme: Theme) =>
   createStyles({
     content: {
       padding: theme.spacing.unit * 2,
       textAlign: 'center'
+    },
+    error: {
+      color: theme.palette.error.main
+    },
+    checkbox: {
+      textAlign: 'left',
+      width: '100%'
     }
   });
 
@@ -52,6 +62,8 @@ type DecoratedProps = Props & InjectedIntlProps;
 export interface State {
   passphrase: string;
   passphraseInvalid: boolean;
+  passphraseConfirmed: boolean;
+  passphraseConfirmedError?: boolean;
 }
 
 const messages = defineMessages({
@@ -75,12 +87,13 @@ class AddSecondPassphraseDialogContent extends React.Component<
 
   state: State = {
     passphrase: '',
-    passphraseInvalid: false
+    passphraseInvalid: false,
+    passphraseConfirmed: false
   };
 
   constructor(props: DecoratedProps) {
     super(props);
-    this.state.passphrase = props.passphrase || '';
+    this.state.passphrase = props.passphrase || bip39.generateMnemonic();
   }
 
   handlePassphraseChanged = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -104,17 +117,28 @@ class AddSecondPassphraseDialogContent extends React.Component<
     ev.preventDefault();
 
     const { onSubmit } = this.props;
-    const { passphrase } = this.state;
+    const { passphrase, passphraseConfirmed } = this.state;
 
     const passphraseInvalid = !!this.passphraseError();
     if (passphraseInvalid) {
-      this.setState({
+      return this.setState({
         passphraseInvalid
       });
-      return;
+    }
+    if (!passphraseConfirmed) {
+      return this.setState({
+        passphraseConfirmedError: true
+      });
     }
 
     onSubmit(passphrase);
+  }
+
+  handlePassphraseConfirmed = (ev: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      passphraseConfirmed: Boolean(ev.target.checked),
+      passphraseConfirmedError: false
+    });
   }
 
   passphraseError(): string | null {
@@ -135,7 +159,12 @@ class AddSecondPassphraseDialogContent extends React.Component<
 
   render() {
     const { intl, classes, error, passphraseFee } = this.props;
-    const { passphrase, passphraseInvalid } = this.state;
+    const {
+      passphrase,
+      passphraseInvalid,
+      passphraseConfirmed,
+      passphraseConfirmedError
+    } = this.state;
 
     return (
       <Grid
@@ -161,9 +190,16 @@ class AddSecondPassphraseDialogContent extends React.Component<
         <Grid item={true} xs={12}>
           <Typography>
             <FormattedMessage
-              id="add-second-passphrase-dialog-content.instructions-immutable"
-              description="Warning about the 2nd passphrase being immutable"
-              defaultMessage="Once the 2nd passphrase has been set it cannot be changed nor removed."
+              id="add-second-passphrase-dialog-content.instructions-immutable-pregenerated"
+              description={
+                'Warning about the 2nd passphrase being immutable and ' +
+                'suggesting the pre-generated one'
+              }
+              defaultMessage={
+                'Once the 2nd passphrase has been set it cannot be changed ' +
+                'nor removed. Your passphrase depends totally on you, but we ' +
+                'recommend using the pre-generated one.'
+              }
             />
           </Typography>
         </Grid>
@@ -177,9 +213,7 @@ class AddSecondPassphraseDialogContent extends React.Component<
                   'You don\'t have enough funds in your account to pay the network fee ' +
                   'of {fee} to setup a 2nd passphrase!'
                 }
-                values={{
-                  fee: formatAmount(intl, passphraseFee)
-                }}
+                values={{ fee: formatAmount(intl, passphraseFee) }}
               />
             </Typography>
           </Grid>
@@ -192,7 +226,7 @@ class AddSecondPassphraseDialogContent extends React.Component<
                 description="Error about the 2nd passphrase being set already"
                 defaultMessage={
                   'You\'ve already set a 2nd passphrase for this account. You need to ' +
-                  'create a new account should you wish to change your passphrase.'
+                  'create a new account if you wish to change your passphrase.'
                 }
               />
             </Typography>
@@ -202,7 +236,6 @@ class AddSecondPassphraseDialogContent extends React.Component<
           <Grid item={true} xs={12}>
             <TextField
               autoFocus={true}
-              type="password"
               label={
                 <FormattedMessage
                   id="add-second-passphrase-dialog-content.passphrase-input-label"
@@ -215,10 +248,26 @@ class AddSecondPassphraseDialogContent extends React.Component<
               onBlur={this.handlePassphraseBlur}
               fullWidth={true}
               error={passphraseInvalid}
-              FormHelperTextProps={{
-                error: passphraseInvalid
-              }}
+              FormHelperTextProps={{ error: passphraseInvalid }}
               helperText={passphraseInvalid ? this.passphraseError() || '' : ''}
+            />
+
+            <FormControlLabel
+              className={classes.checkbox}
+              control={
+                <Checkbox
+                  className={passphraseConfirmedError ? classes.error : ''}
+                  checked={passphraseConfirmed}
+                  onChange={this.handlePassphraseConfirmed}
+                />
+              }
+              label={
+                <FormattedMessage
+                  id="add-second-passphrase-dialog-content.passphrase-stored"
+                  description="Checkbox confirming the users stored the passphrase"
+                  defaultMessage="I have securely stored the second passphrase"
+                />
+              }
             />
           </Grid>
         )}
