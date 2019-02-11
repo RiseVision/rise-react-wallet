@@ -5,59 +5,38 @@
   "choose-network.invalid-custom-url": "Adresse URL du serveur invalide",
   "choose-network.custom-url": "Adresse URL de serveur customisée",
   "choose-network.submit-button": "Choisir serveur",
-  "onboarding-mnemonic-account.invalid-mnemonic-generic":
-    "Mot de passe mnémonique invalide. Un mot de passe mnémonique valide est une liste de 12 mots.",
+  "onboarding-mnemonic-account.invalid-mnemonic-generic": "Mot de passe mnémonique invalide. Un mot de passe mnémonique valide est une liste de 12 mots.",
   "onboarding-mnemonic-account.title": "Votre compte",
-  "onboarding-mnemonic-account.enter-mnemonic-text":
-    "Entrer le mot de passe mnémonique du compte RISE que vous souhaitez accéder:",
+  "onboarding-mnemonic-account.enter-mnemonic-text": "Entrer le mot de passe mnémonique du compte RISE que vous souhaitez accéder:",
   "onboarding-mnemonic-account.mnemonic-input-label": "Mot de passe mnémonique",
-  "onboarding-mnemonic-account.account-address-text":
-    "Votre adresse de compte Rise est {address}.",
+  "onboarding-mnemonic-account.account-address-text": "Votre adresse de compte Rise est {address}.",
   "onboarding-mnemonic-account.continue": "Continuez",
   "onboarding-account-created.title": "Votre nouveau compte",
-  "onboarding-account-created.account-with-address-created":
-    "Un nouveau compte a été créé, avec l'adresse suivante:",
-  "onboarding-account-created.explain-image":
-    "Chaque compte obtient une icône générée automatiquement. Cela permet de vérifier que l'adresse rentrée pour envoyer des RISE est correcte.",
+  "onboarding-account-created.account-with-address-created": "Un nouveau compte a été créé, avec l'adresse suivante:",
+  "onboarding-account-created.explain-image": "Chaque compte obtient une icône générée automatiquement. Cela permet de vérifier que l'adresse rentrée pour envoyer des RISE est correcte.",
   "onboarding-account-created.continue": "Aller à l'aperçu de votre compte",
-  "onboarding-ledger-account.connect-instructions":
-    "Connectez votre Ledger & ouvrez votre application RISE du Ledger.",
-  "onboarding-ledger-account.unsupported-browser":
-    "Votre navigateur ne supporte pas le Ledger. Si vous voulez utiliser un Ledger, essayez avec un autre navigateur comme google chrome. C'est un navigateur qui est reconnu pour supporter le Ledger.",
-  "onboarding-ledger-account.status-connecting":
-    "Tentative de connection en cours...",
-  "onboarding-ledger-account.status-connecting-help":
-    "En cas de problème merci de <a href=\"https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues\" target=\"_blank\">visiter la page web de support</a>.",
+  "onboarding-ledger-account.connect-instructions": "Connectez votre Ledger & ouvrez votre application RISE du Ledger.",
+  "onboarding-ledger-account.unsupported-browser": "Votre navigateur ne supporte pas le Ledger. Si vous voulez utiliser un Ledger, essayez avec un autre navigateur comme google chrome. C'est un navigateur qui est reconnu pour supporter le Ledger.",
+  "onboarding-ledger-account.status-connecting": "Tentative de connection en cours...",
+  "onboarding-ledger-account.status-connecting-help": "En cas de problème merci de <a href=\"https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues\" target=\"_blank\">visiter la page web de support</a>.",
   "onboarding-ledger-account.account-nr-label": "Compte #{number}",
-  "onboarding-ledger-account.confirm-instructions":
-    "Merci de confirmer votre adresse sur l'appareil Ledger.",
-  "onboarding-ledger-account.status-waiting-confirmation":
-    "En attente de confirmation...({seconds} {seconds, plural, one {seconde} other {secondes}} restantes)",
+  "onboarding-ledger-account.confirm-instructions": "Merci de confirmer votre adresse sur l'appareil Ledger.",
+  "onboarding-ledger-account.status-waiting-confirmation": "En attente de confirmation...({seconds} {seconds, plural, one {seconde} other {secondes}} restantes)",
   "onboarding-ledger-account.title": "Importer un compte Ledger",
-  "onboarding-existing-account.invalid-address-generic":
-    "Adresse RISE invalide. Une adresse valide suit le format \"1234567890R\".",
-  "onboarding-existing-account.invalid-address-mnemonic":
-    "Il semble que vous essayiez d'entrer votre mot de passe. Essayez d'entrer votre adresse de compte plutôt.",
+  "onboarding-existing-account.invalid-address-generic": "Adresse RISE invalide. Une adresse valide suit le format \"1234567890R\".",
+  "onboarding-existing-account.invalid-address-mnemonic": "Il semble que vous essayiez d'entrer votre mot de passe. Essayez d'entrer votre adresse de compte plutôt.",
   "onboarding-existing-account.title": "Votre compte",
-  "onboarding-existing-account.enter-address-text":
-    "Entrez l'adresse d'un compte RISE existant auquel vous voulez accéder:",
+  "onboarding-existing-account.enter-address-text": "Entrez l'adresse d'un compte RISE existant auquel vous voulez accéder:",
   "onboarding-existing-account.address-input-label": "Adresse de compte",
   "onboarding-existing-account.continue": "Continuez",
-  "onboarding-existing-account.recover-from-mnemonic":
-    "Adresse de compte oubliée, mais vous connaissez votre mot de passe mnémonique?",
-  "onboarding-security-notice.correct-url-tip":
-    "Lorsque vous accédez ce wallet, tapez toujours l'adresse URL dans la barre de navigation du navigateur web ou alors utilisez le favori que vous avez créé. Ne faites jamais confiance à un lien trouvé sur les réseaux sociaux, dans les résultats de moteurs de recherche ou listé sur d'autres sites webs.",
-  "onboarding-security-notice.trust-browser-tip":
-    "Si votre navigateur internet mentionne un quelconque message d'alerte de sécurité à propos de ce wallet en ligne, merci de nous contacter. N'ignorez pas ce message d'alerte et ne rentrez pas votre mot de passe mnémonique!",
-  "onboarding-security-notice.own-devices-tip":
-    "Utilisez seulement vos propres appareils pour accéder à votre compte. N'entrez jamais votre mot de passe mnémonique sur des appareils en lesquels vous n'avez pas confiance (appareils à mise à disposition du public, téléphones, ou Pc de vos amis, etc) car ils pourraient être pleins de logiciels enregistreur de frappes et malwares.",
-  "onboarding-security-notice.apply-updates-tip":
-    "Gardez toujours votre logiciel d'exploitation, votre logiciel antivirus et vos navigateurs internet à jour avec les derniers correctifs de sécurité.",
-  "onboarding-security-notice.hardware-wallets-tip":
-    "Si possible, il est conseillé d'utiliser des wallets hardware au lieu de compter sur votre seul mot de passe mnémonique pour des montants de RISE important.",
+  "onboarding-existing-account.recover-from-mnemonic": "Adresse de compte oubliée, mais vous connaissez votre mot de passe mnémonique?",
+  "onboarding-security-notice.correct-url-tip": "Lorsque vous accédez ce wallet, tapez toujours l'adresse URL dans la barre de navigation du navigateur web ou alors utilisez le favori que vous avez créé. Ne faites jamais confiance à un lien trouvé sur les réseaux sociaux, dans les résultats de moteurs de recherche ou listé sur d'autres sites webs.",
+  "onboarding-security-notice.trust-browser-tip": "Si votre navigateur internet mentionne un quelconque message d'alerte de sécurité à propos de ce wallet en ligne, merci de nous contacter. N'ignorez pas ce message d'alerte et ne rentrez pas votre mot de passe mnémonique!",
+  "onboarding-security-notice.own-devices-tip": "Utilisez seulement vos propres appareils pour accéder à votre compte. N'entrez jamais votre mot de passe mnémonique sur des appareils en lesquels vous n'avez pas confiance (appareils à mise à disposition du public, téléphones, ou Pc de vos amis, etc) car ils pourraient être pleins de logiciels enregistreur de frappes et malwares.",
+  "onboarding-security-notice.apply-updates-tip": "Gardez toujours votre logiciel d'exploitation, votre logiciel antivirus et vos navigateurs internet à jour avec les derniers correctifs de sécurité.",
+  "onboarding-security-notice.hardware-wallets-tip": "Si possible, il est conseillé d'utiliser des wallets hardware au lieu de compter sur votre seul mot de passe mnémonique pour des montants de RISE important.",
   "onboarding-security-notice.title": "Astuces de sécurité",
-  "onboarding-security-notice.keep-in-mind":
-    "Ce que vous devez savoir pour améliorer la sécurité de vos fonds:",
+  "onboarding-security-notice.keep-in-mind": "Ce que vous devez savoir pour améliorer la sécurité de vos fonds:",
   "onboarding-security-notice.next-tip": "Astuce suivante",
   "onboarding-security-notice.continue": "Continuer",
   "onboarding-add-account.official-main-network": "réseau mainnet",
@@ -65,51 +44,37 @@
   "onboarding-add-account.custom-network": "customisation",
   "onboarding-add-account.title": "{icon} RISE wallet",
   "onboarding-add-account.new-account": "Nouveau compte",
-  "onboarding-add-account.new-account-tip":
-    "Je veux créer un nouveau compte sur le réseau RISE",
+  "onboarding-add-account.new-account-tip": "Je veux créer un nouveau compte sur le réseau RISE",
   "onboarding-add-account.existing-account": "Compte existant",
-  "onboarding-add-account.existing-account-tip":
-    "Je veux accéder à un compte existant sur le réseau RISE",
+  "onboarding-add-account.existing-account-tip": "Je veux accéder à un compte existant sur le réseau RISE",
   "onboarding-add-account.hw-wallet-account": "Compte de Wallet hardware",
-  "onboarding-add-account.hw-wallet-account-tip":
-    "Je veux importer un compte de mon appareil Ledger",
+  "onboarding-add-account.hw-wallet-account-tip": "Je veux importer un compte de mon appareil Ledger",
   "onboarding-add-account.change-language": "Changer de langue",
   "onboarding-add-account.select-node": "Changer de noeud de réseau ({name})",
   "onboarding-verify-mnemonic.title": "Vérifier le mot de passe mnémonique",
-  "onboarding-verify-mnemonic.verify-mnemonic":
-    "Vérifiez bien que vous avez correctement écrit votre mot de passe mnémonique. Entrez le {whichWordInBold} dans le champ suivant.",
-  "onboarding-verify-mnemonic.verify-mnemonic-which-word":
-    "{whichWord, selectordinal, one {#er mot} other {#ème mot}}",
-  "onboarding-verify-mnemonic.input-label-which-word":
-    "Mot #{whichWord, number}",
+  "onboarding-verify-mnemonic.verify-mnemonic": "Vérifiez bien que vous avez correctement écrit votre mot de passe mnémonique. Entrez le {whichWordInBold} dans le champ suivant.",
+  "onboarding-verify-mnemonic.verify-mnemonic-which-word": "{whichWord, selectordinal, one {#er mot} other {#ème mot}}",
+  "onboarding-verify-mnemonic.input-label-which-word": "Mot #{whichWord, number}",
   "onboarding-verify-mnemonic.check": "Vérifier",
   "onboarding-verify-mnemonic.check-and-continue": "Vérifier et continuer",
   "onboarding-verify-mnemonic.continue": "Continuez",
   "onboarding-existing-account-type.title": "Type de compte",
   "onboarding-existing-account-type.full-access": "Accès total au compte",
-  "onboarding-existing-account-type.full-access-tip":
-    "Je connais le mot de passe mnémonique de ce compte",
+  "onboarding-existing-account-type.full-access-tip": "Je connais le mot de passe mnémonique de ce compte",
   "onboarding-existing-account-type.read-access": "Compte en lecture seulement",
-  "onboarding-existing-account-type.read-access-tip":
-    "Je ne connais pas le mot de passe mnémonique de ce compte",
+  "onboarding-existing-account-type.read-access-tip": "Je ne connais pas le mot de passe mnémonique de ce compte",
   "onboarding-no-mnemonic-notice.title": "Votre compte a été ajouté",
-  "onboarding-no-mnemonic-notice.did-you-notice":
-    "Avez-vous remarqué que vous n'avez pas à entrer votre mot de passe ? C'est parce que vous devrez rentrer votre mot de passe mnémonique seulement lorsque vous êtes sur le point de faire une transaction.",
-  "onboarding-no-mnemonic-notice.written-down-mnemonic":
-    "Merci de vous assurer de bien noter le mot de passe et de le conserver en lieu sûr afin que vous ne le perdiez pas car il n'est utilisé qu'occasionnellement.",
+  "onboarding-no-mnemonic-notice.did-you-notice": "Avez-vous remarqué que vous n'avez pas à entrer votre mot de passe ? C'est parce que vous devrez rentrer votre mot de passe mnémonique seulement lorsque vous êtes sur le point de faire une transaction.",
+  "onboarding-no-mnemonic-notice.written-down-mnemonic": "Merci de vous assurer de bien noter le mot de passe et de le conserver en lieu sûr afin que vous ne le perdiez pas car il n'est utilisé qu'occasionnellement.",
   "onboarding-no-mnemonic-notice.continue": "Aller à l'aperçu de votre compte",
   "onboarding-new-mnemonic.title": "A prendre note",
-  "onboarding-new-mnemonic.mnemonic-pretext":
-    "Voici votre nouveau {wordCount, number} mot de passe mnémonique secret:",
-  "onboarding-new-mnemonic.write-mnemonic-down":
-    "Noter votre mot de passe mnémonique sur un support papier afin de le stocker dans un lieu sûr.",
-  "onboarding-new-mnemonic.mnemonic-grants-full-access":
-    "Nota Bene! Quiconque le connaît peut transférer des fonds de votre compte.",
+  "onboarding-new-mnemonic.mnemonic-pretext": "Voici votre nouveau {wordCount, number} mot de passe mnémonique secret:",
+  "onboarding-new-mnemonic.write-mnemonic-down": "Noter votre mot de passe mnémonique sur un support papier afin de le stocker dans un lieu sûr.",
+  "onboarding-new-mnemonic.mnemonic-grants-full-access": "Nota Bene! Quiconque le connaît peut transférer des fonds de votre compte.",
   "onboarding-new-mnemonic.continue": "Continuez",
   "onboarding-choose-language.title": "{icon} Wallet RISE",
   "onboarding-choose-language.translate-cta-title": "Il manque votre langue ?",
-  "onboarding-choose-language.translate-cta":
-    "Aidez-nous à traduire le Wallet RISE !",
+  "onboarding-choose-language.translate-cta": "Aidez-nous à traduire le Wallet RISE !",
   "wallet-appbar.open-drawer-aria-label": "Ouvrir le menu de navigation",
   "wallet-appbar.navigate-back-aria-label": "Revenir en arrière",
   "wallet-appbar.account-settings-tooltip": "Paramètres de compte",
@@ -126,8 +91,7 @@
   "wallet-address-book.modify-action-tooltip": "Modifier le contact",
   "wallet-address-book.delete-action-tooltip": "Supprimer le contact",
   "wallet-address-book.empty-title": "Votre carnet d'adresses est vide",
-  "wallet-address-book.empty-text":
-    "Vous pouvez créer des contacts dans votre carnet d'adresses et associer des adresses RISE avec des noms faciles à lire.",
+  "wallet-address-book.empty-text": "Vous pouvez créer des contacts dans votre carnet d'adresses et associer des adresses RISE avec des noms faciles à lire.",
   "accounts-list.accounts-list-aria-label": "Comptes",
   "accounts-list.unnamed-account-label": "Compte sans nom ({id})",
   "accounts-list.add-account-fab-tooltip": "Ajouter un compte",
@@ -143,10 +107,8 @@
   "account-settings.unnamed-account-label": "Compte sans nom ({id})",
   "account-settings.account-name": "Nom du compte",
   "account-settings.pinned-account": "Compte épinglé",
-  "account-settings.pinned-account-on-aria":
-    "Compte épinglé (appuyer pour détacher)",
-  "account-settings.pinned-account-off-aria":
-    "Compte détaché (appuyer pour épingler)",
+  "account-settings.pinned-account-on-aria": "Compte épinglé (appuyer pour détacher)",
+  "account-settings.pinned-account-off-aria": "Compte détaché (appuyer pour épingler)",
   "account-settings.voted-delegate": "Délégué sélectionné",
   "account-settings.voted-delegate-unset-label": "Aucun",
   "account-settings.fiat-currency": "Monnaie FIAT équivalente",
@@ -158,28 +120,18 @@
   "account-settings.ledger-address": "Vérfier votre Ledger Nano",
   "account-settings.delegate-registration-unset-label": "Pas enregistré",
   "account-settings.remove-account": "Effacer ce compte de votre wallet",
-  "verify-ledger-address.connect-instructions":
-    "Connectez votre Ledger & ouvrez votre application RISE du Ledger.",
-  "verify-ledger-address.unsupported-browser":
-    "Votre navigateur ne supporte pas le Ledger. Si vous voulez utiliser un Ledger, essayez avec un autre navigateur comme google chrome. C'est un navigateur qui est reconnu pour supporter le Ledger.",
-  "verify-ledger-address.status-connecting":
-    "Tentative de connection en cours...",
-  "verify-ledger-address.status-connecting-help":
-    "En cas de problème merci de <a href=\"https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues\" target=\"_blank\">visiter la page web de support</a>.",
+  "verify-ledger-address.connect-instructions": "Connectez votre Ledger & ouvrez votre application RISE du Ledger.",
+  "verify-ledger-address.unsupported-browser": "Votre navigateur ne supporte pas le Ledger. Si vous voulez utiliser un Ledger, essayez avec un autre navigateur comme google chrome. C'est un navigateur qui est reconnu pour supporter le Ledger.",
+  "verify-ledger-address.status-connecting": "Tentative de connection en cours...",
+  "verify-ledger-address.status-connecting-help": "En cas de problème merci de <a href=\"https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues\" target=\"_blank\">visiter la page web de support</a>.",
   "verify-ledger-address.account-nr-label": "Compte #{number}",
-  "verify-ledger-address.confirm-instructions":
-    "Merci de confirmer votre adresse sur l'appareil Ledger.",
+  "verify-ledger-address.confirm-instructions": "Merci de confirmer votre adresse sur l'appareil Ledger.",
   "verify-ledger-address.close-dialog": "Fermer",
-  "verify-ledger-address.success":
-    "Vous avez vérifié avec succès l'adresse de votre compte sur l'appareil Ledger.",
+  "verify-ledger-address.success": "Vous avez vérifié avec succès l'adresse de votre compte sur l'appareil Ledger.",
   "verify-ledger-address.dialog-title": "Verifier l'adresse Ledger",
-  "verify-ledger-address.status-waiting-confirmation":
-    "En attente de confirmation...({seconds} {seconds, plural, one {seconde} other {secondes}} restantes)",
+  "verify-ledger-address.status-waiting-confirmation": "En attente de confirmation...({seconds} {seconds, plural, one {seconde} other {secondes}} restantes)",
   "wallet-account-overview.unnamed-account-label": "Compte sans nom ({id})",
-  "wallet-account-overview.no-pubkey-account-tip":
-    "Vous devriez faire une transaction (envoyer quelques RISE ou faire un vote) afin de lier votre clé publique et votre compte afin d'améliorer la sécurité de vos fonds.",
-  "wallet-account-overview.high-value-account-tip":
-    "Vous avez un nombre important de RISE sur ce compte. Vous devriez considérer l'utilisation d'un appareil de type hardware wallet pour une sécurité accrue. Si ce n'est pas possible, vous devriez au moins utiliser la version desktop du wallet RISE au lieu de la version en ligne.",
+  "wallet-account-overview.high-value-account-tip": "Vous avez un nombre important de RISE sur ce compte. Vous devriez considérer l'utilisation d'un appareil de type hardware wallet pour une sécurité accrue. Si ce n'est pas possible, vous devriez au moins utiliser la version desktop du wallet RISE au lieu de la version en ligne.",
   "wallet-account-overview.send-funds-fab-tooltip": "Envoyer des RISE",
   "modal-paper-header.back-button-aria-label": "Retour en arrière",
   "modal-paper-header.close-button-aria-label": "Fermer la discussion",
@@ -199,339 +151,208 @@
   "confirm-tx-status-footer.error-icon-aria": "Icône d'indication d'erreur",
   "confirm-tx-status-footer.info-icon-aria": "Icône d'indication d'information",
   "confirm-tx-status-footer.success-icon-aria": "Icône d'indication de succès",
-  "confirm-tx-dialog-content.broadcasting-msg":
-    "Envoi en cours de la transaction sur le réseau. Merci de patienter...",
-  "confirm-tx-status-footer.success-msg":
-    "La transaction a été envoyée avec succès sur le réseau!",
-  "confirm-tx-status-footer.error-msg":
-    "Erreur d'envoi de la transaction sur le réseau: {error}",
-  "confirm-tx-status-footer.ledger-not-supported-msg":
-    "Votre navigateur internet n'est pas compatible avec les appareils Ledger.",
-  "confirm-tx-status-footer.ledger-another-device-msg":
-    "L'appareil Ledger connecté ne gère pas ce compte. Vous avez dû utiliser un mot de passe additionnel (dans votre Ledger) en ajoutant ce compte ou alors vous avez connecté un appareil dont le mot de passe mnémonique est différent.",
-  "confirm-tx-status-footer.ledger-not-connected-msg":
-    "Merci de connecter votre Ledger et d'ouvrir l'application RISE dessus. En attente de connection du Ledger...",
-  "confirm-tx-status-footer.ledger-confirming-msg":
-    "Merci de confirmer la transaction sur votre Ledger. En attente de confirmation...({seconds} {seconds, plural, one {seconde} other {secondes}} restantes)",
+  "confirm-tx-dialog-content.broadcasting-msg": "Envoi en cours de la transaction sur le réseau. Merci de patienter...",
+  "confirm-tx-status-footer.success-msg": "La transaction a été envoyée avec succès sur le réseau!",
+  "confirm-tx-status-footer.error-msg": "Erreur d'envoi de la transaction sur le réseau: {error}",
+  "confirm-tx-status-footer.ledger-not-supported-msg": "Votre navigateur internet n'est pas compatible avec les appareils Ledger.",
+  "confirm-tx-status-footer.ledger-another-device-msg": "L'appareil Ledger connecté ne gère pas ce compte. Vous avez dû utiliser un mot de passe additionnel (dans votre Ledger) en ajoutant ce compte ou alors vous avez connecté un appareil dont le mot de passe mnémonique est différent.",
+  "confirm-tx-status-footer.ledger-not-connected-msg": "Merci de connecter votre Ledger et d'ouvrir l'application RISE dessus. En attente de connection du Ledger...",
+  "confirm-tx-status-footer.ledger-confirming-msg": "Merci de confirmer la transaction sur votre Ledger. En attente de confirmation...({seconds} {seconds, plural, one {seconde} other {secondes}} restantes)",
   "confirm-tx-status-footer.try-again-button": "Essayer encore",
   "confirm-tx-status-footer.close-button": "Fermer",
-  "tx-details-expansion-panel.summary-unconfirmed-receive-alias-long":
-    "En attente de transfert de {alias} ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-receive-alias-short":
-    "En attente de {alias} ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-receive-long":
-    "En attente de transfert de {address}",
-  "tx-details-expansion-panel.summary-unconfirmed-receive-short":
-    "En attente de {address}",
-  "tx-details-expansion-panel.summary-receive-alias-long":
-    "Transfert depuis {alias} ({address})",
-  "tx-details-expansion-panel.summary-receive-alias-short":
-    "De {alias} ({address})",
-  "tx-details-expansion-panel.summary-receive-long":
-    "Transfert depuis {address}",
+  "tx-details-expansion-panel.summary-unconfirmed-receive-alias-long": "En attente de transfert de {alias} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-receive-alias-short": "En attente de {alias} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-receive-long": "En attente de transfert de {address}",
+  "tx-details-expansion-panel.summary-unconfirmed-receive-short": "En attente de {address}",
+  "tx-details-expansion-panel.summary-receive-alias-long": "Transfert depuis {alias} ({address})",
+  "tx-details-expansion-panel.summary-receive-alias-short": "De {alias} ({address})",
+  "tx-details-expansion-panel.summary-receive-long": "Transfert depuis {address}",
   "tx-details-expansion-panel.summary-receive-short": "De {address}",
-  "tx-details-expansion-panel.summary-unconfirmed-send-alias-long":
-    "En attente de transfert de {alias} ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-send-alias-short":
-    "En attente de {alias} ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-send-long":
-    "En attente de transfert de {address}",
-  "tx-details-expansion-panel.summary-unconfirmed-send-short":
-    "En attente de {address}",
-  "tx-details-expansion-panel.summary-send-alias-long":
-    "Transfert vers {alias} ({address})",
-  "tx-details-expansion-panel.summary-send-alias-short":
-    "Vers {alias} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-send-alias-long": "En attente de transfert de {alias} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-send-alias-short": "En attente de {alias} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-send-long": "En attente de transfert de {address}",
+  "tx-details-expansion-panel.summary-unconfirmed-send-short": "En attente de {address}",
+  "tx-details-expansion-panel.summary-send-alias-long": "Transfert vers {alias} ({address})",
+  "tx-details-expansion-panel.summary-send-alias-short": "Vers {alias} ({address})",
   "tx-details-expansion-panel.summary-send-long": "Transfert vers {address}",
   "tx-details-expansion-panel.summary-send-short": "Vers {address}",
-  "tx-details-expansion-panel.summary-unconfirmed-passphrase-long":
-    "En attente de configuration de deuxième mot de passe pour le compte",
-  "tx-details-expansion-panel.summary-unconfirmed-passphrase-short":
-    "En attente de deuxième mot de passe",
-  "tx-details-expansion-panel.summary-passphrase-long":
-    "Configuration du deuxième mot de passe pour le compte",
-  "tx-details-expansion-panel.summary-passphrase-short":
-    "Configurer un deuxième mot de passe",
-  "tx-details-expansion-panel.summary-unconfirmed-delegate-long":
-    "Inscription de délégué en attente pour {username}",
-  "tx-details-expansion-panel.summary-unconfirmed-delegate-short":
-    "Inscription de délégué en attente pour {username}",
-  "tx-details-expansion-panel.summary-unconfirmed-delegate-generic-long":
-    "Transaction d'inscription de délégué en attente",
-  "tx-details-expansion-panel.summary-unconfirmed-delegate-generic-short":
-    "Transaction d'inscription de délégué en attente",
-  "tx-details-expansion-panel.summary-delegate-long":
-    "S'inscrire en tant que délégué {username}",
-  "tx-details-expansion-panel.summary-delegate-short":
-    "Inscrire un délégué {username}",
-  "tx-details-expansion-panel.summary-delegate-generic-long":
-    "Transaction d'inscription en tant que délégué",
-  "tx-details-expansion-panel.summary-delegate-generic-short":
-    "Transaction d'inscription de délégué",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-cast-long":
-    "En attente de vote pour {username} ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-cast-short":
-    "En attente de vote pour {username} ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-remove-long":
-    "En attente de changement de vote de {username} ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-remove-short":
-    "En attente de changement de vote de {username} ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-generic-long":
-    "Transaction de vote en attente",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-generic-short":
-    "Transaction de vote en attente",
-  "tx-details-expansion-panel.summary-vote-cast-long":
-    "Voter pour {username} ({address})",
-  "tx-details-expansion-panel.summary-vote-cast-short":
-    "Voter pour {username} ({address})",
-  "tx-details-expansion-panel.summary-vote-remove-long":
-    "Changer de vote pour {username} ({address})",
-  "tx-details-expansion-panel.summary-vote-remove-short":
-    "Changer de vote pour {username} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-passphrase-long": "En attente de configuration de deuxième mot de passe pour le compte",
+  "tx-details-expansion-panel.summary-unconfirmed-passphrase-short": "En attente de deuxième mot de passe",
+  "tx-details-expansion-panel.summary-passphrase-long": "Configuration du deuxième mot de passe pour le compte",
+  "tx-details-expansion-panel.summary-passphrase-short": "Configurer un deuxième mot de passe",
+  "tx-details-expansion-panel.summary-unconfirmed-delegate-long": "Inscription de délégué en attente pour {username}",
+  "tx-details-expansion-panel.summary-unconfirmed-delegate-short": "Inscription de délégué en attente pour {username}",
+  "tx-details-expansion-panel.summary-unconfirmed-delegate-generic-long": "Transaction d'inscription de délégué en attente",
+  "tx-details-expansion-panel.summary-unconfirmed-delegate-generic-short": "Transaction d'inscription de délégué en attente",
+  "tx-details-expansion-panel.summary-delegate-long": "S'inscrire en tant que délégué {username}",
+  "tx-details-expansion-panel.summary-delegate-short": "Inscrire un délégué {username}",
+  "tx-details-expansion-panel.summary-delegate-generic-long": "Transaction d'inscription en tant que délégué",
+  "tx-details-expansion-panel.summary-delegate-generic-short": "Transaction d'inscription de délégué",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-cast-long": "En attente de vote pour {username} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-cast-short": "En attente de vote pour {username} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-remove-long": "En attente de changement de vote de {username} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-remove-short": "En attente de changement de vote de {username} ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-generic-long": "Transaction de vote en attente",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-generic-short": "Transaction de vote en attente",
+  "tx-details-expansion-panel.summary-vote-cast-long": "Voter pour {username} ({address})",
+  "tx-details-expansion-panel.summary-vote-cast-short": "Voter pour {username} ({address})",
+  "tx-details-expansion-panel.summary-vote-remove-long": "Changer de vote pour {username} ({address})",
+  "tx-details-expansion-panel.summary-vote-remove-short": "Changer de vote pour {username} ({address})",
   "tx-details-expansion-panel.summary-vote-generic-long": "Transaction de vote",
-  "tx-details-expansion-panel.summary-vote-generic-short":
-    "Transaction de vote",
-  "tx-details-expansion-panel.summary-unconfirmed-unknown-long":
-    "Transaction inconnue en attente",
-  "tx-details-expansion-panel.summary-unconfirmed-unknown-short":
-    "Transaction inconnue en attente",
+  "tx-details-expansion-panel.summary-vote-generic-short": "Transaction de vote",
+  "tx-details-expansion-panel.summary-unconfirmed-unknown-long": "Transaction inconnue en attente",
+  "tx-details-expansion-panel.summary-unconfirmed-unknown-short": "Transaction inconnue en attente",
   "tx-details-expansion-panel.summary-unknown-long": "Transaction inconnue",
   "tx-details-expansion-panel.summary-unknown-short": "Transaction inconnue",
   "tx-details-expansion-panel.details-status-label": "Statut:",
   "tx-details-expansion-panel.details-status-unconfirmed": "Non confirmé",
-  "tx-details-expansion-panel.details-status-unconfirmed-tooltip":
-    "Pas encore incluse dans un bloc",
-  "tx-details-expansion-panel.details-status-unsettled":
-    "Confirmé(règlement - {confirmations}/{needed})",
-  "tx-details-expansion-panel.details-status-unsettled-tooltip":
-    "Avec peu de confirmations",
+  "tx-details-expansion-panel.details-status-unconfirmed-tooltip": "Pas encore incluse dans un bloc",
+  "tx-details-expansion-panel.details-status-unsettled": "Confirmé(règlement - {confirmations}/{needed})",
+  "tx-details-expansion-panel.details-status-unsettled-tooltip": "Avec peu de confirmations",
   "tx-details-expansion-panel.details-status-settled": "Confirmé (réglé)",
-  "tx-details-expansion-panel.details-status-settled-tooltip":
-    "Avec beaucoup de confirmations",
+  "tx-details-expansion-panel.details-status-settled-tooltip": "Avec beaucoup de confirmations",
   "tx-details-expansion-panel.details-timestamp-label": "Horodatage:",
   "tx-details-expansion-panel.details-txid-label": "ID de transaction:",
   "tx-details-expansion-panel.details-txid-copy-tooltip": "Copier le numéro",
-  "tx-details-expansion-panel.details-txid-copy-aria":
-    "Copier le numéro de transaction",
-  "tx-details-expansion-panel.details-txid-explorer-tooltip":
-    "Voir dans le navigateur",
-  "tx-details-expansion-panel.details-txid-explorer-aria":
-    "Voir la transaction dans le navigateur",
+  "tx-details-expansion-panel.details-txid-copy-aria": "Copier le numéro de transaction",
+  "tx-details-expansion-panel.details-txid-explorer-tooltip": "Voir dans le navigateur",
+  "tx-details-expansion-panel.details-txid-explorer-aria": "Voir la transaction dans le navigateur",
   "tx-details-expansion-panel.details-blockid-label": "Numéro de bloc:",
   "tx-details-expansion-panel.details-blockid-copy-tooltip": "Copier le numéro",
-  "tx-details-expansion-panel.details-blockid-copy-aria":
-    "Copier le numéro de bloc",
-  "tx-details-expansion-panel.details-blockid-explorer-tooltip":
-    "Voir dans le navigateur",
-  "tx-details-expansion-panel.details-blockid-explorer-aria":
-    "Voir le bloc dans le navigateur",
+  "tx-details-expansion-panel.details-blockid-copy-aria": "Copier le numéro de bloc",
+  "tx-details-expansion-panel.details-blockid-explorer-tooltip": "Voir dans le navigateur",
+  "tx-details-expansion-panel.details-blockid-explorer-aria": "Voir le bloc dans le navigateur",
   "tx-details-expansion-panel.details-txtype-label": "Type de transaction:",
   "tx-details-expansion-panel.details-txtype-send": "Envoyer",
   "tx-details-expansion-panel.details-txtype-vote": "Voter",
-  "tx-details-expansion-panel.details-txtype-passphrase":
-    "Deuxième mot de passe",
-  "tx-details-expansion-panel.details-txtype-delegate":
-    "Enregistrement de délégué",
+  "tx-details-expansion-panel.details-txtype-passphrase": "Deuxième mot de passe",
+  "tx-details-expansion-panel.details-txtype-delegate": "Enregistrement de délégué",
   "tx-details-expansion-panel.details-txtype-unknown": "Inconnu",
-  "tx-details-expansion-panel.details-address-alias-format":
-    "{alias} ({address})",
+  "tx-details-expansion-panel.details-address-alias-format": "{alias} ({address})",
   "tx-details-expansion-panel.details-address-format": "{address}",
   "tx-details-expansion-panel.details-sender-label": "Émetteur:",
   "tx-details-expansion-panel.details-sender-copy-tooltip": "Copier l'adresse",
-  "tx-details-expansion-panel.details-sender-copy-aria":
-    "Copier l'adresse de l'émetteur",
+  "tx-details-expansion-panel.details-sender-copy-aria": "Copier l'adresse de l'émetteur",
   "tx-details-expansion-panel.details-sender-add-tooltip": "Ajouter contact",
-  "tx-details-expansion-panel.details-sender-add-aria":
-    "Ajouter l'émetteur aux contacts",
-  "tx-details-expansion-panel.details-sender-edit-tooltip":
-    "Modifier le contact",
-  "tx-details-expansion-panel.details-sender-edit-aria":
-    "Modifier la carte de visite de l'émetteur",
+  "tx-details-expansion-panel.details-sender-add-aria": "Ajouter l'émetteur aux contacts",
+  "tx-details-expansion-panel.details-sender-edit-tooltip": "Modifier le contact",
+  "tx-details-expansion-panel.details-sender-edit-aria": "Modifier la carte de visite de l'émetteur",
   "tx-details-expansion-panel.details-recipient-label": "Bénéficiaire:",
-  "tx-details-expansion-panel.details-recipient-copy-tooltip":
-    "Copier l'adresse",
-  "tx-details-expansion-panel.details-recipient-copy-aria":
-    "Copier l'adresse du bénéficiaire",
+  "tx-details-expansion-panel.details-recipient-copy-tooltip": "Copier l'adresse",
+  "tx-details-expansion-panel.details-recipient-copy-aria": "Copier l'adresse du bénéficiaire",
   "tx-details-expansion-panel.details-recipient-add-tooltip": "Ajouter contact",
-  "tx-details-expansion-panel.details-recipient-add-aria":
-    "Ajouter le bénéficiaire aux contacts",
-  "tx-details-expansion-panel.details-recipient-edit-tooltip":
-    "Modifier le contact",
-  "tx-details-expansion-panel.details-recipient-edit-aria":
-    "Modifier la carte de visite du bénéficiaire",
+  "tx-details-expansion-panel.details-recipient-add-aria": "Ajouter le bénéficiaire aux contacts",
+  "tx-details-expansion-panel.details-recipient-edit-tooltip": "Modifier le contact",
+  "tx-details-expansion-panel.details-recipient-edit-aria": "Modifier la carte de visite du bénéficiaire",
   "tx-details-expansion-panel.details-send-amount-label": "Montant à envoyer:",
-  "tx-details-expansion-panel.details-delegate-username-label":
-    "Nom d'utilisateur enregistré:",
-  "tx-details-expansion-panel.details-votes-added-label":
-    "{voteCount, plural, one {Vote} other {Votes}} pris en compte:",
-  "tx-details-expansion-panel.details-votes-removed-label":
-    "{voteCount, plural, one {Vote} other {Votes}} enlevé:",
+  "tx-details-expansion-panel.details-delegate-username-label": "Nom d'utilisateur enregistré:",
+  "tx-details-expansion-panel.details-votes-added-label": "{voteCount, plural, one {Vote} other {Votes}} pris en compte:",
+  "tx-details-expansion-panel.details-votes-removed-label": "{voteCount, plural, one {Vote} other {Votes}} enlevé:",
   "tx-details-expansion-panel.details-network-fee-label": "Frais de réseau:",
   "tx-details-expansion-panel.details-return-funds-label": "Renvoyer les fonds",
   "tx-details-expansion-panel.details-send-again-label": "Envoyer de nouveau",
   "app-helmet.title": "Wallet RISE",
-  "confirm-tx-enter-secrets-footer.invalid-mnemonic-missing":
-    "Il manque le mot de passe. Merci de rentrer le mot de passe mnémonique de votre compte.",
-  "confirm-tx-enter-secrets-footer.invalid-mnemonic-incorrect":
-    "Mot de passe invalide. le mot de passe entré n'est pas associé avec ce compte.",
-  "confirm-tx-enter-secrets-footer.invalid-mnemonic-no-words":
-    "Mot de passe invalide. Le mot de passe mnémonique contient généralement 12 mots séparés par des espaces.",
-  "confirm-tx-enter-secrets-footer.invalid-passphrase-missing":
-    "Manque le mot de passe. Merci d'entrer le mot de passe de votre compte.",
-  "confirm-tx-enter-secrets-footer.invalid-passphrase-incorrect":
-    "Mot de passe incorrect. Le mot de passe rentré n'est pas associé avec ce compte.",
-  "confirm-tx-enter-secrets-footer.instructions-with-passphrase":
-    "Afin de confirmer cette transaction, entrer votre premier mot de passe mnémonique and votre second mot de passe mnémonique dans les champs suivants.",
-  "confirm-tx-enter-secrets-footer.instructions":
-    "Afin de confirmer cette transaction, entrer votre mot de passe mnémonique dans le champ suivant.",
-  "confirm-tx-enter-secrets-footer.mnemonic-input-label":
-    "Mot de passe mnémonique du compte",
-  "confirm-tx-enter-secrets-footer.passphrase-input-label":
-    "Deuxième mot de passe",
+  "confirm-tx-enter-secrets-footer.invalid-mnemonic-missing": "Il manque le mot de passe. Merci de rentrer le mot de passe mnémonique de votre compte.",
+  "confirm-tx-enter-secrets-footer.invalid-mnemonic-incorrect": "Mot de passe invalide. le mot de passe entré n'est pas associé avec ce compte.",
+  "confirm-tx-enter-secrets-footer.invalid-mnemonic-no-words": "Mot de passe invalide. Le mot de passe mnémonique contient généralement 12 mots séparés par des espaces.",
+  "confirm-tx-enter-secrets-footer.invalid-passphrase-missing": "Manque le mot de passe. Merci d'entrer le mot de passe de votre compte.",
+  "confirm-tx-enter-secrets-footer.invalid-passphrase-incorrect": "Mot de passe incorrect. Le mot de passe rentré n'est pas associé avec ce compte.",
+  "confirm-tx-enter-secrets-footer.instructions-with-passphrase": "Afin de confirmer cette transaction, entrer votre premier mot de passe mnémonique and votre second mot de passe mnémonique dans les champs suivants.",
+  "confirm-tx-enter-secrets-footer.instructions": "Afin de confirmer cette transaction, entrer votre mot de passe mnémonique dans le champ suivant.",
+  "confirm-tx-enter-secrets-footer.mnemonic-input-label": "Mot de passe mnémonique du compte",
+  "confirm-tx-enter-secrets-footer.passphrase-input-label": "Deuxième mot de passe",
   "confirm-tx-enter-secrets-footer.sign-button": "Signer et émettre",
   "confirm-tx-dialog-content.dialog-title": "Confirmer la transaction",
   "confirm-tx-dialog-content.unnamed-sender": "Compte sans nom ({id})",
   "confirm-tx-dialog-content.unnamed-recipient": "Bénéficiaire inconnu",
-  "confirm-tx-dialog-content.send-title-aria":
-    "Envoyer une transaction de {amount}",
-  "confirm-tx-dialog-content.passphrase-title-aria":
-    "Transaction pour créer un deuxième mot de passe",
-  "confirm-tx-dialog-content.delegate-title-aria":
-    "Transaction pour s'enregistrer en tant que délégué",
+  "confirm-tx-dialog-content.send-title-aria": "Envoyer une transaction de {amount}",
+  "confirm-tx-dialog-content.passphrase-title-aria": "Transaction pour créer un deuxième mot de passe",
+  "confirm-tx-dialog-content.delegate-title-aria": "Transaction pour s'enregistrer en tant que délégué",
   "confirm-tx-dialog-content.vote-title-aria": "Transaction pour voter",
-  "confirm-tx-dialog-content.sender-summary-aria":
-    "Depuis {account} ({address})",
-  "confirm-tx-dialog-content.recipient-summary-aria":
-    "Vers {account} ({address})",
+  "confirm-tx-dialog-content.sender-summary-aria": "Depuis {account} ({address})",
+  "confirm-tx-dialog-content.recipient-summary-aria": "Vers {account} ({address})",
   "confirm-tx-dialog-content.details-section-aria": "Détails de la transaction",
   "confirm-tx-dialog-content.breakdown-section-aria": "Coût de la transaction",
-  "confirm-tx-dialog-content.details-add-passphrase":
-    "Configurer un deuxième mot de passe pour le compte.",
-  "confirm-tx-dialog-content.details-register-delegate":
-    "S'enregistrer en tant que délégué avec un nom d'utilisateur {username}.",
-  "confirm-tx-dialog-content.details-remove-votes":
-    "Retirer {delegateCount, plural, one {vote} other {votes}} de {delegates}.",
-  "confirm-tx-dialog-content.details-add-votes":
-    "Voter {delegateCount, plural, one {vote} other {votes}} pour {delegates}.",
+  "confirm-tx-dialog-content.details-add-passphrase": "Configurer un deuxième mot de passe pour le compte.",
+  "confirm-tx-dialog-content.details-register-delegate": "S'enregistrer en tant que délégué avec un nom d'utilisateur {username}.",
+  "confirm-tx-dialog-content.details-remove-votes": "Retirer {delegateCount, plural, one {vote} other {votes}} de {delegates}.",
+  "confirm-tx-dialog-content.details-add-votes": "Voter {delegateCount, plural, one {vote} other {votes}} pour {delegates}.",
   "confirm-tx-dialog-content.breakdown-amount-label": "Montant du transfert:",
   "confirm-tx-dialog-content.breakdown-fee-label": "Frais de réseau:",
   "confirm-tx-dialog-content.breakdown-total-label": "Total:",
   "remove-account-dialog-content.dialog-title": "Supprimer le compte?",
-  "remove-account-dialog-content.invalid-address":
-    "L'adresse du compte ne correspond pas avec celle du compte que vous voulez supprimer",
-  "remove-account-dialog-content.prompt-text-with-name":
-    "Êtes-vous certain de vouloir supprimer {name} ({address}) du wallet ? Pour confirmer, rentrer l'adresse du compte dans le champ suivant.",
-  "remove-account-dialog-content.prompt-text":
-    "Êtes-vous certain de vouloir supprimer {address} du wallet ? Pour confirmer, rentrer l'adresse du compte dans le champ suivant.",
+  "remove-account-dialog-content.invalid-address": "L'adresse du compte ne correspond pas avec celle du compte que vous voulez supprimer",
+  "remove-account-dialog-content.prompt-text-with-name": "Êtes-vous certain de vouloir supprimer {name} ({address}) du wallet ? Pour confirmer, rentrer l'adresse du compte dans le champ suivant.",
+  "remove-account-dialog-content.prompt-text": "Êtes-vous certain de vouloir supprimer {address} du wallet ? Pour confirmer, rentrer l'adresse du compte dans le champ suivant.",
   "remove-account-dialog-content.address-input-label": "Adresse du compte",
-  "remove-account-dialog-content.save-contact":
-    "Se souvenir du nom de compte dans le carnet d'adresse",
+  "remove-account-dialog-content.save-contact": "Se souvenir du nom de compte dans le carnet d'adresse",
   "remove-account-dialog-content.remove-button": "Supprimer le compte",
   "vote-delegate-dialog-content.dialog-title": "Voter pour un délégué",
-  "vote-delegate-dialog-content.instructions":
-    "Les nouveaux blocs de la blockchain RISE sont minés par les délégués du top 101. En tant qu'utilisateur du réseau, vous choisissez les délégués par votre vote.",
-  "vote-delegate-dialog-content.insufficient-funds-error":
-    "Vous n'avez pas suffisamment de fonds sur votre compte pour payer les frais du réseau de {fee} afin de voter pour un délégué!",
+  "vote-delegate-dialog-content.instructions": "Les nouveaux blocs de la blockchain RISE sont minés par les délégués du top 101. En tant qu'utilisateur du réseau, vous choisissez les délégués par votre vote.",
+  "vote-delegate-dialog-content.insufficient-funds-error": "Vous n'avez pas suffisamment de fonds sur votre compte pour payer les frais du réseau de {fee} afin de voter pour un délégué!",
   "vote-delegate-dialog-content.close-button": "Fermer",
-  "vote-delegate-dialog-content.search-box-label":
-    "Trouver un délégué par nom d'utilisateur ou adresse",
-  "vote-delegate-dialog-content.results-subtitle":
-    "Résultats de la recherche pour \"{query}\"",
+  "vote-delegate-dialog-content.search-box-label": "Trouver un délégué par nom d'utilisateur ou adresse",
+  "vote-delegate-dialog-content.results-subtitle": "Résultats de la recherche pour \"{query}\"",
   "vote-delegate-dialog-content.suggested-subtitle": "Délégués suggérés",
   "account-name-dialog-content.dialog-title": "Mettre à jour le nom du compte",
-  "account-name-dialog-content.instructions":
-    "Changer le nom du compte {address}. Ce nom ne sera visible que par vous et personne d'autre.",
+  "account-name-dialog-content.instructions": "Changer le nom du compte {address}. Ce nom ne sera visible que par vous et personne d'autre.",
   "account-name-dialog-content.name-input-label": "Nom du compte",
   "account-name-dialog-content.update-button-label": "Mettre à jour le nom",
   "sign-out-dialog-content.dialog-title": "Se déconnecter?",
-  "sign-out-dialog-content.prompt-text":
-    "Êtes-vous sûr de vouloir vous déconnecter? Le contenu de tous vos comptes et carnets d'adresses seront supprimés de cet appareil.",
+  "sign-out-dialog-content.prompt-text": "Êtes-vous sûr de vouloir vous déconnecter? Le contenu de tous vos comptes et carnets d'adresses seront supprimés de cet appareil.",
   "sign-out-dialog-content.sign-out-button": "Se déconnecter",
   "sign-out-dialog-content.cancel-button": "Annuler",
   "remove-contact-dialog-content.dialog-title": "Supprimer le contact?",
-  "remove-contact-dialog-content.prompt-text-with-name":
-    "Êtes-vous sûr de vouloir supprimer {name} ({address}) de votre carnet d'adresses?",
+  "remove-contact-dialog-content.prompt-text-with-name": "Êtes-vous sûr de vouloir supprimer {name} ({address}) de votre carnet d'adresses?",
   "remove-contact-dialog-content.remove-button": "Supprimer le contact",
   "modify-contact-dialog-content.dialog-title": "Modifier le contact",
-  "modify-contact-dialog-content.instructions":
-    "Nom du contact pour {address}. Cette information ne sera visible que par vous et personne d'autre.",
+  "modify-contact-dialog-content.instructions": "Nom du contact pour {address}. Cette information ne sera visible que par vous et personne d'autre.",
   "modify-contact-dialog-content.name-input-label": "Nom du contact",
-  "modify-contact-dialog-content.invalid-name":
-    "Le nom du contact ne peut pas être vide.",
+  "modify-contact-dialog-content.invalid-name": "Le nom du contact ne peut pas être vide.",
   "modify-contact-dialog-content.modify-button-label": "Modifier",
-  "add-second-passphrase-dialog-content.dialog-title":
-    "Configurer un deuxième mot de passe",
-  "add-second-passphrase-dialog-content.invalid-passphrase":
-    "Mot de passe invalide. Le mot de passe ne peut pas être vide.",
-  "add-second-passphrase-dialog-content.instructions-about":
-    "Le deuxième mot de passe offre une couche supplémentaire de protection pour les mineurs dont le premier mot de passe mnémonique est stocké sur des serveurs qui peuvent être potentiellement piratés et compromettre ce dernier.",
-  "add-second-passphrase-dialog-content.instructions-immutable":
-    "Une fois le deuxième mote de passe configuré, il ne peut pas être modifié ou supprimé.",
-  "add-second-passphrase-dialog-content.insufficient-funds-error":
-    "Vous n'avez pas assez de fonds sur votre compte pour payer les frais de réseau de {fee} afin de générer un deuxième mot de passe!",
-  "add-second-passphrase-dialog-content.already-set-error":
-    "Vous avez déjà créé un deuxième mot de passe pour ce compte. Vous devez créer un nouveau compte si vous désirez changer de mot de passe.",
-  "add-second-passphrase-dialog-content.passphrase-input-label":
-    "Deuxième mot de passe",
+  "add-second-passphrase-dialog-content.dialog-title": "Configurer un deuxième mot de passe",
+  "add-second-passphrase-dialog-content.invalid-passphrase": "Mot de passe invalide. Le mot de passe ne peut pas être vide.",
+  "add-second-passphrase-dialog-content.instructions-about": "Le deuxième mot de passe offre une couche supplémentaire de protection pour les mineurs dont le premier mot de passe mnémonique est stocké sur des serveurs qui peuvent être potentiellement piratés et compromettre ce dernier.",
+  "add-second-passphrase-dialog-content.insufficient-funds-error": "Vous n'avez pas assez de fonds sur votre compte pour payer les frais de réseau de {fee} afin de générer un deuxième mot de passe!",
+  "add-second-passphrase-dialog-content.passphrase-input-label": "Deuxième mot de passe",
   "add-second-passphrase-dialog-content.continue-button": "Continuer",
   "add-second-passphrase-dialog-content.close-button": "Fermer",
   "register-delegate-dialog-content.dialog-title": "Enregistrement de délégué",
-  "forms-register-delegate.invalid-username":
-    "Nom d'utilisateur de délégué invalide. Un nom d'utilisateur de délégué valide comporte des lettres (a-z), des nombres (0-9) et/ou des symboles (!@$&_.)",
-  "forms-register-delegate.invalid-username-too-long":
-    "Nom d'utilisateur de délégué trop long. La longueur maximale est de 20 caractères.",
-  "forms-register-delegate.invalid-username-like-address":
-    "Nom d'utilisateur de délégué invalide. Le nom d'utilisateur ne peut pas ressembler à une adresse.",
-  "forms-register-delegate.invalid-username-uppercase":
-    "Nom d'utilisateur de délégué invalide. Le nom d'utilisateur ne peut pas contenir des caractères majuscules",
-  "forms-register-delegate.instructions":
-    "Il faut s'inscrire pour devenir délégué. Vous pouvez choisir votre propre nom de délégué, qui peut être utilisé pour promouvoir votre délégation. Seulement les délégués du top 101 peuvent participer au minage. Tous les frais de réseau sont partagés de façon équitable parmi le top 101.",
-  "forms-register-delegate.insufficient-funds-error":
-    "Vous n'avez pas suffisamment de fonds sur votre compte pour payer les frais de transaction de {fee} pour s'inscrire en tant que délégué!",
-  "forms-register-delegate.already-delegate-error":
-    "Vous vous êtes déjà inscris en tant que délégué ({username}). Le nom ne peut pas être changé.",
-  "forms-register-delegate.username-input-label":
-    "Nom d'utilisateur de délégué",
+  "forms-register-delegate.invalid-username": "Nom d'utilisateur de délégué invalide. Un nom d'utilisateur de délégué valide comporte des lettres (a-z), des nombres (0-9) et/ou des symboles (!@$&_.)",
+  "forms-register-delegate.invalid-username-too-long": "Nom d'utilisateur de délégué trop long. La longueur maximale est de 20 caractères.",
+  "forms-register-delegate.invalid-username-like-address": "Nom d'utilisateur de délégué invalide. Le nom d'utilisateur ne peut pas ressembler à une adresse.",
+  "forms-register-delegate.invalid-username-uppercase": "Nom d'utilisateur de délégué invalide. Le nom d'utilisateur ne peut pas contenir des caractères majuscules",
+  "forms-register-delegate.instructions": "Il faut s'inscrire pour devenir délégué. Vous pouvez choisir votre propre nom de délégué, qui peut être utilisé pour promouvoir votre délégation. Seulement les délégués du top 101 peuvent participer au minage. Tous les frais de réseau sont partagés de façon équitable parmi le top 101.",
+  "forms-register-delegate.insufficient-funds-error": "Vous n'avez pas suffisamment de fonds sur votre compte pour payer les frais de transaction de {fee} pour s'inscrire en tant que délégué!",
+  "forms-register-delegate.already-delegate-error": "Vous vous êtes déjà inscris en tant que délégué ({username}). Le nom ne peut pas être changé.",
+  "forms-register-delegate.username-input-label": "Nom d'utilisateur de délégué",
   "forms-register-delegate.continue-button": "Continuer",
   "forms-register-delegate.close-button": "Fermer",
   "send-coins-dialog-content.dialog-title": "Envoyer des RISE",
-  "send-coins-dialog-content.invalid-address":
-    "Adresse RISE invalide. Une adresse valide suit le format \"1234567890R\".",
+  "send-coins-dialog-content.invalid-address": "Adresse RISE invalide. Une adresse valide suit le format \"1234567890R\".",
   "send-coins-dialog-content.invalid-amount": "Montant invalide.",
-  "send-coins-dialog-content.insufficient-balance":
-    "Ce montant excède le solde de votre compte.",
-  "send-coins-dialog-content.recipient-from-address-book":
-    "Adresse pour {name} (de votre carnet d'adresses)",
-  "send-coins-dialog-content.recipient-from-wallet":
-    "Adresse pour {name} (de votre wallet)",
-  "send-coins-dialog-content.recipient-is-delegate":
-    "Adresse pour {name} (délégué inscris)",
-  "send-coins-dialog-content.instructions":
-    "Merci de rentrer l'adresse du bénéficiaire et le montant de RISE que vous souhaitez envoyer.",
+  "send-coins-dialog-content.insufficient-balance": "Ce montant excède le solde de votre compte.",
+  "send-coins-dialog-content.recipient-from-address-book": "Adresse pour {name} (de votre carnet d'adresses)",
+  "send-coins-dialog-content.recipient-from-wallet": "Adresse pour {name} (de votre wallet)",
+  "send-coins-dialog-content.recipient-is-delegate": "Adresse pour {name} (délégué inscris)",
+  "send-coins-dialog-content.instructions": "Merci de rentrer l'adresse du bénéficiaire et le montant de RISE que vous souhaitez envoyer.",
   "send-coins-dialog-content.recipient-input-label": "Adresse du bénéficiaire",
   "send-coins-dialog-content.amount-input-label": "Montant de RISE",
   "send-coins-dialog-content.balance-fee": "Solde: {balance} | Frais: {fee}",
   "send-coins-dialog-content.send-button": "Vérifier et Envoyer",
   "choose-fiat-dialog-content.dialog-title": "Monnaie FIAT affichée",
-  "choose-fiat-dialog-content.instructions":
-    "Sélectionner quelle monnaie FIAT vous préférez pour afficher la valeur de votre montant de RISE.",
+  "choose-fiat-dialog-content.instructions": "Sélectionner quelle monnaie FIAT vous préférez pour afficher la valeur de votre montant de RISE.",
   "choose-fiat-dialog-content.update-for-one": "Sélectionner pour ce compte",
-  "choose-fiat-dialog-content.update-for-all":
-    "Sélectionner pour tous les comptes",
+  "choose-fiat-dialog-content.update-for-all": "Sélectionner pour tous les comptes",
   "create-contact-dialog-content.dialog-title": "Nouveau contact",
-  "create-contact-dialog-content.instructions":
-    "Ajouter un nouveau contact à votre carnet d'adresses. Cette information ne sera visible que de vous et personne d'autre.",
+  "create-contact-dialog-content.instructions": "Ajouter un nouveau contact à votre carnet d'adresses. Cette information ne sera visible que de vous et personne d'autre.",
   "create-contact-dialog-content.name-input-label": "Nom du contact",
-  "create-contact-dialog-content.invalid-name":
-    "Le nom du contact ne peut pas être vide.",
+  "create-contact-dialog-content.invalid-name": "Le nom du contact ne peut pas être vide.",
   "create-contact-dialog-content.address-input-label": "Adresse",
-  "create-contact-dialog-content.invalid-address":
-    "Adresse RISE invalide. Une adresse valide suit le format \"1234567890R\".",
-  "create-contact-dialog-content.invalid-address-exists":
-    "Un contact avec la même adresse existe déjà.",
+  "create-contact-dialog-content.invalid-address": "Adresse RISE invalide. Une adresse valide suit le format \"1234567890R\".",
+  "create-contact-dialog-content.invalid-address-exists": "Un contact avec la même adresse existe déjà.",
   "create-contact-dialog-content.create-button-label": "Créer",
-  "update-available.message":
-    "Une nouvelle version du wallet est disponible. Redémarrer l'application pour mettre à jour.",
+  "update-available.message": "Une nouvelle version du wallet est disponible. Redémarrer l'application pour mettre à jour.",
   "update-available.reload-label": "Redémarrer",
   "update-available.dismiss-aria-label": "Ne pas prendre en compte",
   "account-tip.dismiss-aria-label": "Ne pas prendre en compte",

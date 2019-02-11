@@ -5,58 +5,38 @@
   "choose-network.invalid-custom-url": "Vigane sõlme URL",
   "choose-network.custom-url": "Kohandatud sõlme URL",
   "choose-network.submit-button": "Vali sõlm",
-  "onboarding-mnemonic-account.invalid-mnemonic-generic":
-    "Ebakorrektne saladus. Korrektne mnemooniline saladus koosneb 12-st sõnast.",
+  "onboarding-mnemonic-account.invalid-mnemonic-generic": "Ebakorrektne saladus. Korrektne mnemooniline saladus koosneb 12-st sõnast.",
   "onboarding-mnemonic-account.title": "Olemas olev konto",
-  "onboarding-mnemonic-account.enter-mnemonic-text":
-    "Sisesta olemas oleva RISE konto mnemooniline saladus millele soovid ligipääsu:",
+  "onboarding-mnemonic-account.enter-mnemonic-text": "Sisesta olemas oleva RISE konto mnemooniline saladus millele soovid ligipääsu:",
   "onboarding-mnemonic-account.mnemonic-input-label": "Mnemooniline saladus",
-  "onboarding-mnemonic-account.account-address-text":
-    "Sinu konto aadress on {address}.",
+  "onboarding-mnemonic-account.account-address-text": "Sinu konto aadress on {address}.",
   "onboarding-mnemonic-account.continue": "Jätka",
   "onboarding-account-created.title": "Sinu uus konto",
-  "onboarding-account-created.account-with-address-created":
-    "Järgneva aadressiga uus konto on loodud:",
-  "onboarding-account-created.explain-image":
-    "Igale kontole genereeritakse unikaalne kontopilt automaatselt. Seda kontopilti saab kasutada kontrollimaks sisestatud konto aadressi õigsust kui teed ülekandeid.",
+  "onboarding-account-created.account-with-address-created": "Järgneva aadressiga uus konto on loodud:",
+  "onboarding-account-created.explain-image": "Igale kontole genereeritakse unikaalne kontopilt automaatselt. Seda kontopilti saab kasutada kontrollimaks sisestatud konto aadressi õigsust kui teed ülekandeid.",
   "onboarding-account-created.continue": "Ava konto ülevaade",
-  "onboarding-ledger-account.connect-instructions":
-    "Ühenda oma Ledger & ava sellel RISE rakendus.",
-  "onboarding-ledger-account.unsupported-browser":
-    "Sinu brauser ei toeta Ledger seadme kasutust. Kui sa soovid seda funktsiooni kasutada võid proovide Google Chromega uuesti. Chrome on üks brauseritest, mis seda toetab.",
+  "onboarding-ledger-account.connect-instructions": "Ühenda oma Ledger & ava sellel RISE rakendus.",
+  "onboarding-ledger-account.unsupported-browser": "Sinu brauser ei toeta Ledger seadme kasutust. Kui sa soovid seda funktsiooni kasutada võid proovide Google Chromega uuesti. Chrome on üks brauseritest, mis seda toetab.",
   "onboarding-ledger-account.status-connecting": "Ühenduse loomine...",
-  "onboarding-ledger-account.status-connecting-help":
-    "Probleemide tekkimisel <a href=\"https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues\" target=\"_blank\">külasta Ledger toe lehte</a>.",
+  "onboarding-ledger-account.status-connecting-help": "Probleemide tekkimisel <a href=\"https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues\" target=\"_blank\">külasta Ledger toe lehte</a>.",
   "onboarding-ledger-account.account-nr-label": "{number}. konto",
-  "onboarding-ledger-account.confirm-instructions":
-    "Palun kontrolli & kinnita ülal olev aadressi õigsus oma Ledger seadmes.",
-  "onboarding-ledger-account.status-waiting-confirmation":
-    "Kinnituse ootamine... ({seconds} {seconds, plural, one {sekund} other {sekundit}})",
+  "onboarding-ledger-account.confirm-instructions": "Palun kontrolli & kinnita ülal olev aadressi õigsus oma Ledger seadmes.",
+  "onboarding-ledger-account.status-waiting-confirmation": "Kinnituse ootamine... ({seconds} {seconds, plural, one {sekund} other {sekundit}})",
   "onboarding-ledger-account.title": "Impordi konto Ledger seadmest",
-  "onboarding-existing-account.invalid-address-generic":
-    "Ebakorrektne RISE aadress. Korrektne aadress on \"1234567890R\" vormingus.",
-  "onboarding-existing-account.invalid-address-mnemonic":
-    "Paistab, et üritad sisestada oma mnemoonilist saladust. Palun sisesta oma konto aadress selle asemel.",
+  "onboarding-existing-account.invalid-address-generic": "Ebakorrektne RISE aadress. Korrektne aadress on \"1234567890R\" vormingus.",
+  "onboarding-existing-account.invalid-address-mnemonic": "Paistab, et üritad sisestada oma mnemoonilist saladust. Palun sisesta oma konto aadress selle asemel.",
   "onboarding-existing-account.title": "Olemas olev konto",
-  "onboarding-existing-account.enter-address-text":
-    "Sisesta olemas oleva RISE konto aadress millele soovid ligipääsu:",
+  "onboarding-existing-account.enter-address-text": "Sisesta olemas oleva RISE konto aadress millele soovid ligipääsu:",
   "onboarding-existing-account.address-input-label": "Konto aadress",
   "onboarding-existing-account.continue": "Jätka",
-  "onboarding-existing-account.recover-from-mnemonic":
-    "Unustasid oma konto aadressi aga tead mnemoonilist saladust?",
-  "onboarding-security-notice.correct-url-tip":
-    "Selle veebirakenduse avamiseks kirjuta URL brauseri aadressi ribale alati ise või kasuta järjehoidjat mille sa lõid. Ära kunagi usalda linke sotsiaalmeedias, otsingu vastetes, emailides või teistel veebilehtedel.",
-  "onboarding-security-notice.trust-browser-tip":
-    "Kui su brauser annab sulle mistahes hoiatuse selle veebirakenduse kohta, võta meiega koheselt ühendust. Ära ignoreeri seda hoiatust ja ära mingil juhul sisesta oma mnemoonilist saladust!",
-  "onboarding-security-notice.own-devices-tip":
-    "Kasuta ainult isiklikke seadmeid oma kontode haldamiseks. Ära sisesta oma mnemoonilist saladust ebausaldusväärsetesse seadmetesse (avalikud arvutid, sõprade arvutid/telefonid, jne) - need võivad kubiseda pahavarast.",
-  "onboarding-security-notice.apply-updates-tip":
-    "Alati installeeri operatsiooni süsteemi, antiviirus tarkvara ja brauseri uuendused nii kiirelt kui võimalik.",
-  "onboarding-security-notice.hardware-wallets-tip":
-    "Kui võimalik, siis eelista riistvara rahakotti mnemoonilisele saladusele kui hoiustad suuremaid RISE koguseid.",
+  "onboarding-existing-account.recover-from-mnemonic": "Unustasid oma konto aadressi aga tead mnemoonilist saladust?",
+  "onboarding-security-notice.correct-url-tip": "Selle veebirakenduse avamiseks kirjuta URL brauseri aadressi ribale alati ise või kasuta järjehoidjat mille sa lõid. Ära kunagi usalda linke sotsiaalmeedias, otsingu vastetes, emailides või teistel veebilehtedel.",
+  "onboarding-security-notice.trust-browser-tip": "Kui su brauser annab sulle mistahes hoiatuse selle veebirakenduse kohta, võta meiega koheselt ühendust. Ära ignoreeri seda hoiatust ja ära mingil juhul sisesta oma mnemoonilist saladust!",
+  "onboarding-security-notice.own-devices-tip": "Kasuta ainult isiklikke seadmeid oma kontode haldamiseks. Ära sisesta oma mnemoonilist saladust ebausaldusväärsetesse seadmetesse (avalikud arvutid, sõprade arvutid/telefonid, jne) - need võivad kubiseda pahavarast.",
+  "onboarding-security-notice.apply-updates-tip": "Alati installeeri operatsiooni süsteemi, antiviirus tarkvara ja brauseri uuendused nii kiirelt kui võimalik.",
+  "onboarding-security-notice.hardware-wallets-tip": "Kui võimalik, siis eelista riistvara rahakotti mnemoonilisele saladusele kui hoiustad suuremaid RISE koguseid.",
   "onboarding-security-notice.title": "Turvanõuanded",
-  "onboarding-security-notice.keep-in-mind":
-    "Mida meeles pidada, et suurendada oma hoiuste turvalisust:",
+  "onboarding-security-notice.keep-in-mind": "Mida meeles pidada, et suurendada oma hoiuste turvalisust:",
   "onboarding-security-notice.next-tip": "Järgmine nõuanne",
   "onboarding-security-notice.continue": "Jätka",
   "onboarding-add-account.official-main-network": "ametlik mainnet",
@@ -66,43 +46,31 @@
   "onboarding-add-account.new-account": "Uus konto",
   "onboarding-add-account.new-account-tip": "Soovin luua uue RISE konto",
   "onboarding-add-account.existing-account": "Olemas olev konto",
-  "onboarding-add-account.existing-account-tip":
-    "Soovin juurdepääsu olemas olevale RISE kontole",
+  "onboarding-add-account.existing-account-tip": "Soovin juurdepääsu olemas olevale RISE kontole",
   "onboarding-add-account.hw-wallet-account": "Konto riistvara rahakotist",
-  "onboarding-add-account.hw-wallet-account-tip":
-    "Soovin importida konto oma Ledger seadmest",
+  "onboarding-add-account.hw-wallet-account-tip": "Soovin importida konto oma Ledger seadmest",
   "onboarding-add-account.change-language": "Muuda keelt",
   "onboarding-add-account.select-node": "Muuda sõlme ({name})",
   "onboarding-verify-mnemonic.title": "Kontrolli saladust",
-  "onboarding-verify-mnemonic.verify-mnemonic":
-    "Kontrolli, et kirjutasid oma mnemoonilise saladuse korrektselt üles. Sisesta {whichWordInBold} all olevasse tekstivälja.",
-  "onboarding-verify-mnemonic.verify-mnemonic-which-word":
-    "{whichWord, selectordinal, other {#. sõna}}",
-  "onboarding-verify-mnemonic.input-label-which-word":
-    "{whichWord, number}. sõna",
+  "onboarding-verify-mnemonic.verify-mnemonic": "Kontrolli, et kirjutasid oma mnemoonilise saladuse korrektselt üles. Sisesta {whichWordInBold} all olevasse tekstivälja.",
+  "onboarding-verify-mnemonic.verify-mnemonic-which-word": "{whichWord, selectordinal, other {#. sõna}}",
+  "onboarding-verify-mnemonic.input-label-which-word": "{whichWord, number}. sõna",
   "onboarding-verify-mnemonic.check": "Kontrolli",
   "onboarding-verify-mnemonic.check-and-continue": "Kontrolli & jätka",
   "onboarding-verify-mnemonic.continue": "Jätka",
   "onboarding-existing-account-type.title": "Konto tüüp",
   "onboarding-existing-account-type.full-access": "Täieliku ligipääsuga konto",
-  "onboarding-existing-account-type.full-access-tip":
-    "Ma tean selle konto mnemoonilist saladust",
+  "onboarding-existing-account-type.full-access-tip": "Ma tean selle konto mnemoonilist saladust",
   "onboarding-existing-account-type.read-access": "Jälgimis ligipääsuga konto",
-  "onboarding-existing-account-type.read-access-tip":
-    "Ma ei tea selle konto mnemoonilist saladust",
+  "onboarding-existing-account-type.read-access-tip": "Ma ei tea selle konto mnemoonilist saladust",
   "onboarding-no-mnemonic-notice.title": "Konto lisatud",
-  "onboarding-no-mnemonic-notice.did-you-notice":
-    "Kas täheldasid, et sa ei pidanud sisestama oma konto mnemoonilist saladust? Oma mnemoonilise saladuse pead sa sisestama ainult siis kui teed tehinguid.",
-  "onboarding-no-mnemonic-notice.written-down-mnemonic":
-    "Palun veendu, et su konto mnemooniline saladus oleks turvaliselt üles kirjutatud. Muidu võib see ununeda ja kontol olevad vahendid muutuvad ligipääsmatuks.",
+  "onboarding-no-mnemonic-notice.did-you-notice": "Kas täheldasid, et sa ei pidanud sisestama oma konto mnemoonilist saladust? Oma mnemoonilise saladuse pead sa sisestama ainult siis kui teed tehinguid.",
+  "onboarding-no-mnemonic-notice.written-down-mnemonic": "Palun veendu, et su konto mnemooniline saladus oleks turvaliselt üles kirjutatud. Muidu võib see ununeda ja kontol olevad vahendid muutuvad ligipääsmatuks.",
   "onboarding-no-mnemonic-notice.continue": "Ava konto ülevaade",
   "onboarding-new-mnemonic.title": "Kirjuta see üles",
-  "onboarding-new-mnemonic.mnemonic-pretext":
-    "See on sinu konto uus {wordCount, number}-sõnaline mnemooniline saladus:",
-  "onboarding-new-mnemonic.write-mnemonic-down":
-    "Kirjuta oma mnemooniline saladus füüsilise paberile, et saaksid selle hiljem talletada turvalisse kohta.",
-  "onboarding-new-mnemonic.mnemonic-grants-full-access":
-    "NB! Kõik kes teavad seda saladust saavad kontolt ülekandeid teha.",
+  "onboarding-new-mnemonic.mnemonic-pretext": "See on sinu konto uus {wordCount, number}-sõnaline mnemooniline saladus:",
+  "onboarding-new-mnemonic.write-mnemonic-down": "Kirjuta oma mnemooniline saladus füüsilise paberile, et saaksid selle hiljem talletada turvalisse kohta.",
+  "onboarding-new-mnemonic.mnemonic-grants-full-access": "NB! Kõik kes teavad seda saladust saavad kontolt ülekandeid teha.",
   "onboarding-new-mnemonic.continue": "Jätka",
   "onboarding-choose-language.title": "{icon} RISE rahakott",
   "onboarding-choose-language.translate-cta-title": "Sinu keel on puudu?",
@@ -123,8 +91,7 @@
   "wallet-address-book.modify-action-tooltip": "Muuda kontakti",
   "wallet-address-book.delete-action-tooltip": "Kustuta kontakt",
   "wallet-address-book.empty-title": "Sinu aadressiraamat on tühi",
-  "wallet-address-book.empty-text":
-    "Sa saad luua kontakte oma aadressiraamatusse, et siduda RISE aadressid lihtsalt loetavate nimedega.",
+  "wallet-address-book.empty-text": "Sa saad luua kontakte oma aadressiraamatusse, et siduda RISE aadressid lihtsalt loetavate nimedega.",
   "accounts-list.accounts-list-aria-label": "Kontod",
   "accounts-list.unnamed-account-label": "Nimetu konto ({id})",
   "accounts-list.add-account-fab-tooltip": "Lisa konto",
@@ -140,10 +107,8 @@
   "account-settings.unnamed-account-label": "Nimetu konto ({id})",
   "account-settings.account-name": "Konto nimi",
   "account-settings.pinned-account": "Prioriteetne konto",
-  "account-settings.pinned-account-on-aria":
-    "Kõrge prioriteediga konto (vajuta, et märkida madala prioriteediga kontoks)",
-  "account-settings.pinned-account-off-aria":
-    "Madala prioriteediga konto (vajuta, et märkida kõrge prioriteediga kontoks)",
+  "account-settings.pinned-account-on-aria": "Kõrge prioriteediga konto (vajuta, et märkida madala prioriteediga kontoks)",
+  "account-settings.pinned-account-off-aria": "Madala prioriteediga konto (vajuta, et märkida kõrge prioriteediga kontoks)",
   "account-settings.voted-delegate": "Hääletatud delegaat",
   "account-settings.voted-delegate-unset-label": "Mitte keegi",
   "account-settings.fiat-currency": "Eelistatud fia valuuta",
@@ -155,27 +120,18 @@
   "account-settings.ledger-address": "Kontrolli konto aadressi Ledger seadmel",
   "account-settings.delegate-registration-unset-label": "Registreerimata",
   "account-settings.remove-account": "Eemalda konto rahakotist",
-  "verify-ledger-address.connect-instructions":
-    "Ühenda oma Ledger & ava sellel RISE rakendus.",
-  "verify-ledger-address.unsupported-browser":
-    "Sinu brauser ei toeta Ledger seadme kasutust. Kui sa soovid seda funktsiooni kasutada võid proovide Google Chromega uuesti. Chrome on üks brauseritest, mis seda toetab.",
+  "verify-ledger-address.connect-instructions": "Ühenda oma Ledger & ava sellel RISE rakendus.",
+  "verify-ledger-address.unsupported-browser": "Sinu brauser ei toeta Ledger seadme kasutust. Kui sa soovid seda funktsiooni kasutada võid proovide Google Chromega uuesti. Chrome on üks brauseritest, mis seda toetab.",
   "verify-ledger-address.status-connecting": "Ühenduse loomine...",
-  "verify-ledger-address.status-connecting-help":
-    "Probleemide tekkimisel <a href=\"https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues\" target=\"_blank\">külasta Ledger toe lehte</a>.",
+  "verify-ledger-address.status-connecting-help": "Probleemide tekkimisel <a href=\"https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues\" target=\"_blank\">külasta Ledger toe lehte</a>.",
   "verify-ledger-address.account-nr-label": "{number}. konto",
-  "verify-ledger-address.confirm-instructions":
-    "Palun kontrolli & kinnita ülal olev aadressi õigsus oma Ledger seadmes.",
+  "verify-ledger-address.confirm-instructions": "Palun kontrolli & kinnita ülal olev aadressi õigsus oma Ledger seadmes.",
   "verify-ledger-address.close-dialog": "Sulge",
-  "verify-ledger-address.success":
-    "Konto aadress edukalt kontrollitud Ledger seadmes.",
+  "verify-ledger-address.success": "Konto aadress edukalt kontrollitud Ledger seadmes.",
   "verify-ledger-address.dialog-title": "Kontrolli konto aadressi",
-  "verify-ledger-address.status-waiting-confirmation":
-    "Kinnituse ootamine... ({seconds} {seconds, plural, one {sekund} other {sekundit}})",
+  "verify-ledger-address.status-waiting-confirmation": "Kinnituse ootamine... ({seconds} {seconds, plural, one {sekund} other {sekundit}})",
   "wallet-account-overview.unnamed-account-label": "Nimetu konto ({id})",
-  "wallet-account-overview.no-pubkey-account-tip":
-    "Oma konto turvalisuse suurendamiseks soovitame sul teha vähemalt ühe tehingu (RISE saatmine või delegaadi poolt hääletamine), see seob sinu krüptovõtmed blokiahelas sinu konto aadressiga.",
-  "wallet-account-overview.high-value-account-tip":
-    "Sul on võrdlemisi palju RISE-t siin kontol. Suuremate summade turvaliseks hoiustamiseks soovitame kasutada riistvara rahakotti. Kui see pole võimalik, siis soovitame kasutada RISE alla laetavat rakendust veebi rakenduse asemel.",
+  "wallet-account-overview.high-value-account-tip": "Sul on võrdlemisi palju RISE-t siin kontol. Suuremate summade turvaliseks hoiustamiseks soovitame kasutada riistvara rahakotti. Kui see pole võimalik, siis soovitame kasutada RISE alla laetavat rakendust veebi rakenduse asemel.",
   "wallet-account-overview.send-funds-fab-tooltip": "Saada RISE",
   "modal-paper-header.back-button-aria-label": "Tagasi",
   "modal-paper-header.close-button-aria-label": "Sulge dialoog",
@@ -195,189 +151,115 @@
   "confirm-tx-status-footer.error-icon-aria": "Vea indikaatori ikoon",
   "confirm-tx-status-footer.info-icon-aria": "Info indikaatori ikoon",
   "confirm-tx-status-footer.success-icon-aria": "Edu indikaatori ikoon",
-  "confirm-tx-dialog-content.broadcasting-msg":
-    "Tehingu edastamine. Palun oota...",
+  "confirm-tx-dialog-content.broadcasting-msg": "Tehingu edastamine. Palun oota...",
   "confirm-tx-status-footer.success-msg": "Tehing said edukalt edastatud!",
-  "confirm-tx-status-footer.error-msg":
-    "Tehingu edastamisel tekkis viga: {error}",
-  "confirm-tx-status-footer.ledger-not-supported-msg":
-    "Sinu brauser ei toeta Ledger seadmete kasutust.",
-  "confirm-tx-status-footer.ledger-another-device-msg":
-    "Ühendatud Ledger seade ei halda seda kontot. Võib-olla kasutasid lisa salasõna (Ledger seadmel), kui konto importisid või oled ühendanud seade teise mnemoonilise saladusega.",
-  "confirm-tx-status-footer.ledger-not-connected-msg":
-    "Ühenda oma Ledger ja ava sellel RISE rakendus. Ühenduse loomine...",
-  "confirm-tx-status-footer.ledger-confirming-msg":
-    "Palun kontrolli & kinnita tehingu andmed oma Ledger seadmes. Kinnituse ootamine... ({seconds} {seconds, plural, one {sekund} other {sekundit}})",
+  "confirm-tx-status-footer.error-msg": "Tehingu edastamisel tekkis viga: {error}",
+  "confirm-tx-status-footer.ledger-not-supported-msg": "Sinu brauser ei toeta Ledger seadmete kasutust.",
+  "confirm-tx-status-footer.ledger-another-device-msg": "Ühendatud Ledger seade ei halda seda kontot. Võib-olla kasutasid lisa salasõna (Ledger seadmel), kui konto importisid või oled ühendanud seade teise mnemoonilise saladusega.",
+  "confirm-tx-status-footer.ledger-not-connected-msg": "Ühenda oma Ledger ja ava sellel RISE rakendus. Ühenduse loomine...",
+  "confirm-tx-status-footer.ledger-confirming-msg": "Palun kontrolli & kinnita tehingu andmed oma Ledger seadmes. Kinnituse ootamine... ({seconds} {seconds, plural, one {sekund} other {sekundit}})",
   "confirm-tx-status-footer.try-again-button": "Proovi uuesti",
   "confirm-tx-status-footer.close-button": "Sulge",
-  "tx-details-expansion-panel.summary-unconfirmed-receive-alias-long":
-    "Teostamisel ülekanne {alias} kontolt {address}",
-  "tx-details-expansion-panel.summary-unconfirmed-receive-alias-short":
-    "Teostamisel ülekanne '{alias}'-lt ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-receive-long":
-    "Teostamisel ülekanne kontolt {address}",
-  "tx-details-expansion-panel.summary-unconfirmed-receive-short":
-    "Teostamisel ülekanne {address}-lt",
-  "tx-details-expansion-panel.summary-receive-alias-long":
-    "Ülekanne {alias} kontolt {address}",
-  "tx-details-expansion-panel.summary-receive-alias-short":
-    "Ülekanne '{alias}'-lt ({address})",
-  "tx-details-expansion-panel.summary-receive-long":
-    "Ülekanne kontolt {address}",
+  "tx-details-expansion-panel.summary-unconfirmed-receive-alias-long": "Teostamisel ülekanne {alias} kontolt {address}",
+  "tx-details-expansion-panel.summary-unconfirmed-receive-alias-short": "Teostamisel ülekanne '{alias}'-lt ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-receive-long": "Teostamisel ülekanne kontolt {address}",
+  "tx-details-expansion-panel.summary-unconfirmed-receive-short": "Teostamisel ülekanne {address}-lt",
+  "tx-details-expansion-panel.summary-receive-alias-long": "Ülekanne {alias} kontolt {address}",
+  "tx-details-expansion-panel.summary-receive-alias-short": "Ülekanne '{alias}'-lt ({address})",
+  "tx-details-expansion-panel.summary-receive-long": "Ülekanne kontolt {address}",
   "tx-details-expansion-panel.summary-receive-short": "Ülekanne {address}-lt",
-  "tx-details-expansion-panel.summary-unconfirmed-send-alias-long":
-    "Teostamisel ülekanne {alias} kontole {address}",
-  "tx-details-expansion-panel.summary-unconfirmed-send-alias-short":
-    "Teostamisel ülekanne '{alias}'-le ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-send-long":
-    "Teostamisel ülekanne kontole {address}",
-  "tx-details-expansion-panel.summary-unconfirmed-send-short":
-    "Teostamisel ülekanne {address}-le",
-  "tx-details-expansion-panel.summary-send-alias-long":
-    "Ülekanne {alias} kontole {address}",
-  "tx-details-expansion-panel.summary-send-alias-short":
-    "Ülekanne '{alias}'-le ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-send-alias-long": "Teostamisel ülekanne {alias} kontole {address}",
+  "tx-details-expansion-panel.summary-unconfirmed-send-alias-short": "Teostamisel ülekanne '{alias}'-le ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-send-long": "Teostamisel ülekanne kontole {address}",
+  "tx-details-expansion-panel.summary-unconfirmed-send-short": "Teostamisel ülekanne {address}-le",
+  "tx-details-expansion-panel.summary-send-alias-long": "Ülekanne {alias} kontole {address}",
+  "tx-details-expansion-panel.summary-send-alias-short": "Ülekanne '{alias}'-le ({address})",
   "tx-details-expansion-panel.summary-send-long": "Ülekanne kontole {address}",
   "tx-details-expansion-panel.summary-send-short": "Ülekanne {address}-le",
-  "tx-details-expansion-panel.summary-unconfirmed-passphrase-long":
-    "Teostamisel konto lisaparooli seadistus",
-  "tx-details-expansion-panel.summary-unconfirmed-passphrase-short":
-    "Teostamisel lisaparooli seadistus",
-  "tx-details-expansion-panel.summary-passphrase-long":
-    "Konto lisaparooli seadistus",
-  "tx-details-expansion-panel.summary-passphrase-short":
-    "Lisaparooli seadistus",
-  "tx-details-expansion-panel.summary-unconfirmed-delegate-long":
-    "Teostamisel delegaadiks registreerumine (kasutajanimega {username})",
-  "tx-details-expansion-panel.summary-unconfirmed-delegate-short":
-    "Teostamisel delegaadiks registreerumine ({username})",
-  "tx-details-expansion-panel.summary-unconfirmed-delegate-generic-long":
-    "Teostamisel delegaadiks registreerumine",
-  "tx-details-expansion-panel.summary-unconfirmed-delegate-generic-short":
-    "Teostamisel delegaadiks registreerumine",
-  "tx-details-expansion-panel.summary-delegate-long":
-    "Delegaadiks registreerumine (kasutajanimega {username})",
-  "tx-details-expansion-panel.summary-delegate-short":
-    "Delegaadiks registreerumine ({username})",
-  "tx-details-expansion-panel.summary-delegate-generic-long":
-    "Delegaadiks registreerumine",
-  "tx-details-expansion-panel.summary-delegate-generic-short":
-    "Delegaadiks registreerumine",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-cast-long":
-    "Teostamisel hääle lisamine {username}-le ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-cast-short":
-    "Teostamisel hääle lisamine {username}-le ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-remove-long":
-    "Teostamisel hääle eemaldamine {username}-lt ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-remove-short":
-    "Teostamisel hääle eemaldamine {username}-lt ({address})",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-generic-long":
-    "Teostamisel hääletus operatsioon",
-  "tx-details-expansion-panel.summary-unconfirmed-vote-generic-short":
-    "Teostamisel hääletus op.",
-  "tx-details-expansion-panel.summary-vote-cast-long":
-    "Hääle lisamine {username}-le ({address})",
-  "tx-details-expansion-panel.summary-vote-cast-short":
-    "Hääle lisamine {username}-le ({address})",
-  "tx-details-expansion-panel.summary-vote-remove-long":
-    "Hääle eemaldamine {username}-lt ({address})",
-  "tx-details-expansion-panel.summary-vote-remove-short":
-    "Hääle eemaldamine {username}-lt ({address})",
-  "tx-details-expansion-panel.summary-vote-generic-long":
-    "Hääletus operatsioon",
+  "tx-details-expansion-panel.summary-unconfirmed-passphrase-long": "Teostamisel konto lisaparooli seadistus",
+  "tx-details-expansion-panel.summary-unconfirmed-passphrase-short": "Teostamisel lisaparooli seadistus",
+  "tx-details-expansion-panel.summary-passphrase-long": "Konto lisaparooli seadistus",
+  "tx-details-expansion-panel.summary-passphrase-short": "Lisaparooli seadistus",
+  "tx-details-expansion-panel.summary-unconfirmed-delegate-long": "Teostamisel delegaadiks registreerumine (kasutajanimega {username})",
+  "tx-details-expansion-panel.summary-unconfirmed-delegate-short": "Teostamisel delegaadiks registreerumine ({username})",
+  "tx-details-expansion-panel.summary-unconfirmed-delegate-generic-long": "Teostamisel delegaadiks registreerumine",
+  "tx-details-expansion-panel.summary-unconfirmed-delegate-generic-short": "Teostamisel delegaadiks registreerumine",
+  "tx-details-expansion-panel.summary-delegate-long": "Delegaadiks registreerumine (kasutajanimega {username})",
+  "tx-details-expansion-panel.summary-delegate-short": "Delegaadiks registreerumine ({username})",
+  "tx-details-expansion-panel.summary-delegate-generic-long": "Delegaadiks registreerumine",
+  "tx-details-expansion-panel.summary-delegate-generic-short": "Delegaadiks registreerumine",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-cast-long": "Teostamisel hääle lisamine {username}-le ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-cast-short": "Teostamisel hääle lisamine {username}-le ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-remove-long": "Teostamisel hääle eemaldamine {username}-lt ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-remove-short": "Teostamisel hääle eemaldamine {username}-lt ({address})",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-generic-long": "Teostamisel hääletus operatsioon",
+  "tx-details-expansion-panel.summary-unconfirmed-vote-generic-short": "Teostamisel hääletus op.",
+  "tx-details-expansion-panel.summary-vote-cast-long": "Hääle lisamine {username}-le ({address})",
+  "tx-details-expansion-panel.summary-vote-cast-short": "Hääle lisamine {username}-le ({address})",
+  "tx-details-expansion-panel.summary-vote-remove-long": "Hääle eemaldamine {username}-lt ({address})",
+  "tx-details-expansion-panel.summary-vote-remove-short": "Hääle eemaldamine {username}-lt ({address})",
+  "tx-details-expansion-panel.summary-vote-generic-long": "Hääletus operatsioon",
   "tx-details-expansion-panel.summary-vote-generic-short": "Hääletus op.",
-  "tx-details-expansion-panel.summary-unconfirmed-unknown-long":
-    "Teostamisel tundmatu operatsioon",
-  "tx-details-expansion-panel.summary-unconfirmed-unknown-short":
-    "Teostamisel tundmatu op.",
+  "tx-details-expansion-panel.summary-unconfirmed-unknown-long": "Teostamisel tundmatu operatsioon",
+  "tx-details-expansion-panel.summary-unconfirmed-unknown-short": "Teostamisel tundmatu op.",
   "tx-details-expansion-panel.summary-unknown-long": "Tundmatu tehing",
   "tx-details-expansion-panel.summary-unknown-short": "Tundmatu tehing",
   "tx-details-expansion-panel.details-status-label": "Staatus:",
   "tx-details-expansion-panel.details-status-unconfirmed": "Kinnitamata",
-  "tx-details-expansion-panel.details-status-unconfirmed-tooltip":
-    "Ei ole veel kaasatud ühtegi plokki",
-  "tx-details-expansion-panel.details-status-unsettled":
-    "Kinnitatud (arveldamine - {confirmations}/{needed})",
-  "tx-details-expansion-panel.details-status-unsettled-tooltip":
-    "Vähese kinnituste arvuga",
-  "tx-details-expansion-panel.details-status-settled":
-    "Kinnitatud (arveldatud)",
-  "tx-details-expansion-panel.details-status-settled-tooltip":
-    "Rohke kinnituste arvuga",
+  "tx-details-expansion-panel.details-status-unconfirmed-tooltip": "Ei ole veel kaasatud ühtegi plokki",
+  "tx-details-expansion-panel.details-status-unsettled": "Kinnitatud (arveldamine - {confirmations}/{needed})",
+  "tx-details-expansion-panel.details-status-unsettled-tooltip": "Vähese kinnituste arvuga",
+  "tx-details-expansion-panel.details-status-settled": "Kinnitatud (arveldatud)",
+  "tx-details-expansion-panel.details-status-settled-tooltip": "Rohke kinnituste arvuga",
   "tx-details-expansion-panel.details-timestamp-label": "Ajatempel:",
   "tx-details-expansion-panel.details-txid-label": "Tehingu ID:",
   "tx-details-expansion-panel.details-txid-copy-tooltip": "Kopeeri ID",
   "tx-details-expansion-panel.details-txid-copy-aria": "Kopeeri tehingu ID",
-  "tx-details-expansion-panel.details-txid-explorer-tooltip":
-    "Ava ploki uurijas",
-  "tx-details-expansion-panel.details-txid-explorer-aria":
-    "Ava tehing ploki uurijas",
+  "tx-details-expansion-panel.details-txid-explorer-tooltip": "Ava ploki uurijas",
+  "tx-details-expansion-panel.details-txid-explorer-aria": "Ava tehing ploki uurijas",
   "tx-details-expansion-panel.details-blockid-label": "Ploki ID:",
   "tx-details-expansion-panel.details-blockid-copy-tooltip": "Kopeeri ID",
   "tx-details-expansion-panel.details-blockid-copy-aria": "Kopeeri ploki ID",
-  "tx-details-expansion-panel.details-blockid-explorer-tooltip":
-    "Ava ploki uurijas",
-  "tx-details-expansion-panel.details-blockid-explorer-aria":
-    "Ava plokk ploki uurijas",
+  "tx-details-expansion-panel.details-blockid-explorer-tooltip": "Ava ploki uurijas",
+  "tx-details-expansion-panel.details-blockid-explorer-aria": "Ava plokk ploki uurijas",
   "tx-details-expansion-panel.details-txtype-label": "Tehingu tüüp:",
   "tx-details-expansion-panel.details-txtype-send": "Saada",
   "tx-details-expansion-panel.details-txtype-vote": "Hääleta",
-  "tx-details-expansion-panel.details-txtype-passphrase":
-    "Lisaparooli seadistamine",
-  "tx-details-expansion-panel.details-txtype-delegate":
-    "Delegaadi registratsioon",
+  "tx-details-expansion-panel.details-txtype-passphrase": "Lisaparooli seadistamine",
+  "tx-details-expansion-panel.details-txtype-delegate": "Delegaadi registratsioon",
   "tx-details-expansion-panel.details-txtype-unknown": "Tundmatu",
-  "tx-details-expansion-panel.details-address-alias-format":
-    "{alias} ({address})",
+  "tx-details-expansion-panel.details-address-alias-format": "{alias} ({address})",
   "tx-details-expansion-panel.details-address-format": "{address}",
   "tx-details-expansion-panel.details-sender-label": "Saatja:",
   "tx-details-expansion-panel.details-sender-copy-tooltip": "Kopeeri aadress",
-  "tx-details-expansion-panel.details-sender-copy-aria":
-    "Kopeeri saatja aadress",
+  "tx-details-expansion-panel.details-sender-copy-aria": "Kopeeri saatja aadress",
   "tx-details-expansion-panel.details-sender-add-tooltip": "Lisa kontakt",
-  "tx-details-expansion-panel.details-sender-add-aria":
-    "Lisa saatja kontaktidesse",
+  "tx-details-expansion-panel.details-sender-add-aria": "Lisa saatja kontaktidesse",
   "tx-details-expansion-panel.details-sender-edit-tooltip": "Muuda kontakti",
-  "tx-details-expansion-panel.details-sender-edit-aria":
-    "Muuda saatja kontakt andmeid",
+  "tx-details-expansion-panel.details-sender-edit-aria": "Muuda saatja kontakt andmeid",
   "tx-details-expansion-panel.details-recipient-label": "Saaja:",
-  "tx-details-expansion-panel.details-recipient-copy-tooltip":
-    "Kopeeri aadress",
-  "tx-details-expansion-panel.details-recipient-copy-aria":
-    "Kopeeri saaja aadress",
+  "tx-details-expansion-panel.details-recipient-copy-tooltip": "Kopeeri aadress",
+  "tx-details-expansion-panel.details-recipient-copy-aria": "Kopeeri saaja aadress",
   "tx-details-expansion-panel.details-recipient-add-tooltip": "Lisa kontakt",
-  "tx-details-expansion-panel.details-recipient-add-aria":
-    "Lisa saaja kontaktidesse",
+  "tx-details-expansion-panel.details-recipient-add-aria": "Lisa saaja kontaktidesse",
   "tx-details-expansion-panel.details-recipient-edit-tooltip": "Muuda kontakti",
-  "tx-details-expansion-panel.details-recipient-edit-aria":
-    "Muuda saaja kontakt andmeid",
+  "tx-details-expansion-panel.details-recipient-edit-aria": "Muuda saaja kontakt andmeid",
   "tx-details-expansion-panel.details-send-amount-label": "Summa:",
-  "tx-details-expansion-panel.details-delegate-username-label":
-    "Registreeritud kasutajanimi:",
-  "tx-details-expansion-panel.details-votes-added-label":
-    "Lisatud {voteCount, plural, one {hääl} other {hääled}}:",
-  "tx-details-expansion-panel.details-votes-removed-label":
-    "Eemaldatud {voteCount, plural, one {hääl} other {hääled}}:",
+  "tx-details-expansion-panel.details-delegate-username-label": "Registreeritud kasutajanimi:",
+  "tx-details-expansion-panel.details-votes-added-label": "Lisatud {voteCount, plural, one {hääl} other {hääled}}:",
+  "tx-details-expansion-panel.details-votes-removed-label": "Eemaldatud {voteCount, plural, one {hääl} other {hääled}}:",
   "tx-details-expansion-panel.details-network-fee-label": "Võrgutasu:",
   "tx-details-expansion-panel.details-return-funds-label": "Tagasta summa",
   "tx-details-expansion-panel.details-send-again-label": "Kordusmakse",
   "app-helmet.title": "RISE rahakott",
-  "confirm-tx-enter-secrets-footer.invalid-mnemonic-missing":
-    "Puuduv saladus. Palun sisesta oma konto mnemooniline saladus.",
-  "confirm-tx-enter-secrets-footer.invalid-mnemonic-incorrect":
-    "Ebakorrektne saladus. Sisestatud mnemooniline saladus ei ole seotud selle kontoga.",
-  "confirm-tx-enter-secrets-footer.invalid-mnemonic-no-words":
-    "Ebakorrektne saladus. Mnemooniline saladus koosneb enamasti tühikutega eraldatud 12-st sõnast.",
-  "confirm-tx-enter-secrets-footer.invalid-passphrase-missing":
-    "Puuduv lisaparool. Palun sisesta oma konto lisaparool.",
-  "confirm-tx-enter-secrets-footer.invalid-passphrase-incorrect":
-    "Ebakorrektne lisaparool. Sisestatud lisaparool ei ole seotud selle kontoga.",
-  "confirm-tx-enter-secrets-footer.instructions-with-passphrase":
-    "Sisesta oma konto mnemooniline saladus ja lisaparool all olevatesse tekstiväljadesse, et tehing kinnitada.",
-  "confirm-tx-enter-secrets-footer.instructions":
-    "Sisesta oma konto mnemooniline saladus all olevasse tekstivälja, et tehing kinnitada.",
-  "confirm-tx-enter-secrets-footer.mnemonic-input-label":
-    "Konto mnemooniline saladus",
+  "confirm-tx-enter-secrets-footer.invalid-mnemonic-missing": "Puuduv saladus. Palun sisesta oma konto mnemooniline saladus.",
+  "confirm-tx-enter-secrets-footer.invalid-mnemonic-incorrect": "Ebakorrektne saladus. Sisestatud mnemooniline saladus ei ole seotud selle kontoga.",
+  "confirm-tx-enter-secrets-footer.invalid-mnemonic-no-words": "Ebakorrektne saladus. Mnemooniline saladus koosneb enamasti tühikutega eraldatud 12-st sõnast.",
+  "confirm-tx-enter-secrets-footer.invalid-passphrase-missing": "Puuduv lisaparool. Palun sisesta oma konto lisaparool.",
+  "confirm-tx-enter-secrets-footer.invalid-passphrase-incorrect": "Ebakorrektne lisaparool. Sisestatud lisaparool ei ole seotud selle kontoga.",
+  "confirm-tx-enter-secrets-footer.instructions-with-passphrase": "Sisesta oma konto mnemooniline saladus ja lisaparool all olevatesse tekstiväljadesse, et tehing kinnitada.",
+  "confirm-tx-enter-secrets-footer.instructions": "Sisesta oma konto mnemooniline saladus all olevasse tekstivälja, et tehing kinnitada.",
+  "confirm-tx-enter-secrets-footer.mnemonic-input-label": "Konto mnemooniline saladus",
   "confirm-tx-enter-secrets-footer.passphrase-input-label": "Konto lisaparool",
   "confirm-tx-enter-secrets-footer.sign-button": "Allkirjasta & edasta",
   "confirm-tx-dialog-content.dialog-title": "Kinnita tehing",
@@ -385,139 +267,92 @@
   "confirm-tx-dialog-content.unnamed-recipient": "Tundmatu saaja",
   "confirm-tx-dialog-content.send-title-aria": "Ülekanne summas {amount}",
   "confirm-tx-dialog-content.passphrase-title-aria": "Lisaparooli seadistamine",
-  "confirm-tx-dialog-content.delegate-title-aria":
-    "Delegaadiks registreerumine",
+  "confirm-tx-dialog-content.delegate-title-aria": "Delegaadiks registreerumine",
   "confirm-tx-dialog-content.vote-title-aria": "Hääletus operatsioon",
   "confirm-tx-dialog-content.sender-summary-aria": "'{account}'-lt ({address})",
-  "confirm-tx-dialog-content.recipient-summary-aria":
-    "'{account}'-le ({address})",
+  "confirm-tx-dialog-content.recipient-summary-aria": "'{account}'-le ({address})",
   "confirm-tx-dialog-content.details-section-aria": "Tehingu üksikasjad",
   "confirm-tx-dialog-content.breakdown-section-aria": "Tehingukulu jaotus",
-  "confirm-tx-dialog-content.details-add-passphrase":
-    "Konto lisaparooli seadistus.",
-  "confirm-tx-dialog-content.details-register-delegate":
-    "Registreeru delegaadiks kasutajanimega {username}.",
-  "confirm-tx-dialog-content.details-remove-votes":
-    "Eemalda {delegateCount, plural, one {hääl delegaadilt} other {hääled delegaatidelt}} {delegates}.",
-  "confirm-tx-dialog-content.details-add-votes":
-    "Lisa {delegateCount, plural, one {hääl delegaadile} other {hääled delegaatidele}} {delegates}.",
+  "confirm-tx-dialog-content.details-add-passphrase": "Konto lisaparooli seadistus.",
+  "confirm-tx-dialog-content.details-register-delegate": "Registreeru delegaadiks kasutajanimega {username}.",
+  "confirm-tx-dialog-content.details-remove-votes": "Eemalda {delegateCount, plural, one {hääl delegaadilt} other {hääled delegaatidelt}} {delegates}.",
+  "confirm-tx-dialog-content.details-add-votes": "Lisa {delegateCount, plural, one {hääl delegaadile} other {hääled delegaatidele}} {delegates}.",
   "confirm-tx-dialog-content.breakdown-amount-label": "Ülekande summa:",
   "confirm-tx-dialog-content.breakdown-fee-label": "Võrgutasu:",
   "confirm-tx-dialog-content.breakdown-total-label": "Kokku:",
   "remove-account-dialog-content.dialog-title": "Eemalda konto?",
-  "remove-account-dialog-content.invalid-address":
-    "Sisestatud konto aadress ei ühti sellega mida soovid eemaldada",
-  "remove-account-dialog-content.prompt-text-with-name":
-    "Oled kindel, et soovid eemaldada {name} konto {address} rahakotist? Kinnitamiseks kirjuta konto aadress all olevasse tekstivälja.",
-  "remove-account-dialog-content.prompt-text":
-    "Oled kindel, et soovid eemaldada konto {address} rahakotist? Kinnitamiseks kirjuta konto aadress all olevasse tekstivälja.",
+  "remove-account-dialog-content.invalid-address": "Sisestatud konto aadress ei ühti sellega mida soovid eemaldada",
+  "remove-account-dialog-content.prompt-text-with-name": "Oled kindel, et soovid eemaldada {name} konto {address} rahakotist? Kinnitamiseks kirjuta konto aadress all olevasse tekstivälja.",
+  "remove-account-dialog-content.prompt-text": "Oled kindel, et soovid eemaldada konto {address} rahakotist? Kinnitamiseks kirjuta konto aadress all olevasse tekstivälja.",
   "remove-account-dialog-content.address-input-label": "Konto aadress",
-  "remove-account-dialog-content.save-contact":
-    "Jäädvusta konto nimi aadressiraamatusse",
+  "remove-account-dialog-content.save-contact": "Jäädvusta konto nimi aadressiraamatusse",
   "remove-account-dialog-content.remove-button": "Eemalda konto",
   "vote-delegate-dialog-content.dialog-title": "Delegaadi hääletus",
-  "vote-delegate-dialog-content.instructions":
-    "RISE plokiahela uued plokid sepistatakse 101 enim hääli saanud delegaatide poolt. Sinu ja teiste kasutajate poolt antud hääled määravad kes need 101 delegaati on.",
-  "vote-delegate-dialog-content.insufficient-funds-error":
-    "Sul pole piisavalt vabu vahendeid kontol, et tasuda hääletamise võrgutasu ({fee})!",
+  "vote-delegate-dialog-content.instructions": "RISE plokiahela uued plokid sepistatakse 101 enim hääli saanud delegaatide poolt. Sinu ja teiste kasutajate poolt antud hääled määravad kes need 101 delegaati on.",
+  "vote-delegate-dialog-content.insufficient-funds-error": "Sul pole piisavalt vabu vahendeid kontol, et tasuda hääletamise võrgutasu ({fee})!",
   "vote-delegate-dialog-content.close-button": "Sulge",
-  "vote-delegate-dialog-content.search-box-label":
-    "Otsi delegaate (kasutajanimi, aadress)",
-  "vote-delegate-dialog-content.results-subtitle":
-    "Otsingu tulemus päringule \"{query}\"",
+  "vote-delegate-dialog-content.search-box-label": "Otsi delegaate (kasutajanimi, aadress)",
+  "vote-delegate-dialog-content.results-subtitle": "Otsingu tulemus päringule \"{query}\"",
   "vote-delegate-dialog-content.suggested-subtitle": "Soovitatud delegaadid",
   "account-name-dialog-content.dialog-title": "Uuenda konto nime",
-  "account-name-dialog-content.instructions":
-    "Määra uus nimi kontole aadressiga {address}. See nimi on ainult nähtav sinule ja mitte kellelegi teisele.",
+  "account-name-dialog-content.instructions": "Määra uus nimi kontole aadressiga {address}. See nimi on ainult nähtav sinule ja mitte kellelegi teisele.",
   "account-name-dialog-content.name-input-label": "Konto nimi",
   "account-name-dialog-content.update-button-label": "Uuenda nime",
   "sign-out-dialog-content.dialog-title": "Logi välja?",
-  "sign-out-dialog-content.prompt-text":
-    "Oled kindel, et soovid välja logida? Kõik su kontod ja aadressiraamatu sisu kustutatakse sinu seadmelt.",
+  "sign-out-dialog-content.prompt-text": "Oled kindel, et soovid välja logida? Kõik su kontod ja aadressiraamatu sisu kustutatakse sinu seadmelt.",
   "sign-out-dialog-content.sign-out-button": "Logi välja",
   "sign-out-dialog-content.cancel-button": "Loobu",
   "remove-contact-dialog-content.dialog-title": "Kustuta kontakt?",
-  "remove-contact-dialog-content.prompt-text-with-name":
-    "Oled kindel, et soovid kustutada {name}-i ({address}) oma aadressiraamatust?",
+  "remove-contact-dialog-content.prompt-text-with-name": "Oled kindel, et soovid kustutada {name}-i ({address}) oma aadressiraamatust?",
   "remove-contact-dialog-content.remove-button": "Kustuta kontakt",
   "modify-contact-dialog-content.dialog-title": "Muuda kontakti",
-  "modify-contact-dialog-content.instructions":
-    "{address} aadressi kontakti nimi. See info on ainult sulle nähtav, teistel puudub sellele ligipääs.",
+  "modify-contact-dialog-content.instructions": "{address} aadressi kontakti nimi. See info on ainult sulle nähtav, teistel puudub sellele ligipääs.",
   "modify-contact-dialog-content.name-input-label": "Kontakti nimi",
-  "modify-contact-dialog-content.invalid-name":
-    "Kontakti nimi ei saa tühi olla.",
+  "modify-contact-dialog-content.invalid-name": "Kontakti nimi ei saa tühi olla.",
   "modify-contact-dialog-content.modify-button-label": "Muuda",
-  "add-second-passphrase-dialog-content.dialog-title":
-    "Lisaparooli seadistamine",
-  "add-second-passphrase-dialog-content.invalid-passphrase":
-    "Ebakorrektne lisaparool. Lisaparool ei saa tühi olla.",
-  "add-second-passphrase-dialog-content.instructions-about":
-    "Konto lisaparool pakub lisa turvalisust ploki sepistajatele, kelle konto mnemooniline saladus on talletatud serverites, kust häkkerid võivad sellele ligipääsu saada.",
-  "add-second-passphrase-dialog-content.instructions-immutable":
-    "Peale lisaparool seadistamist pole seda võimalik enam muuta ega eemaldada.",
-  "add-second-passphrase-dialog-content.insufficient-funds-error":
-    "Sul pole piisavalt vabu vahendeid kontol, et tasuda lisaparooli seadistamise võrgutasu ({fee})!",
-  "add-second-passphrase-dialog-content.already-set-error":
-    "Lisaparooli on juba seadistatud sellel kontol. Kui soovid lisaparooli muuta, pead looma täiesti uue konto.",
+  "add-second-passphrase-dialog-content.dialog-title": "Lisaparooli seadistamine",
+  "add-second-passphrase-dialog-content.invalid-passphrase": "Ebakorrektne lisaparool. Lisaparool ei saa tühi olla.",
+  "add-second-passphrase-dialog-content.instructions-about": "Konto lisaparool pakub lisa turvalisust ploki sepistajatele, kelle konto mnemooniline saladus on talletatud serverites, kust häkkerid võivad sellele ligipääsu saada.",
+  "add-second-passphrase-dialog-content.insufficient-funds-error": "Sul pole piisavalt vabu vahendeid kontol, et tasuda lisaparooli seadistamise võrgutasu ({fee})!",
   "add-second-passphrase-dialog-content.passphrase-input-label": "Lisaparool",
   "add-second-passphrase-dialog-content.continue-button": "Jätka",
   "add-second-passphrase-dialog-content.close-button": "Sulge",
   "register-delegate-dialog-content.dialog-title": "Registreeru delegaadiks",
-  "forms-register-delegate.invalid-username":
-    "Ebakorrektne delegaati kasutajanimi. Korrektne kasutajanimi koosneb tähtedest (a-z), numbritest (0-9) ja/või sümbolitest (!@$&_.)",
-  "forms-register-delegate.invalid-username-too-long":
-    "Liiga pikk delegaadi kasutajanimi. Maksimaalne lubatud pikkus on 20 tähemärki.",
-  "forms-register-delegate.invalid-username-like-address":
-    "Ebakorrektne delegaadi kasutajanimi. Kasutajanimi ei tohi olla sarnane konto aadressidega.",
-  "forms-register-delegate.invalid-username-uppercase":
-    "Ebakorrektne delegaadi kasutajanimi. Kasutajanimi ei tohi sisaldada suurtähti.",
-  "forms-register-delegate.instructions":
-    "Delegaadiks hakkamine nõuab registreerimist. Sa saad valida endale meelepärase delegaadi kasutajanime. Seda saad kasutada oma delegaadi reklaamimiseks. Ainult 101 enim hääli saanud delegaadid võtavad osa plokkide sepistamisest. Kõik sepistustasud jagatakse võrdselt nende 101 delegaadi vahel.",
-  "forms-register-delegate.insufficient-funds-error":
-    "Sul pole piisavalt vabu vahendeid kontol, et tasuda delegaadiks registreeriumis võrgutasu ({fee})!",
-  "forms-register-delegate.already-delegate-error":
-    "Sa oled juba registreeritud delegaat (kasutajanimega {username}). Kasutajanime ei ole võimalik muuta.",
+  "forms-register-delegate.invalid-username": "Ebakorrektne delegaati kasutajanimi. Korrektne kasutajanimi koosneb tähtedest (a-z), numbritest (0-9) ja/või sümbolitest (!@$&_.)",
+  "forms-register-delegate.invalid-username-too-long": "Liiga pikk delegaadi kasutajanimi. Maksimaalne lubatud pikkus on 20 tähemärki.",
+  "forms-register-delegate.invalid-username-like-address": "Ebakorrektne delegaadi kasutajanimi. Kasutajanimi ei tohi olla sarnane konto aadressidega.",
+  "forms-register-delegate.invalid-username-uppercase": "Ebakorrektne delegaadi kasutajanimi. Kasutajanimi ei tohi sisaldada suurtähti.",
+  "forms-register-delegate.instructions": "Delegaadiks hakkamine nõuab registreerimist. Sa saad valida endale meelepärase delegaadi kasutajanime. Seda saad kasutada oma delegaadi reklaamimiseks. Ainult 101 enim hääli saanud delegaadid võtavad osa plokkide sepistamisest. Kõik sepistustasud jagatakse võrdselt nende 101 delegaadi vahel.",
+  "forms-register-delegate.insufficient-funds-error": "Sul pole piisavalt vabu vahendeid kontol, et tasuda delegaadiks registreeriumis võrgutasu ({fee})!",
+  "forms-register-delegate.already-delegate-error": "Sa oled juba registreeritud delegaat (kasutajanimega {username}). Kasutajanime ei ole võimalik muuta.",
   "forms-register-delegate.username-input-label": "Delegaadi kasutajanimi",
   "forms-register-delegate.continue-button": "Jätka",
   "forms-register-delegate.close-button": "Sulge",
   "send-coins-dialog-content.dialog-title": "Saada RISE",
-  "send-coins-dialog-content.invalid-address":
-    "Ebakorrektne RISE aadress. Korrektne aadress on \"1234567890R\" vormingus.",
+  "send-coins-dialog-content.invalid-address": "Ebakorrektne RISE aadress. Korrektne aadress on \"1234567890R\" vormingus.",
   "send-coins-dialog-content.invalid-amount": "Ebakorrektne summa.",
-  "send-coins-dialog-content.insufficient-balance":
-    "See summa ületab sinu konto saldo.",
-  "send-coins-dialog-content.recipient-from-address-book":
-    "'{name}' aadress (kontakt aadressiraamatust)",
-  "send-coins-dialog-content.recipient-from-wallet":
-    "'{name}' aadress (sinu konto)",
-  "send-coins-dialog-content.recipient-is-delegate":
-    "'{name}' aadress (registreeritud delegaat)",
-  "send-coins-dialog-content.instructions":
-    "Sisesta saaja aadress ja RISE summa midas soovid saata all olevatesse väljadesse.",
+  "send-coins-dialog-content.insufficient-balance": "See summa ületab sinu konto saldo.",
+  "send-coins-dialog-content.recipient-from-address-book": "'{name}' aadress (kontakt aadressiraamatust)",
+  "send-coins-dialog-content.recipient-from-wallet": "'{name}' aadress (sinu konto)",
+  "send-coins-dialog-content.recipient-is-delegate": "'{name}' aadress (registreeritud delegaat)",
+  "send-coins-dialog-content.instructions": "Sisesta saaja aadress ja RISE summa midas soovid saata all olevatesse väljadesse.",
   "send-coins-dialog-content.recipient-input-label": "Saaja aadress",
   "send-coins-dialog-content.amount-input-label": "RISE summa",
-  "send-coins-dialog-content.balance-fee":
-    "Saldo: {balance} | Võrgutasu: {fee}",
+  "send-coins-dialog-content.balance-fee": "Saldo: {balance} | Võrgutasu: {fee}",
   "send-coins-dialog-content.send-button": "Saada",
   "choose-fiat-dialog-content.dialog-title": "Eelistatud fia valuuta",
-  "choose-fiat-dialog-content.instructions":
-    "Vali fia valuuta milles eelistad oma RISE konto väärtust näha.",
+  "choose-fiat-dialog-content.instructions": "Vali fia valuuta milles eelistad oma RISE konto väärtust näha.",
   "choose-fiat-dialog-content.update-for-one": "Määra sellele kontole",
   "choose-fiat-dialog-content.update-for-all": "Määra kõigile kontodele",
   "create-contact-dialog-content.dialog-title": "Uus kontakt",
-  "create-contact-dialog-content.instructions":
-    "Lisa uus kontakt oma aadressiraamatusse. See info on ainult sulle nähtav, teistel puudub sellele ligipääs.",
+  "create-contact-dialog-content.instructions": "Lisa uus kontakt oma aadressiraamatusse. See info on ainult sulle nähtav, teistel puudub sellele ligipääs.",
   "create-contact-dialog-content.name-input-label": "Kontakti nimi",
-  "create-contact-dialog-content.invalid-name":
-    "Kontakti nimi ei saa tühi olla.",
+  "create-contact-dialog-content.invalid-name": "Kontakti nimi ei saa tühi olla.",
   "create-contact-dialog-content.address-input-label": "Aadress",
-  "create-contact-dialog-content.invalid-address":
-    "Ebakorrektne RISE aadress. Korrektne aadress on \"1234567890R\" vormingus.",
-  "create-contact-dialog-content.invalid-address-exists":
-    "Selle aadressiga kontakt on juba olemas.",
+  "create-contact-dialog-content.invalid-address": "Ebakorrektne RISE aadress. Korrektne aadress on \"1234567890R\" vormingus.",
+  "create-contact-dialog-content.invalid-address-exists": "Selle aadressiga kontakt on juba olemas.",
   "create-contact-dialog-content.create-button-label": "Loo kontakt",
-  "update-available.message":
-    "Uus versioon on saadaval. Uuendamiseks lae leht uuesti.",
+  "update-available.message": "Uus versioon on saadaval. Uuendamiseks lae leht uuesti.",
   "update-available.reload-label": "Lae uuesti",
   "update-available.dismiss-aria-label": "Sulge",
   "account-tip.dismiss-aria-label": "Sulge",
