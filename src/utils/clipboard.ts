@@ -1,3 +1,4 @@
+// TODO use an npm module
 export function copyToClipboard(value: string) {
   const selection = document.getSelection();
 
