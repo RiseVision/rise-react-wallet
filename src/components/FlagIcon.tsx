@@ -19,11 +19,11 @@ const countryFlags: { [P in CountryCode]: string } = {
   gb: require('svg-country-flags/svg/gb.svg'),
   // es: require('svg-country-flags/svg/es.svg'),
   ee: require('svg-country-flags/svg/ee.svg'),
-  fr: require('svg-country-flags/svg/fr.svg')
+  fr: require('svg-country-flags/svg/fr.svg'),
   // it: require('svg-country-flags/svg/it.svg'),
   // hu: require('svg-country-flags/svg/hu.svg'),
-  // nl: require('svg-country-flags/svg/nl.svg'),
-  // pl: require('svg-country-flags/svg/pl.svg'),
+  nl: require('svg-country-flags/svg/nl.svg'),
+  pl: require('svg-country-flags/svg/pl.svg')
   // ro: require('svg-country-flags/svg/ro.svg'),
   // ru: require('svg-country-flags/svg/ru.svg'),
   // ua: require('svg-country-flags/svg/ua.svg'),

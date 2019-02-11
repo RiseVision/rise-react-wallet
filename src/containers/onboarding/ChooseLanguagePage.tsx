@@ -29,11 +29,11 @@ const localeLabels: { [P in Locale]: string } = {
   en: 'Continue in English',
   // es: 'Continuar en español',
   et: 'Jätka eesti keeles',
-  fr: 'Continuer en français'
+  fr: 'Continuer en français',
   // it: 'Continua in italiano',
   // hu: 'Folytatás magyarul',
-  // nl: 'Ga door in het Nederlands',
-  // pl: 'Kontynuuj po polsku',
+  nl: 'Ga door in het Nederlands',
+  pl: 'Kontynuuj po polsku'
   // ro: 'Continuați în română',
   // ru: 'Продолжить на русском',
   // uk: 'Продовжуйте по-українськи',
