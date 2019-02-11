@@ -21,6 +21,22 @@
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <style type="text/css">
+        /*
+        prevent ios bounce scrolling
+        https://github.com/RiseVision/rise-react-wallet/issues/207
+        */
+        @supports (-webkit-overflow-scrolling: touch) {
+            body {
+                -webkit-overflow-scrolling: touch;
+                overflow: hidden;
+                height: 100%;
+                position: fixed;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 <noscript>

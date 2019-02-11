@@ -22,6 +22,7 @@
     "dpos-api-wrapper": "^1.3.2",
     "dpos-ledger-api": "^2.0.0",
     "dpos-offline": "2.0.2",
+    "inobounce": "^0.1.6",
     "is-mobile": "^2.0.0",
     "jdenticon": "^2.1.0",
     "keyboardjs": "^2.5.1",
