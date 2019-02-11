@@ -218,7 +218,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
     this.setState({
       mobileDrawerOpen: !this.state.mobileDrawerOpen
     });
-  };
+  }
 
   handleConfirmSignOut = () => {
     const { walletStore, routerStore } = this.injected;
@@ -229,26 +229,26 @@ class Wallet extends React.Component<DecoratedProps, State> {
 
     walletStore.signout();
     routerStore.goTo(onboardingAddAccountRoute);
-  };
+  }
 
   handleCancelSignOutPrompt = () => {
     this.setState({
       signOutOpen: false
     });
-  };
+  }
 
   handleOpenSignOutPrompt = () => {
     this.setState({
       mobileDrawerOpen: false,
       signOutOpen: true
     });
-  };
+  }
 
   handleAfterNavigate = () => {
     this.setState({
       mobileDrawerOpen: false
     });
-  };
+  }
 }
 
 export default stylesDecorator(themeDecorator(Wallet));
