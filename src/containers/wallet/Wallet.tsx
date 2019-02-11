@@ -20,6 +20,8 @@ import SignOutDialogContent from '../../components/content/SignOutDialogContent'
 import { onboardingAddAccountRoute } from '../../routes';
 import WalletStore from '../../stores/wallet';
 import { version } from '../../../package.json';
+// @ts-ignore
+import * as inobounce from 'inobounce';
 
 const drawerWidth = 280;
 
@@ -54,6 +56,13 @@ const styles = (theme: Theme) =>
       }
     },
     toolbar: theme.mixins.toolbar,
+    iosBottomBar: {
+      minHeight: 0,
+      [`@supports (-webkit-overflow-scrolling: touch)`]: {
+        // rough estimation for the safari's bottom status bar's height
+        minHeight: (window.screen.availHeight - window.innerHeight) * 0.62
+      }
+    },
     content: {
       display: 'flex',
       flexDirection: 'column',
@@ -112,6 +121,13 @@ class Wallet extends React.Component<DecoratedProps, State> {
   }
 
   componentWillMount() {
+    // store info if the current platform is supported
+    if (typeof inobounce.supported === 'undefined') {
+      inobounce.supported = inobounce.isEnabled();
+    }
+    if (inobounce.supported) {
+      inobounce.enable();
+    }
     // Automatically close signOut prompt on route change
     this.disposeRouteMonitor = reaction(
       () => {
@@ -125,6 +141,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
   }
 
   componentWillUnmount() {
+    inobounce.disable();
     if (this.disposeRouteMonitor) {
       this.disposeRouteMonitor();
       this.disposeRouteMonitor = null;
@@ -185,6 +202,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           {this.props.children}
+          <div className={classes.iosBottomBar} />
         </main>
         <Dialog open={signOutOpen} onClose={this.handleCancelSignOutPrompt}>
           <SignOutDialogContent
@@ -200,7 +218,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
     this.setState({
       mobileDrawerOpen: !this.state.mobileDrawerOpen
     });
-  }
+  };
 
   handleConfirmSignOut = () => {
     const { walletStore, routerStore } = this.injected;
@@ -211,26 +229,26 @@ class Wallet extends React.Component<DecoratedProps, State> {
 
     walletStore.signout();
     routerStore.goTo(onboardingAddAccountRoute);
-  }
+  };
 
   handleCancelSignOutPrompt = () => {
     this.setState({
       signOutOpen: false
     });
-  }
+  };
 
   handleOpenSignOutPrompt = () => {
     this.setState({
       mobileDrawerOpen: false,
       signOutOpen: true
     });
-  }
+  };
 
   handleAfterNavigate = () => {
     this.setState({
       mobileDrawerOpen: false
     });
-  }
+  };
 }
 
 export default stylesDecorator(themeDecorator(Wallet));
