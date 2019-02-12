@@ -20,7 +20,7 @@ import SignOutDialogContent from '../../components/content/SignOutDialogContent'
 import { onboardingAddAccountRoute } from '../../routes';
 import WalletStore from '../../stores/wallet';
 import { version } from '../../../package.json';
-// @ts-ignore
+// @ts-ignore TODO d.ts
 import * as inobounce from 'inobounce';
 
 const drawerWidth = 280;
@@ -121,10 +121,6 @@ class Wallet extends React.Component<DecoratedProps, State> {
   }
 
   componentWillMount() {
-    // store info if the current platform is supported
-    if (typeof inobounce.supported === 'undefined') {
-      inobounce.supported = inobounce.isEnabled();
-    }
     if (inobounce.supported) {
       inobounce.enable();
     }

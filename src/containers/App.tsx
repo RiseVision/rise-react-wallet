@@ -10,6 +10,11 @@ import UpdateAvailableSnackbar from '../components/UpdateAvailableSnackbar';
 import { accountSendNoIDRoute } from '../routes';
 import LangStore from '../stores/lang';
 import ThemeProvider from './ThemeProvider';
+// @ts-ignore TODO d.ts
+import * as inobounce from 'inobounce';
+
+// store info if the current platform is supported
+inobounce.supported = inobounce.isEnabled();
 
 interface Props {}
 
@@ -54,7 +59,7 @@ class App extends React.Component<Props, State> {
     e.preventDefault();
     e.stopPropagation();
     routerStore.goTo(accountSendNoIDRoute);
-  }
+  };
 
   render() {
     let currentError = null;
