@@ -1,4 +1,4 @@
-import Drawer from '@material-ui/core/Drawer';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
 import {
@@ -154,11 +154,12 @@ class Wallet extends React.Component<DecoratedProps, State> {
     return (
       <div className={classes.root}>
         <Hidden mdUp={true}>
-          <Drawer
+          <SwipeableDrawer
             variant="temporary"
             anchor={theme.direction === 'rtl' ? 'right' : 'left'}
             open={mobileDrawerOpen}
             onClose={this.handleDrawerToggle}
+            onOpen={() => void 0}
             classes={{
               paper: classes.drawerPaper
             }}
@@ -169,12 +170,14 @@ class Wallet extends React.Component<DecoratedProps, State> {
           />
         </Hidden>
         <div className={classes.permanentDrawerContainer}>
-          <Drawer
+          <SwipeableDrawer
             variant="permanent"
             open={true}
             classes={{
               paper: classes.drawerPaper
             }}
+            onOpen={() => void 0}
+            onClose={() => void 0}
             children={drawer}
           />
         </div>
