@@ -2,7 +2,7 @@
 
 RISE wallet uses Crowdin to crowdsource translations to different languages. The translation project URL is <https://crowdin.com/project/rise-web-wallet>.
 
-## Exporting string to Crowdin
+## Exporting strings to Crowdin
 
 ```
 $ yarn intl:prepare
@@ -17,7 +17,7 @@ Then select the "Files" tab and press the "Update" button in _messages.json_ row
 
 ![Update button location in Files tab](crowdin-settings-files.png)
 
-## Importing translated string from Crowdin
+## Importing translated strings from Crowdin
 
 Go to project settings on Crowdin. From there you want to use the "Build & Download" button to get a zip file with the latest translations for all languages.
 
