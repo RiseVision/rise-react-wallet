@@ -78,10 +78,11 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  }
+  };
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
+    alert(walletStore.isHomeScreen)
     const showClose = [...walletStore.accounts.keys()].length > 0;
     let network;
 
