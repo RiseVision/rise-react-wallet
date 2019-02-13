@@ -33,7 +33,8 @@ import {
   accountOverviewRoute,
   onboardingAddAccountRoute,
   addressBookRoute,
-  accountsListRoute
+  accountsListRoute,
+  onboardingInstallToHomeScreenRoute
 } from '../../routes';
 import { RouteLink } from '../../stores/root';
 import AccountStore from '../../stores/account';
@@ -93,7 +94,7 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
-    description: 'Label for accounts that user hasn\'t named yet',
+    description: "Label for accounts that user hasn't named yet",
     defaultMessage: 'Unnamed account ({id})'
   },
   accountsListAriaLabel: {
@@ -122,7 +123,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
 
     const allAccounts = orderBy(
       [...walletStore.accounts.values()],
-      ['pinned', (a) => Boolean(a.name), 'name'],
+      ['pinned', a => Boolean(a.name), 'name'],
       ['desc', 'desc', 'asc']
     );
     const pinnedCount = allAccounts.filter(a => a.pinned).length;
@@ -323,6 +324,26 @@ class DrawerContent extends React.Component<DecoratedProps> {
               />
             </ListItemText>
           </ListItem>*/}
+          {(walletStore.isMobile || walletStore.deferredInstallPrompt) &&
+            !walletStore.isHomeScreen && (
+              <Link
+                route={onboardingInstallToHomeScreenRoute}
+                onAfterNavigate={onAfterNavigate}
+              >
+                <ListItem button={true}>
+                  <ListItemIcon className={classes.listIcon}>
+                    <PeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText>
+                    <FormattedMessage
+                      id="drawer-content.install-to-homescreen"
+                      description="Install to homescreen drawer item"
+                      defaultMessage="Install to Home Screen"
+                    />
+                  </ListItemText>
+                </ListItem>
+              </Link>
+            )}
           <ListItem button={true} onClick={onSignOutClick}>
             <ListItemIcon className={classes.listIcon}>
               <ExitToAppIcon />

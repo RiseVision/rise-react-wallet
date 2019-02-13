@@ -17,7 +17,8 @@ import {
   onboardingLedgerAccount,
   onboardingSecurityNoticeRoute,
   accountOverviewNoIDRoute,
-  onboardingChooseNetworkRoute
+  onboardingChooseNetworkRoute,
+  onboardingInstallToHomeScreenRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
 import LedgerStore from '../../stores/ledger';
@@ -76,10 +77,11 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  }
+  };
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
+    alert(walletStore.isHomeScreen)
     const showClose = [...walletStore.accounts.keys()].length > 0;
     let network;
 
@@ -232,6 +234,25 @@ class AddAccountPage extends React.Component<Props> {
               <ChevronRight />
             </ListItem>
           </Link>
+          {(walletStore.isMobile || walletStore.deferredInstallPrompt) &&
+            !walletStore.isHomeScreen && (
+              <Link
+                route={onboardingInstallToHomeScreenRoute}
+                onBeforeNavigate={this.handleBeforeNavigate}
+              >
+                <ListItem button={true}>
+                  <ServerNetworkIcon className={classes.nodeIcon} />
+                  <ListItemText>
+                    <FormattedMessage
+                      id="onboarding-add-account.install-to-homescreen"
+                      description="Install to homescreen button label"
+                      defaultMessage="Install to Home Screen"
+                    />
+                  </ListItemText>
+                  <ChevronRight />
+                </ListItem>
+              </Link>
+            )}
           <Link
             route={onboardingChooseNetworkRoute}
             onBeforeNavigate={this.handleBeforeNavigate}

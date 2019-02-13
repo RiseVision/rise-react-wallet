@@ -5212,6 +5212,11 @@ is-installed-globally@0.1.0, is-installed-globally@^0.1.0:
     global-dirs "^0.1.0"
     is-path-inside "^1.0.0"
 
+is-mobile@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/is-mobile/-/is-mobile-2.0.0.tgz#4d0140e91bb4e26d7e0402ead2f8a79d1551b9d5"
+  integrity sha512-k2+p7BBCzhqHMdYJwGUNNo+6zegGiMIVbM6bEPzxWXpQV6BUzV892UW0oDFgqxT6DygO7LdxRbwC0xmOhJdbew==
+
 is-npm@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-npm/-/is-npm-1.0.0.tgz#f2fb63a65e4905b406c86072765a1a4dc793b9f4"

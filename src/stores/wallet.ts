@@ -7,6 +7,7 @@ import {
   RecipientId,
   Rise
 } from 'dpos-offline';
+import { isMobile } from 'is-mobile';
 import { get, pick } from 'lodash';
 import {
   action,
@@ -79,6 +80,9 @@ export default class WalletStore {
 
   fiatPrices: { [currency: string]: number } = {};
   @observable connected: LoadingState = LoadingState.NOT_LOADED;
+  @observable isHomeScreen: boolean = false;
+  @observable isMobile: boolean = false;
+  @observable deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
 
   /**
    * Returns node's URL, depending on the current location.
@@ -115,10 +119,63 @@ export default class WalletStore {
     this.config = config;
     this.reload();
     this.observeSelectedAccount();
+    this.detectMobile();
     if (!this.storedAccounts().length) {
       router.goTo(onboardingAddAccountRoute);
       return;
     }
+  }
+
+  @action
+  detectMobile() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // https://developers.google.com/web/fundamentals/app-install-banners/
+    window.addEventListener(
+      'beforeinstallprompt',
+      (e: BeforeInstallPromptEvent) => {
+        runInAction(() => {
+          this.deferredInstallPrompt = e;
+        });
+      }
+    );
+
+    // TODO debug
+    // this.isMobile = true;
+    // this.isHomeScreen = false;
+    // return;
+
+    this.isMobile = isMobile();
+
+    this.isHomeScreen =
+      // @ts-ignore missing d.ts
+      Boolean(window.navigator.standalone) ||
+      window.matchMedia('(display-mode: standalone)').matches;
+  }
+
+  /**
+   * Install the app using Add to Home Screen API.
+   *
+   * https://developers.google.com/web/fundamentals/app-install-banners/
+   */
+  async installA2HS() {
+    const prompt = this.deferredInstallPrompt;
+    if (!prompt) {
+      return false;
+    }
+    // Show the prompt
+    prompt.prompt();
+    // Wait for the user to respond to the prompt
+    const choiceResult = await prompt.userChoice;
+
+    // dispose
+    runInAction(() => {
+      this.deferredInstallPrompt = null;
+    });
+
+    return choiceResult.outcome === 'accepted';
   }
 
   connect() {

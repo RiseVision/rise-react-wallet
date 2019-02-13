@@ -239,6 +239,22 @@ export const onboardingNewMnemonicRoute = new Route<RootStore>({
   )
 });
 
+export const onboardingInstallToHomeScreenRoute = new Route<RootStore>({
+  path: '/onboarding/install-homescreen',
+  component: (
+    <AsyncComponent
+      name="./containers/onboarding"
+      resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.InstallToHomeScreen />
+        </components.Onboarding>
+      )}
+    />
+  )
+});
+
 // wallet
 
 export const accountsListRoute = new Route({
