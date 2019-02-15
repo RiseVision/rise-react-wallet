@@ -12,8 +12,9 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import AddIcon from '@material-ui/icons/Add';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import AddIcon from '@material-ui/icons/Add';
+import AppsIcon from '@material-ui/icons/Apps';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
@@ -36,8 +37,8 @@ import {
   accountsListRoute,
   onboardingInstallToHomeScreenRoute
 } from '../../routes';
-import { RouteLink } from '../../stores/root';
 import AccountStore from '../../stores/account';
+import { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -94,7 +95,7 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
-    description: "Label for accounts that user hasn't named yet",
+    description: 'Label for accounts that user hasn\'t named yet',
     defaultMessage: 'Unnamed account ({id})'
   },
   accountsListAriaLabel: {
@@ -332,7 +333,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
               >
                 <ListItem button={true}>
                   <ListItemIcon className={classes.listIcon}>
-                    <PeopleIcon />
+                    <AppsIcon />
                   </ListItemIcon>
                   <ListItemText>
                     <FormattedMessage

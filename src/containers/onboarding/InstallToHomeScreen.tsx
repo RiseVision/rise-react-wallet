@@ -40,7 +40,7 @@ class InstallToHomeScreen extends React.Component<Props, State> {
 
   handleInstall = () => {
     this.injected.walletStore.installA2HS();
-  };
+  }
 
   render() {
     const { classes, walletStore } = this.injected;
@@ -66,8 +66,8 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                 id="onboarding-install.info-main"
                 description="Main info about installing app to homescreen"
                 defaultMessage={
-                  'You can install the wallet on your phone via "ADD TO HOME ' +
-                  'SCREEN" on iOS, Android and Chrome Desktop.'
+                  'You can install the wallet on your phone or OS via ' +
+                  '"ADD TO HOME SCREEN" on iOS, Android and Chrome Desktop.'
                 }
               />
             </Typography>
@@ -78,7 +78,8 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                     id="onboarding-install.info-icon-location"
                     description="Info about the icon location"
                     defaultMessage={
-                      "this will create an icon on your phone's screen"
+                      'this will create an app icon on your phone\'s screen ' +
+                      '/ desktop'
                     }
                   />
                 </Typography>
@@ -98,7 +99,7 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                     id="onboarding-install.info-no-appstore"
                     description="Info about appstores"
                     defaultMessage={
-                      "you don't need to access AppStore / Play Store to do this"
+                      'you don\'t need to access AppStore / Play Store to do this'
                     }
                   />
                 </Typography>
@@ -109,7 +110,7 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                     id="onboarding-install.info-offline"
                     description="Info about offline support"
                     defaultMessage={
-                      "your data will be accessible even while offline"
+                      'your data will be accessible even while offline'
                     }
                   />
                 </Typography>
@@ -147,13 +148,13 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                     id="onboarding-install.howto-ios"
                     description="Instruction on how to install the app on iOS"
                     defaultMessage={
-                      'To install the app click the "SHARE" button at the ' +
-                      'bottom and then "ADD TO HOME SCREEN".'
+                      'To install the app on an iPhone, click the "SHARE" ' +
+                      'button at the bottom and then "ADD TO HOME SCREEN".'
                     }
                   />
                 </Typography>
                 <p className={classes.img}>
-                  <img src="/a2hs-ios.png" />
+                  <img src="/a2hs-ios.png" style={{ maxWidth: '100%' }} />
                 </p>
               </React.Fragment>
             )}

@@ -119,7 +119,10 @@ export default class WalletStore {
     this.config = config;
     this.reload();
     this.observeSelectedAccount();
-    this.detectMobile();
+    // ignore exceptions for unit tests
+    try {
+      this.detectMobile();
+    } catch {}
     if (!this.storedAccounts().length) {
       router.goTo(onboardingAddAccountRoute);
       return;
@@ -128,10 +131,10 @@ export default class WalletStore {
 
   @action
   detectMobile() {
-    if (typeof window === 'undefined') {
+    // skip detection for carlo
+    if (typeof carlo !== 'undefined') {
       return;
     }
-
     // https://developers.google.com/web/fundamentals/app-install-banners/
     window.addEventListener(
       'beforeinstallprompt',
@@ -142,13 +145,7 @@ export default class WalletStore {
       }
     );
 
-    // TODO debug
-    // this.isMobile = true;
-    // this.isHomeScreen = false;
-    // return;
-
     this.isMobile = isMobile();
-
     this.isHomeScreen =
       // @ts-ignore missing d.ts
       Boolean(window.navigator.standalone) ||

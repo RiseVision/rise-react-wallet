@@ -2,6 +2,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import AppsIcon from '@material-ui/icons/Apps';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import ServerNetworkIcon from 'mdi-material-ui/ServerNetwork';
 import { inject, observer } from 'mobx-react';
@@ -77,11 +78,10 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  };
+  }
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
-    alert(walletStore.isHomeScreen)
     const showClose = [...walletStore.accounts.keys()].length > 0;
     let network;
 
@@ -241,7 +241,7 @@ class AddAccountPage extends React.Component<Props> {
                 onBeforeNavigate={this.handleBeforeNavigate}
               >
                 <ListItem button={true}>
-                  <ServerNetworkIcon className={classes.nodeIcon} />
+                  <AppsIcon className={classes.nodeIcon} />
                   <ListItemText>
                     <FormattedMessage
                       id="onboarding-add-account.install-to-homescreen"
