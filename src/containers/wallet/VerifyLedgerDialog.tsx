@@ -12,7 +12,12 @@ import { reaction, IReactionDisposer, observable, action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import { defineMessages, injectIntl, InjectedIntlProps } from 'react-intl';
+import {
+  defineMessages,
+  injectIntl,
+  InjectedIntlProps,
+  FormattedMessage
+} from 'react-intl';
 import AccountIcon from '../../components/AccountIcon';
 import Dialog, {
   SetDialogContent,
@@ -87,13 +92,10 @@ const messages = defineMessages({
     description: 'Status text when attempting to connect to the Ledger device',
     defaultMessage: 'Trying to connect...'
   },
-  statusConnectingHelp: {
-    id: 'verify-ledger-address.status-connecting-help',
-    description: 'Link to the help page regarding Ledger connection problems',
-    defaultMessage:
-      'In case of problems please <a href="https://support.ledger.com/hc/' +
-      'en-us/articles/115005165269-Fix-connection-issues" target="_blank">' +
-      'visit the support page</a>.'
+  statusConnectingHelpLink: {
+    id: 'verify-ledger-address.status-connecting-help-link',
+    description: 'Content of the link to the ledger support page',
+    defaultMessage: 'visit the support page'
   },
   accountNrLabel: {
     id: 'verify-ledger-address.account-nr-label',
@@ -292,11 +294,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
               <Typography
                 children={intl.formatMessage(messages.statusConnecting)}
               />
-              <Typography
-                dangerouslySetInnerHTML={{
-                  __html: intl.formatHTMLMessage(messages.statusConnectingHelp)
-                }}
-              />
+              {this.getConnectingHelpMsg()}
             </Grid>
           </Grid>
         ) : (
@@ -360,6 +358,29 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
           </React.Fragment>
         )}
       </Dialog>
+    );
+  }
+
+  getConnectingHelpMsg() {
+    const { intl } = this.injected;
+    return (
+      <Typography>
+        <FormattedMessage
+          id="verify-ledger-address.status-connecting-help-v2"
+          description="Link to the help page regarding Ledger connection problems"
+          defaultMessage="In case of problems please {link}."
+          values={{
+            link: (
+              <a
+                href="https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues"
+                target="_blank"
+              >
+                {intl.formatMessage(messages.statusConnectingHelpLink)}
+              </a>
+            )
+          }}
+        />
+      </Typography>
     );
   }
 }

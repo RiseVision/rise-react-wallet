@@ -77,13 +77,10 @@ const messages = defineMessages({
     description: 'Status text when attempting to connect to the Ledger device',
     defaultMessage: 'Trying to connect...'
   },
-  statusConnectingHelp: {
-    id: 'onboarding-ledger-account.status-connecting-help',
-    description: 'Link to the help page regarding Ledger connection problems',
-    defaultMessage:
-      'In case of problems please <a href="https://support.ledger.com/hc/' +
-      'en-us/articles/115005165269-Fix-connection-issues" target="_blank">' +
-      'visit the support page</a>.'
+  statusConnectingHelpLink: {
+    id: 'onboarding-ledger-account.status-connecting-help-link',
+    description: 'Content of the link to the ledger support page',
+    defaultMessage: 'visit the support page'
   },
   accountNrLabel: {
     id: 'onboarding-ledger-account.account-nr-label',
@@ -203,11 +200,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
               <Typography
                 children={intl.formatMessage(messages.statusConnecting)}
               />
-              <Typography
-                dangerouslySetInnerHTML={{
-                  __html: intl.formatHTMLMessage(messages.statusConnectingHelp)
-                }}
-              />
+              {this.getConnectingHelpMsg()}
             </Grid>
           </Grid>
         ) : selectedAccount !== null ? (
@@ -283,6 +276,29 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
           </List>
         )}
       </ModalPaper>
+    );
+  }
+
+  getConnectingHelpMsg() {
+    const { intl } = this.injected;
+    return (
+      <Typography>
+        <FormattedMessage
+          id="onboarding-ledger-account.status-connecting-help-v2"
+          description="Link to the help page regarding Ledger connection problems"
+          defaultMessage="In case of problems please {link}."
+          values={{
+            link: (
+              <a
+                href="https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues"
+                target="_blank"
+              >
+                {intl.formatMessage(messages.statusConnectingHelpLink)}
+              </a>
+            )
+          }}
+        />
+      </Typography>
     );
   }
 
