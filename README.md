@@ -5,10 +5,15 @@
 
 RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using **TypeScript**, **React** and **Material UI**.
 
-### URLs
+### Web access
 
 - [mainnet](https://wallet-beta.rise.vision/)
 - [testnet](https://twallet-beta.rise.vision/)
+
+### Desktop downloads
+
+- [Latest release](https://github.com/RiseVision/rise-react-wallet/releases/latest)
+- [Previous releases](https://github.com/RiseVision/rise-react-wallet/releases)
 
 ### Status
 
