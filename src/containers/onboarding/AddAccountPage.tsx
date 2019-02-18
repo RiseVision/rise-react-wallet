@@ -82,7 +82,6 @@ class AddAccountPage extends React.Component<Props> {
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
-    alert(walletStore.isHomeScreen)
     const showClose = [...walletStore.accounts.keys()].length > 0;
     let network;
 
