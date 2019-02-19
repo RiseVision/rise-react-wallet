@@ -12,6 +12,7 @@ RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using
 ![desktop](docs/desktop.png)
 
 ###### Mobile
+
 ![mobile](docs/mobile-1.png)
 ![mobile settings](docs/mobile-2.png)
 
@@ -45,6 +46,7 @@ RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using
 ### Nightly builds
 
 Automatic nightly builds are provided directly from `master`:
+
 - [gh-wallet.rise.vision](https://gh-wallet.rise.vision/)
 - [Windows](https://gh-wallet.rise.vision/rise-wallet-win-nightly.zip)
 - [Linux](https://gh-wallet.rise.vision/rise-wallet-linux-nightly.tar.gz)
@@ -53,25 +55,28 @@ Automatic nightly builds are provided directly from `master`:
 ### Contributing
 
 Dev build (live reload):
-1. Clone the repo
-1. Run `yarn start`
+
+1.  Clone the repo
+1.  Run `yarn start`
 
 Production build:
-1. Clone the repo
-1. Run `yarn build; yarn serve`
+
+1.  Clone the repo
+1.  Run `yarn build; yarn serve`
 
 Translations:
-* You can help with [translating the wallet](https://github.com/RiseVision/rise-react-wallet/blob/master/docs/managing-translations.md)
+
+- You can help with [translating the wallet](https://github.com/RiseVision/rise-react-wallet/blob/master/docs/managing-translations.md)
 
 ### Custom backend
 
 To get the wallet working with a custom RISE deployment by default:
-1. Checkout a working copy
-1. Edit `src/config.json` and change both `api_url` and `api_url_testnet`
-1. Build a release with `yarn build` or `yarn release`
+
+1.  Checkout a working copy
+1.  Edit `src/config.json` and change both `api_url` and `api_url_testnet`
+1.  Build a release with `yarn build` or `yarn release`
 
 Keep in mind that you can simply use Node Switcher to connect to your node manually.
-
 
 ### About RISE
 
