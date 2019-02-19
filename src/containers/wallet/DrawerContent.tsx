@@ -95,7 +95,7 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
-    description: "Label for accounts that user hasn't named yet",
+    description: 'Label for accounts that user hasn\'t named yet',
     defaultMessage: 'Unnamed account ({id})'
   },
   accountsListAriaLabel: {
@@ -325,7 +325,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
               />
             </ListItemText>
           </ListItem>*/}
-          {(walletStore.isMobile || walletStore.deferredInstallPrompt) &&
+          {walletStore.isMobile &&
             !walletStore.isHomeScreen && (
               <Link
                 route={onboardingInstallToHomeScreenRoute}
@@ -340,6 +340,27 @@ class DrawerContent extends React.Component<DecoratedProps> {
                       id="drawer-content.install-to-homescreen"
                       description="Install to homescreen drawer item"
                       defaultMessage="Install to Home Screen"
+                    />
+                  </ListItemText>
+                </ListItem>
+              </Link>
+            )}
+          {!walletStore.isMobile &&
+            walletStore.supportsA2HS &&
+            !walletStore.isHomeScreen && (
+              <Link
+                route={onboardingInstallToHomeScreenRoute}
+                onAfterNavigate={onAfterNavigate}
+              >
+                <ListItem button={true}>
+                  <ListItemIcon className={classes.listIcon}>
+                    <AppsIcon />
+                  </ListItemIcon>
+                  <ListItemText>
+                    <FormattedMessage
+                      id="drawer-content.install-to-desktop"
+                      description="Install to desktop drawer item"
+                      defaultMessage="Install to Desktop"
                     />
                   </ListItemText>
                 </ListItem>

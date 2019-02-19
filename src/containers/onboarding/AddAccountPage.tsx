@@ -78,7 +78,7 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  };
+  }
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
@@ -234,7 +234,7 @@ class AddAccountPage extends React.Component<Props> {
               <ChevronRight />
             </ListItem>
           </Link>
-          {(walletStore.isMobile || walletStore.deferredInstallPrompt) &&
+          {walletStore.isMobile &&
             !walletStore.isHomeScreen && (
               <Link
                 route={onboardingInstallToHomeScreenRoute}
@@ -247,6 +247,26 @@ class AddAccountPage extends React.Component<Props> {
                       id="onboarding-add-account.install-to-homescreen"
                       description="Install to homescreen button label"
                       defaultMessage="Install to Home Screen"
+                    />
+                  </ListItemText>
+                  <ChevronRight />
+                </ListItem>
+              </Link>
+            )}
+          {!walletStore.isMobile &&
+            walletStore.supportsA2HS &&
+            !walletStore.isHomeScreen && (
+              <Link
+                route={onboardingInstallToHomeScreenRoute}
+                onBeforeNavigate={this.handleBeforeNavigate}
+              >
+                <ListItem button={true}>
+                  <AppsIcon className={classes.nodeIcon} />
+                  <ListItemText>
+                    <FormattedMessage
+                      id="onboarding-add-account.install-to-desktop"
+                      description="Install to desktop button label"
+                      defaultMessage="Install to Desktop"
                     />
                   </ListItemText>
                   <ChevronRight />

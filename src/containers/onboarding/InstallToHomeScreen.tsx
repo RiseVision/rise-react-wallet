@@ -48,11 +48,20 @@ class InstallToHomeScreen extends React.Component<Props, State> {
     return (
       <ModalPaper open={true}>
         <ModalPaperHeader backLink={{ route: onboardingAddAccountRoute }}>
-          <FormattedMessage
-            id="onboarding-install.title"
-            description="Install to Home Screen screen title"
-            defaultMessage="Install to Home Screen"
-          />
+          {walletStore.isMobile && (
+            <FormattedMessage
+              id="onboarding-install.title-mobile"
+              description="Install to Home Screen screen title"
+              defaultMessage="Install to Home Screen"
+            />
+          )}
+          {!walletStore.isMobile && (
+            <FormattedMessage
+              id="onboarding-install.title-desktop"
+              description="Install to Desktop screen title"
+              defaultMessage="Install to Desktop"
+            />
+          )}
         </ModalPaperHeader>
         <Grid
           container={true}
@@ -62,26 +71,48 @@ class InstallToHomeScreen extends React.Component<Props, State> {
         >
           <Grid item={true} xs={12}>
             <Typography>
-              <FormattedMessage
-                id="onboarding-install.info-main"
-                description="Main info about installing app to homescreen"
-                defaultMessage={
-                  'You can install the wallet on your phone or OS via ' +
-                  '"ADD TO HOME SCREEN" on iOS, Android and Chrome Desktop.'
-                }
-              />
+              {walletStore.isMobile && (
+                <FormattedMessage
+                  id="onboarding-install.info-main-mobile"
+                  description="Main info about installing app to homescreen"
+                  defaultMessage={
+                    'You can install the wallet on your phone via ' +
+                    '"ADD TO HOME SCREEN".'
+                  }
+                />
+              )}
+              {!walletStore.isMobile && (
+                <FormattedMessage
+                  id="onboarding-install.info-main-desktop"
+                  description="Main info about installing the app to desktop"
+                  defaultMessage={
+                    'You can install the wallet on your desktop OS by ' +
+                    'pressing the button below.'
+                  }
+                />
+              )}
             </Typography>
             <ul>
               <li>
                 <Typography>
-                  <FormattedMessage
-                    id="onboarding-install.info-icon-location"
-                    description="Info about the icon location"
-                    defaultMessage={
-                      'this will create an app icon on your phone\'s screen ' +
-                      '/ desktop'
-                    }
-                  />
+                  {walletStore.isMobile && (
+                    <FormattedMessage
+                      id="onboarding-install.info-icon-location-mobile"
+                      description="Info about the icon location"
+                      defaultMessage={
+                        'This will create an app icon on your phone\'s screen'
+                      }
+                    />
+                  )}
+                  {!walletStore.isMobile && (
+                    <FormattedMessage
+                      id="onboarding-install.info-icon-location-desktop"
+                      description="Info about the icon location"
+                      defaultMessage={
+                        'This will create an app icon on your desktop'
+                      }
+                    />
+                  )}
                 </Typography>
               </li>
               <li>
@@ -89,7 +120,7 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                   <FormattedMessage
                     id="onboarding-install.info-pwa-native-comparison"
                     description="Info comparing PWA and a native app"
-                    defaultMessage={'the wallet will look like a regular app'}
+                    defaultMessage={'The wallet will look like a regular app'}
                   />
                 </Typography>
               </li>
@@ -99,7 +130,7 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                     id="onboarding-install.info-no-appstore"
                     description="Info about appstores"
                     defaultMessage={
-                      'you don\'t need to access AppStore / Play Store to do this'
+                      'No need to access AppStore / Play Store to do this'
                     }
                   />
                 </Typography>
@@ -110,7 +141,7 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                     id="onboarding-install.info-offline"
                     description="Info about offline support"
                     defaultMessage={
-                      'your data will be accessible even while offline'
+                      'Your data will be accessible even while offline'
                     }
                   />
                 </Typography>
@@ -118,17 +149,30 @@ class InstallToHomeScreen extends React.Component<Props, State> {
               <li>
                 <Typography>
                   <FormattedMessage
-                    id="onboarding-install.info-separate-account"
-                    description="Info about separate account"
+                    id="onboarding-install.info-autoupdate"
+                    description="Info about automatic updates"
                     defaultMessage={
-                      'on iOS, accounts on the installed wallet will be ' +
-                      'separate from the ones on the web'
+                      'You will still receive (optional) automatic updates'
                     }
                   />
                 </Typography>
               </li>
+              {!walletStore.supportsA2HS && (
+                <li>
+                  <Typography>
+                    <FormattedMessage
+                      id="onboarding-install.info-separate-account"
+                      description="Info about separate account"
+                      defaultMessage={
+                        'On iOS, accounts on the installed wallet will be ' +
+                        'separate from the ones on the web'
+                      }
+                    />
+                  </Typography>
+                </li>
+              )}
             </ul>
-            {walletStore.deferredInstallPrompt && (
+            {walletStore.supportsA2HS && (
               <Button
                 type="submit"
                 fullWidth={true}
@@ -141,23 +185,24 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                 />
               </Button>
             )}
-            {!walletStore.deferredInstallPrompt && (
-              <React.Fragment>
-                <Typography>
-                  <FormattedMessage
-                    id="onboarding-install.howto-ios"
-                    description="Instruction on how to install the app on iOS"
-                    defaultMessage={
-                      'To install the app on an iPhone, click the "SHARE" ' +
-                      'button at the bottom and then "ADD TO HOME SCREEN".'
-                    }
-                  />
-                </Typography>
-                <p className={classes.img}>
-                  <img src="/a2hs-ios.png" style={{ maxWidth: '100%' }} />
-                </p>
-              </React.Fragment>
-            )}
+            {walletStore.isMobile &&
+              !walletStore.supportsA2HS && (
+                <React.Fragment>
+                  <Typography>
+                    <FormattedMessage
+                      id="onboarding-install.howto-ios"
+                      description="Instruction on how to install the app on iOS"
+                      defaultMessage={
+                        'To install the app on an iPhone, click the "SHARE" ' +
+                        'button at the bottom and then "ADD TO HOME SCREEN".'
+                      }
+                    />
+                  </Typography>
+                  <p className={classes.img}>
+                    <img src="/a2hs-ios.png" style={{ maxWidth: '100%' }} />
+                  </p>
+                </React.Fragment>
+              )}
           </Grid>
         </Grid>
       </ModalPaper>

@@ -82,7 +82,9 @@ export default class WalletStore {
   @observable connected: LoadingState = LoadingState.NOT_LOADED;
   @observable isHomeScreen: boolean = false;
   @observable isMobile: boolean = false;
-  @observable deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
+  /** Add to Home Screen event, used to trigger a deferred installation */
+  @observable deferredA2HSPrompt: BeforeInstallPromptEvent | null = null;
+  @observable supportsA2HS: boolean = false;
 
   /**
    * Returns node's URL, depending on the current location.
@@ -139,8 +141,11 @@ export default class WalletStore {
     window.addEventListener(
       'beforeinstallprompt',
       (e: BeforeInstallPromptEvent) => {
+        // prevent showing the info bar
+        e.preventDefault();
         runInAction(() => {
-          this.deferredInstallPrompt = e;
+          this.deferredA2HSPrompt = e;
+          this.supportsA2HS = true;
         });
       }
     );
@@ -158,7 +163,7 @@ export default class WalletStore {
    * https://developers.google.com/web/fundamentals/app-install-banners/
    */
   async installA2HS() {
-    const prompt = this.deferredInstallPrompt;
+    const prompt = this.deferredA2HSPrompt;
     if (!prompt) {
       return false;
     }
@@ -169,7 +174,7 @@ export default class WalletStore {
 
     // dispose
     runInAction(() => {
-      this.deferredInstallPrompt = null;
+      this.deferredA2HSPrompt = null;
     });
 
     return choiceResult.outcome === 'accepted';
