@@ -7,10 +7,13 @@ RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using
 
 ### Screenshots
 
-![desktop](docs/desktop.png)
-
-![mobile](docs/mobile-1.png)
-![mobile settings](docs/mobile-2.png)
+<p align="center">
+	<img src="docs/desktop.png" alt="Desktop screenshot">
+</p>
+<p align="center">
+	<img src="docs/mobile-1.png" alt="Mobile screenshot">
+	<img src="docs/mobile-2.png" alt="Mobile settings screenshot">
+</p>
 
 ### Web access
 
