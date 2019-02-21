@@ -312,7 +312,8 @@ context('Settings', () => {
     });
   });
 
-  it('2nd passphrase (stabbed)', () => {
+  // TODO enable when #194 is fixed
+  it.skip('2nd passphrase (stabbed)', () => {
     // stab the route
     cy.route({
       method: 'PUT',
@@ -568,7 +569,8 @@ context('Form validation', function() {
     closeDialog();
   });
 
-  it('passphrase when setting it', () => {
+  // TODO enable when #194 is fixed
+  it.skip('passphrase when setting it', () => {
     selectAccount(getSecrets(1).id);
     goToSettings();
     clickSettingsRow('2nd passphrase');
