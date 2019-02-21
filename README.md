@@ -5,8 +5,6 @@
 
 RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using **TypeScript**, **React** and **Material UI**.
 
-### Screenshots
-
 <p align="center">
 	<img src="docs/desktop.png" alt="Desktop screenshot">
 </p>
