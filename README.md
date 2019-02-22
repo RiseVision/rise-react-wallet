@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/RiseVision/rise-react-wallet.svg?branch=master)](https://travis-ci.org/RiseVision/rise-react-wallet)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/rise-web-wallet/localized.svg)](https://crowdin.com/project/rise-web-wallet)
 
-RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using **TypeScript**, **React** and **Material UI**.
+RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Built using **TypeScript**, **React** and **Material UI**.
 
 <p align="center">
 	<img src="docs/desktop.png" alt="Desktop screenshot">
@@ -23,22 +23,23 @@ RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Build using
 - [Latest release](https://github.com/RiseVision/rise-react-wallet/releases/latest)
 - [Previous releases](https://github.com/RiseVision/rise-react-wallet/releases)
 
-### Status
+### Features
 
-- [x] Onboarding
-- [x] Account page
-- [x] Settings
-- [x] Sending Coins
-- [x] Delegates support
-- [x] Address book
+- [x] Sending & receiving RISE
+- [x] Voting for DPoS delegates
 - [x] Ledger hardware wallet support
 - [x] Offline support
-- [x] Install to Home Screen / Desktop
-- [x] Dedicated desktop packages
+- [x] Address book
 - [x] Connecting to custom nodes
+- [x] Desktop versions
 - [x] Translations (ET, FR, NL, PL, [more to come](https://github.com/RiseVision/rise-react-wallet/blob/master/docs/managing-translations.md))
-- [x] Unit tests
-- [x] End-to-end tests
+
+### Install to Home Screen / Desktop
+
+RISE Wallet being a Progressive Web App (PWA) can be installed on a phone's 
+home screen (iOS, Android) or a desktop OS (currently only on Chrome win/linux).
+This will remove the browser's UI and combined with offline support will give 
+you a native-like experience (push notifications [still to come](https://github.com/RiseVision/rise-react-wallet/issues/186)).
 
 ### Nightly builds
 
