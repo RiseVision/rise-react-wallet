@@ -7,6 +7,7 @@ import {
   RecipientId,
   Rise
 } from 'dpos-offline';
+import { isMobile } from 'is-mobile';
 import { get, pick } from 'lodash';
 import {
   action,
@@ -79,6 +80,11 @@ export default class WalletStore {
 
   fiatPrices: { [currency: string]: number } = {};
   @observable connected: LoadingState = LoadingState.NOT_LOADED;
+  @observable isHomeScreen: boolean = false;
+  @observable isMobile: boolean = false;
+  /** Add to Home Screen event, used to trigger a deferred installation */
+  @observable deferredA2HSPrompt: BeforeInstallPromptEvent | null = null;
+  @observable supportsA2HS: boolean = false;
 
   /**
    * Returns node's URL, depending on the current location.
@@ -115,10 +121,63 @@ export default class WalletStore {
     this.config = config;
     this.reload();
     this.observeSelectedAccount();
+    // ignore exceptions for unit tests
+    try {
+      this.detectMobile();
+    } catch {}
     if (!this.storedAccounts().length) {
       router.goTo(onboardingAddAccountRoute);
       return;
     }
+  }
+
+  @action
+  detectMobile() {
+    // skip detection for carlo
+    if (typeof carlo !== 'undefined') {
+      return;
+    }
+    // https://developers.google.com/web/fundamentals/app-install-banners/
+    window.addEventListener(
+      'beforeinstallprompt',
+      (e: BeforeInstallPromptEvent) => {
+        // prevent showing the info bar
+        e.preventDefault();
+        runInAction(() => {
+          this.deferredA2HSPrompt = e;
+          this.supportsA2HS = true;
+        });
+      }
+    );
+
+    this.isMobile = isMobile();
+    this.isHomeScreen =
+      // @ts-ignore missing d.ts
+      Boolean(window.navigator.standalone) ||
+      window.matchMedia('(display-mode: standalone)').matches;
+  }
+
+  /**
+   * Install the app using Add to Home Screen API.
+   *
+   * https://developers.google.com/web/fundamentals/app-install-banners/
+   */
+  async installA2HS() {
+    const prompt = this.deferredA2HSPrompt;
+    if (!prompt) {
+      return false;
+    }
+    // Show the prompt
+    prompt.prompt();
+    // Wait for the user to respond to the prompt
+    const choiceResult = await prompt.userChoice;
+
+    // dispose
+    runInAction(() => {
+      this.deferredA2HSPrompt = null;
+    });
+
+    return choiceResult.outcome === 'accepted';
   }
 
   connect() {

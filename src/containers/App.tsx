@@ -59,7 +59,7 @@ class App extends React.Component<Props, State> {
     e.preventDefault();
     e.stopPropagation();
     routerStore.goTo(accountSendNoIDRoute);
-  };
+  }
 
   render() {
     let currentError = null;

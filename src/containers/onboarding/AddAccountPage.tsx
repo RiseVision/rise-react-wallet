@@ -2,6 +2,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import AppsIcon from '@material-ui/icons/Apps';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import ServerNetworkIcon from 'mdi-material-ui/ServerNetwork';
 import { inject, observer } from 'mobx-react';
@@ -17,7 +18,8 @@ import {
   onboardingLedgerAccount,
   onboardingSecurityNoticeRoute,
   accountOverviewNoIDRoute,
-  onboardingChooseNetworkRoute
+  onboardingChooseNetworkRoute,
+  onboardingInstallToHomeScreenRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
 import LedgerStore from '../../stores/ledger';
@@ -232,6 +234,45 @@ class AddAccountPage extends React.Component<Props> {
               <ChevronRight />
             </ListItem>
           </Link>
+          {walletStore.isMobile &&
+            !walletStore.isHomeScreen && (
+              <Link
+                route={onboardingInstallToHomeScreenRoute}
+                onBeforeNavigate={this.handleBeforeNavigate}
+              >
+                <ListItem button={true}>
+                  <AppsIcon className={classes.nodeIcon} />
+                  <ListItemText>
+                    <FormattedMessage
+                      id="onboarding-add-account.install-to-homescreen"
+                      description="Install to homescreen button label"
+                      defaultMessage="Install to Home Screen"
+                    />
+                  </ListItemText>
+                  <ChevronRight />
+                </ListItem>
+              </Link>
+            )}
+          {!walletStore.isMobile &&
+            walletStore.supportsA2HS &&
+            !walletStore.isHomeScreen && (
+              <Link
+                route={onboardingInstallToHomeScreenRoute}
+                onBeforeNavigate={this.handleBeforeNavigate}
+              >
+                <ListItem button={true}>
+                  <AppsIcon className={classes.nodeIcon} />
+                  <ListItemText>
+                    <FormattedMessage
+                      id="onboarding-add-account.install-to-desktop"
+                      description="Install to desktop button label"
+                      defaultMessage="Install to Desktop"
+                    />
+                  </ListItemText>
+                  <ChevronRight />
+                </ListItem>
+              </Link>
+            )}
           <Link
             route={onboardingChooseNetworkRoute}
             onBeforeNavigate={this.handleBeforeNavigate}

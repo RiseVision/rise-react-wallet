@@ -12,8 +12,9 @@ import {
   WithStyles
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import AddIcon from '@material-ui/icons/Add';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import AddIcon from '@material-ui/icons/Add';
+import AppsIcon from '@material-ui/icons/Apps';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
@@ -33,10 +34,11 @@ import {
   accountOverviewRoute,
   onboardingAddAccountRoute,
   addressBookRoute,
-  accountsListRoute
+  accountsListRoute,
+  onboardingInstallToHomeScreenRoute
 } from '../../routes';
-import { RouteLink } from '../../stores/root';
 import AccountStore from '../../stores/account';
+import { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
 const riseIcon = require('../../images/rise_icon.svg');
@@ -122,7 +124,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
 
     const allAccounts = orderBy(
       [...walletStore.accounts.values()],
-      ['pinned', (a) => Boolean(a.name), 'name'],
+      ['pinned', a => Boolean(a.name), 'name'],
       ['desc', 'desc', 'asc']
     );
     const pinnedCount = allAccounts.filter(a => a.pinned).length;
@@ -323,6 +325,47 @@ class DrawerContent extends React.Component<DecoratedProps> {
               />
             </ListItemText>
           </ListItem>*/}
+          {walletStore.isMobile &&
+            !walletStore.isHomeScreen && (
+              <Link
+                route={onboardingInstallToHomeScreenRoute}
+                onAfterNavigate={onAfterNavigate}
+              >
+                <ListItem button={true}>
+                  <ListItemIcon className={classes.listIcon}>
+                    <AppsIcon />
+                  </ListItemIcon>
+                  <ListItemText>
+                    <FormattedMessage
+                      id="drawer-content.install-to-homescreen"
+                      description="Install to homescreen drawer item"
+                      defaultMessage="Install to Home Screen"
+                    />
+                  </ListItemText>
+                </ListItem>
+              </Link>
+            )}
+          {!walletStore.isMobile &&
+            walletStore.supportsA2HS &&
+            !walletStore.isHomeScreen && (
+              <Link
+                route={onboardingInstallToHomeScreenRoute}
+                onAfterNavigate={onAfterNavigate}
+              >
+                <ListItem button={true}>
+                  <ListItemIcon className={classes.listIcon}>
+                    <AppsIcon />
+                  </ListItemIcon>
+                  <ListItemText>
+                    <FormattedMessage
+                      id="drawer-content.install-to-desktop"
+                      description="Install to desktop drawer item"
+                      defaultMessage="Install to Desktop"
+                    />
+                  </ListItemText>
+                </ListItem>
+              </Link>
+            )}
           <ListItem button={true} onClick={onSignOutClick}>
             <ListItemIcon className={classes.listIcon}>
               <ExitToAppIcon />
