@@ -15,7 +15,7 @@ RISE Wallet - web & desktop wallet for the **RISE** DPoS blockchain. Built using
 
 ### Links
 
-- [Web access](https://wallet.rise.vision/)
+- [Web access - wallet.rise.vision](https://wallet.rise.vision/)
 - [Download latest release](https://github.com/RiseVision/rise-react-wallet/releases/latest)
 - [Download previous releases](https://github.com/RiseVision/rise-react-wallet/releases)
 
