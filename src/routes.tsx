@@ -554,7 +554,7 @@ export const accountSettingsNoIDRoute = createNoIDRoute(
 
 // send form
 
-// accepts &to=1232R&amount=0.1
+// accepts &address=1232R&amount=0.1
 export const accountSendRoute = new Route({
   path: '/send/:id',
   onEnter: onEnterID,

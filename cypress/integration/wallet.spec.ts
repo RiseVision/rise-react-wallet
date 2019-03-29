@@ -785,4 +785,16 @@ context('URLs', () => {
       cy.url().should('contain', `/settings/remove/${getAccount().id}`);
     });
   });
+
+  it.only('send intent link', () => {
+    cy.visit(`${url}/send/?address=1R&amount=0.1`);
+    getDialogInput(0).then(input => {
+      // TODO assert with a real address
+      expect(input.val()).to.eql('1R');
+    });
+    getDialogInput(1).then(input => {
+      // TODO assert with a real amount
+      expect(input.val()).to.eql('0.1');
+    });
+  });
 });
