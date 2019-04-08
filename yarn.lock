@@ -85,19 +85,34 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@ledgerhq/hw-transport-u2f@^4.32.0":
-  version "4.32.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-u2f/-/hw-transport-u2f-4.32.0.tgz#847969744aafecfa6c16bc481fe6615814ee2385"
-  integrity sha512-xzY+Q7ObVVv/V/wxvp1eEbDhFf+LFnavQGvqw8EZkCEmkX4iKh2w7AH+B8k1XWS+Mpa3CiG3TVQQE85mf+6jQg==
+"@ledgerhq/devices@^4.48.0":
+  version "4.48.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-4.48.0.tgz#b62cce08dd49a8bd4cbf0eda0e09bf8610e42b56"
+  integrity sha512-Rs0zhkjzJTps1hoHlwGLhPM8Poo8EzE55QGLWk4Q6oXoO/Nk6MRUrFaz2UuCBVQU5RaI2JPhDbwO9bPd9cVH1Q==
   dependencies:
-    "@ledgerhq/hw-transport" "^4.32.0"
+    "@ledgerhq/errors" "^4.48.0"
+
+"@ledgerhq/errors@^4.48.0":
+  version "4.48.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-4.48.0.tgz#3a2a65862de72641095db8ef72739d105524a68f"
+  integrity sha512-MM5Tvo+KBr+dQyc6F2d93eyepZdHCmrR9KjwuB2W8pjPBG9jYmtPM/+I72k9o22YXQ9FIyd1WJJaARJoOzWXOA==
+
+"@ledgerhq/hw-transport-u2f@^4.48.0":
+  version "4.48.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-u2f/-/hw-transport-u2f-4.48.0.tgz#0419f7d54c989d6119450d9e505aa54a5d701c1f"
+  integrity sha512-qqKlLWDDibwKGWIcL3c9DLr9DdA+71AS5GwWGIJaKaOyGYeMK6uuJrqPphXO2xvHkPNG1B56vpAFy3ojp1mtMA==
+  dependencies:
+    "@ledgerhq/errors" "^4.48.0"
+    "@ledgerhq/hw-transport" "^4.48.0"
     u2f-api "0.2.7"
 
-"@ledgerhq/hw-transport@^4.32.0":
-  version "4.32.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.32.0.tgz#592b9dc51459cb1cd31ce9444cf943f627bc4beb"
-  integrity sha512-Wgsk9UHC4RShqYoDeIEeKgHZOvNCtB0WWIG0xqlVPzS+IcKDkIxtXQw7hTA7GQSuDuGeauVtlbTQ5yat6+2/BA==
+"@ledgerhq/hw-transport@^4.48.0":
+  version "4.48.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.48.0.tgz#8fa09e46d9d9aab35db5679e0970e7fed2ee73bf"
+  integrity sha512-dZH/3dTXlhe3IFl+MRFePcC0TnSeQcaBuiq5t3yDA68qw7WZCbON9GKSO5Rex4yNx5v6BCHyzz1myBFJ7895iw==
   dependencies:
+    "@ledgerhq/devices" "^4.48.0"
+    "@ledgerhq/errors" "^4.48.0"
     events "^3.0.0"
 
 "@material-ui/core@^3.7.0":
