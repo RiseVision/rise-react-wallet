@@ -19,12 +19,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": true
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": ["src/setupTests.ts", "src/serve.js"],
   "include": ["src/**/*.ts", "src/**/*.tsx"]

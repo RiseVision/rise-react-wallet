@@ -1,18 +1,17 @@
+import { Rise } from 'dpos-offline';
 import { observable, runInAction, reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import { Rise } from 'dpos-offline';
+import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
+import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog, {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
-import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
-import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
-import RootStore from '../../stores/root';
-import { LedgerChannel } from '../../utils/ledgerHub';
 import LedgerStore from '../../stores/ledger';
+import RootStore from '../../stores/root';
 import WalletStore, {
   PostableRiseTransaction,
   RiseTransaction,
@@ -69,7 +68,6 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   };
 
   open: boolean = false;
-  private ledger: null | LedgerChannel = null;
   private lastLedgerSignId = 0;
   private disposeLedgerMonitor: null | IReactionDisposer = null;
 
@@ -111,7 +109,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     } else if (navigateBackLink) {
       store.navigateTo(navigateBackLink);
     }
-  }
+  };
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     // close interrupt
@@ -140,11 +138,11 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       store.navigateTo(onCloseRoute);
     }
     return false;
-  }
+  };
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  }
+  };
 
   handleConfirmTransaction = async (secrets: Secrets) => {
     const { account, walletStore, onCreateTransaction } = this.injected;
@@ -167,14 +165,14 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     );
 
     this.broadcastTransaction(signedTx);
-  }
+  };
 
   handleRetryTransaction = () => {
     const { signedTx } = this.state;
     if (signedTx !== null) {
       this.broadcastTransaction(signedTx);
     }
-  }
+  };
 
   async broadcastTransaction(signedTx: PostableRiseTransaction) {
     const { walletStore, onSuccess, onError } = this.injected;
@@ -256,15 +254,18 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   dialogWillOpen() {
+    const { account, ledgerStore } = this.injected;
+
     if (this.open) {
       return;
     }
     this.open = true;
-    const { account, ledgerStore } = this.injected;
+    // open the ledger
+    if (account.type === AccountType.LEDGER) {
+      ledgerStore.open();
+    }
 
     if (account.type === AccountType.LEDGER) {
-      this.ledger = ledgerStore.openChannel();
-
       this.disposeLedgerMonitor = reaction(
         this.canSignOnLedger,
         this.beginLedgerSigning
@@ -273,19 +274,20 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   dialogWillClose() {
+    const { account, ledgerStore } = this.injected;
+
     if (!this.open) {
       return;
     }
     this.open = false;
+    // close the ledger
+    if (account.type === AccountType.LEDGER) {
+      ledgerStore.close();
+    }
 
     if (this.disposeLedgerMonitor !== null) {
       this.disposeLedgerMonitor();
       this.disposeLedgerMonitor = null;
-    }
-
-    if (this.ledger !== null) {
-      this.ledger.close();
-      this.ledger = null;
     }
   }
 
@@ -296,32 +298,34 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   canSignOnLedger = () => {
     const { transaction, account, ledgerStore } = this.injected;
     const { step } = this.state;
-    const { ledger } = this;
 
     return (
       step === 'confirm' &&
       transaction !== null &&
       ledgerStore.hasSupport &&
       account.hwId !== null &&
-      ledger !== null &&
-      ledger.deviceId === account.hwId
+      ledgerStore.isOpen &&
+      ledgerStore.deviceId === account.hwId
     );
-  }
+  };
 
   beginLedgerSigning = async () => {
-    const { account, onCreateTransaction } = this.injected;
-    const { ledger } = this;
+    const { account, onCreateTransaction, ledgerStore } = this.injected;
 
     const ledgerSignId = ++this.lastLedgerSignId;
 
-    if (ledger === null || !this.canSignOnLedger() || account.hwSlot === null) {
+    if (
+      !ledgerStore.isOpen ||
+      !this.canSignOnLedger() ||
+      account.hwSlot === null
+    ) {
       return;
     }
     const accountSlot = account.hwSlot || 0;
 
     // Ensure that the account publicKey is set before calling onCreateTransaction
     if (!account.publicKey) {
-      const info = await ledger.getAccount(accountSlot);
+      const info = await ledgerStore.getAccount(accountSlot);
       runInAction(() => {
         account.publicKey = info.publicKey;
       });
@@ -332,12 +336,14 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       return;
     }
 
-    this.confirmationTimeout = new Date(new Date().getTime() + 25000);
+    this.confirmationTimeout = new Date(
+      new Date().getTime() + ledgerStore.confirmationTimeout
+    );
     this.updateConfirmationCountdown();
 
     let signedTx;
     try {
-      signedTx = await ledger.signTransaction(accountSlot, unsignedTx);
+      signedTx = await ledgerStore.signTransaction(accountSlot, unsignedTx);
       if (ledgerSignId !== this.lastLedgerSignId) {
         return;
       }
@@ -350,7 +356,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     } else {
       this.goBack();
     }
-  }
+  };
 
   render() {
     const { open } = this.injected;
@@ -433,8 +439,6 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   renderConfirmTxContent() {
     const { account, passphrasePublicKey, ledgerStore } = this.injected;
     const { transaction } = this.state;
-    const { ledger } = this;
-    11;
 
     return (
       <ConfirmTransactionDialogContent
@@ -446,11 +450,11 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         senderAddress={account.id}
       >
         {account.type === AccountType.LEDGER ? (
-          ledger === null || !ledgerStore.hasSupport ? (
+          !ledgerStore.isOpen || !ledgerStore.hasSupport ? (
             <ConfirmTxStatusFooter type="ledger-not-supported" />
-          ) : ledger.deviceId === null ? (
+          ) : ledgerStore.deviceId === null ? (
             <ConfirmTxStatusFooter type="ledger-not-connected" />
-          ) : ledger.deviceId !== account.hwId ? (
+          ) : ledgerStore.deviceId !== account.hwId ? (
             <ConfirmTxStatusFooter type="ledger-another-device" />
           ) : (
             <ConfirmTxStatusFooter
@@ -548,7 +552,6 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       } else {
         // Make sure that the timeout clears the selected account
         this.lastLedgerSignId += 1;
-        this.goBack();
       }
     });
 
@@ -561,7 +564,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  }
+  };
 }
 
 export default ConfirmTransactionDialog;

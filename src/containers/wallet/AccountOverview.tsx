@@ -340,7 +340,10 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                         )}
                         onExpand={this.handleExpand}
                         getSendLinkProps={this.getSendLinkProps}
-                        key={transaction.id}
+                        key={
+                          transaction.id +
+                          (transaction.confirmations ? 'C' : 'U')
+                        }
                         tx={transaction}
                         explorerUrl={this.account.config.explorer_url}
                         handleContactEdit={this.handleContactEdit}

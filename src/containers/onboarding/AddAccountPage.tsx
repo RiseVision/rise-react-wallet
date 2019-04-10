@@ -22,11 +22,9 @@ import {
   onboardingInstallToHomeScreenRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
-import LedgerStore from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
-import { LedgerChannel } from '../../utils/ledgerHub';
 
 const riseIcon = require('../../images/rise_icon.svg');
 
@@ -46,7 +44,6 @@ interface PropsInjected extends Props {
   langStore: LangStore;
   onboardingStore: OnboardingStore;
   walletStore: WalletStore;
-  ledgerStore: LedgerStore;
 }
 
 const stylesDecorator = withStyles(styles, {
@@ -56,23 +53,11 @@ const stylesDecorator = withStyles(styles, {
 @inject('langStore')
 @inject('onboardingStore')
 @inject('walletStore')
-@inject('ledgerStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
-  private ledger: LedgerChannel;
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;
-  }
-
-  componentWillMount() {
-    const { ledgerStore } = this.injected;
-    this.ledger = ledgerStore.openChannel();
-  }
-
-  componentWillUnmount() {
-    // pass async
-    this.ledger.close();
   }
 
   handleBeforeNavigate = () => {
