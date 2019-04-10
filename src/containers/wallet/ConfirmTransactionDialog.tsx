@@ -109,7 +109,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     } else if (navigateBackLink) {
       store.navigateTo(navigateBackLink);
     }
-  };
+  }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     // close interrupt
@@ -138,11 +138,11 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       store.navigateTo(onCloseRoute);
     }
     return false;
-  };
+  }
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  };
+  }
 
   handleConfirmTransaction = async (secrets: Secrets) => {
     const { account, walletStore, onCreateTransaction } = this.injected;
@@ -165,14 +165,14 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     );
 
     this.broadcastTransaction(signedTx);
-  };
+  }
 
   handleRetryTransaction = () => {
     const { signedTx } = this.state;
     if (signedTx !== null) {
       this.broadcastTransaction(signedTx);
     }
-  };
+  }
 
   async broadcastTransaction(signedTx: PostableRiseTransaction) {
     const { walletStore, onSuccess, onError } = this.injected;
@@ -307,7 +307,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       ledgerStore.isOpen &&
       ledgerStore.deviceId === account.hwId
     );
-  };
+  }
 
   beginLedgerSigning = async () => {
     const { account, onCreateTransaction, ledgerStore } = this.injected;
@@ -356,7 +356,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     } else {
       this.goBack();
     }
-  };
+  }
 
   render() {
     const { open } = this.injected;
@@ -564,7 +564,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  };
+  }
 }
 
 export default ConfirmTransactionDialog;
