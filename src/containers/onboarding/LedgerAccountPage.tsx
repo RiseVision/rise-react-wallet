@@ -6,7 +6,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { observable, reaction, IReactionDisposer, runInAction } from 'mobx';
+import { observable, runInAction, action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -23,10 +23,9 @@ import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
 import { AccountType } from '../../stores/account';
-import LedgerStore from '../../stores/ledger';
+import LedgerStore, { LedgerAccount } from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
-import { LedgerAccount, LedgerChannel } from '../../utils/ledgerHub';
 
 const styles = createStyles({
   content: {
@@ -107,13 +106,13 @@ const messages = defineMessages({
 class AccountData {
   @observable data: null | LedgerAccount = null;
 
-  constructor(ledger: LedgerChannel, readonly slot: number) {
-    this.load(ledger);
+  constructor(ledgerStore: LedgerStore, readonly slot: number) {
+    this.load(ledgerStore);
   }
 
-  private async load(ledger: LedgerChannel) {
+  private async load(ledgerStore: LedgerStore) {
     try {
-      const resp = await ledger.getAccount(this.slot);
+      const resp = await ledgerStore.getAccount(this.slot);
       runInAction(() => {
         this.data = resp;
       });
@@ -129,43 +128,32 @@ class AccountData {
 @inject('ledgerStore')
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps> {
-  private ledger: LedgerChannel;
-  private disposeAccountLoader: null | IReactionDisposer = null;
   private countdownId: null | number = null;
 
   @observable private selectedAccount: null | AccountData = null;
   @observable private selectionTimeout: null | Date = null;
   @observable private countdownSeconds: number = 0;
   @observable private accounts = observable.array<AccountData>([]);
+  private loadingAccounts = false;
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;
   }
 
   componentWillMount() {
-    const { ledgerStore } = this.injected;
-    this.ledger = ledgerStore.openChannel();
-
-    this.disposeAccountLoader = reaction(
-      () => this.ledger.deviceId,
-      this.accountLoader
-    );
-    this.accountLoader();
+    this.injected.ledgerStore.open();
   }
 
   componentWillUnmount() {
-    if (this.disposeAccountLoader) {
-      this.disposeAccountLoader();
-      this.disposeAccountLoader = null;
-    }
-
-    this.ledger.close();
+    this.injected.ledgerStore.close();
   }
 
   render() {
     const { intl, classes, ledgerStore } = this.injected;
-    const { deviceId } = this.ledger;
+    const { deviceId } = ledgerStore;
     const { selectedAccount, countdownSeconds } = this;
+
+    this.loadAccounts();
 
     return (
       <ModalPaper open={true}>
@@ -328,8 +316,8 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
   }
 
   private async confirmImport(account: AccountData) {
-    const { walletStore, routerStore } = this.injected;
-    const { deviceId } = this.ledger;
+    const { walletStore, routerStore, ledgerStore } = this.injected;
+    const { deviceId } = ledgerStore;
 
     if (account.data !== null) {
       const { address: accountAddress } = account.data;
@@ -344,7 +332,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
       // Run the actual confirmation logic
       let success: boolean;
       try {
-        success = await this.ledger.confirmAccount(account.slot);
+        success = await ledgerStore.confirmAccount(account.slot);
       } catch (ex) {
         success = false;
       }
@@ -374,10 +362,21 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
   /**
    * TODO move to LedgerStore
    */
-  private accountLoader = () => {
+  @action
+  private loadAccounts = () => {
     const accountsToLoad = 5;
-    const { walletStore } = this.injected;
-    const { deviceId } = this.ledger;
+    const { walletStore, ledgerStore } = this.injected;
+    const { deviceId } = ledgerStore;
+
+    // wait for a read transport
+    if (!deviceId) {
+      return;
+    }
+    // only one thread
+    if (this.loadingAccounts || this.accounts.length == accountsToLoad) {
+      return;
+    }
+    this.loadingAccounts = true;
 
     this.selectedAccount = null;
     // TODO dispose the previous one
@@ -395,10 +394,12 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
         importedAccounts.filter(({ hwSlot }) => hwSlot === slot).length > 0;
 
       if (!isImported) {
-        const acc = new AccountData(this.ledger, slot);
+        const acc = new AccountData(ledgerStore, slot);
         this.accounts.push(acc);
       }
     }
+
+    this.loadingAccounts = false;
   }
 }
 

@@ -8,7 +8,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import { createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography/Typography';
-import { reaction, IReactionDisposer, observable, action } from 'mobx';
+import { IReactionDisposer, observable, action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -28,10 +28,10 @@ import LedgerConnectIllustration from '../../components/LedgerConnectIllustratio
 import { accountSettingsLedgerRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
+import LedgerStore from '../../stores/ledger';
 import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import autoId from '../../utils/autoId';
-import LedgerStore, { LedgerChannel } from '../../utils/ledgerHub';
 
 type Props = WithStyles<typeof styles> &
   DialogContentProps & {
@@ -148,7 +148,6 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     confirmed: false
   };
   open: boolean = false;
-  private ledger: LedgerChannel;
   private disposeLedgerChangeMonitor: null | IReactionDisposer = null;
   private countdownId: null | number = null;
   @observable private countdownSeconds: number = 0;
@@ -170,17 +169,13 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     this.open = true;
     this.setState({ confirmed: false });
     const { ledgerStore, intl } = this.injected;
-    this.ledger = ledgerStore.openChannel();
+    ledgerStore.open();
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
       contentId: this.dialogContentId
     });
 
-    // TODO observe the store
-    this.disposeLedgerChangeMonitor = reaction(() => {
-      return this.ledger.deviceId;
-    },                                         this.handleVerifyLedger);
     this.handleVerifyLedger();
   }
 
@@ -194,7 +189,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       this.disposeLedgerChangeMonitor = null;
     }
 
-    this.ledger.close();
+    this.injected.ledgerStore.open();
     this.setState({ confirmed: false });
   }
 
@@ -218,7 +213,8 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
   }
 
   handleVerifyLedger = async () => {
-    if (!this.ledger.deviceId || this.state.confirmed) {
+    const { ledgerStore } = this.injected;
+    if (!ledgerStore.deviceId || this.state.confirmed) {
       return;
     }
 
@@ -226,9 +222,11 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     this.updateSelectionCountdown();
 
     try {
-      const confirmed = await this.ledger.confirmAccount(this.account!.hwSlot!);
+      const confirmed = await ledgerStore.confirmAccount(this.account!.hwSlot!);
       this.setState({ confirmed });
-    } catch {
+    } catch (e) {
+      // TODO debug
+      console.log(e);
       // silent
     }
   }
@@ -257,7 +255,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     if (isOpen) {
       this.onOpen();
 
-      deviceId = this.ledger.deviceId;
+      deviceId = ledgerStore.deviceId;
       confirmed = this.state.confirmed;
     } else if (this.open) {
       // TODO dialog doesnt call onClose if onCloseRoute is passed along
