@@ -22,6 +22,7 @@ import {
   onboardingInstallToHomeScreenRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
+import LedgerStore from '../../stores/ledger';
 import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 import { getMainCountryForLocale } from '../../utils/i18n';
@@ -44,6 +45,7 @@ interface PropsInjected extends Props {
   langStore: LangStore;
   onboardingStore: OnboardingStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 const stylesDecorator = withStyles(styles, {
@@ -53,9 +55,9 @@ const stylesDecorator = withStyles(styles, {
 @inject('langStore')
 @inject('onboardingStore')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class AddAccountPage extends React.Component<Props> {
-
   get injected(): PropsInjected {
     return this.props as PropsInjected;
   }
@@ -63,6 +65,15 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
+  };
+
+  componentWillMount() {
+    // establish communication with a ledger
+    this.injected.ledgerStore.open();
+  }
+
+  componentWillUnmount() {
+    this.injected.ledgerStore.close();
   }
 
   render() {
