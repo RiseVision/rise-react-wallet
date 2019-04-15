@@ -65,7 +65,7 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  };
+  }
 
   componentWillMount() {
     // establish communication with a ledger

@@ -158,8 +158,7 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 id="confirm-tx-status-footer.error-msg"
                 description="Message for when a transaction failed to broadcast."
                 defaultMessage={
-                  'Failed to broadcast the transaction to the network: {error}'
-                }
+                  'Failed to broadcast the transaction to the network: {error}'}
                 values={{
                   error: reason || 'N/A'
                 }}
@@ -175,7 +174,7 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 id="confirm-tx-status-footer.ledger-another-device-msg"
                 description="Message for when the user has connected the wrong Ledger."
                 defaultMessage={
-                  "The connected Ledger doesn't manage this account. Either you used " +
+                  'The connected Ledger doesn\'t manage this account. Either you used ' +
                   'an additional passphrase (in your Ledger) when adding this account ' +
                   'or you have plugged in a device with a different mnemonic.'
                 }
@@ -209,14 +208,13 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                   id="confirm-tx-status-footer.ledger-confirming-msg-twice"
                   description="Double confirmation issue notification."
                   defaultMessage={
-                    'You may have to confirm twice. Its a {link}.'
-                  }
+                    'You may have to confirm twice. Its a {link}.'}
                   values={{
                     seconds: timeout || 0,
 
                     link: (
                       <a
-                        href="https://github.com/LedgerHQ/ledgerjs/issues/315"
+                        href="https://support.ledger.com/hc/en-us/articles/360018810413-U2F-timeout-in-Chrome-browser"
                         target="_blank"
                       >
                         {intl.formatMessage(messages.ledgerDoubleConfirmLink)}
