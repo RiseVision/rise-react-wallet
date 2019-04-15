@@ -73,6 +73,11 @@ const messages = defineMessages({
     id: 'confirm-tx-status-footer.success-icon-aria',
     description: 'Success status icon label for accessibility',
     defaultMessage: 'Success indicator icon'
+  },
+  ledgerDoubleConfirmLink: {
+    id: 'confirm-tx-status-footer.ledger-dobule-confirm-link',
+    description: 'text content for the ledger issue link',
+    defaultMessage: 'known issue'
   }
 });
 
@@ -153,7 +158,8 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 id="confirm-tx-status-footer.error-msg"
                 description="Message for when a transaction failed to broadcast."
                 defaultMessage={
-                  'Failed to broadcast the transaction to the network: {error}'}
+                  'Failed to broadcast the transaction to the network: {error}'
+                }
                 values={{
                   error: reason || 'N/A'
                 }}
@@ -169,7 +175,7 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 id="confirm-tx-status-footer.ledger-another-device-msg"
                 description="Message for when the user has connected the wrong Ledger."
                 defaultMessage={
-                  'The connected Ledger doesn\'t manage this account. Either you used ' +
+                  "The connected Ledger doesn't manage this account. Either you used " +
                   'an additional passphrase (in your Ledger) when adding this account ' +
                   'or you have plugged in a device with a different mnemonic.'
                 }
@@ -184,18 +190,41 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 }
               />
             ) : type === 'ledger-confirming' ? (
-              <FormattedMessage
-                id="confirm-tx-status-footer.ledger-confirming-msg"
-                description="Message for when the user needs to confirm the transaction on Ledger."
-                defaultMessage={
-                  'Please confirm the transaction on your Ledger. Waiting for confirmation... ' +
-                  '({seconds} {seconds, plural,' +
-                  '  one {second}' +
-                  '  other {seconds}' +
-                  '} remaining)'
-                }
-                values={{ seconds: timeout || 0 }}
-              />
+              <React.Fragment>
+                <FormattedMessage
+                  id="confirm-tx-status-footer.ledger-confirming-msg"
+                  description="Message for when the user needs to confirm the transaction on Ledger."
+                  defaultMessage={
+                    'Please confirm the transaction on your Ledger. Waiting for confirmation... ' +
+                    '({seconds} {seconds, plural,' +
+                    '  one {second}' +
+                    '  other {seconds}' +
+                    '} remaining)'
+                  }
+                  values={{ seconds: timeout || 0 }}
+                />
+                <br />
+                <br />
+                <FormattedMessage
+                  id="confirm-tx-status-footer.ledger-confirming-msg-twice"
+                  description="Double confirmation issue notification."
+                  defaultMessage={
+                    'You may have to confirm twice. Its a {link}.'
+                  }
+                  values={{
+                    seconds: timeout || 0,
+
+                    link: (
+                      <a
+                        href="https://github.com/LedgerHQ/ledgerjs/issues/315"
+                        target="_blank"
+                      >
+                        {intl.formatMessage(messages.ledgerDoubleConfirmLink)}
+                      </a>
+                    )
+                  }}
+                />
+              </React.Fragment>
             ) : null}
           </Typography>
         </Grid>
