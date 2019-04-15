@@ -188,10 +188,9 @@ export default class LedgerStore {
         unsignedTx.signature = signature as Buffer & As<'signature'>;
         signedTx = Rise.txs.toPostable(unsignedTx);
       } catch (e) {
-        console.log('signTransaction error', e);
+        log('signTransaction error', e);
         const error = mapLedgerError(e);
         if (error instanceof LedgerConfirmError) {
-          // TODO
           signedTx = null;
         } else {
           throw e;
