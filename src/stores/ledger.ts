@@ -130,7 +130,7 @@ export default class LedgerStore {
     }
     const release = await this.mutex.acquire();
     try {
-      return this.getAccountUnsafe(accountSlot, showOnLedger);
+      return await this.getAccountUnsafe(accountSlot, showOnLedger);
     } finally {
       release();
     }
@@ -247,7 +247,7 @@ export default class LedgerStore {
     // provide us with the device ID, we rely on the account at path 44'/1120'/0'
     // to fingerprint the currently connected device.
     if (!this.isOpen) {
-      log('Skipping pinging, no channels open...');
+      log('Skipping pinging, ledger not open...');
       return;
     }
 
@@ -269,7 +269,7 @@ export default class LedgerStore {
     try {
       const value = await comm.getPubKey(accountPath, false);
       runInAction(() => {
-        const deviceId = value !== null ? value.address : null;
+        const deviceId = (value && value.address) || null;
         if (deviceId !== this.deviceId) {
           this.deviceId = deviceId;
           this.accountCache = {};
@@ -277,9 +277,15 @@ export default class LedgerStore {
             this.accountCache[PING_ACCOUNT_SLOT] = value;
           }
         }
+        if (!deviceId) {
+          this.isOpen = false;
+        }
       });
     } catch (e) {
       log('Error pinging the device', e);
+      runInAction(() => {
+        this.deviceId = null;
+      });
     } finally {
       release();
     }

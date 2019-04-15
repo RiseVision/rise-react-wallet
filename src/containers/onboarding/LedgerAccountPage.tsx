@@ -372,18 +372,16 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
     if (!deviceId) {
       return;
     }
+
     // only one thread
-    if (this.loadingAccounts || this.accounts.length == accountsToLoad) {
+    if (this.loadingAccounts || this.accounts.length === accountsToLoad) {
       return;
     }
-    this.loadingAccounts = true;
 
+    this.loadingAccounts = true;
     this.selectedAccount = null;
     // TODO dispose the previous one
     this.accounts = observable.array();
-    if (deviceId === null) {
-      return;
-    }
 
     const importedAccounts = [...walletStore.accounts.values()]
       .filter(({ type }) => type === AccountType.LEDGER)
