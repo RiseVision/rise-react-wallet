@@ -65,16 +65,12 @@ class AddAccountPage extends React.Component<Props> {
   handleBeforeNavigate = () => {
     const { onboardingStore } = this.injected;
     onboardingStore.reset();
-  }
+  };
 
-  componentWillMount() {
-    // establish communication with a ledger
-    this.injected.ledgerStore.open();
-  }
-
-  componentWillUnmount() {
-    this.injected.ledgerStore.close();
-  }
+  preserveLedgerContext = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    this.injected.ledgerStore.open()
+    // this.injected.ledgerStore.eventContext = event;
+  };
 
   render() {
     const { classes, langStore, walletStore } = this.injected;
@@ -191,6 +187,7 @@ class AddAccountPage extends React.Component<Props> {
           <Link
             route={onboardingLedgerAccount}
             onBeforeNavigate={this.handleBeforeNavigate}
+            onClick={this.preserveLedgerContext}
           >
             <ListItem button={true}>
               <ListItemText

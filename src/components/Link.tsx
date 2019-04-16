@@ -11,6 +11,7 @@ type BaseProps = Overwrite<
 >;
 
 interface Props extends BaseProps {
+  onClick?(ev: React.MouseEvent<HTMLAnchorElement>): void;
   children: React.ReactElement<
     React.AnchorHTMLAttributes<HTMLAnchorElement> & {
       component: React.ReactType;
@@ -70,7 +71,7 @@ class Link extends React.Component<Props> {
       ev.preventDefault();
       store.navigateTo(routeLink);
     }
-  }
+  };
 
   render() {
     const {
@@ -79,6 +80,7 @@ class Link extends React.Component<Props> {
       queryParams,
       onBeforeNavigate,
       onAfterNavigate,
+      onClick,
       children,
       store,
       ...passthroughProps
@@ -91,7 +93,13 @@ class Link extends React.Component<Props> {
       overrideProps = {
         component: 'a',
         href: store.linkUrl(routeLink),
-        onClick: this.handleClick
+        // compose onClick if a handler passed
+        onClick: onClick
+          ? e => {
+              onClick(e);
+              this.handleClick(e);
+            }
+          : this.handleClick
       };
     }
 

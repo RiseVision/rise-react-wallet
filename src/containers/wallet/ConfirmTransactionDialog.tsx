@@ -1,17 +1,17 @@
-import { Rise } from 'dpos-offline';
 import { observable, runInAction, reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
-import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
+import { Rise } from 'dpos-offline';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog, {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
+import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
+import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
-import LedgerStore from '../../stores/ledger';
 import RootStore from '../../stores/root';
+import LedgerStore from '../../stores/ledger';
 import WalletStore, {
   PostableRiseTransaction,
   RiseTransaction,
@@ -109,7 +109,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     } else if (navigateBackLink) {
       store.navigateTo(navigateBackLink);
     }
-  }
+  };
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     // close interrupt
@@ -138,11 +138,11 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       store.navigateTo(onCloseRoute);
     }
     return false;
-  }
+  };
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  }
+  };
 
   handleConfirmTransaction = async (secrets: Secrets) => {
     const { account, walletStore, onCreateTransaction } = this.injected;
@@ -165,18 +165,19 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     );
 
     this.broadcastTransaction(signedTx);
-  }
+  };
 
   handleRetryTransaction = () => {
     const { signedTx } = this.state;
     if (signedTx !== null) {
       this.broadcastTransaction(signedTx);
     }
-  }
+  };
 
   async broadcastTransaction(signedTx: PostableRiseTransaction) {
     const { walletStore, onSuccess, onError } = this.injected;
 
+    console.log('sending');
     this.setState({ step: 'sending' });
 
     let success = false;
@@ -203,7 +204,10 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       }
     }
 
+    // TODO this should switch the dialog to the SENT state when using ledger
+    //  works well for non-ledger signed txes
     if (success) {
+      console.log('setState sent');
       this.setState({
         step: 'sent',
         signedTx: null
@@ -254,16 +258,13 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   dialogWillOpen() {
-    const { account, ledgerStore } = this.injected;
-
     if (this.open) {
       return;
     }
     this.open = true;
+    const { account, ledgerStore } = this.injected;
     // open the ledger
-    if (account.type === AccountType.LEDGER) {
-      ledgerStore.open();
-    }
+    ledgerStore.open();
 
     if (account.type === AccountType.LEDGER) {
       this.disposeLedgerMonitor = reaction(
@@ -274,16 +275,12 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   dialogWillClose() {
-    const { account, ledgerStore } = this.injected;
-
     if (!this.open) {
       return;
     }
     this.open = false;
     // close the ledger
-    if (account.type === AccountType.LEDGER) {
-      ledgerStore.close();
-    }
+    this.injected.ledgerStore.close();
 
     if (this.disposeLedgerMonitor !== null) {
       this.disposeLedgerMonitor();
@@ -296,18 +293,19 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   canSignOnLedger = () => {
-    const { transaction, account, ledgerStore } = this.injected;
-    const { step } = this.state;
-
-    return (
-      step === 'confirm' &&
-      transaction !== null &&
-      ledgerStore.hasSupport &&
-      account.hwId !== null &&
-      ledgerStore.isOpen &&
-      ledgerStore.deviceId === account.hwId
-    );
-  }
+    // TODO
+    // const { transaction, account, ledgerStore } = this.injected;
+    // const { step } = this.state;
+    //
+    // return (
+    //   step === 'confirm' &&
+    //   transaction !== null &&
+    //   ledgerStore.hasSupport &&
+    //   account.hwId !== null &&
+    //   ledgerStore.isOpen &&
+    //   ledgerStore.deviceId === account.hwId
+    // );
+  };
 
   beginLedgerSigning = async () => {
     const { account, onCreateTransaction, ledgerStore } = this.injected;
@@ -316,7 +314,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
 
     if (
       !ledgerStore.isOpen ||
-      !this.canSignOnLedger() ||
+      // !this.canSignOnLedger() ||
       account.hwSlot === null
     ) {
       return;
@@ -336,9 +334,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       return;
     }
 
-    this.confirmationTimeout = new Date(
-      new Date().getTime() + ledgerStore.confirmationTimeout
-    );
+    this.confirmationTimeout = new Date(new Date().getTime() + 25000);
     this.updateConfirmationCountdown();
 
     let signedTx;
@@ -356,7 +352,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     } else {
       this.goBack();
     }
-  }
+  };
 
   render() {
     const { open } = this.injected;
@@ -412,6 +408,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       backProps.onNavigateBack = onNavigateBack;
     }
 
+    console.log('step', step);
     switch (step) {
       default:
         return {
@@ -449,27 +446,28 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         senderLocalId={account.localId}
         senderAddress={account.id}
       >
-        {account.type === AccountType.LEDGER ? (
-          !ledgerStore.isOpen || !ledgerStore.hasSupport ? (
-            <ConfirmTxStatusFooter type="ledger-not-supported" />
-          ) : ledgerStore.deviceId === null ? (
-            <ConfirmTxStatusFooter type="ledger-not-connected" />
-          ) : ledgerStore.deviceId !== account.hwId ? (
-            <ConfirmTxStatusFooter type="ledger-another-device" />
-          ) : (
-            <ConfirmTxStatusFooter
-              type="ledger-confirming"
-              timeout={this.countdownSeconds}
-            />
-          )
-        ) : (
-          <ConfirmTxEnterSecretsFooter
-            address={account.id}
-            publicKey={account.publicKey}
-            secondPublicKey={passphrasePublicKey || account.secondPublicKey}
-            onConfirm={this.handleConfirmTransaction}
-          />
-        )}
+        {/* TODO */}
+        {/*{account.type === AccountType.LEDGER ? (*/}
+        {/*  !ledgerStore.isOpen || !ledgerStore.hasSupport ? (*/}
+        {/*    <ConfirmTxStatusFooter type="ledger-not-supported" />*/}
+        {/*  ) : ledgerStore.deviceId === null ? (*/}
+        {/*    <ConfirmTxStatusFooter type="ledger-not-connected" />*/}
+        {/*  ) : ledgerStore.deviceId !== account.hwId ? (*/}
+        {/*    <ConfirmTxStatusFooter type="ledger-another-device" />*/}
+        {/*  ) : (*/}
+        {/*    <ConfirmTxStatusFooter*/}
+        {/*      type="ledger-confirming"*/}
+        {/*      timeout={this.countdownSeconds}*/}
+        {/*    />*/}
+        {/*  )*/}
+        {/*) : (*/}
+        {/*  <ConfirmTxEnterSecretsFooter*/}
+        {/*    address={account.id}*/}
+        {/*    publicKey={account.publicKey}*/}
+        {/*    secondPublicKey={passphrasePublicKey || account.secondPublicKey}*/}
+        {/*    onConfirm={this.handleConfirmTransaction}*/}
+        {/*  />*/}
+        {/*)}*/}
       </ConfirmTransactionDialogContent>
     );
   }
@@ -552,6 +550,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       } else {
         // Make sure that the timeout clears the selected account
         this.lastLedgerSignId += 1;
+        this.goBack();
       }
     });
 
@@ -564,7 +563,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  }
+  };
 }
 
 export default ConfirmTransactionDialog;

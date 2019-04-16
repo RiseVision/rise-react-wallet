@@ -82,9 +82,9 @@ const messages = defineMessages({
   unsupportedBrowser: {
     id: 'verify-ledger-address.unsupported-browser',
     description:
-      'Message when trying to use a browser that doesn\'t support Ledger devices',
+      "Message when trying to use a browser that doesn't support Ledger devices",
     defaultMessage:
-      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
+      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
       'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
@@ -177,7 +177,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     });
 
     this.handleVerifyLedger();
-  }
+  };
 
   onClose = () => {
     if (!this.open) {
@@ -189,9 +189,9 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       this.disposeLedgerChangeMonitor = null;
     }
 
-    this.injected.ledgerStore.open();
+    this.injected.ledgerStore.close();
     this.setState({ confirmed: false });
-  }
+  };
 
   @action
   updateSelectionCountdown = () => {
@@ -210,11 +210,11 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  }
+  };
 
   handleVerifyLedger = async () => {
     const { ledgerStore } = this.injected;
-    if (!ledgerStore.deviceId || this.state.confirmed) {
+    if (!ledgerStore.device || this.state.confirmed) {
       return;
     }
 
@@ -229,12 +229,12 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       console.log(e);
       // silent
     }
-  }
+  };
 
   handleCloseButton = () => {
     this.onClose();
     this.injected.store.navigateTo(this.injected.navigateBackLink);
-  }
+  };
 
   render() {
     const {
@@ -246,7 +246,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       ledgerStore
     } = this.injected;
     const account = this.account;
-    let deviceId;
+    let device;
     let confirmed;
 
     const isOpen =
@@ -255,7 +255,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     if (isOpen) {
       this.onOpen();
 
-      deviceId = ledgerStore.deviceId;
+      device = ledgerStore.device;
       confirmed = this.state.confirmed;
     } else if (this.open) {
       // TODO dialog doesnt call onClose if onCloseRoute is passed along
@@ -276,7 +276,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
               />
             </Grid>
           </Grid>
-        ) : !deviceId ? (
+        ) : !device ? (
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography

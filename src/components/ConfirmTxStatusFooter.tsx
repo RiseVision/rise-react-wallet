@@ -73,11 +73,6 @@ const messages = defineMessages({
     id: 'confirm-tx-status-footer.success-icon-aria',
     description: 'Success status icon label for accessibility',
     defaultMessage: 'Success indicator icon'
-  },
-  ledgerDoubleConfirmLink: {
-    id: 'confirm-tx-status-footer.ledger-dobule-confirm-link',
-    description: 'text content for the ledger issue link',
-    defaultMessage: 'known issue'
   }
 });
 
@@ -189,40 +184,18 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 }
               />
             ) : type === 'ledger-confirming' ? (
-              <React.Fragment>
-                <FormattedMessage
-                  id="confirm-tx-status-footer.ledger-confirming-msg"
-                  description="Message for when the user needs to confirm the transaction on Ledger."
-                  defaultMessage={
-                    'Please confirm the transaction on your Ledger. Waiting for confirmation... ' +
-                    '({seconds} {seconds, plural,' +
-                    '  one {second}' +
-                    '  other {seconds}' +
-                    '} remaining)'
-                  }
-                  values={{ seconds: timeout || 0 }}
-                />
-                <br />
-                <br />
-                <FormattedMessage
-                  id="confirm-tx-status-footer.ledger-confirming-msg-twice"
-                  description="Double confirmation issue notification."
-                  defaultMessage={
-                    'You may have to confirm twice. Its a {link}.'}
-                  values={{
-                    seconds: timeout || 0,
-
-                    link: (
-                      <a
-                        href="https://support.ledger.com/hc/en-us/articles/360018810413-U2F-timeout-in-Chrome-browser"
-                        target="_blank"
-                      >
-                        {intl.formatMessage(messages.ledgerDoubleConfirmLink)}
-                      </a>
-                    )
-                  }}
-                />
-              </React.Fragment>
+              <FormattedMessage
+                id="confirm-tx-status-footer.ledger-confirming-msg"
+                description="Message for when the user needs to confirm the transaction on Ledger."
+                defaultMessage={
+                  'Please confirm the transaction on your Ledger. Waiting for confirmation... ' +
+                  '({seconds} {seconds, plural,' +
+                  '  one {second}' +
+                  '  other {seconds}' +
+                  '} remaining)'
+                }
+                values={{ seconds: timeout || 0 }}
+              />
             ) : null}
           </Typography>
         </Grid>

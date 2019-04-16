@@ -66,9 +66,9 @@ const messages = defineMessages({
   unsupportedBrowser: {
     id: 'onboarding-ledger-account.unsupported-browser',
     description:
-      'Message when trying to use a browser that doesn\'t support Ledger devices',
+      "Message when trying to use a browser that doesn't support Ledger devices",
     defaultMessage:
-      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
+      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
       'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
@@ -117,6 +117,8 @@ class AccountData {
         this.data = resp;
       });
     } catch (ex) {
+      // TODO debug remove
+      console.log(ex);
       // Ignore failures
     }
   }
@@ -140,9 +142,12 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
     return this.props as PropsInjected;
   }
 
-  componentWillMount() {
-    this.injected.ledgerStore.open();
-  }
+  // async componentWillMount() {
+  //   const { ledgerStore } = this.injected;
+  //
+  //   // TODO call inside of a click handler
+  //   await ledgerStore.open();
+  // }
 
   componentWillUnmount() {
     this.injected.ledgerStore.close();
@@ -150,7 +155,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
 
   render() {
     const { intl, classes, ledgerStore } = this.injected;
-    const { deviceId } = ledgerStore;
+    const { transport } = ledgerStore;
     const { selectedAccount, countdownSeconds } = this;
 
     this.loadAccounts();
@@ -164,7 +169,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             defaultMessage="Import a Ledger account"
           />
         </ModalPaperHeader>
-        {ledgerStore.hasSupport === false ? (
+        {/* NO SUPPORT */ ledgerStore.hasSupport === false ? (
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography
@@ -172,7 +177,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
               />
             </Grid>
           </Grid>
-        ) : deviceId === null ? (
+        ) : /* SETUP THE DEVICE */ transport === null ? (
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography
@@ -191,7 +196,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
               {this.getConnectingHelpMsg()}
             </Grid>
           </Grid>
-        ) : selectedAccount !== null ? (
+        ) : /* SELECT ACCOUNT */ selectedAccount !== null ? (
           <React.Fragment>
             <List>
               <ListItem key={selectedAccount.slot} divider={true}>
@@ -237,7 +242,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             </Grid>
           </React.Fragment>
         ) : (
-          <List>
+          /* CONFIRM IMPORT */ <List>
             {this.accounts.map((acc, idx) => (
               <ListItem
                 key={acc.slot}
@@ -313,11 +318,11 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  }
+  };
 
   private async confirmImport(account: AccountData) {
     const { walletStore, routerStore, ledgerStore } = this.injected;
-    const { deviceId } = ledgerStore;
+    const { device } = ledgerStore;
 
     if (account.data !== null) {
       const { address: accountAddress } = account.data;
@@ -344,7 +349,8 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
           accountAddress,
           {
             type: AccountType.LEDGER,
-            hwId: deviceId,
+            // TODO check if `serialNumber` is ok
+            hwId: device!.serialNumber,
             hwSlot: account.slot
           },
           true
@@ -364,30 +370,39 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
    */
   @action
   private loadAccounts = () => {
-    const accountsToLoad = 5;
     const { walletStore, ledgerStore } = this.injected;
-    const { deviceId } = ledgerStore;
 
     // wait for a read transport
-    if (!deviceId) {
+    if (!ledgerStore.transport) {
       return;
     }
-
     // only one thread
-    if (this.loadingAccounts || this.accounts.length === accountsToLoad) {
+    if (this.loadingAccounts) {
       return;
     }
-
     this.loadingAccounts = true;
+
+    debugger
+
+    // TODO tmp
+    // const accountsToLoad = 5;
+    const accountsToLoad = 1;
+    const { device } = ledgerStore;
+
     this.selectedAccount = null;
     // TODO dispose the previous one
     this.accounts = observable.array();
+    if (device === null) {
+      return;
+    }
 
     const importedAccounts = [...walletStore.accounts.values()]
       .filter(({ type }) => type === AccountType.LEDGER)
-      .filter(({ hwId }) => hwId === deviceId);
+      // TODO compare account IDs
+      .filter(({ hwId }) => hwId === device.serialNumber);
 
     for (let slot = 0; this.accounts.length < accountsToLoad; slot++) {
+      // TODO compare account IDs
       const isImported =
         importedAccounts.filter(({ hwSlot }) => hwSlot === slot).length > 0;
 
@@ -398,7 +413,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
     }
 
     this.loadingAccounts = false;
-  }
+  };
 }
 
 export default stylesDecorator(injectIntl(LedgerAccountPage));

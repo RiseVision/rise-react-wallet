@@ -1,4 +1,4 @@
-///<reference path="../../desktop/node_modules/electron/electron.d.ts"/>
+///<reference path="../../node_modules/@types/w3c-web-usb/index.d.ts"/>
 
 declare const ipcRenderer: Electron.IpcRenderer;
 // absolute modules path for electronRequire
