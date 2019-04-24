@@ -4,16 +4,15 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import {
   DposLedger,
   SupportedCoin,
-  LedgerAccount as DposAccount,
+  LedgerAccount as DposAccount
 } from 'dpos-ledger-api';
-import {
-  CommHandler
-} from 'dpos-ledger-api/dist/es5/commHandler';
+import { CommHandler } from 'dpos-ledger-api/dist/es5/commHandler';
 import { Rise } from 'dpos-offline';
 import { observable, runInAction, action } from 'mobx';
 import * as React from 'react';
 import { As } from 'type-tagger';
 import { PostableRiseTransaction, RiseTransaction } from './wallet';
+import { Mutex } from 'async-mutex';
 
 /** Simple logging util (linter friendly) */
 // tslint:disable-next-line:no-unused-expression
@@ -24,6 +23,7 @@ function log(...msg: string[]) {
 export interface LedgerAccount {
   publicKey: string;
   address: string;
+  slot: number;
 }
 
 export class LedgerUnreachableError extends Error {
@@ -58,9 +58,13 @@ export interface ILedgerInternalError {
 export default class LedgerStore {
   @observable hasSupport: boolean = false;
   @observable isOpen: boolean = false;
+  // @observable deviceId: null | string = null;
   @observable device: null | USBDevice = null;
   @observable transport: null | Transport = null;
   @observable eventContext: React.MouseEvent<HTMLAnchorElement>;
+
+  private mutex = new Mutex();
+  confirmationTimeout = 30000;
 
   // private pingInterval: null | number = null;
   // private pingMutex = new Mutex();
@@ -83,37 +87,29 @@ export default class LedgerStore {
     } catch (e) {
       // catch non-supported browsers
       // TODO test for webusb
+      console.error('ledger init error', e);
       if (!e.id || e.id !== 'U2FNotSupported') {
         throw e;
       }
     }
   }
 
-  async open(): Promise<void> {
-    // assert(this.eventContext, 'eventContext required');
-    // return new Promise(resolve => {
-    //   const observer: Observer<DescriptorEvent<USBDevice>> = {
-    //     next: action((e: DescriptorEvent<USBDevice>) => {
-    //       this.isOpen = true;
-    //       this.device = e.descriptor;
-    //       resolve();
-    //     }),
-    //     error: action(err => {
-    //       this.isOpen = false;
-    //       this.device = null;
-    //       resolve();
-    //     }),
-    //     complete: () => {}
-    //   };
-    //   LedgerTransport.listen.call(event, observer);
-    // });
+  async open(): Promise<boolean> {
+    // TODO enable
+    // if (this.open) {
+    //   return true
+    // }
     const transport = await TransportWebUSB.create();
-    console.log(transport);
+    log('transport', transport);
+    if (!transport) {
+      return false;
+    }
     runInAction(() => {
       this.transport = transport;
       this.device = transport.device;
       this.isOpen = true;
     });
+    return true;
   }
 
   @action
@@ -130,31 +126,27 @@ export default class LedgerStore {
     if (!this.transport) {
       throw new LedgerUnreachableError();
     }
-    if (!this.accountCache[accountSlot] || showOnLedger) {
-      const accountPath = new DposAccount()
-        .coinIndex(SupportedCoin.RISE)
-        .account(accountSlot);
-
-      const comm = await this.getRiseTransport(showOnLedger ? 'long' : 'short');
-
-      this.accountCache[accountSlot] = await comm.getPubKey(
-        accountPath,
-        showOnLedger
-      );
+    const release = await this.mutex.acquire();
+    try {
+      return await this.getAccountUnsafe(accountSlot, showOnLedger);
+    } finally {
+      release();
     }
-    return this.accountCache[accountSlot];
   }
 
   async confirmAccount(accountSlot: number): Promise<boolean> {
+    const release = await this.mutex.acquire();
     try {
-      await this.getAccount(accountSlot, true);
+      await this.getAccountUnsafe(accountSlot, true);
       return true;
     } catch (e) {
-      const error = handleLedgerError(e);
+      const error = mapLedgerError(e);
       if (error instanceof LedgerConfirmError) {
         log('Error when confirming account', e);
       }
       return false;
+    } finally {
+      release();
     }
   }
 
@@ -165,55 +157,77 @@ export default class LedgerStore {
     if (!this.device) {
       throw new LedgerUnreachableError();
     }
-    const accountPath = new DposAccount()
-      .coinIndex(SupportedCoin.RISE)
-      .account(accountSlot);
-
-    const account = await this.getAccount(accountSlot, false);
-
-    unsignedTx.senderPublicKey = Buffer.from(
-      account.publicKey,
-      'hex'
-    ) as Buffer & As<'publicKey'>;
-    const txBytes = Rise.txs.bytes(unsignedTx);
-
-    let signedTx: null | PostableRiseTransaction;
-    const comm = await this.getRiseTransport('long');
+    const release = await this.mutex.acquire();
     try {
-      log('confirming on the ledger, check the device');
-      const signature = await comm.signTX(accountPath, txBytes);
-      unsignedTx.signature = signature as Buffer & As<'signature'>;
-      signedTx = Rise.txs.toPostable(unsignedTx);
-    } catch (e) {
-      console.log('LedgerConfirmError', e);
-      const error = handleLedgerError(e);
-      if (error instanceof LedgerConfirmError) {
-        // TODO
-        signedTx = null;
-      } else {
-        throw e;
-      }
-    }
+      const accountPath = new DposAccount()
+        .coinIndex(SupportedCoin.RISE)
+        .account(accountSlot);
 
-    return signedTx;
+      const account = await this.getAccountUnsafe(accountSlot, false);
+
+      unsignedTx.senderPublicKey = Buffer.from(
+        account.publicKey,
+        'hex'
+      ) as Buffer & As<'publicKey'>;
+      const txBytes = Rise.txs.bytes(unsignedTx);
+
+      let signedTx: null | PostableRiseTransaction;
+      const comm = await this.getRiseTransport('long');
+      try {
+        log('confirming on the ledger, check the device');
+        const signature = await comm.signTX(accountPath, txBytes);
+        unsignedTx.signature = signature as Buffer & As<'signature'>;
+        signedTx = Rise.txs.toPostable(unsignedTx);
+      } catch (e) {
+        console.log('LedgerConfirmError', e);
+        const error = mapLedgerError(e);
+        if (error instanceof LedgerConfirmError) {
+          signedTx = null;
+        } else {
+          throw e;
+        }
+      }
+
+      return signedTx;
+    } finally {
+      release();
+    }
+  }
+
+  protected async getAccountUnsafe(
+    accountSlot: number,
+    showOnLedger: boolean = false
+  ): Promise<LedgerAccount> {
+    if (!this.accountCache[accountSlot] || showOnLedger) {
+      const accountPath = new DposAccount()
+        .coinIndex(SupportedCoin.RISE)
+        .account(accountSlot);
+
+      const comm = await this.getRiseTransport(showOnLedger ? 'long' : 'short');
+
+      const data = await comm.getPubKey(accountPath, showOnLedger);
+      // TODO remove once fixed in the driver
+      data.address = data.address.replace('L', 'R');
+      this.accountCache[accountSlot] = { slot: accountSlot, ...data };
+    }
+    return this.accountCache[accountSlot];
   }
 
   private async getRiseTransport(
     operationType: 'short' | 'long' = 'short'
   ): Promise<DposLedger> {
-    this.transport.setExchangeTimeout(operationType === 'short' ? 5000 : 30000);
+    this.transport.setExchangeTimeout(
+      operationType === 'short' ? 5000 : this.confirmationTimeout
+    );
     return new DposLedger(new CommHandler(this.transport));
   }
 }
 
-function handleLedgerError(
+// Map known errors to new exception types
+function mapLedgerError(
   ex: ILedgerInternalError
 ): LedgerUnreachableError | LedgerLockedError | LedgerUnknownError {
-  // Map known errors to new exception types
-  if (ex.id === 'U2F_5') {
-    // Device not connected
-    return new LedgerUnreachableError();
-  } else if (ex.statusCode === 0x6804) {
+  if (ex.statusCode === 0x6804) {
     // Device locked
     return new LedgerLockedError();
   } else if (ex.statusCode === 0x6985) {

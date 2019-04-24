@@ -103,27 +103,6 @@ const messages = defineMessages({
   }
 });
 
-class AccountData {
-  @observable data: null | LedgerAccount = null;
-
-  constructor(ledgerStore: LedgerStore, readonly slot: number) {
-    this.load(ledgerStore);
-  }
-
-  private async load(ledgerStore: LedgerStore) {
-    try {
-      const resp = await ledgerStore.getAccount(this.slot);
-      runInAction(() => {
-        this.data = resp;
-      });
-    } catch (ex) {
-      // TODO debug remove
-      console.log(ex);
-      // Ignore failures
-    }
-  }
-}
-
 @inject('onboardingStore')
 @inject('routerStore')
 @inject('walletStore')
@@ -131,11 +110,15 @@ class AccountData {
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps> {
   private countdownId: null | number = null;
+  accountsToShow: number = 5;
 
-  @observable private selectedAccount: null | AccountData = null;
+  @observable private selectedAccount: null | LedgerAccount = null;
   @observable private selectionTimeout: null | Date = null;
   @observable private countdownSeconds: number = 0;
-  @observable private accounts = observable.array<AccountData>([]);
+  @observable
+  private accounts = observable.array<LedgerAccount>(
+    new Array(this.accountsToShow)
+  );
   private loadingAccounts = false;
 
   get injected(): PropsInjected {
@@ -196,17 +179,15 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
               {this.getConnectingHelpMsg()}
             </Grid>
           </Grid>
-        ) : /* SELECT ACCOUNT */ selectedAccount !== null ? (
+        ) : /* CONFIRM IMPORT */ selectedAccount !== null ? (
           <React.Fragment>
             <List>
-              <ListItem key={selectedAccount.slot} divider={true}>
+              <ListItem key={selectedAccount.address} divider={true}>
                 <ListItemAvatar>
                   <Avatar className={classes.accountAvatar}>
                     <AccountIcon
                       size={24}
-                      address={
-                        selectedAccount.data ? selectedAccount.data.address : ''
-                      }
+                      address={selectedAccount ? selectedAccount.address : ''}
                     />
                   </Avatar>
                 </ListItemAvatar>
@@ -214,9 +195,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
                   primary={intl.formatMessage(messages.accountNrLabel, {
                     number: selectedAccount.slot + 1
                   })}
-                  secondary={
-                    selectedAccount.data ? selectedAccount.data.address : '...'
-                  }
+                  secondary={selectedAccount ? selectedAccount.address : '...'}
                 />
               </ListItem>
             </List>
@@ -242,27 +221,24 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             </Grid>
           </React.Fragment>
         ) : (
-          /* CONFIRM IMPORT */ <List>
-            {this.accounts.map((acc, idx) => (
+          /* SELECT ACCOUNT */ <List>
+            {this.accounts.map((data, index) => (
               <ListItem
-                key={acc.slot}
-                divider={idx + 1 < this.accounts.length}
+                key={index}
+                divider={index + 1 < this.accounts.length}
                 button={true}
-                onClick={() => this.confirmImport(acc)}
+                onClick={() => this.confirmImport(data)}
               >
                 <ListItemAvatar>
                   <Avatar className={classes.accountAvatar}>
-                    <AccountIcon
-                      size={24}
-                      address={acc.data ? acc.data.address : ''}
-                    />
+                    <AccountIcon size={24} address={data ? data.address : ''} />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                   primary={intl.formatMessage(messages.accountNrLabel, {
-                    number: acc.slot + 1
+                    number: data ? data.slot + 1 : '...'
                   })}
-                  secondary={acc.data ? acc.data.address : '...'}
+                  secondary={data ? data.address : '...'}
                 />
               </ListItem>
             ))}
@@ -320,12 +296,12 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
     }
   };
 
-  private async confirmImport(account: AccountData) {
+  private async confirmImport(account: LedgerAccount) {
     const { walletStore, routerStore, ledgerStore } = this.injected;
     const { device } = ledgerStore;
 
-    if (account.data !== null) {
-      const { address: accountAddress } = account.data;
+    if (account !== null) {
+      const { address: accountAddress } = account;
 
       // Switch to account importing UI
       runInAction(() => {
@@ -349,8 +325,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
           accountAddress,
           {
             type: AccountType.LEDGER,
-            // TODO check if `serialNumber` is ok
-            hwId: device!.serialNumber,
+            hwId: device!.vendorId.toString(),
             hwSlot: account.slot
           },
           true
@@ -369,51 +344,38 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
    * TODO move to LedgerStore
    */
   @action
-  private loadAccounts = () => {
+  private async loadAccounts() {
     const { walletStore, ledgerStore } = this.injected;
+    const { device } = ledgerStore;
 
-    // wait for a read transport
-    if (!ledgerStore.transport) {
+    // wait for a ready transport
+    if (!device) {
       return;
     }
-    // only one thread
+
+    // run once
     if (this.loadingAccounts) {
       return;
     }
+
     this.loadingAccounts = true;
-
-    debugger
-
-    // TODO tmp
-    // const accountsToLoad = 5;
-    const accountsToLoad = 1;
-    const { device } = ledgerStore;
-
     this.selectedAccount = null;
-    // TODO dispose the previous one
-    this.accounts = observable.array();
-    if (device === null) {
-      return;
-    }
 
-    const importedAccounts = [...walletStore.accounts.values()]
-      .filter(({ type }) => type === AccountType.LEDGER)
-      // TODO compare account IDs
-      .filter(({ hwId }) => hwId === device.serialNumber);
+    for (let slot = 0, index = 0; index < this.accountsToShow; slot++) {
+      const data = await ledgerStore.getAccount(slot);
+      const isImported = walletStore.accounts.has(data.address);
 
-    for (let slot = 0; this.accounts.length < accountsToLoad; slot++) {
-      // TODO compare account IDs
-      const isImported =
-        importedAccounts.filter(({ hwSlot }) => hwSlot === slot).length > 0;
-
-      if (!isImported) {
-        const acc = new AccountData(ledgerStore, slot);
-        this.accounts.push(acc);
+      if (isImported) {
+        continue;
       }
-    }
 
-    this.loadingAccounts = false;
-  };
+      runInAction(() => {
+        this.accounts[index] = data;
+      });
+
+      index++
+    }
+  }
 }
 
 export default stylesDecorator(injectIntl(LedgerAccountPage));

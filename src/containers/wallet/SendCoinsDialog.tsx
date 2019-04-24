@@ -2,14 +2,16 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
-import SendCoinsDialogContent from '../../components/content/SendCoinsDialogContent';
+import SendCoinsDialogContent
+  from '../../components/content/SendCoinsDialogContent';
 import {
   ICloseInterruptControllerState,
   ICloseInterruptController
 } from '../../components/Dialog';
 import { accountSendRoute } from '../../routes';
-import AccountStore from '../../stores/account';
+import AccountStore, { AccountType } from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
+import LedgerStore from '../../stores/ledger';
 import WalletStore from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
@@ -25,6 +27,7 @@ interface Props {
 interface PropsInjected extends Props {
   routerStore: RouterStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
   addressBookStore: AddressBookStore;
 }
 
@@ -39,6 +42,7 @@ interface State extends ICloseInterruptControllerState {
 }
 
 @inject('routerStore')
+@inject('ledgerStore')
 @inject('walletStore')
 @inject('addressBookStore')
 @observer
@@ -51,6 +55,10 @@ class SendCoinsDialog extends React.Component<Props, State>
     step: 'form',
     transaction: null
   };
+
+  get account(): AccountStore {
+    return this.injected.account
+  }
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;
@@ -92,6 +100,12 @@ class SendCoinsDialog extends React.Component<Props, State>
   handleSubmit = (data: { recipientID: string; amount: RawAmount }) => {
     const { recipientID, amount } = data;
 
+    // ledger requires to be open in a click handler
+    if (this.account.type === AccountType.LEDGER) {
+      this.injected.ledgerStore.open()
+    }
+
+    debugger
     this.setState({
       recipientID,
       amount,
@@ -114,6 +128,7 @@ class SendCoinsDialog extends React.Component<Props, State>
         account.id
       );
     } else {
+      debugger
       throw new Error('Invalid internal state');
     }
   }
@@ -121,6 +136,7 @@ class SendCoinsDialog extends React.Component<Props, State>
   resetState() {
     const { recipientID, amount } = this.props;
 
+    console.log('reset state')
     this.setState({
       recipientID: recipientID || '',
       amount: amount || null,
