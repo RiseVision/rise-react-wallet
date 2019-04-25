@@ -1,7 +1,7 @@
 {
   "name": "rise-wallet-desktop",
   "description": "Rise Wallet",
-  "version": "1.2.0",
+  "version": "1.2.0-beta1",
   "author": "rise.vision",
   "engines": {
     "yarn": "^1.10.1"
