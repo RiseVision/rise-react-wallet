@@ -66,9 +66,9 @@ const messages = defineMessages({
   unsupportedBrowser: {
     id: 'onboarding-ledger-account.unsupported-browser',
     description:
-      "Message when trying to use a browser that doesn't support Ledger devices",
+      'Message when trying to use a browser that doesn\'t support Ledger devices',
     defaultMessage:
-      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
+      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
       'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
@@ -109,8 +109,12 @@ const messages = defineMessages({
 @inject('ledgerStore')
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps> {
-  private countdownId: null | number = null;
+
+  get injected(): PropsInjected {
+    return this.props as PropsInjected;
+  }
   accountsToShow: number = 5;
+  private countdownId: null | number = null;
 
   @observable private selectedAccount: null | LedgerAccount = null;
   @observable private selectionTimeout: null | Date = null;
@@ -120,10 +124,6 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
     new Array(this.accountsToShow)
   );
   private loadingAccounts = false;
-
-  get injected(): PropsInjected {
-    return this.props as PropsInjected;
-  }
 
   // async componentWillMount() {
   //   const { ledgerStore } = this.injected;
@@ -294,7 +294,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  };
+  }
 
   private async confirmImport(account: LedgerAccount) {
     const { walletStore, routerStore, ledgerStore } = this.injected;
@@ -373,7 +373,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
         this.accounts[index] = data;
       });
 
-      index++
+      index++;
     }
   }
 }

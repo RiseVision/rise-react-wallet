@@ -11,12 +11,12 @@ type BaseProps = Overwrite<
 >;
 
 interface Props extends BaseProps {
-  onClick?(ev: React.MouseEvent<HTMLAnchorElement>): void;
   children: React.ReactElement<
     React.AnchorHTMLAttributes<HTMLAnchorElement> & {
       component: React.ReactType;
     }
   >;
+  onClick?(ev: React.MouseEvent<HTMLAnchorElement>): void;
 }
 
 interface PropsInjected extends Props {
@@ -71,7 +71,7 @@ class Link extends React.Component<Props> {
       ev.preventDefault();
       store.navigateTo(routeLink);
     }
-  };
+  }
 
   render() {
     const {
@@ -95,7 +95,7 @@ class Link extends React.Component<Props> {
         href: store.linkUrl(routeLink),
         // compose onClick if a handler passed
         onClick: onClick
-          ? e => {
+          ? (e: React.MouseEvent<HTMLAnchorElement>) => {
               onClick(e);
               this.handleClick(e);
             }

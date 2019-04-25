@@ -12,3 +12,8 @@ declare var carlo: any;
 interface Window {
   riseRelease: string | null;
 }
+
+declare module '@ledgerhq/hw-transport-webusb' {
+  const e: any;
+  export default e;
+}

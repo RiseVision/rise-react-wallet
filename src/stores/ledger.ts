@@ -13,11 +13,12 @@ import * as React from 'react';
 import { As } from 'type-tagger';
 import { PostableRiseTransaction, RiseTransaction } from './wallet';
 import { Mutex } from 'async-mutex';
+import * as assert from 'assert';
 
 /** Simple logging util (linter friendly) */
 // tslint:disable-next-line:no-unused-expression
 function log(...msg: string[]) {
-  console.log(...msg);
+  // console.log(...msg);
 }
 
 export interface LedgerAccount {
@@ -62,9 +63,9 @@ export default class LedgerStore {
   @observable device: null | USBDevice = null;
   @observable transport: null | Transport = null;
   @observable eventContext: React.MouseEvent<HTMLAnchorElement>;
+  confirmationTimeout = 30000;
 
   private mutex = new Mutex();
-  confirmationTimeout = 30000;
 
   // private pingInterval: null | number = null;
   // private pingMutex = new Mutex();
@@ -86,21 +87,14 @@ export default class LedgerStore {
       });
     } catch (e) {
       // catch non-supported browsers
-      // TODO test for webusb
-      console.error('ledger init error', e);
-      if (!e.id || e.id !== 'U2FNotSupported') {
+      if (!e.name || e.name !== 'TransportOpenUserCancelled') {
         throw e;
       }
     }
   }
 
   async open(): Promise<boolean> {
-    // TODO enable
-    // if (this.open) {
-    //   return true
-    // }
     const transport = await TransportWebUSB.create();
-    log('transport', transport);
     if (!transport) {
       return false;
     }
@@ -179,7 +173,7 @@ export default class LedgerStore {
         unsignedTx.signature = signature as Buffer & As<'signature'>;
         signedTx = Rise.txs.toPostable(unsignedTx);
       } catch (e) {
-        console.log('LedgerConfirmError', e);
+        log('LedgerConfirmError', e);
         const error = mapLedgerError(e);
         if (error instanceof LedgerConfirmError) {
           signedTx = null;
@@ -216,14 +210,17 @@ export default class LedgerStore {
   private async getRiseTransport(
     operationType: 'short' | 'long' = 'short'
   ): Promise<DposLedger> {
-    this.transport.setExchangeTimeout(
+    assert(this.transport);
+    this.transport!.setExchangeTimeout(
       operationType === 'short' ? 5000 : this.confirmationTimeout
     );
-    return new DposLedger(new CommHandler(this.transport));
+    // @ts-ignore TODO remove once defs are updated
+    return new DposLedger(new CommHandler(this.transport!));
   }
 }
 
 // Map known errors to new exception types
+// TODO align with webusb
 function mapLedgerError(
   ex: ILedgerInternalError
 ): LedgerUnreachableError | LedgerLockedError | LedgerUnknownError {

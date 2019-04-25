@@ -9,7 +9,8 @@ import {
   ICloseInterruptControllerState
 } from '../../components/Dialog';
 import { accountSettingsPassphraseRoute } from '../../routes';
-import AccountStore from '../../stores/account';
+import AccountStore, { AccountType } from '../../stores/account';
+import LedgerStore from '../../stores/ledger';
 import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
@@ -24,6 +25,7 @@ interface PropsInjected extends Props {
   store: RootStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 interface State extends ICloseInterruptControllerState {
@@ -37,6 +39,7 @@ interface State extends ICloseInterruptControllerState {
 @inject('store')
 @inject('routerStore')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class AddSecondPassphraseDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
@@ -48,6 +51,10 @@ class AddSecondPassphraseDialog extends React.Component<Props, State>
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;
+  }
+
+  get account(): AccountStore {
+    return this.injected.account;
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
@@ -73,6 +80,11 @@ class AddSecondPassphraseDialog extends React.Component<Props, State>
   }
 
   handleAddPassphrase = (passphrase: string) => {
+    // ledger requires to be open in a click handler
+    if (this.account.type === AccountType.LEDGER) {
+      this.injected.ledgerStore.open();
+    }
+
     this.setState({
       step: 'transaction',
       transaction: {

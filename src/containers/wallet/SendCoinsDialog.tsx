@@ -57,7 +57,7 @@ class SendCoinsDialog extends React.Component<Props, State>
   };
 
   get account(): AccountStore {
-    return this.injected.account
+    return this.injected.account;
   }
 
   get injected(): PropsInjected {
@@ -102,10 +102,9 @@ class SendCoinsDialog extends React.Component<Props, State>
 
     // ledger requires to be open in a click handler
     if (this.account.type === AccountType.LEDGER) {
-      this.injected.ledgerStore.open()
+      this.injected.ledgerStore.open();
     }
 
-    debugger
     this.setState({
       recipientID,
       amount,
@@ -128,7 +127,6 @@ class SendCoinsDialog extends React.Component<Props, State>
         account.id
       );
     } else {
-      debugger
       throw new Error('Invalid internal state');
     }
   }
@@ -136,7 +134,6 @@ class SendCoinsDialog extends React.Component<Props, State>
   resetState() {
     const { recipientID, amount } = this.props;
 
-    console.log('reset state')
     this.setState({
       recipientID: recipientID || '',
       amount: amount || null,

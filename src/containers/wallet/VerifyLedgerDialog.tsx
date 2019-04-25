@@ -8,7 +8,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import { createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography/Typography';
-import { IReactionDisposer, observable, action } from 'mobx';
+import { observable, action, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -82,9 +82,9 @@ const messages = defineMessages({
   unsupportedBrowser: {
     id: 'verify-ledger-address.unsupported-browser',
     description:
-      "Message when trying to use a browser that doesn't support Ledger devices",
+      'Message when trying to use a browser that doesn\'t support Ledger devices',
     defaultMessage:
-      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
+      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
       'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
@@ -148,7 +148,6 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     confirmed: false
   };
   open: boolean = false;
-  private disposeLedgerChangeMonitor: null | IReactionDisposer = null;
   private countdownId: null | number = null;
   @observable private countdownSeconds: number = 0;
   @observable private timeout: null | Date = null;
@@ -167,31 +166,29 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       return;
     }
     this.open = true;
-    this.setState({ confirmed: false });
-    const { ledgerStore, intl } = this.injected;
-    ledgerStore.open();
+    const { intl } = this.injected;
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
       contentId: this.dialogContentId
     });
-
-    this.handleVerifyLedger();
-  };
+  }
 
   onClose = () => {
     if (!this.open) {
       return;
     }
     this.open = false;
-    if (this.disposeLedgerChangeMonitor) {
-      this.disposeLedgerChangeMonitor();
-      this.disposeLedgerChangeMonitor = null;
-    }
-
     this.injected.ledgerStore.close();
-    this.setState({ confirmed: false });
-  };
+    runInAction(() => {
+      this.timeout = null;
+    });
+    // TODO temp hack, remove once onOpen isnt called by render
+    //   (which is also a hack)
+    setTimeout(() => {
+      this.setState({ confirmed: false });
+    });
+  }
 
   @action
   updateSelectionCountdown = () => {
@@ -210,31 +207,31 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  };
+  }
 
   handleVerifyLedger = async () => {
     const { ledgerStore } = this.injected;
-    if (!ledgerStore.device || this.state.confirmed) {
+    if (!ledgerStore.device || this.state.confirmed || this.timeout) {
       return;
     }
 
-    this.timeout = new Date(new Date().getTime() + 25000);
+    this.timeout = new Date(
+      new Date().getTime() + ledgerStore.confirmationTimeout
+    );
     this.updateSelectionCountdown();
 
     try {
       const confirmed = await ledgerStore.confirmAccount(this.account!.hwSlot!);
       this.setState({ confirmed });
     } catch (e) {
-      // TODO debug
-      console.log(e);
       // silent
     }
-  };
+  }
 
   handleCloseButton = () => {
     this.onClose();
     this.injected.store.navigateTo(this.injected.navigateBackLink);
-  };
+  }
 
   render() {
     const {
@@ -249,6 +246,9 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     let device;
     let confirmed;
 
+    this.handleVerifyLedger();
+
+    // TODO refactor and inherit, call outside of render()
     const isOpen =
       open || routerStore.currentView === accountSettingsLedgerRoute;
 

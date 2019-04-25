@@ -85,6 +85,7 @@ type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 interface Props extends BaseProps, ICloseInterruptFormProps {
   query: string;
   onQueryChange: (query: string) => void;
+  // TODO rename to onSubmit
   onSelect: (delegate: Delegate) => void;
   isLoading: boolean;
   votedDelegate: null | Delegate;
