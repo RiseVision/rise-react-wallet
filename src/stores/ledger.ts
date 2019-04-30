@@ -18,7 +18,7 @@ import * as assert from 'assert';
 /** Simple logging util (linter friendly) */
 // tslint:disable-next-line:no-unused-expression
 function log(...msg: string[]) {
-  // console.log(...msg);
+  console.log(...msg);
 }
 
 export interface LedgerAccount {
@@ -61,6 +61,7 @@ export default class LedgerStore {
   @observable isOpen: boolean = false;
   // @observable deviceId: null | string = null;
   @observable device: null | USBDevice = null;
+  @observable lastDevice: null | USBDevice = null;
   @observable transport: null | Transport = null;
   @observable eventContext: React.MouseEvent<HTMLAnchorElement>;
   confirmationTimeout = 30000;
@@ -94,16 +95,24 @@ export default class LedgerStore {
   }
 
   async open(): Promise<boolean> {
-    const transport = await TransportWebUSB.create();
+    const transport = this.lastDevice
+      ? await TransportWebUSB.open(this.lastDevice)
+      : await TransportWebUSB.create();
     if (!transport) {
       return false;
     }
     runInAction(() => {
       this.transport = transport;
       this.device = transport.device;
+      this.lastDevice = transport.device;
       this.isOpen = true;
     });
     return true;
+  }
+
+  @action
+  forgetLastDevice() {
+    this.lastDevice = null;
   }
 
   @action

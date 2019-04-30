@@ -16,6 +16,7 @@ import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import AddIcon from '@material-ui/icons/Add';
 import AppsIcon from '@material-ui/icons/Apps';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import UsbIcon from '@material-ui/icons/Usb';
 import PeopleIcon from '@material-ui/icons/People';
 import * as classNames from 'classnames';
 import { orderBy } from 'lodash';
@@ -38,6 +39,7 @@ import {
   onboardingInstallToHomeScreenRoute
 } from '../../routes';
 import AccountStore from '../../stores/account';
+import LedgerStore from '../../stores/ledger';
 import { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 
@@ -88,6 +90,7 @@ type DecoratedProps = Props & InjectedIntlProps;
 interface PropsInjected extends DecoratedProps {
   routerStore: RouterStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
@@ -112,6 +115,7 @@ const messages = defineMessages({
 
 @inject('routerStore')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class DrawerContent extends React.Component<DecoratedProps> {
   get injected(): PropsInjected {
@@ -149,6 +153,12 @@ class DrawerContent extends React.Component<DecoratedProps> {
     return list;
   }
 
+  handleUnmountLedger = () => {
+    const { ledgerStore } = this.injected;
+    ledgerStore.close();
+    ledgerStore.forgetLastDevice();
+  }
+
   render() {
     const {
       intl,
@@ -156,7 +166,8 @@ class DrawerContent extends React.Component<DecoratedProps> {
       onAfterNavigate,
       onSignOutClick,
       routerStore,
-      walletStore
+      walletStore,
+      ledgerStore
     } = this.injected;
 
     const { selectedAccount } = walletStore;
@@ -345,6 +356,20 @@ class DrawerContent extends React.Component<DecoratedProps> {
                 </ListItem>
               </Link>
             )}
+          {ledgerStore.lastDevice && (
+            <ListItem button={true} onClick={this.handleUnmountLedger}>
+              <ListItemIcon className={classes.listIcon}>
+                <UsbIcon />
+              </ListItemIcon>
+              <ListItemText>
+                <FormattedMessage
+                  id="drawer-content.unmount-ledger"
+                  description="Unmount a ledger device drawer item"
+                  defaultMessage="Unmount Ledger"
+                />
+              </ListItemText>
+            </ListItem>
+          )}
           {!walletStore.isMobile &&
             walletStore.supportsA2HS &&
             !walletStore.isHomeScreen && (

@@ -57,11 +57,12 @@ const stylesDecorator = withStyles(styles, {
 });
 
 const messages = defineMessages({
-  connectInstructions: {
+  connectInstructionsV2: {
     id: 'onboarding-ledger-account.connect-instructions',
     description:
       'Text instructing the user to open the RISE app on their Ledger device',
-    defaultMessage: 'Connect your Ledger & open the RISE app on it.'
+    defaultMessage:
+      'Connect your Ledger, open the RISE app and click Discover Device below.'
   },
   unsupportedBrowser: {
     id: 'onboarding-ledger-account.unsupported-browser',
@@ -109,7 +110,6 @@ const messages = defineMessages({
 @inject('ledgerStore')
 @observer
 class LedgerAccountPage extends React.Component<DecoratedProps> {
-
   get injected(): PropsInjected {
     return this.props as PropsInjected;
   }
@@ -134,6 +134,10 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
 
   componentWillUnmount() {
     this.injected.ledgerStore.close();
+  }
+
+  onDiscoverLedger = () => {
+    this.injected.ledgerStore.open();
   }
 
   render() {
@@ -164,12 +168,12 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography
-                children={intl.formatMessage(messages.connectInstructions)}
+                children={intl.formatMessage(messages.connectInstructionsV2)}
               />
             </Grid>
             <Grid item={true} xs={12}>
               <div className={classes.noPadding}>
-                <LedgerConnectIllustration />
+                <LedgerConnectIllustration onClick={this.onDiscoverLedger} />
               </div>
             </Grid>
             <Grid item={true} xs={12}>

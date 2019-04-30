@@ -176,10 +176,10 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
               />
             ) : type === 'ledger-not-connected' ? (
               <FormattedMessage
-                id="confirm-tx-status-footer.ledger-not-connected-msg"
+                id="confirm-tx-status-footer.ledger-not-connected-msg-v2"
                 description="Message for when the Ledger device isn't connected."
                 defaultMessage={
-                  'Please connect your Ledger and open the RISE app on it. ' +
+                  'Connect your Ledger, open the RISE app and click Discover Device below.' +
                   'Waiting for Ledger...'
                 }
               />

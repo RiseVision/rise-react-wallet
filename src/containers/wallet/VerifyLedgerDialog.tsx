@@ -73,11 +73,12 @@ const stylesDecorator = withStyles(styles, {
 });
 
 const messages = defineMessages({
-  connectInstructions: {
+  connectInstructionsV2: {
     id: 'verify-ledger-address.connect-instructions',
     description:
       'Text instructing the user to open the RISE app on their Ledger device',
-    defaultMessage: 'Connect your Ledger & open the RISE app on it.'
+    defaultMessage:
+      'Connect your Ledger, open the RISE app and click Discover Device below.'
   },
   unsupportedBrowser: {
     id: 'verify-ledger-address.unsupported-browser',
@@ -172,6 +173,10 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       title: intl.formatMessage(messages.dialogTitle),
       contentId: this.dialogContentId
     });
+  }
+
+  onDiscoverLedger = () => {
+    this.injected.ledgerStore.open();
   }
 
   onClose = () => {
@@ -280,12 +285,12 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography
-                children={intl.formatMessage(messages.connectInstructions)}
+                children={intl.formatMessage(messages.connectInstructionsV2)}
               />
             </Grid>
             <Grid item={true} xs={12}>
               <div className={classes.noPadding}>
-                <LedgerConnectIllustration />
+                <LedgerConnectIllustration onClick={this.onDiscoverLedger} />
               </div>
             </Grid>
             <Grid item={true} xs={12}>
