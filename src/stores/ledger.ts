@@ -18,7 +18,7 @@ import * as assert from 'assert';
 /** Simple logging util (linter friendly) */
 // tslint:disable-next-line:no-unused-expression
 function log(...msg: string[]) {
-  console.log(...msg);
+  // console.log(...msg);
 }
 
 export interface LedgerAccount {
