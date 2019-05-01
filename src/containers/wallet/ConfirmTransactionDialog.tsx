@@ -203,8 +203,6 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       }
     }
 
-    // TODO this should switch the dialog to the SENT state when using ledger
-    //  works well for non-ledger signed txes
     if (success) {
       this.setState({
         step: 'sent',
