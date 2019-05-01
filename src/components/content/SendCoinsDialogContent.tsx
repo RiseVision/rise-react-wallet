@@ -227,7 +227,7 @@ class SendCoinsDialogContent extends React.Component<DecoratedProps, State> {
   handleAmountBlur = () => {
     const amountInvalid = !!this.state.amount && !!this.amountError();
     const amount = this.state.parsedAmount
-      ? this.state.parsedAmount.unit.toNumber().toString()
+      ? this.state.parsedAmount.unit.toString()
       : '';
     this.setState({
       amountInvalid,
