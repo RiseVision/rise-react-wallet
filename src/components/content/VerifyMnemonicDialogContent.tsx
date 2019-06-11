@@ -27,31 +27,29 @@ const styles = (theme: Theme) =>
   });
 
 const stylesDecorator = withStyles(styles, {
-  name: 'AccountNameDialogContent'
+  name: 'VerifyMnemonicDialogContent'
 });
 
 const messages = defineMessages({
   dialogTitle: {
-    id: 'account-name-dialog-content.dialog-title',
-    description: 'Account name dialog title',
-    defaultMessage: 'Update Account Name'
+    id: 'verify-mnemonic-dialog-content.dialog-title',
+    description: 'Verify Mnemonic dialog title',
+    defaultMessage: 'Verify Mnemonic'
   },
   instructions: {
-    id: 'account-name-dialog-content.instructions',
-    description: 'Instructions before the account name input field',
-    defaultMessage:
-      'Assign a new name to account {address}. ' +
-      'This name will only be visible to you and nobody else.'
+    id: 'verify-mnemonic-dialog-content.instructions',
+    description: 'Instructions before the verify mnemonic input field',
+    defaultMessage: 'You can verify that your mnemonic matches this account.'
   },
-  nameField: {
-    id: 'account-name-dialog-content.name-input-label',
-    description: 'Account name text field label',
-    defaultMessage: 'Account name'
+  mnemonicField: {
+    id: 'verify-mnemonic-dialog-content.mnemonic-input-label',
+    description: 'Mnemonic text field label',
+    defaultMessage: 'Mnemonic'
   },
-  updateButton: {
-    id: 'account-name-dialog-content.update-button-label',
-    description: 'Update account name button label',
-    defaultMessage: 'Update name'
+  verifyButton: {
+    id: 'verify-mnemonic-dialog-content.update-button-label',
+    description: 'Verify mnemonic button label',
+    defaultMessage: 'Verify Mnemonic'
   }
 });
 
@@ -59,46 +57,41 @@ type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps, ICloseInterruptFormProps {
   account: {
-    name: string;
     address: string;
   };
-  onSubmit(account: { address: string; name: string }): void;
+  onSubmit(account: { address: string; mnemonic: string }): void;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface State {
-  name: string;
+  mnemonic: string;
 }
 
-class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
+class VerifyMnemonicDialogContent extends React.Component<
+  DecoratedProps,
+  State
+> {
   @autoId dialogContentId: string;
 
   state = {
-    name: ''
+    mnemonic: ''
   };
 
-  constructor(props: DecoratedProps) {
-    super(props);
-
-    const { account } = this.props;
-    this.state.name = account.name;
-  }
-
   handleNameChange = (ev: ChangeEvent<HTMLInputElement>) => {
-    const name = ev.target.value;
-    this.props.onFormChanged(this.state.name !== this.props.account.name);
-    this.setState({ name });
+    const mnemonic = ev.target.value;
+    this.props.onFormChanged(Boolean(this.state.mnemonic));
+    this.setState({ mnemonic });
   }
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
     const { onSubmit, account } = this.props;
-    const { name } = this.state;
+    const { mnemonic } = this.state;
     onSubmit({
       address: account.address,
-      name: name.trim()
+      mnemonic: mnemonic.trim()
     });
   }
 
@@ -114,7 +107,7 @@ class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
   render() {
     const { intl, classes, account } = this.props;
 
-    const { name } = this.state;
+    const { mnemonic } = this.state;
     return (
       <Grid
         className={classes.content}
@@ -133,9 +126,9 @@ class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
         </Grid>
         <Grid item={true} xs={12}>
           <TextField
-            label={intl.formatMessage(messages.nameField)}
+            label={intl.formatMessage(messages.mnemonicField)}
             autoFocus={true}
-            value={name}
+            value={mnemonic}
             onChange={this.handleNameChange}
             fullWidth={true}
           />
@@ -144,7 +137,7 @@ class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
           <Button
             type="submit"
             fullWidth={true}
-            children={intl.formatMessage(messages.updateButton)}
+            children={intl.formatMessage(messages.verifyButton)}
           />
         </Grid>
       </Grid>
@@ -152,4 +145,4 @@ class AccountNameDialogContent extends React.Component<DecoratedProps, State> {
   }
 }
 
-export default stylesDecorator(injectIntl(AccountNameDialogContent));
+export default stylesDecorator(injectIntl(VerifyMnemonicDialogContent));

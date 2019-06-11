@@ -552,6 +552,30 @@ export const accountSettingsNoIDRoute = createNoIDRoute(
   accountSettingsRoute
 );
 
+export const accountSettingsVerifyMnemonicRoute = new Route({
+  path: '/settings/verify-mnemonic/:id',
+  onEnter: onEnterID,
+  component: (
+    <AsyncComponent
+      name="./containers/wallet"
+      resolve={() => {
+        return import('./containers/wallet');
+      }}
+      loading={<LoadingIndicator />}
+      render={(components: TWalletComponents) => (
+        <components.Wallet>
+          <components.AccountSettings />
+        </components.Wallet>
+      )}
+    />
+  )
+});
+
+export const accountSettingsVerifyMnemonicNoIDRoute = createNoIDRoute(
+  '/settings/verify-mnemonic',
+  accountSettingsVerifyMnemonicRoute
+);
+
 // send form
 
 // accepts &address=1232R&amount=0.1
