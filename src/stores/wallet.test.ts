@@ -356,8 +356,8 @@ describe('transactions', () => {
     const amount = 1000000;
     const tx = await wallet.createSendTx(recipientID, new RawAmount(amount));
     const signedTx = wallet.signTransaction(tx, 'foo bar baz', 'test');
-    expect(signedTx.senderPublicKey).toEqual(wallet.selectedAccount.publicKey);
-    expect(signedTx.signSignature).toBeTruthy();
+    expect(signedTx.senderPubData).toEqual(wallet.selectedAccount.publicKey);
+    expect(signedTx.signatures).toBeTruthy();
   });
 });
 

@@ -408,6 +408,7 @@ export default class WalletStore {
     // TODO fix types in dpos-offline
     return Rise.txs.transform({
       kind: 'second-signature-v2',
+      // @ts-ignore TODO
       publicKey: wallet2.publicKey,
       sender: account.toSenderObject()
     });
@@ -425,6 +426,7 @@ export default class WalletStore {
 
     return Rise.txs.transform({
       kind: 'send-v2',
+      // @ts-ignore TODO
       amount: amount.toString(),
       recipient: recipientId as RecipientId,
       sender: account.toSenderObject()
@@ -454,6 +456,7 @@ export default class WalletStore {
     return Rise.txs.transform({
       kind: 'vote-v2',
       sender: account.toSenderObject(),
+      // @ts-ignore TODO
       preferences: [
         ...(account.votedDelegate
           ? [
@@ -503,6 +506,7 @@ export default class WalletStore {
     return Rise.txs.transform({
       kind: 'register-delegate-v2',
       sender: account.toSenderObject(),
+      // @ts-ignore TODO
       identifier: username as string & As<'delegateName'>
     });
   }

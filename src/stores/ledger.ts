@@ -168,7 +168,7 @@ export default class LedgerStore {
 
       const account = await this.getAccountUnsafe(accountSlot, false);
 
-      unsignedTx.senderPublicKey = Buffer.from(
+      unsignedTx.senderPubData = Buffer.from(
         account.publicKey,
         'hex'
       ) as Buffer & As<'publicKey'>;
@@ -179,7 +179,7 @@ export default class LedgerStore {
       try {
         log('confirming on the ledger, check the device');
         const signature = await comm.signTX(accountPath, txBytes);
-        unsignedTx.signature = signature as Buffer & As<'signature'>;
+        unsignedTx.signatures = [signature as Buffer & As<'signature'>];
         signedTx = Rise.txs.toPostable(unsignedTx);
       } catch (e) {
         log('LedgerConfirmError', e);
