@@ -2,11 +2,12 @@ import * as assert from 'assert';
 import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
 import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
 import {
-  RiseTransaction as GenericRiseTransaction,
-  PostableRiseTransaction as GenericPostableRiseTransaction,
+  RiseV2Transaction as GenericRiseTransaction,
+  PostableRiseV2Transaction as GenericPostableRiseTransaction,
   RecipientId,
   Rise
 } from 'dpos-offline';
+import { RiseV2 } from 'dpos-offline/src/codecs/rise';
 import { isMobile } from 'is-mobile';
 import { get, pick } from 'lodash';
 import {
@@ -404,8 +405,9 @@ export default class WalletStore {
     assert(account, 'Account required');
     const wallet2 = Rise.deriveKeypair(passphrase);
 
+    // TODO fix types in dpos-offline
     return Rise.txs.transform({
-      kind: 'second-signature',
+      kind: 'second-signature-v2',
       publicKey: wallet2.publicKey,
       sender: account.toSenderObject()
     });
@@ -422,7 +424,7 @@ export default class WalletStore {
     assert(account, 'Account required');
 
     return Rise.txs.transform({
-      kind: 'send',
+      kind: 'send-v2',
       amount: amount.toString(),
       recipient: recipientId as RecipientId,
       sender: account.toSenderObject()
@@ -448,8 +450,9 @@ export default class WalletStore {
       await this.loadVotedDelegate(account.id);
     }
 
+    // TODO fix types in dpos-offline
     return Rise.txs.transform({
-      kind: 'vote',
+      kind: 'vote-v2',
       sender: account.toSenderObject(),
       preferences: [
         ...(account.votedDelegate
@@ -496,8 +499,9 @@ export default class WalletStore {
       throw new Error('Already registered as a delegate');
     }
 
+    // TODO fix types in dpos-offline
     return Rise.txs.transform({
-      kind: 'register-delegate',
+      kind: 'register-delegate-v2',
       sender: account.toSenderObject(),
       identifier: username as string & As<'delegateName'>
     });
@@ -508,9 +512,14 @@ export default class WalletStore {
     mnemonic: string,
     passphrase: string | null = null
   ): PostableRiseTransaction {
-    const signedTx = Rise.txs.sign(unsignedTx, mnemonic);
+    const signedTx = RiseV2.txs.sign(unsignedTx, mnemonic);
     if (passphrase) {
-      signedTx.signSignature = Rise.txs.calcSignature(signedTx, passphrase);
+      signedTx.signatures.push(
+        RiseV2.txs.calc2ndSignature(
+          unsignedTx,
+          RiseV2.deriveKeypair(passphrase)
+        )
+      );
     }
     return Rise.txs.toPostable(signedTx);
   }
