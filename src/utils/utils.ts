@@ -16,6 +16,7 @@ export function unixToTimestamp(timestamp: number) {
   return new Date((timestamp - epoch) * 1000).getTime() / 1000;
 }
 
+// TODO verify using `bech32-buffer` or `dpos-offline`
 export function normalizeAddress(address: string): string {
   const normalizedAddress = address.trim().toUpperCase();
   if (!normalizedAddress.match(/^\d{1,20}R$/)) {
