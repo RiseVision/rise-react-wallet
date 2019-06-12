@@ -255,6 +255,22 @@ export const onboardingInstallToHomeScreenRoute = new Route<RootStore>({
   )
 });
 
+export const onboardingImportExportRoute = new Route<RootStore>({
+  path: '/onboarding/import-export',
+  component: (
+    <AsyncComponent
+      name="./containers/onboarding"
+      resolve={() => import('./containers/onboarding')}
+      loading={<LoadingIndicator />}
+      render={(components: TOnboardingComponents) => (
+        <components.Onboarding>
+          <components.ImportExportPage />
+        </components.Onboarding>
+      )}
+    />
+  )
+});
+
 // wallet
 
 export const accountsListRoute = new Route({

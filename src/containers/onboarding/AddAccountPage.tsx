@@ -5,6 +5,7 @@ import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import AppsIcon from '@material-ui/icons/Apps';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import ServerNetworkIcon from 'mdi-material-ui/ServerNetwork';
+import ImportExportIcon from 'mdi-material-ui/SwapVertical';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -19,7 +20,7 @@ import {
   onboardingSecurityNoticeRoute,
   accountOverviewNoIDRoute,
   onboardingChooseNetworkRoute,
-  onboardingInstallToHomeScreenRoute
+  onboardingInstallToHomeScreenRoute, onboardingImportExportRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
 import LedgerStore from '../../stores/ledger';
@@ -33,7 +34,7 @@ const styles = createStyles({
   titleIcon: {
     margin: '-4px 4px'
   },
-  nodeIcon: {
+  icon: {
     margin: '0 3px',
     color: '#999'
   }
@@ -233,7 +234,7 @@ class AddAccountPage extends React.Component<Props> {
                 onBeforeNavigate={this.handleBeforeNavigate}
               >
                 <ListItem button={true}>
-                  <AppsIcon className={classes.nodeIcon} />
+                  <AppsIcon className={classes.icon} />
                   <ListItemText>
                     <FormattedMessage
                       id="onboarding-add-account.install-to-homescreen"
@@ -253,7 +254,7 @@ class AddAccountPage extends React.Component<Props> {
                 onBeforeNavigate={this.handleBeforeNavigate}
               >
                 <ListItem button={true}>
-                  <AppsIcon className={classes.nodeIcon} />
+                  <AppsIcon className={classes.icon} />
                   <ListItemText>
                     <FormattedMessage
                       id="onboarding-add-account.install-to-desktop"
@@ -266,11 +267,27 @@ class AddAccountPage extends React.Component<Props> {
               </Link>
             )}
           <Link
+            route={onboardingImportExportRoute}
+            onBeforeNavigate={this.handleBeforeNavigate}
+          >
+            <ListItem button={true}>
+              <ImportExportIcon className={classes.icon} />
+              <ListItemText>
+                <FormattedMessage
+                  id="onboarding-add-account.import-export"
+                  description="Import / Export button label"
+                  defaultMessage="Import / Export accounts"
+                />
+              </ListItemText>
+              <ChevronRight />
+            </ListItem>
+          </Link>
+          <Link
             route={onboardingChooseNetworkRoute}
             onBeforeNavigate={this.handleBeforeNavigate}
           >
             <ListItem button={true}>
-              <ServerNetworkIcon className={classes.nodeIcon} />
+              <ServerNetworkIcon className={classes.icon} />
               <ListItemText>
                 <FormattedMessage
                   id="onboarding-add-account.select-node"

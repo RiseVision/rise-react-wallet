@@ -139,14 +139,17 @@ class DrawerContent extends React.Component<DecoratedProps> {
     );
 
     const list = allAccounts.splice(0, maxAccounts);
+
     // Make sure that the selected account is always visible...
-    if (!list.includes(selectedAccount)) {
-      if (!list[list.length - 1].pinned) {
-        // ... either by replacing the last item with the selected account
-        list.splice(list.length - 1, 1, selectedAccount);
-      } else {
-        // ... or appending it as the last item (we don't want to replace pinned accounts)
-        list.push(selectedAccount);
+    if (allAccounts.length > 1) {
+      if (!list.includes(selectedAccount)) {
+        if (!list[list.length - 1].pinned) {
+          // ... either by replacing the last item with the selected account
+          list.splice(list.length - 1, 1, selectedAccount);
+        } else {
+          // ... or appending it as the last item (we don't want to replace pinned accounts)
+          list.push(selectedAccount);
+        }
       }
     }
 
