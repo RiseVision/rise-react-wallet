@@ -14,7 +14,6 @@ import {
 import Switch from '@material-ui/core/Switch';
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import Link from '../../components/Link';
@@ -31,7 +30,7 @@ import {
 import { accountStore } from '../../stores';
 import AccountStore, { AccountType, LoadingState } from '../../stores/account';
 import LedgerStore from '../../stores/ledger';
-import { RouteLink } from '../../stores/root';
+import RouterStore, { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
 import AccountNameDialog from './AccountNameDialog';
 import AddSecondPassphraseDialog from './AddSecondPassphraseDialog';

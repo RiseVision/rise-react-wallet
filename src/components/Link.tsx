@@ -1,7 +1,7 @@
 import { Overwrite } from '@material-ui/core';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import RootStore, { RouteLink } from '../stores/root';
+import RouterStore, { RouteLink } from '../stores/router';
 
 type BaseProps = Overwrite<
   RouteLink,
@@ -20,7 +20,7 @@ interface Props extends BaseProps {
 }
 
 interface PropsInjected extends Props {
-  store: RootStore;
+  routerStore: RouterStore;
 }
 
 /**
@@ -29,7 +29,7 @@ interface PropsInjected extends Props {
  * and associates the navigation logic with the onClick handler and populates the
  * href attribute.
  */
-@inject('store')
+@inject('routerStore')
 @observer
 class Link extends React.Component<Props> {
   get injected(): PropsInjected {
@@ -59,7 +59,7 @@ class Link extends React.Component<Props> {
   }
 
   handleClick = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-    const { store } = this.injected;
+    const { routerStore } = this.injected;
     const routeLink = this.routeLink;
 
     const isMiddleMouse = ev.button === 2;
@@ -69,7 +69,7 @@ class Link extends React.Component<Props> {
 
     if (!isBrowserNavigation && routeLink) {
       ev.preventDefault();
-      store.navigateTo(routeLink);
+      routerStore.navigateTo(routeLink);
     }
   }
 
@@ -82,7 +82,7 @@ class Link extends React.Component<Props> {
       onAfterNavigate,
       onClick,
       children,
-      store,
+      routerStore,
       ...passthroughProps
     } = this.injected;
 
@@ -92,7 +92,7 @@ class Link extends React.Component<Props> {
     if (routeLink) {
       overrideProps = {
         component: 'a',
-        href: store.linkUrl(routeLink),
+        href: routerStore.linkUrl(routeLink),
         // compose onClick if a handler passed
         onClick: onClick
           ? (e: React.MouseEvent<HTMLAnchorElement>) => {

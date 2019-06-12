@@ -1,7 +1,6 @@
 import { Rise } from 'dpos-offline';
 import { reaction, IReactionDisposer, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import AddSecondPassphraseDialogContent from '../../components/content/AddSecondPassphraseDialogContent';
 import {
@@ -11,7 +10,7 @@ import {
 import { accountSettingsPassphraseRoute } from '../../routes';
 import AccountStore, { AccountType } from '../../stores/account';
 import LedgerStore from '../../stores/ledger';
-import RootStore, { RouteLink } from '../../stores/root';
+import RouterStore, { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 
@@ -22,7 +21,6 @@ interface Props {
 }
 
 interface PropsInjected extends Props {
-  store: RootStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
   ledgerStore: LedgerStore;
@@ -36,10 +34,9 @@ interface State extends ICloseInterruptControllerState {
   };
 }
 
-@inject('store')
+@inject('ledgerStore')
 @inject('routerStore')
 @inject('walletStore')
-@inject('ledgerStore')
 @observer
 class AddSecondPassphraseDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
@@ -67,8 +64,8 @@ class AddSecondPassphraseDialog extends React.Component<Props, State>
       return true;
     }
 
-    const { navigateBackLink, store } = this.injected;
-    store.navigateTo(navigateBackLink);
+    const { navigateBackLink, routerStore } = this.injected;
+    routerStore.navigateTo(navigateBackLink);
     return false;
   }
 

@@ -786,7 +786,7 @@ context('URLs', () => {
     });
   });
 
-  it.only('send intent link', () => {
+  it('send intent link', () => {
     cy.visit(`${url}/send/?address=1R&amount=0.1`);
     getDialogInput(0).then(input => {
       // TODO assert with a real address

@@ -10,7 +10,6 @@ import { createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography/Typography';
 import { observable, action, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import {
   defineMessages,
@@ -29,7 +28,7 @@ import { accountSettingsLedgerRoute } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore from '../../stores/account';
 import LedgerStore from '../../stores/ledger';
-import RootStore, { RouteLink } from '../../stores/root';
+import RouterStore, { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
 import autoId from '../../utils/autoId';
 
@@ -47,7 +46,6 @@ interface PropsInjected extends Props {
   routerStore: RouterStore;
   walletStore: WalletStore;
   ledgerStore: LedgerStore;
-  store: RootStore;
 }
 
 interface State {
@@ -141,7 +139,6 @@ const messages = defineMessages({
 @inject('walletStore')
 @inject('routerStore')
 @inject('ledgerStore')
-@inject('store')
 @observer
 class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
   @autoId dialogContentId: string;
@@ -235,7 +232,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
 
   handleCloseButton = () => {
     this.onClose();
-    this.injected.store.navigateTo(this.injected.navigateBackLink);
+    this.injected.routerStore.navigateTo(this.injected.navigateBackLink);
   }
 
   render() {

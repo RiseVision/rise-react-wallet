@@ -10,8 +10,8 @@ import Dialog, {
 import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
 import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
-import RootStore from '../../stores/root';
 import LedgerStore from '../../stores/ledger';
+import RouterStore from '../../stores/router';
 import WalletStore, {
   PostableRiseTransaction,
   RiseTransaction,
@@ -42,9 +42,9 @@ interface Props extends DialogProps {
 }
 
 interface PropsInjected extends Props {
-  store: RootStore;
-  walletStore: WalletStore;
   ledgerStore: LedgerStore;
+  routerStore: RouterStore;
+  walletStore: WalletStore;
 }
 
 interface State extends ICloseInterruptControllerState {
@@ -54,9 +54,9 @@ interface State extends ICloseInterruptControllerState {
   sendError: string;
 }
 
-@inject('store')
-@inject('walletStore')
 @inject('ledgerStore')
+@inject('routerStore')
+@inject('walletStore')
 @observer
 class ConfirmTransactionDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
@@ -103,11 +103,11 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   goBack = () => {
-    const { store, onNavigateBack, navigateBackLink } = this.injected;
+    const { routerStore, onNavigateBack, navigateBackLink } = this.injected;
     if (onNavigateBack) {
       onNavigateBack();
     } else if (navigateBackLink) {
-      store.navigateTo(navigateBackLink);
+      routerStore.navigateTo(navigateBackLink);
     }
   }
 
@@ -129,13 +129,13 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     this.dialogWillClose();
 
     // navigation part
-    const { store, onClose, onCloseRoute } = this.injected;
+    const { routerStore, onClose, onCloseRoute } = this.injected;
     if (onClose) {
       onClose(ev);
     } else if (onCloseRoute) {
       // Fallback to the closeLink as we use this event handler for the
       // dialog content close buttons as well
-      store.navigateTo(onCloseRoute);
+      routerStore.navigateTo(onCloseRoute);
     }
     return false;
   }

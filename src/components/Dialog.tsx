@@ -8,7 +8,7 @@ import {
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { ReactElement } from 'react';
-import RootStore, { RouteLink } from '../stores/root';
+import RouterStore, { RouteLink } from '../stores/router';
 import autoId from '../utils/autoId';
 import { PropsOf } from '../utils/metaTypes';
 import ModalPaperHeader from './ModalPaperHeader';
@@ -38,7 +38,7 @@ interface Props extends BaseProps {
 }
 
 interface PropsInjected extends Props {
-  store: RootStore;
+  routerStore: RouterStore;
 }
 
 interface State {
@@ -48,7 +48,7 @@ interface State {
 
 const stylesDecorator = withStyles(styles);
 
-@inject('store')
+@inject('routerStore')
 @observer
 class Dialog extends React.Component<Props, State> {
   @autoId dialogTitleId: string;
@@ -71,7 +71,7 @@ class Dialog extends React.Component<Props, State> {
   }
 
   handleCloseDialog = (ev: React.SyntheticEvent<{}>) => {
-    const { onClose, onCloseRoute, store } = this.injected;
+    const { onClose, onCloseRoute, routerStore } = this.injected;
 
     if (onClose) {
       // @ts-ignore
@@ -90,7 +90,7 @@ class Dialog extends React.Component<Props, State> {
     }
 
     if (onCloseRoute) {
-      store.navigateTo(onCloseRoute);
+      routerStore.navigateTo(onCloseRoute);
     }
     return false;
   }

@@ -2,18 +2,17 @@ import { Delegate } from 'dpos-api-wrapper';
 import { throttle, sampleSize } from 'lodash';
 import { reaction, IReactionDisposer, observe, Lambda } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
 import LedgerStore from '../../stores/ledger';
+import RouterStore, { RouteLink } from '../../stores/router';
 import { normalizeAddress } from '../../utils/utils';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
-import RootStore, { RouteLink } from '../../stores/root';
 import AccountStore, { LoadingState, AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
@@ -24,7 +23,6 @@ interface Props {
 }
 
 interface PropsInjected extends Props {
-  store: RootStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
   ledgerStore: LedgerStore;
@@ -45,7 +43,6 @@ interface State extends ICloseInterruptControllerState {
   };
 }
 
-@inject('store')
 @inject('routerStore')
 @inject('walletStore')
 @inject('ledgerStore')
@@ -157,8 +154,8 @@ class VoteDelegateDialog extends React.Component<Props, State>
       return true;
     }
 
-    const { store, navigateBackLink } = this.injected;
-    store.navigateTo(navigateBackLink);
+    const { routerStore, navigateBackLink } = this.injected;
+    routerStore.navigateTo(navigateBackLink);
     return false;
   }
 

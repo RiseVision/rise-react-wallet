@@ -1,9 +1,9 @@
-import { RouterStore } from 'mobx-router-rise';
 import AccountStore from './account';
 import AddressBookStore from './addressBook';
 import LangStore from './lang';
 import OnboardingStore from './onboarding';
 import RootStore from './root';
+import RouterStore from './router';
 import WalletStore from './wallet';
 import LedgerStore from './ledger';
 

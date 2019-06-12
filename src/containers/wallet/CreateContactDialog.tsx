@@ -1,6 +1,5 @@
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import CreateContactDialogContent, {
   TSubmitData
@@ -11,7 +10,7 @@ import Dialog, {
 } from '../../components/Dialog';
 import { addressBookCreateRoute } from '../../routes';
 import AddressBookStore from '../../stores/addressBook';
-import RootStore, { RouteLink } from '../../stores/root';
+import RouterStore, { RouteLink } from '../../stores/router';
 
 interface Props {
   address?: string;
@@ -20,14 +19,12 @@ interface Props {
 }
 
 interface InjectedProps extends Props {
-  store: RootStore;
   routerStore: RouterStore;
   addressBookStore: AddressBookStore;
 }
 
 interface State extends ICloseInterruptControllerState {}
 
-@inject('store')
 @inject('routerStore')
 @inject('addressBookStore')
 @observer
@@ -41,9 +38,9 @@ class CreateContactDialog extends React.Component<Props, State>
 
   @action
   handleCreate = (data: TSubmitData) => {
-    const { navigateBackLink, store, addressBookStore } = this.injected;
+    const { navigateBackLink, routerStore, addressBookStore } = this.injected;
     addressBookStore.setContact(data.address, data.name);
-    store.navigateTo(navigateBackLink);
+    routerStore.navigateTo(navigateBackLink);
   }
 
   checkAddressExists = (address: string): boolean => {
