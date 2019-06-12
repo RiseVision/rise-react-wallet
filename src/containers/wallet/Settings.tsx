@@ -163,7 +163,7 @@ const messages = defineMessages({
     id: 'account-settings.verify-mnemonic',
     description:
       'Label for opening a dialog verifying the account\'s mnemonic',
-    defaultMessage: 'Verify the mnemonic'
+    defaultMessage: 'Verify your mnemonic'
   },
   delegateRegistrationUnsetLabel: {
     id: 'account-settings.delegate-registration-unset-label',
@@ -427,7 +427,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
               >
                 <ListItem button={true}>
                   <ListItemText
-                    primary={intl.formatMessage(messages.ledgerAddress)}
+                    primary={intl.formatMessage(messages.verifyMnemonic)}
                   />
                 </ListItem>
               </Link>

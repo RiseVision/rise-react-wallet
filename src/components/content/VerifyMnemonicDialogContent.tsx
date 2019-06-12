@@ -1,22 +1,23 @@
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import autoId from '../../utils/autoId';
+import AccountTip from '../AccountTip';
 import {
   DialogContentProps,
   SetDialogContent,
   ICloseInterruptFormProps
 } from '../Dialog';
-import autoId from '../../utils/autoId';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -44,12 +45,29 @@ const messages = defineMessages({
   mnemonicField: {
     id: 'verify-mnemonic-dialog-content.mnemonic-input-label',
     description: 'Mnemonic text field label',
-    defaultMessage: 'Mnemonic'
+    defaultMessage: 'Secret mnemonic'
+  },
+  mnemonicIncorrect: {
+    id: 'verify-mnemonic-dialog-content.mnemonic-input-error',
+    description: 'Mnemonic text field error message',
+    defaultMessage: 'Your secret mnemonic did\'t match with this account'
   },
   verifyButton: {
-    id: 'verify-mnemonic-dialog-content.update-button-label',
+    id: 'verify-mnemonic-dialog-content.verify-button-label',
     description: 'Verify mnemonic button label',
     defaultMessage: 'Verify Mnemonic'
+  },
+  closeButton: {
+    id: 'verify-mnemonic-dialog-content.close-button-label',
+    description:
+      'Close dialog button label once the mnemonic has been verified',
+    defaultMessage: 'Close dialog'
+  },
+  verified: {
+    id: 'verify-mnemonic-dialog-content.verified-msg',
+    description: 'Message visible after the mnemonic has been verified',
+    defaultMessage:
+      'Provided secret mnemonic matches the one assigned with this account, all OK.'
   }
 });
 
@@ -59,13 +77,16 @@ interface Props extends BaseProps, ICloseInterruptFormProps {
   account: {
     address: string;
   };
-  onSubmit(account: { address: string; mnemonic: string }): void;
+  closeDialog(): void;
+  onSubmit(account: { address: string; mnemonic: string }): boolean;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface State {
   mnemonic: string;
+  error: boolean;
+  verified: boolean;
 }
 
 class VerifyMnemonicDialogContent extends React.Component<
@@ -75,7 +96,9 @@ class VerifyMnemonicDialogContent extends React.Component<
   @autoId dialogContentId: string;
 
   state = {
-    mnemonic: ''
+    mnemonic: '',
+    error: false,
+    verified: false
   };
 
   handleNameChange = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -87,11 +110,21 @@ class VerifyMnemonicDialogContent extends React.Component<
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    const { onSubmit, account } = this.props;
-    const { mnemonic } = this.state;
-    onSubmit({
+    const { onSubmit, account, closeDialog } = this.props;
+    const { mnemonic, verified } = this.state;
+
+    if (verified) {
+      closeDialog();
+      return;
+    }
+
+    const match = onSubmit({
       address: account.address,
       mnemonic: mnemonic.trim()
+    });
+    this.setState({
+      error: !match,
+      verified: match
     });
   }
 
@@ -107,7 +140,8 @@ class VerifyMnemonicDialogContent extends React.Component<
   render() {
     const { intl, classes, account } = this.props;
 
-    const { mnemonic } = this.state;
+    const { mnemonic, error, verified } = this.state;
+
     return (
       <Grid
         className={classes.content}
@@ -116,30 +150,53 @@ class VerifyMnemonicDialogContent extends React.Component<
         component="form"
         onSubmit={this.handleFormSubmit}
       >
-        <Grid item={true} xs={12}>
-          <Typography
-            id={this.dialogContentId}
-            children={intl.formatMessage(messages.instructions, {
-              address: account.address
-            })}
-          />
-        </Grid>
-        <Grid item={true} xs={12}>
-          <TextField
-            label={intl.formatMessage(messages.mnemonicField)}
-            autoFocus={true}
-            value={mnemonic}
-            onChange={this.handleNameChange}
-            fullWidth={true}
-          />
-        </Grid>
-        <Grid item={true} xs={12}>
-          <Button
-            type="submit"
-            fullWidth={true}
-            children={intl.formatMessage(messages.verifyButton)}
-          />
-        </Grid>
+        {/* NOT VERIFIED */ !verified && (
+          <React.Fragment>
+            <Grid item={true} xs={12}>
+              <Typography
+                id={this.dialogContentId}
+                children={intl.formatMessage(messages.instructions, {
+                  address: account.address
+                })}
+              />
+            </Grid>
+            <Grid item={true} xs={12}>
+              <TextField
+                label={intl.formatMessage(messages.mnemonicField)}
+                autoFocus={true}
+                error={error}
+                helperText={
+                  error && intl.formatMessage(messages.mnemonicIncorrect)
+                }
+                value={mnemonic}
+                onChange={this.handleNameChange}
+                fullWidth={true}
+              />
+            </Grid>
+            <Grid item={true} xs={12}>
+              <Button
+                type="submit"
+                fullWidth={true}
+                children={intl.formatMessage(messages.verifyButton)}
+              />
+            </Grid>
+          </React.Fragment>
+        )}
+        {/*VERIFIED*/ verified && (
+          <React.Fragment>
+            <AccountTip
+              open={true}
+              message={intl.formatMessage(messages.verified)}
+            />
+            <Grid item={true} xs={12}>
+              <Button
+                type="submit"
+                fullWidth={true}
+                children={intl.formatMessage(messages.closeButton)}
+              />
+            </Grid>
+          </React.Fragment>
+        )}
       </Grid>
     );
   }

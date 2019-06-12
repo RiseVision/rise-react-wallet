@@ -33,6 +33,7 @@ import AccountStore, { AccountType, LoadingState } from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
 import WalletStore from '../../stores/wallet';
 
+// TODO move to the config
 const HIGH_VALUE_ACCOUNT_THRESHOLD = RawAmount.fromUnit(1000);
 
 const styles = (theme: Theme) =>

@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import { InjectedIntl } from 'react-intl';
 import { isNaN } from 'lodash';
 import { RawAmount } from './amounts';
+import { Rise } from 'dpos-offline';
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
@@ -143,4 +144,8 @@ export function formatFiat(
     style: 'currency',
     currency
   });
+}
+
+export function derivePublicKey(secret: string): string {
+  return Rise.deriveKeypair(secret).publicKey.toString('hex');
 }

@@ -13,6 +13,7 @@ import AccountStore, { AccountType } from '../../stores/account';
 import LedgerStore from '../../stores/ledger';
 import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
+import { derivePublicKey } from '../../utils/utils';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 
 interface Props {
@@ -207,7 +208,3 @@ class AddSecondPassphraseDialog extends React.Component<Props, State>
 }
 
 export default AddSecondPassphraseDialog;
-
-function derivePublicKey(secret: string): string {
-  return Rise.deriveKeypair(secret).publicKey.toString('hex');
-}

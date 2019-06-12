@@ -1,4 +1,3 @@
-import { Rise } from 'dpos-offline';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
@@ -11,7 +10,8 @@ import Dialog, {
 } from '../../components/Dialog';
 import { accountSettingsVerifyMnemonicRoute } from '../../routes';
 import AccountStore from '../../stores/account';
-import { RouteLink } from '../../stores/root';
+import RootStore, { RouteLink } from '../../stores/root';
+import { derivePublicKey } from '../../utils/utils';
 
 interface Props {
   account: AccountStore;
@@ -20,11 +20,13 @@ interface Props {
 }
 
 interface InjectedProps extends Props {
+  store: RootStore;
   routerStore: RouterStore;
 }
 
 interface State extends ICloseInterruptControllerState {}
 
+@inject('store')
 @inject('routerStore')
 @observer
 class VerifyMnemonicDialog extends React.Component<Props>
@@ -42,9 +44,12 @@ class VerifyMnemonicDialog extends React.Component<Props>
     const { account } = this.injected;
     // TODO verify that the mnemonic matches the public key
     const publicKey = account.publicKey as string & As<'publicKey'>;
-    const match =
-      Rise.deriveKeypair(data.mnemonic).publicKey.toString('hex') === publicKey;
-    return match;
+    return derivePublicKey(data.mnemonic) === publicKey;
+  }
+
+  closeDialog = () => {
+    const { navigateBackLink, store } = this.injected;
+    store.navigateTo(navigateBackLink);
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
@@ -73,6 +78,7 @@ class VerifyMnemonicDialog extends React.Component<Props>
             address: account.id
           }}
           onSubmit={this.handleSubmit}
+          closeDialog={this.closeDialog}
         />
       </Dialog>
     );
