@@ -16,7 +16,7 @@ import { RouterStore } from 'mobx-router-rise';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import { RouteLink } from '../../stores/root';
+import { RouteLink } from '../../stores/router';
 import { RawAmount } from '../../utils/amounts';
 import AccountNameDialog from './AccountNameDialog';
 import CreateContactDialog from './CreateContactDialog';

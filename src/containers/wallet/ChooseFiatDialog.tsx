@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import { accountSettingsFiatRoute } from '../../routes';
 import Dialog, {
   ICloseInterruptControllerState,
   ICloseInterruptController
 } from '../../components/Dialog';
 import AccountStore from '../../stores/account';
-import RootStore, { RouteLink } from '../../stores/root';
+import RouterStore, { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
 import ChooseFiatDialogContent from '../../components/content/ChooseFiatDialogContent';
 
@@ -19,14 +18,12 @@ interface Props {
 }
 
 interface InjectedProps extends Props {
-  store: RootStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
 }
 
 interface State extends ICloseInterruptControllerState {}
 
-@inject('store')
 @inject('routerStore')
 @inject('walletStore')
 @observer
@@ -40,7 +37,7 @@ class ChooseFiatDialog extends React.Component<Props, State>
 
   @action
   handleSubmit = (data: { fiat: string; global: boolean }) => {
-    const { account, navigateBackLink, store, walletStore } = this.injected;
+    const { account, navigateBackLink, routerStore, walletStore } = this.injected;
 
     if (data.global) {
       for (const acc of walletStore.accounts.values()) {
@@ -50,7 +47,7 @@ class ChooseFiatDialog extends React.Component<Props, State>
       account.fiatCurrency = data.fiat;
     }
 
-    store.navigateTo(navigateBackLink);
+    routerStore.navigateTo(navigateBackLink);
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {

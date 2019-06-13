@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import { addressBookRemoveRoute } from '../../routes';
 import Dialog from '../../components/Dialog';
-import RootStore, { RouteLink } from '../../stores/root';
 import AddressBookStore from '../../stores/addressBook';
 import RemoveContactDialogContent from '../../components/content/RemoveContactDialogContent';
+import RouterStore, { RouteLink } from '../../stores/router';
 import { normalizeAddress } from '../../utils/utils';
 
 interface Props {
@@ -15,12 +14,10 @@ interface Props {
 }
 
 interface InjectedProps extends Props {
-  store: RootStore;
   routerStore: RouterStore;
   addressBookStore: AddressBookStore;
 }
 
-@inject('store')
 @inject('addressBookStore')
 @inject('routerStore')
 @observer
@@ -34,9 +31,9 @@ class RemoveContactDialog extends React.Component<Props> {
 
   @action
   handleConfirm = () => {
-    const { navigateBackLink, store, addressBookStore } = this.injected;
+    const { navigateBackLink, routerStore, addressBookStore } = this.injected;
     addressBookStore.contacts.delete(this.address);
-    store.navigateTo(navigateBackLink);
+    routerStore.navigateTo(navigateBackLink);
   }
 
   render() {

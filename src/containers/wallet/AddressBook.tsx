@@ -32,7 +32,7 @@ import {
   accountSendRoute
 } from '../../routes';
 import AddressBookStore from '../../stores/addressBook';
-import { RouteLink } from '../../stores/root';
+import { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
 import { AccountType } from '../../stores/account';
 import CreateContactDialog from './CreateContactDialog';

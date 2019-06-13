@@ -1,17 +1,16 @@
 import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import { addressBookModifyRoute } from '../../routes';
 import Dialog, {
   ICloseInterruptControllerState,
   ICloseInterruptController
 } from '../../components/Dialog';
 import AddressBookStore from '../../stores/addressBook';
-import RootStore, { RouteLink } from '../../stores/root';
 import ModifyContactDialogContent, {
   TSubmitData
 } from '../../components/content/ModifyContactDialogContent';
+import RouterStore, { RouteLink } from '../../stores/router';
 
 interface Props {
   navigateBackLink: RouteLink;
@@ -20,7 +19,6 @@ interface Props {
 }
 
 interface InjectedProps extends Props {
-  store: RootStore;
   routerStore: RouterStore;
   addressBookStore: AddressBookStore;
 }
@@ -49,9 +47,9 @@ export default class ModifyContactDialog extends React.Component<Props, State>
 
   @action
   handleEdit = (data: TSubmitData) => {
-    const { navigateBackLink, store, addressBookStore } = this.injected;
+    const { navigateBackLink, routerStore, addressBookStore } = this.injected;
     addressBookStore.setContact(data.address, data.name);
-    store.navigateTo(navigateBackLink);
+    routerStore.navigateTo(navigateBackLink);
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {

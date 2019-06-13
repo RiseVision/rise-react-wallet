@@ -12,8 +12,8 @@ import * as classNames from 'classnames';
 import * as React from 'react';
 import { ReactEventHandler } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import { RouteLink } from '../stores/router';
 import Link from './Link';
-import { RouteLink } from '../stores/root';
 
 const styles = (theme: Theme) =>
   createStyles({

@@ -1,16 +1,15 @@
 import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
 import LedgerStore from '../../stores/ledger';
+import RouterStore, { RouteLink } from '../../stores/router';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import RegisterDelegateDialogContent from '../../components/content/RegisterDelegateDialogContent';
 import { accountSettingsDelegateRoute } from '../../routes';
-import RootStore, { RouteLink } from '../../stores/root';
 import AccountStore, { LoadingState, AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
@@ -21,10 +20,9 @@ interface Props {
 }
 
 interface PropsInjected extends Props {
-  store: RootStore;
+  ledgerStore: LedgerStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
-  ledgerStore: LedgerStore;
 }
 
 interface State extends ICloseInterruptControllerState {
@@ -35,10 +33,9 @@ interface State extends ICloseInterruptControllerState {
   };
 }
 
-@inject('store')
+@inject('ledgerStore')
 @inject('routerStore')
 @inject('walletStore')
-@inject('ledgerStore')
 @observer
 class RegisterDelegateDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
@@ -67,8 +64,8 @@ class RegisterDelegateDialog extends React.Component<Props, State>
       return true;
     }
 
-    const { navigateBackLink, store } = this.injected;
-    store.navigateTo(navigateBackLink);
+    const { navigateBackLink, routerStore } = this.injected;
+    routerStore.navigateTo(navigateBackLink);
     return false;
   }
 

@@ -1,6 +1,5 @@
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import AccountNameDialogContent from '../../components/content/AccountNameDialogContent';
 import Dialog, {
@@ -9,7 +8,7 @@ import Dialog, {
 } from '../../components/Dialog';
 import { accountSettingsNameRoute } from '../../routes';
 import AccountStore from '../../stores/account';
-import RootStore, { RouteLink } from '../../stores/root';
+import RouterStore, { RouteLink } from '../../stores/router';
 
 interface Props {
   account: AccountStore;
@@ -18,13 +17,11 @@ interface Props {
 }
 
 interface InjectedProps extends Props {
-  store: RootStore;
   routerStore: RouterStore;
 }
 
 interface State extends ICloseInterruptControllerState {}
 
-@inject('store')
 @inject('routerStore')
 @observer
 class AccountNameDialog extends React.Component<Props>
@@ -39,9 +36,9 @@ class AccountNameDialog extends React.Component<Props>
 
   @action
   handleSubmit = (data: { name: string }) => {
-    const { account, navigateBackLink, store } = this.injected;
+    const { account, navigateBackLink, routerStore } = this.injected;
     account.name = data.name;
-    store.navigateTo(navigateBackLink);
+    routerStore.navigateTo(navigateBackLink);
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
