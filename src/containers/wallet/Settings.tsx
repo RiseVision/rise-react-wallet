@@ -25,7 +25,8 @@ import {
   accountSettingsRemoveRoute,
   accountSettingsVoteRoute,
   accountSettingsFiatRoute,
-  accountSettingsLedgerRoute
+  accountSettingsLedgerRoute,
+  accountSettingsVerifyMnemonicRoute
 } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore, { AccountType, LoadingState } from '../../stores/account';
@@ -38,6 +39,7 @@ import ChooseFiatDialog from './ChooseFiatDialog';
 import RegisterDelegateDialog from './RegisterDelegateDialog';
 import RemoveAccountDialog from './RemoveAccountDialog';
 import VerifyLedgerDialog from './VerifyLedgerDialog';
+import VerifyMnemonicDialog from './VerifyMnemonicDialog';
 import VoteDelegateDialog from './VoteDelegateDialog';
 
 const styles = (theme: Theme) =>
@@ -156,6 +158,12 @@ const messages = defineMessages({
       'Label for opening a dialog verifying the address on the ledger',
     defaultMessage: 'Verify Ledger Nano'
   },
+  verifyMnemonic: {
+    id: 'account-settings.verify-mnemonic',
+    description:
+      'Label for opening a dialog verifying the account\'s mnemonic',
+    defaultMessage: 'Verify your mnemonic'
+  },
   delegateRegistrationUnsetLabel: {
     id: 'account-settings.delegate-registration-unset-label',
     description: 'Label for delegate registration unset',
@@ -258,6 +266,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
           navigateBackLink={backLink}
         />
         <VerifyLedgerDialog
+          account={this.account}
+          navigateBackLink={backLink}
+        />
+        <VerifyMnemonicDialog
           account={this.account}
           navigateBackLink={backLink}
         />
@@ -401,6 +413,20 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
                 <ListItem button={true}>
                   <ListItemText
                     primary={intl.formatMessage(messages.ledgerAddress)}
+                  />
+                </ListItem>
+              </Link>
+            )}
+            {account.publicKey && (
+              <Link
+                route={accountSettingsVerifyMnemonicRoute}
+                params={{
+                  id: this.account.id
+                }}
+              >
+                <ListItem button={true}>
+                  <ListItemText
+                    primary={intl.formatMessage(messages.verifyMnemonic)}
                   />
                 </ListItem>
               </Link>

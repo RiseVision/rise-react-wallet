@@ -34,7 +34,7 @@ const messages = defineMessages({
   dialogTitle: {
     id: 'account-name-dialog-content.dialog-title',
     description: 'Account name dialog title',
-    defaultMessage: 'Update account name'
+    defaultMessage: 'Update Account Name'
   },
   instructions: {
     id: 'account-name-dialog-content.instructions',
