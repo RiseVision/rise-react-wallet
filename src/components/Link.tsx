@@ -16,6 +16,7 @@ interface Props extends BaseProps {
       component: React.ReactType;
     }
   >;
+  onClick?(ev: React.MouseEvent<HTMLAnchorElement>): void;
 }
 
 interface PropsInjected extends Props {
@@ -79,6 +80,7 @@ class Link extends React.Component<Props> {
       queryParams,
       onBeforeNavigate,
       onAfterNavigate,
+      onClick,
       children,
       store,
       ...passthroughProps
@@ -91,7 +93,13 @@ class Link extends React.Component<Props> {
       overrideProps = {
         component: 'a',
         href: store.linkUrl(routeLink),
-        onClick: this.handleClick
+        // compose onClick if a handler passed
+        onClick: onClick
+          ? (e: React.MouseEvent<HTMLAnchorElement>) => {
+              onClick(e);
+              this.handleClick(e);
+            }
+          : this.handleClick
       };
     }
 

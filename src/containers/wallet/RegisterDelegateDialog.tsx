@@ -6,11 +6,12 @@ import {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
+import LedgerStore from '../../stores/ledger';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import RegisterDelegateDialogContent from '../../components/content/RegisterDelegateDialogContent';
 import { accountSettingsDelegateRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';
-import AccountStore, { LoadingState } from '../../stores/account';
+import AccountStore, { LoadingState, AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
@@ -23,6 +24,7 @@ interface PropsInjected extends Props {
   store: RootStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 interface State extends ICloseInterruptControllerState {
@@ -36,6 +38,7 @@ interface State extends ICloseInterruptControllerState {
 @inject('store')
 @inject('routerStore')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class RegisterDelegateDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
@@ -48,6 +51,10 @@ class RegisterDelegateDialog extends React.Component<Props, State>
 
   get injected(): PropsInjected {
     return this.props as PropsInjected;
+  }
+
+  get account(): AccountStore {
+    return this.injected.account;
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
@@ -84,6 +91,11 @@ class RegisterDelegateDialog extends React.Component<Props, State>
 
   handleUsernameCommit = () => {
     const { usernameInput } = this.state;
+
+    // ledger requires to be open in a click handler
+    if (this.account.type === AccountType.LEDGER) {
+      this.injected.ledgerStore.open();
+    }
 
     this.setState({
       step: 'transaction',

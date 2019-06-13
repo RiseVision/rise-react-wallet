@@ -8,12 +8,13 @@ import {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
+import LedgerStore from '../../stores/ledger';
 import { normalizeAddress } from '../../utils/utils';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';
-import AccountStore, { LoadingState } from '../../stores/account';
+import AccountStore, { LoadingState, AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
 
 interface Props {
@@ -26,6 +27,7 @@ interface PropsInjected extends Props {
   store: RootStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 interface State extends ICloseInterruptControllerState {
@@ -46,11 +48,16 @@ interface State extends ICloseInterruptControllerState {
 @inject('store')
 @inject('routerStore')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class VoteDelegateDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
   get injected(): PropsInjected {
     return this.props as PropsInjected;
+  }
+
+  get account(): AccountStore {
+    return this.injected.account;
   }
 
   get isOpen() {
@@ -178,6 +185,11 @@ class VoteDelegateDialog extends React.Component<Props, State>
   handleSelectDelegate = (delegate: Delegate) => {
     const { account } = this.injected;
     const { votedDelegate } = account;
+
+    // ledger requires to be open in a click handler
+    if (this.account.type === AccountType.LEDGER) {
+      this.injected.ledgerStore.open();
+    }
 
     let removeNames = [];
     let addNames = [];

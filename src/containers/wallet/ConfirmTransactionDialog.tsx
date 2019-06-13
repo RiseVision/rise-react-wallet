@@ -1,17 +1,17 @@
-import { Rise } from 'dpos-offline';
 import { observable, runInAction, reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
-import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
+import { Rise } from 'dpos-offline';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog, {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
+import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
+import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
-import LedgerStore from '../../stores/ledger';
 import RootStore from '../../stores/root';
+import LedgerStore from '../../stores/ledger';
 import WalletStore, {
   PostableRiseTransaction,
   RiseTransaction,
@@ -254,18 +254,14 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   dialogWillOpen() {
-    const { account, ledgerStore } = this.injected;
-
     if (this.open) {
       return;
     }
     this.open = true;
-    // open the ledger
-    if (account.type === AccountType.LEDGER) {
-      ledgerStore.open();
-    }
+    const { account } = this.injected;
 
     if (account.type === AccountType.LEDGER) {
+      // TODO change reaction to a state change listener
       this.disposeLedgerMonitor = reaction(
         this.canSignOnLedger,
         this.beginLedgerSigning
@@ -274,16 +270,12 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   dialogWillClose() {
-    const { account, ledgerStore } = this.injected;
-
     if (!this.open) {
       return;
     }
     this.open = false;
     // close the ledger
-    if (account.type === AccountType.LEDGER) {
-      ledgerStore.close();
-    }
+    this.injected.ledgerStore.close();
 
     if (this.disposeLedgerMonitor !== null) {
       this.disposeLedgerMonitor();
@@ -296,16 +288,14 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   canSignOnLedger = () => {
-    const { transaction, account, ledgerStore } = this.injected;
+    const { transaction, ledgerStore } = this.injected;
     const { step } = this.state;
 
     return (
       step === 'confirm' &&
       transaction !== null &&
       ledgerStore.hasSupport &&
-      account.hwId !== null &&
-      ledgerStore.isOpen &&
-      ledgerStore.deviceId === account.hwId
+      ledgerStore.isOpen
     );
   }
 
@@ -317,6 +307,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     if (
       !ledgerStore.isOpen ||
       !this.canSignOnLedger() ||
+      // !this.canSignOnLedger() ||
       account.hwSlot === null
     ) {
       return;
@@ -450,12 +441,10 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
         senderAddress={account.id}
       >
         {account.type === AccountType.LEDGER ? (
-          !ledgerStore.isOpen || !ledgerStore.hasSupport ? (
+          !ledgerStore.hasSupport ? (
             <ConfirmTxStatusFooter type="ledger-not-supported" />
-          ) : ledgerStore.deviceId === null ? (
+          ) : !ledgerStore.isOpen ? (
             <ConfirmTxStatusFooter type="ledger-not-connected" />
-          ) : ledgerStore.deviceId !== account.hwId ? (
-            <ConfirmTxStatusFooter type="ledger-another-device" />
           ) : (
             <ConfirmTxStatusFooter
               type="ledger-confirming"

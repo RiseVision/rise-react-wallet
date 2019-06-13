@@ -67,13 +67,8 @@ class AddAccountPage extends React.Component<Props> {
     onboardingStore.reset();
   }
 
-  componentWillMount() {
-    // establish communication with a ledger
+  handleAddLedgerClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     this.injected.ledgerStore.open();
-  }
-
-  componentWillUnmount() {
-    this.injected.ledgerStore.close();
   }
 
   render() {
@@ -191,6 +186,7 @@ class AddAccountPage extends React.Component<Props> {
           <Link
             route={onboardingLedgerAccount}
             onBeforeNavigate={this.handleBeforeNavigate}
+            onClick={this.handleAddLedgerClick}
           >
             <ListItem button={true}>
               <ListItemText

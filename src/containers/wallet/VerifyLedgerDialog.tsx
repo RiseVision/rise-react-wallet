@@ -8,7 +8,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import { createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography/Typography';
-import { IReactionDisposer, observable, action } from 'mobx';
+import { observable, action, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
@@ -73,11 +73,12 @@ const stylesDecorator = withStyles(styles, {
 });
 
 const messages = defineMessages({
-  connectInstructions: {
+  connectInstructionsV2: {
     id: 'verify-ledger-address.connect-instructions',
     description:
       'Text instructing the user to open the RISE app on their Ledger device',
-    defaultMessage: 'Connect your Ledger & open the RISE app on it.'
+    defaultMessage:
+      'Connect your Ledger, open the RISE app and click Discover Device below.'
   },
   unsupportedBrowser: {
     id: 'verify-ledger-address.unsupported-browser',
@@ -148,7 +149,6 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     confirmed: false
   };
   open: boolean = false;
-  private disposeLedgerChangeMonitor: null | IReactionDisposer = null;
   private countdownId: null | number = null;
   @observable private countdownSeconds: number = 0;
   @observable private timeout: null | Date = null;
@@ -167,16 +167,16 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       return;
     }
     this.open = true;
-    this.setState({ confirmed: false });
-    const { ledgerStore, intl } = this.injected;
-    ledgerStore.open();
+    const { intl } = this.injected;
 
     SetDialogContent(this, {
       title: intl.formatMessage(messages.dialogTitle),
       contentId: this.dialogContentId
     });
+  }
 
-    this.handleVerifyLedger();
+  onDiscoverLedger = () => {
+    this.injected.ledgerStore.open();
   }
 
   onClose = () => {
@@ -184,13 +184,15 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       return;
     }
     this.open = false;
-    if (this.disposeLedgerChangeMonitor) {
-      this.disposeLedgerChangeMonitor();
-      this.disposeLedgerChangeMonitor = null;
-    }
-
-    this.injected.ledgerStore.open();
-    this.setState({ confirmed: false });
+    this.injected.ledgerStore.close();
+    runInAction(() => {
+      this.timeout = null;
+    });
+    // TODO temp hack, remove once onOpen isnt called by render
+    //   (which is also a hack)
+    setTimeout(() => {
+      this.setState({ confirmed: false });
+    });
   }
 
   @action
@@ -214,19 +216,19 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
 
   handleVerifyLedger = async () => {
     const { ledgerStore } = this.injected;
-    if (!ledgerStore.deviceId || this.state.confirmed) {
+    if (!ledgerStore.device || this.state.confirmed || this.timeout) {
       return;
     }
 
-    this.timeout = new Date(new Date().getTime() + 25000);
+    this.timeout = new Date(
+      new Date().getTime() + ledgerStore.confirmationTimeout
+    );
     this.updateSelectionCountdown();
 
     try {
       const confirmed = await ledgerStore.confirmAccount(this.account!.hwSlot!);
       this.setState({ confirmed });
     } catch (e) {
-      // TODO debug
-      console.log(e);
       // silent
     }
   }
@@ -246,16 +248,19 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       ledgerStore
     } = this.injected;
     const account = this.account;
-    let deviceId;
+    let device;
     let confirmed;
 
+    this.handleVerifyLedger();
+
+    // TODO refactor and inherit, call outside of render()
     const isOpen =
       open || routerStore.currentView === accountSettingsLedgerRoute;
 
     if (isOpen) {
       this.onOpen();
 
-      deviceId = ledgerStore.deviceId;
+      device = ledgerStore.device;
       confirmed = this.state.confirmed;
     } else if (this.open) {
       // TODO dialog doesnt call onClose if onCloseRoute is passed along
@@ -276,16 +281,16 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
               />
             </Grid>
           </Grid>
-        ) : !deviceId ? (
+        ) : !device ? (
           <Grid container={true} className={classes.content} spacing={16}>
             <Grid item={true} xs={12}>
               <Typography
-                children={intl.formatMessage(messages.connectInstructions)}
+                children={intl.formatMessage(messages.connectInstructionsV2)}
               />
             </Grid>
             <Grid item={true} xs={12}>
               <div className={classes.noPadding}>
-                <LedgerConnectIllustration />
+                <LedgerConnectIllustration onClick={this.onDiscoverLedger} />
               </div>
             </Grid>
             <Grid item={true} xs={12}>

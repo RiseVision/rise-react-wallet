@@ -30,6 +30,7 @@ import {
 } from '../../routes';
 import { accountStore } from '../../stores';
 import AccountStore, { AccountType, LoadingState } from '../../stores/account';
+import LedgerStore from '../../stores/ledger';
 import { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
 import AccountNameDialog from './AccountNameDialog';
@@ -67,6 +68,7 @@ interface PropsInjected extends Props {
   accountStore: AccountStore;
   routerStore: RouterStore;
   walletStore: WalletStore;
+  ledgerStore: LedgerStore;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -170,6 +172,7 @@ const messages = defineMessages({
 @inject(accountStore)
 @inject('routerStore')
 @inject('walletStore')
+@inject('ledgerStore')
 @observer
 class AccountSettings extends React.Component<DecoratedProps, State> {
   state: State = {
@@ -187,6 +190,10 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
   }
 
   // CLICK HANDLERS
+
+  handleVerifyLedgerClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    this.injected.ledgerStore.open();
+  }
 
   handlePinnedClicked = () => {
     runInAction(() => {
@@ -387,6 +394,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             {accountType === AccountType.LEDGER && (
               <Link
                 route={accountSettingsLedgerRoute}
+                onClick={this.handleVerifyLedgerClick}
                 params={{
                   id: this.account.id
                 }}

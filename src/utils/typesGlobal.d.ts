@@ -1,4 +1,4 @@
-///<reference path="../../desktop/node_modules/electron/electron.d.ts"/>
+///<reference path="../../node_modules/@types/w3c-web-usb/index.d.ts"/>
 
 declare const ipcRenderer: Electron.IpcRenderer;
 // absolute modules path for electronRequire
@@ -11,4 +11,9 @@ declare function electronRequire(module: string): any;
 declare var carlo: any;
 interface Window {
   riseRelease: string | null;
+}
+
+declare module '@ledgerhq/hw-transport-webusb' {
+  const e: any;
+  export default e;
 }

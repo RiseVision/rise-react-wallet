@@ -7,7 +7,7 @@ import { RawAmount } from './amounts';
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
-BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
+BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 export function timestampToUnix(timestamp: number) {
   return new Date((timestamp + epoch) * 1000).getTime();
@@ -79,7 +79,7 @@ export function normalizeNumber(intl: InjectedIntl, value: string): string {
     if (isNaN(n.toNumber())) {
       return '';
     }
-    const minSafe = BigNumber.max(n, new BigNumber(0.00000001))
+    const minSafe = BigNumber.max(n, new BigNumber(0.00000001));
     return minSafe.toString();
   } catch (e) {
     return '';
