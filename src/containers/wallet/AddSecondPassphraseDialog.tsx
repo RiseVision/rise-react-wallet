@@ -1,4 +1,3 @@
-import { Rise } from 'dpos-offline';
 import { reaction, IReactionDisposer, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
@@ -114,9 +113,9 @@ class AddSecondPassphraseDialog extends React.Component<Props, State>
     const { transaction } = this.state;
     const { account } = this.injected;
     // set the passphrase locally
-    const kp = Rise.deriveKeypair(transaction!.passphrase!);
+    const publicKey = derivePublicKey(transaction!.passphrase!);
     runInAction(() => {
-      account.secondPublicKey = kp.publicKey.toString('hex');
+      account.secondPublicKey = publicKey;
       account.secondSignature = true;
     });
   }

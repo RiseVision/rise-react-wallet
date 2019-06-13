@@ -1,6 +1,5 @@
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
 import * as React from 'react';
 import { As } from 'type-tagger';
 import VerifyMnemonicDialogContent from '../../components/content/VerifyMnemonicDialogContent';
@@ -10,7 +9,7 @@ import Dialog, {
 } from '../../components/Dialog';
 import { accountSettingsVerifyMnemonicRoute } from '../../routes';
 import AccountStore from '../../stores/account';
-import RootStore, { RouteLink } from '../../stores/root';
+import RouterStore, { RouteLink } from '../../stores/router';
 import { derivePublicKey } from '../../utils/utils';
 
 interface Props {
@@ -20,13 +19,11 @@ interface Props {
 }
 
 interface InjectedProps extends Props {
-  store: RootStore;
   routerStore: RouterStore;
 }
 
 interface State extends ICloseInterruptControllerState {}
 
-@inject('store')
 @inject('routerStore')
 @observer
 class VerifyMnemonicDialog extends React.Component<Props>
@@ -48,8 +45,8 @@ class VerifyMnemonicDialog extends React.Component<Props>
   }
 
   closeDialog = () => {
-    const { navigateBackLink, store } = this.injected;
-    store.navigateTo(navigateBackLink);
+    const { navigateBackLink, routerStore } = this.injected;
+    routerStore.navigateTo(navigateBackLink);
   }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {

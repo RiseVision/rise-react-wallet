@@ -3,12 +3,13 @@ import * as moment from 'moment/min/moment-with-locales';
 import BigNumber from 'bignumber.js';
 import { InjectedIntl } from 'react-intl';
 import { isNaN } from 'lodash';
+import { As } from 'type-tagger';
 import { RawAmount } from './amounts';
 import { Rise } from 'dpos-offline';
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
-BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
+BigNumber.config({ EXPONENTIAL_AT: 1e9 });
 
 export function timestampToUnix(timestamp: number) {
   return new Date((timestamp + epoch) * 1000).getTime();
@@ -148,6 +149,7 @@ export function formatFiat(
   });
 }
 
-export function derivePublicKey(secret: string): string {
-  return Rise.deriveKeypair(secret).publicKey.toString('hex');
+export function derivePublicKey(secret: string): string & As<'publicKey'> {
+  const publicKey = Rise.deriveKeypair(secret).publicKey.toString('hex');
+  return publicKey as string & As<'publicKey'>;
 }

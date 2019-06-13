@@ -413,11 +413,11 @@ export default class WalletStore {
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
-    const wallet2 = Rise.deriveKeypair(passphrase);
+    const keys = Rise.deriveKeypair(passphrase);
 
     return Rise.txs.transform({
       kind: 'second-signature',
-      publicKey: wallet2.publicKey,
+      publicKey: keys.publicKey,
       sender: account.toSenderObject()
     });
   }
@@ -900,6 +900,22 @@ export default class WalletStore {
     this.login(account.id, account, true);
     return account.id;
   }
+
+  // TODO this should work, but break the unit tests
+  //  Rise.calcAddress to blame
+  // @action
+  // registerAccount(mnemonic: string[]) {
+  //   const publicKey = derivePublicKey(mnemonic.join(' '));
+  //
+  //   const account = {
+  //     id: Rise.calcAddress(publicKey),
+  //     publicKey,
+  //     type: AccountType.MNEMONIC
+  //   };
+  //   // pass async
+  //   this.login(account.id, account, true);
+  //   return account.id;
+  // }
 
   @action
   removeAccount(id: string) {

@@ -17,6 +17,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { derivePublicKey } from '../utils/utils';
 import AccountTip from './AccountTip';
 
 const styles = (theme: Theme) =>
@@ -190,13 +191,13 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
     // The derivation takes some CPU cycles, so only do it after the empty check
     let isValid = false;
     if (mnemonic) {
-      const derivedKey = Rise.deriveKeypair(mnemonic).publicKey;
+      const derivedKey = derivePublicKey(mnemonic);
 
       if (publicKey) {
         // Prefer to validate against the account publicKey
-        isValid = derivedKey.toString('hex') === publicKey;
+        isValid = derivedKey === publicKey;
       } else {
-        // Fallback to comparing addresses instead of publicKEy
+        // Fallback to comparing addresses instead of publicKey
         isValid = Rise.calcAddress(derivedKey) === address;
       }
     }
@@ -221,8 +222,8 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
     // The derivation takes some CPU cycles, so only do it after the empty check
     let isValid = false;
     if (passphrase) {
-      const derivedKey = Rise.deriveKeypair(passphrase).publicKey;
-      isValid = derivedKey.toString('hex') === secondPublicKey;
+      const publicKey = derivePublicKey(passphrase);
+      isValid = publicKey === secondPublicKey;
     }
 
     if (isValid) {

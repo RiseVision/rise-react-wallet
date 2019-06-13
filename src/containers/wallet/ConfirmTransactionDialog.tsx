@@ -1,7 +1,6 @@
 import { observable, runInAction, reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import { Rise } from 'dpos-offline';
 import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog, {
   ICloseInterruptController,
@@ -19,6 +18,7 @@ import WalletStore, {
 } from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import { PropsOf } from '../../utils/metaTypes';
+import { derivePublicKey } from '../../utils/utils';
 
 type Secrets = {
   mnemonic: string;
@@ -151,9 +151,9 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
 
     // Ensure that the account publicKey is set
     if (!account.publicKey) {
-      const kp = Rise.deriveKeypair(secrets.mnemonic);
+      const publicKey = derivePublicKey(secrets.mnemonic);
       runInAction(() => {
-        account.publicKey = kp.publicKey.toString('hex');
+        account.publicKey = publicKey;
       });
     }
 
