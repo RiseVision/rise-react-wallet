@@ -25,7 +25,9 @@ interface InjectedProps extends Props {
   addressBookStore: AddressBookStore;
 }
 
-interface State extends ICloseInterruptControllerState {}
+interface State extends ICloseInterruptControllerState {
+  formChanged: boolean;
+}
 
 @inject('store')
 @inject('routerStore')
@@ -33,7 +35,11 @@ interface State extends ICloseInterruptControllerState {}
 @observer
 class CreateContactDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
+  // TODO move to state
   address?: string;
+  state: State = {
+    formChanged: false
+  };
 
   private get injected(): InjectedProps {
     return this.props as InjectedProps;
@@ -50,8 +56,7 @@ class CreateContactDialog extends React.Component<Props, State>
     return this.injected.addressBookStore.contacts.has(address);
   }
 
-  handleClose = (ev: React.SyntheticEvent<{}>) => {
-    // @ts-ignore
+  handleClose = (ev: React.KeyboardEvent) => {
     const tagName = ev.currentTarget.tagName;
     const isButton =
       tagName && tagName.toLowerCase() === 'button' && ev.type === 'click';
@@ -74,11 +79,13 @@ class CreateContactDialog extends React.Component<Props, State>
       this.address = this.injected.address;
     }
 
+    // TODO required to keep the proper context, see #235
+    const onClose = this.handleClose.bind(this);
     return (
       <Dialog
         open={isOpen}
         onCloseRoute={navigateBackLink}
-        onClose={this.handleClose}
+        onClose={onClose}
       >
         <CreateContactDialogContent
           onFormChanged={this.handleFormChanged}

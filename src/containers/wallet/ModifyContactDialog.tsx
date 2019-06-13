@@ -25,7 +25,9 @@ interface InjectedProps extends Props {
   addressBookStore: AddressBookStore;
 }
 
-interface State extends ICloseInterruptControllerState {}
+interface State extends ICloseInterruptControllerState {
+  formChanged: boolean;
+}
 
 @inject('store')
 @inject('routerStore')
@@ -33,10 +35,13 @@ interface State extends ICloseInterruptControllerState {}
 @observer
 export default class ModifyContactDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
+  // TODO move to state?
   address?: string;
   name?: string;
 
-  state: State = {};
+  state: State = {
+    formChanged: false
+  };
 
   private get injected(): InjectedProps {
     return this.props as InjectedProps;
