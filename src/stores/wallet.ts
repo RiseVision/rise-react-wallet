@@ -204,6 +204,7 @@ export default class WalletStore {
     }
     // init the API
     dposAPI.nodeAddress = this.nodeAddress;
+    dposAPI.timeout = 10 * 1000;
     this.dposAPI = dposAPI;
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
@@ -329,12 +330,17 @@ export default class WalletStore {
   @action
   // refreshes the fees from the server
   async updateFees() {
-    const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule();
-    runInAction(() => {
-      for (const [fee, value] of Object.entries(fees.fees)) {
-        this.fees.set(fee as TFeeTypes, new RawAmount(value));
-      }
-    });
+    try {
+      const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule();
+      runInAction(() => {
+        for (const [fee, value] of Object.entries(fees.fees)) {
+          this.fees.set(fee as TFeeTypes, new RawAmount(value));
+        }
+      });
+    } catch {
+      console.error(`Couldn't load fees`);
+      // TODO try to redo later
+    }
   }
 
   async checkNodesNethash(nodeURL: string): Promise<string> {
