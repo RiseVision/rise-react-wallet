@@ -35,7 +35,7 @@ import {
   timestampToUnix
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
-import AddressBookStore from './addressBook';
+import AddressBookStore, { TStoredContact } from './addressBook';
 import { TConfig } from './index';
 import LangStore from './lang';
 import { Transaction } from './transactions';
@@ -56,6 +56,11 @@ function nextAccountLocalId(): number {
   lstore.set('nextAccountId', accountId + 1);
   return accountId;
 }
+
+type TExportJSON = {
+  accounts: TStoredAccount[];
+  contacts: TStoredContact[];
+};
 
 export default class WalletStore {
   dposAPI: APIWrapper;
@@ -1053,6 +1058,49 @@ export default class WalletStore {
       }
     }
     return this.suggestedDelegates;
+  }
+
+  exportData(includeContacts: boolean = true): TExportJSON {
+    const json: TExportJSON = {
+      accounts: [],
+      contacts: []
+    };
+    if (includeContacts) {
+      json.contacts = this.addressBook.asArray;
+    }
+    json.accounts = this.storedAccounts();
+    return json;
+  }
+
+  importData(data: TExportJSON, override: boolean = false) {
+    const accounts: TStoredAccount[] = override
+      ? []
+      : JSON.parse(lstore.set('accounts') || '[]');
+    const contacts: TStoredContact[] = override
+      ? []
+      : JSON.parse(lstore.set('contacts') || '[]');
+
+    // accounts
+    for (const item of data.accounts) {
+      const found = accounts.find(el => el.id === item.id);
+      if (!found) {
+        accounts.push(item);
+      }
+    }
+
+    // contacts
+    for (const item of data.contacts) {
+      const found = contacts.find(el => el.id === item.id);
+      if (!found) {
+        contacts.push(item);
+      }
+    }
+
+    lstore.set('accounts', accounts);
+    lstore.set('contacts', contacts);
+
+    // force reload the whole wallet
+    this.reload();
   }
 }
 

@@ -12,6 +12,7 @@ import SecurityNoticePage from './SecurityNoticePage';
 import VerifyMnemonicPage from './VerifyMnemonicPage';
 import ChooseNetworkPage from './ChooseNetworkPage';
 import InstallToHomeScreen from './InstallToHomeScreen';
+import ImportExportPage from './ImportExportPage';
 
 export {
   Onboarding,
@@ -27,5 +28,6 @@ export {
   MnemonicAccountPage,
   LedgerAccountPage,
   ChooseNetworkPage,
-  InstallToHomeScreen
+  InstallToHomeScreen,
+  ImportExportPage
 };

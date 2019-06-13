@@ -8,7 +8,7 @@ export default class AddressBookStore {
   @observable contacts = observable.map<string, string>();
 
   @computed
-  get asArray(): { id: string; name: string }[] {
+  get asArray(): TStoredContact[] {
     return [...this.contacts.entries()].map(([id, name]) => ({
       id,
       name
