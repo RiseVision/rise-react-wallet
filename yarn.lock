@@ -1743,6 +1743,11 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
+bech32-buffer@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/bech32-buffer/-/bech32-buffer-0.1.2.tgz#1a00dbf6ce81c7282d277001f035c7c3bd27dcc1"
+  integrity sha512-WPSZN/HiNxlPsjDLu02arCdC6ZF0IMU/0aG5QJiV/JCaeDAcP1royrltQCpQeYtcYRlWvhFA8SZcV6RlUuAkjQ==
+
 better-assert@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/better-assert/-/better-assert-1.0.2.tgz#40866b9e1b9e0b55b481894311e68faffaebc522"
@@ -3398,11 +3403,12 @@ dpos-ledger-api@^3.0.1:
     bip32-path "^0.4.2"
     crc "^3.5.0"
 
-dpos-offline@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-2.0.2.tgz#5a3697af61b75859915363b0ff2ffb7fd5640981"
-  integrity sha512-lBlBFSCioDZrKWN7GzowacfeySZK5k/s56JMFG2Q0p8CTqbTC80lYoJ3w2XZK1KtknPLb2WNFlEzqyXvCPOP6Q==
+dpos-offline@2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-2.0.7.tgz#912601e1afe3d3fb0261f7a930d82a3c3952c4d2"
+  integrity sha512-Mr0JMxJFENV5spoWBvsygW6IL3esH9Ty0t5XCP7Gwj2Q2nAPDwuketUYkyzxrRTqB9thM8LjipPJuCqLGx9J+w==
   dependencies:
+    bech32-buffer "^0.1.2"
     bytebuffer "^5.0.1"
     is-empty "^1.2.0"
     long "^4.0.0"

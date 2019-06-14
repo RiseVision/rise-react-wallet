@@ -32,7 +32,8 @@ import {
   TAddressRecord,
   TAddressSource,
   isMainnet,
-  timestampToUnix
+  timestampToUnix,
+  derivePublicKey
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore, { TStoredContact } from './addressBook';
@@ -889,33 +890,17 @@ export default class WalletStore {
 
   @action
   registerAccount(mnemonic: string[]) {
-    const wallet = Rise.deriveKeypair(mnemonic.join(' '));
+    const publicKey = derivePublicKey(mnemonic.join(' '));
 
     const account = {
-      id: Rise.calcAddress(wallet.publicKey),
-      publicKey: wallet.publicKey.toString('hex'),
+      id: Rise.calcAddress(publicKey),
+      publicKey,
       type: AccountType.MNEMONIC
     };
     // pass async
     this.login(account.id, account, true);
     return account.id;
   }
-
-  // TODO this should work, but break the unit tests
-  //  Rise.calcAddress to blame
-  // @action
-  // registerAccount(mnemonic: string[]) {
-  //   const publicKey = derivePublicKey(mnemonic.join(' '));
-  //
-  //   const account = {
-  //     id: Rise.calcAddress(publicKey),
-  //     publicKey,
-  //     type: AccountType.MNEMONIC
-  //   };
-  //   // pass async
-  //   this.login(account.id, account, true);
-  //   return account.id;
-  // }
 
   @action
   removeAccount(id: string) {
