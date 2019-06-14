@@ -957,7 +957,6 @@ export default class WalletStore {
   ): Promise<Transaction[]> {
     let res: TTransactionsResponse | TErrorResponse;
     if (confirmed) {
-      // @ts-ignore TODO type errors in dposAPI
       res = await this.dposAPI.transactions.getList(params);
       if (!res.success) {
         // @ts-ignore
@@ -976,7 +975,7 @@ export default class WalletStore {
         this.nodeAddress
       }/api/transactions/unconfirmed?${queryString.stringify(params)}`;
       // TODO switch to dposAPI once it supports params for unconfirmed
-      // transactions
+      //   transactions
       const rawRes = await this.fetch(url);
       res = await rawRes.json();
     }
