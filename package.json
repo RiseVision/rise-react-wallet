@@ -57,7 +57,7 @@
     "start-http": "HTTPS=0 react-scripts-ts start",
     "build": "react-scripts-ts build",
     "bundle": "cd desktop; yarn bundle",
-    "deploy-now": "yarn build; cd build && now && now alias rise-wallet",
+    "deploy-now": "yarn build; cp -f now.json build; cd build && now --target production",
     "cypress": "cypress open",
     "test": "run-p --race serve test-cypress",
     "test-ci": "run-p --race serve test-cypress:record",
