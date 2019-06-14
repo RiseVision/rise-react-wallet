@@ -106,7 +106,7 @@ class ImportExportPage extends React.Component<Props, State> {
         importError: true
       });
     }
-  };
+  }
 
   handleExport = (event: React.MouseEvent<HTMLElement>) => {
     const { exportContactsChecked } = this.state;
@@ -115,19 +115,19 @@ class ImportExportPage extends React.Component<Props, State> {
       type: 'application/json'
     });
     saveAs(blob, `rise-wallet-${moment().toISOString()}.json`);
-  };
+  }
 
   handleImportOverrideClick = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       importOverride: !this.state.importOverride
     });
-  };
+  }
 
   handleExportContactsClick = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       exportContactsChecked: !this.state.exportContactsChecked
     });
-  };
+  }
 
   render() {
     const { classes } = this.injected;
@@ -197,7 +197,7 @@ class ImportExportPage extends React.Component<Props, State> {
             <FormattedMessage
               id="onboarding-import-export.import-override"
               description={
-                "Notice emphasizing that there's no undo after overriding"
+                'Notice emphasizing that there\'s no undo after overriding'
               }
               defaultMessage="Overriding cannot be undone!"
             />
@@ -208,8 +208,8 @@ class ImportExportPage extends React.Component<Props, State> {
           <Button component="span" fullWidth={true}>
             <FormattedMessage
               id="onboarding-import-export.title"
-              description="Choose network screen title"
-              defaultMessage="Upload"
+              description="Button caption for selecting a file"
+              defaultMessage="Select file"
             />
           </Button>
         </label>
@@ -230,7 +230,7 @@ class ImportExportPage extends React.Component<Props, State> {
               id="onboarding-import-export.import-error"
               description="Message when import was NOT successful"
               defaultMessage={
-                "Something wen't wrong. Check the file and try again."
+                'Something wen\'t wrong. Check the file and try again.'
               }
             />
           </Typography>
