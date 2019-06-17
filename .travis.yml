@@ -7,7 +7,7 @@ cache:
   - node_modules
   - desktop/node_modules
   - "~/.cache/Cypress"
-  - build
+  #- build
 before_install:
 - openssl aes-256-cbc -K $encrypted_63d69a2d54d1_key -iv $encrypted_63d69a2d54d1_iv
   -in cypress/fixtures/accounts.json.enc -out cypress/fixtures/accounts.json -d
@@ -40,7 +40,6 @@ jobs:
     name: E2E tests
     script:
     - yarn run test-ci
-    -
 deploy:
   - provider: releases
     skip_cleanup: true
@@ -56,7 +55,7 @@ deploy:
   - provider: pages
     verbose: true
     local-dir: build
-    skip-cleanup: true
+    skip_cleanup: true
     github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
     on:
       branch: master
