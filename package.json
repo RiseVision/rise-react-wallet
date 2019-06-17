@@ -73,7 +73,7 @@
     "intl:import": "bash scripts/intl-import.sh",
     "tsc": "tsc --project tsconfig.prod.json",
     "tslint": "tslint --fix --project tslint.prod.json 'src/**/*.{ts,tsx}'",
-    "precommit": "yarn tsc && yarn prettier && yarn tslint && yarn test-unit:prepare && yarn test-unit",
+    "precommit": "yarn tsc; yarn prettier; yarn tslint; yarn test-unit:prepare; yarn test-unit; yarn intl:prepare",
     "prettier": "prettier src/**.{ts,tsx} --write",
     "serve": "node src/serve.js & local-ssl-proxy --source 3000 --target 5000",
     "encrypt-fixtures": "travis encrypt-file cypress/fixtures/accounts.json cypress/fixtures/accounts.json.enc --add",

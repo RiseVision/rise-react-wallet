@@ -195,7 +195,7 @@ class ImportExportPage extends React.Component<Props, State> {
         {importOverride && (
           <Typography className={classes.overrideInfo}>
             <FormattedMessage
-              id="onboarding-import-export.import-override"
+              id="onboarding-import-export.import-override-confirm"
               description={
                 'Notice emphasizing that there\'s no undo after overriding'
               }
@@ -207,7 +207,7 @@ class ImportExportPage extends React.Component<Props, State> {
         <label htmlFor="import-data-file">
           <Button component="span" fullWidth={true}>
             <FormattedMessage
-              id="onboarding-import-export.title"
+              id="onboarding-import-export.select-file"
               description="Button caption for selecting a file"
               defaultMessage="Select file"
             />
@@ -282,8 +282,8 @@ class ImportExportPage extends React.Component<Props, State> {
 
           <Button component="span" fullWidth={true} onClick={this.handleExport}>
             <FormattedMessage
-              id="onboarding-import-export.title"
-              description="Choose network screen title"
+              id="onboarding-import-export.download-button"
+              description="Download exported data button title"
               defaultMessage="Download"
             />
           </Button>
