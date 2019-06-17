@@ -53,8 +53,8 @@ afterEach(() => {
 });
 
 context('Wallet', () => {
-  it('send coins', () => {
-    const id = lstore.get('accounts')[1].id;
+  it('send coins', function() {
+    const id = this.accounts.storedAccounts[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
     assertAutofocus();
@@ -211,8 +211,8 @@ context('Wallet', () => {
 });
 
 context('Server errors', () => {
-  it('error messages', () => {
-    const id = lstore.get('accounts')[1].id;
+  it('error messages', function() {
+    const id = this.accounts.storedAccounts[1].id;
     // stab the route
     cy.route({
       method: 'PUT',
@@ -234,8 +234,8 @@ context('Server errors', () => {
     assertUnsuccessfulDialog('test reason');
   });
 
-  it('retry', () => {
-    const id = lstore.get('accounts')[1].id;
+  it('retry', function() {
+    const id = this.accounts.storedAccounts[1].id;
     // stab the route
     cy.route({
       method: 'PUT',
@@ -656,7 +656,7 @@ context('Dialog navigation', function() {
   });
 
   it('no navigation buttons during a submission', function() {
-    const id = lstore.get('accounts')[1].id;
+    const id = this.accounts.storedAccounts[1].id;
     // click the Send RISE button
     cy.get('a[title="Send RISE"]').click();
     // type in the recipient address (esc closes auto-completion)

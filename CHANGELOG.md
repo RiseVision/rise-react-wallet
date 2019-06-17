@@ -2,13 +2,13 @@
 
 ### RISE Wallet 1.3 beta
 
-- ability to verify the mnemonic in the settings
-- import / export of account and contacts
+- import / export of accounts and contacts
+- verify a mnemonic in the settings
 - fixed 1e-9 input in the Send dialog
 
 ### RISE Wallet 1.2 beta 2
 
-- switched to the webusb transport for Ledger Nano (fixes #224)
+- switched to the webusb transport for Ledger Nano #224
 - misc bugfixes
 
 ### RISE Wallet 1.1.3

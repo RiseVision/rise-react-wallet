@@ -100,7 +100,7 @@
     "@types/react-intl": "^2.3.14",
     "@types/socket.io-client": "^1.4.32",
     "babel-plugin-react-intl": "^3.0.1",
-    "cypress": "^3.1.5",
+    "cypress": "^3.3.1",
     "cypress-run": "^1.0.6",
     "express": "^4.16.4",
     "gh-pages": "^2.0.1",
