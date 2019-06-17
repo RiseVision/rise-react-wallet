@@ -5,6 +5,7 @@ import { stub, mockStoredContacts } from '../utils/testHelpers';
 import { TAddressRecord } from '../utils/utils';
 import AddressBookStore from './addressBook';
 import { storedContacts } from './fixtures';
+import * as sinon from 'sinon';
 
 let stubs: sinon.SinonStub[];
 

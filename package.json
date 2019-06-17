@@ -58,7 +58,7 @@
     "deploy-now": "yarn build; cd build && now && now alias rise-wallet",
     "cypress": "cypress open",
     "test": "run-p --race serve test-cypress",
-    "test-ci": "run-p --race serve test-cypress:record",
+    "test-ci": "run-p --race serve test-cypress",
     "test-cypress": "cypress-run run",
     "test-cypress:record": "cypress-run run --record",
     "test-unit": "jest",
