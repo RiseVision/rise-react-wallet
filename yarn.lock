@@ -1738,6 +1738,11 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
+bech32-buffer@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/bech32-buffer/-/bech32-buffer-0.1.2.tgz#1a00dbf6ce81c7282d277001f035c7c3bd27dcc1"
+  integrity sha512-WPSZN/HiNxlPsjDLu02arCdC6ZF0IMU/0aG5QJiV/JCaeDAcP1royrltQCpQeYtcYRlWvhFA8SZcV6RlUuAkjQ==
+
 better-assert@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/better-assert/-/better-assert-1.0.2.tgz#40866b9e1b9e0b55b481894311e68faffaebc522"
@@ -3393,18 +3398,19 @@ dpos-ledger-api@^3.0.1:
     bip32-path "^0.4.2"
     crc "^3.5.0"
 
-dpos-offline@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-2.0.2.tgz#5a3697af61b75859915363b0ff2ffb7fd5640981"
-  integrity sha512-lBlBFSCioDZrKWN7GzowacfeySZK5k/s56JMFG2Q0p8CTqbTC80lYoJ3w2XZK1KtknPLb2WNFlEzqyXvCPOP6Q==
+dpos-offline@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/dpos-offline/-/dpos-offline-3.0.2.tgz#69e6424c3843caa47e8f961886d5969335fb4b4c"
+  integrity sha512-jY+AObpbE6pXz96av/bqQCpWvVLd3LJ/dHew1u64/zntIY2Q5YUsqglhO5vBL6t2xa/m1DfJgu52f0yasRWnwA==
   dependencies:
+    bech32-buffer "^0.1.2"
     bytebuffer "^5.0.1"
     is-empty "^1.2.0"
     long "^4.0.0"
-    tweetnacl "^1.0.0"
+    tweetnacl "^1.0.1"
     tweetnacl-util "^0.15.0"
     type-tagger "^1.0.0"
-    utility-types "^2.1.0"
+    utility-types "^3.7.0"
     varuint-bitcoin "^1.1.0"
 
 duplexer3@^0.1.4:
@@ -10055,10 +10061,10 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
   integrity sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=
 
-tweetnacl@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.0.tgz#713d8b818da42068740bf68386d0479e66fc8a7b"
-  integrity sha1-cT2LgY2kIGh0C/aDhtBHnmb8ins=
+tweetnacl@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.1.tgz#2594d42da73cd036bd0d2a54683dd35a6b55ca17"
+  integrity sha512-kcoMoKTPYnoeS50tzoqjPY3Uv9axeuuFAZY9M/9zFnhoVvRfxz9K29IMPD7jGmt2c8SW7i3gT9WqDl2+nV7p4A==
 
 type-check@~0.3.2:
   version "0.3.2"
@@ -10350,10 +10356,10 @@ utila@^0.4.0, utila@~0.4:
   resolved "https://registry.yarnpkg.com/utila/-/utila-0.4.0.tgz#8a16a05d445657a3aea5eecc5b12a4fa5379772c"
   integrity sha1-ihagXURWV6Oupe7MWxKk+lN5dyw=
 
-utility-types@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-2.1.0.tgz#0c78fc9f7eb424d14302222b4ddd13fdb17f44ab"
-  integrity sha512-/nP2gqavggo6l38rtQI/CdeV+2fmBGXVvHgj9kV2MAnms3TIi77Mz9BtapPFI0+GZQCqqom0vACQ+VlTTaCovw==
+utility-types@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-3.7.0.tgz#51f1c29fa35d4267488345706efcf3f68f2b1933"
+  integrity sha512-mqRJXN7dEArK/NZNJUubjr9kbFFVZcmF/JHDc9jt5O/aYXUVmopHYujDMhLmLil1Bxo2+khe6KAIVvDH9Yc4VA==
 
 utils-merge@1.0.1:
   version "1.0.1"

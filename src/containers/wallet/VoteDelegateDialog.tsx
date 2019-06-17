@@ -231,7 +231,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
 
     if (step === 'transaction' && transaction !== null) {
       return walletStore.createVoteTx(
-        transaction.delegate.publicKey,
+        transaction.delegate.username,
         account.id
       );
     } else {

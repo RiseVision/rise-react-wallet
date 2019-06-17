@@ -5,9 +5,8 @@ import {
   RiseV2Transaction as GenericRiseTransaction,
   PostableRiseV2Transaction as GenericPostableRiseTransaction,
   RecipientId,
-  Rise
+  Rise, RiseV2
 } from 'dpos-offline';
-import { RiseV2 } from 'dpos-offline/src/codecs/rise';
 import { isMobile } from 'is-mobile';
 import { get, pick } from 'lodash';
 import {
@@ -426,7 +425,6 @@ export default class WalletStore {
 
     return Rise.txs.transform({
       kind: 'send-v2',
-      // @ts-ignore TODO
       amount: amount.toString(),
       recipient: recipientId as RecipientId,
       sender: account.toSenderObject()
@@ -434,12 +432,12 @@ export default class WalletStore {
   }
 
   /**
-   * @param delegatePublicKey Delegate you want to vote for.
+   * @param delegateUsername The delegate username you want to vote for.
    * @param accountID Optional - the voter's account ID.
    *   Defaults to the currently selected one.
    */
   async createVoteTx(
-    delegatePublicKey: string,
+    delegateUsername: string,
     accountID?: string
   ): Promise<RiseTransaction> {
     const account = accountID
@@ -452,31 +450,25 @@ export default class WalletStore {
       await this.loadVotedDelegate(account.id);
     }
 
-    // TODO fix types in dpos-offline
+    // Create transaction that removes prev voted delegate (if available)
+    // and votes for the new delegate.
     return Rise.txs.transform({
       kind: 'vote-v2',
       sender: account.toSenderObject(),
-      // @ts-ignore TODO
       preferences: [
         ...(account.votedDelegate
           ? [
               {
                 action: '-' as '-',
-                delegateIdentifier: Buffer.from(
-                  account.votedDelegate.publicKey,
-                  'hex'
-                ) as Buffer & As<'publicKey'>
+                delegateIdentifier: account.votedDelegate.username
               }
             ]
           : []),
-        ...(!account.votedDelegate || account.votedDelegate!.publicKey
+        ...(!account.votedDelegate || account.votedDelegate!.username
           ? [
               {
                 action: '+' as '+',
-                delegateIdentifier: Buffer.from(
-                  delegatePublicKey,
-                  'hex'
-                ) as Buffer & As<'publicKey'>
+                delegateIdentifier: delegateUsername
               }
             ]
           : [])
