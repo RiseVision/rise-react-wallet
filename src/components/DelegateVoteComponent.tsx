@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import * as classNames from 'classnames';
-import { Delegate } from 'dpos-api-wrapper';
+import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
@@ -76,7 +76,11 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
-  delegate: Delegate | null;
+  delegate:
+    | Delegate & {
+        infos: DelegateInfos;
+      }
+    | null;
   hasVote: boolean;
   isLoading: boolean;
 }
@@ -140,7 +144,7 @@ class DelegateVoteComponent extends React.Component<DecoratedProps> {
     if (delegate) {
       onSubmit(delegate, !hasVote);
     }
-  }
+  };
 
   render() {
     const { intl, classes, delegate, hasVote, isLoading } = this.props;
@@ -151,15 +155,21 @@ class DelegateVoteComponent extends React.Component<DecoratedProps> {
       ? {
           username: delegate.username,
           address: delegate.address,
-          rank: intl.formatNumber(delegate.rank),
-          uptime: intl.formatNumber(delegate.productivity / 100, {
-            style: 'percent',
-            maximumFractionDigits: 2
-          }),
-          approval: intl.formatNumber(delegate.approval / 100, {
-            style: 'percent',
-            maximumFractionDigits: 2
-          })
+          rank: intl.formatNumber(delegate.infos.rankV2),
+          uptime: intl.formatNumber(
+            parseInt(delegate.infos.productivity, 10) / 100,
+            {
+              style: 'percent',
+              maximumFractionDigits: 2
+            }
+          ),
+          approval: intl.formatNumber(
+            parseInt(delegate.infos.approval, 10) / 100,
+            {
+              style: 'percent',
+              maximumFractionDigits: 2
+            }
+          )
         }
       : {
           username: 'N/A',

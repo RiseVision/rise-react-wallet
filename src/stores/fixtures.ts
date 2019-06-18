@@ -132,7 +132,7 @@ export const serverTransactionsUnconfirmed = {
       blockId: '8968901776605570983',
       type: 0,
       timestamp: 73261827,
-      senderPublicKey:
+      senderPubData:
         '491e09b538aa8d44a613bc5d23e2b6a4f93126b89c8fb8766016708af519fded',
       senderId: '5932278668828702947R',
       recipientId: '5399275477602875017R',
@@ -161,7 +161,7 @@ export const serverTransactionsConfirmed = {
       blockId: '12571019205669775789',
       type: 3,
       timestamp: 76189352,
-      senderPublicKey:
+      senderPubData:
         '023bab3e17365565d7a796291f8d3bb6878a3083ea520fbd163db713d51b44f9',
       senderId: '5932278668828702947R',
       recipientId: '5932278668828702947R',
@@ -187,7 +187,7 @@ export const serverTransactionsConfirmed = {
       blockId: '8968901776605570982',
       type: 0,
       timestamp: 73261826,
-      senderPublicKey:
+      senderPubData:
         '491e09b538aa8d44a613bc5d23e2b6a4f93126b89c8fb8766016708af519fded',
       senderId: '5932278668828702947R',
       recipientId: '5399275477602875017R',
@@ -209,7 +209,7 @@ export const serverTransactionsConfirmed = {
       blockId: '15315325139361767746',
       type: 1,
       timestamp: 73261262,
-      senderPublicKey:
+      senderPubData:
         '491e09b538aa8d44a613bc5d23e2b6a4f93126b89c8fb8766016708af519fded',
       senderId: '5932278668828702947R',
       recipientId: null,
@@ -235,7 +235,7 @@ export const serverTransactionsConfirmed = {
       blockId: '2652299302775213052',
       type: 0,
       timestamp: 73261232,
-      senderPublicKey:
+      senderPubData:
         '491e09b538aa8d44a613bc5d23e2b6a4f93126b89c8fb8766016708af519fded',
       senderId: '5932278668828702947R',
       recipientId: '2655711995542512317R',
@@ -256,7 +256,7 @@ export const serverTransactionsConfirmed = {
       blockId: '1577621231331325441',
       type: 0,
       timestamp: 73260039,
-      senderPublicKey:
+      senderPubData:
         '1db1a4d79853b86f438ad647743775788ed3f4f75ff698ecb2155e711e1137fe',
       senderId: '4221970229545791184R',
       recipientId: '5932278668828702947R',
@@ -273,6 +273,7 @@ export const serverTransactionsConfirmed = {
   ]
 };
 
+// TODO add `infos`
 export const serverDelegatesSearch = {
   success: true,
   delegates: [
@@ -391,6 +392,7 @@ export const serverDelegatesSearch = {
   ]
 };
 
+//TODO add `infos`
 export const serverAccountsDelegates = {
   success: true,
   delegates: [
@@ -410,6 +412,7 @@ export const serverAccountsDelegates = {
   ]
 };
 
+//TODO add `infos`
 export const serverDelegatesGetByPublicKey = {
   success: true,
   delegate: {
@@ -439,7 +442,7 @@ export const serverTransactionDelegates = {
       blockId: '5037878439790225029',
       type: 3,
       timestamp: 69547438,
-      senderPublicKey:
+      senderPubData:
         '023bab3e17365565d7a796291f8d3bb6878a3083ea520fbd163db713d51b44f9',
       senderId: '2655711995542512317R',
       recipientId: '2655711995542512317R',

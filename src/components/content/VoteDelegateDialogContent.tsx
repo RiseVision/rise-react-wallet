@@ -8,7 +8,7 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
-import { Delegate } from 'dpos-api-wrapper';
+import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { range } from 'lodash';
 import * as React from 'react';
 import { ReactEventHandler } from 'react';
@@ -64,13 +64,21 @@ const messages = defineMessages({
 
 type SuggestionsContent = {
   kind: 'suggestions';
-  delegates: Delegate[];
+  delegates: Array<
+    Delegate & {
+      infos: DelegateInfos;
+    }
+  >;
 };
 
 type ResultsContent = {
   kind: 'search-results';
   query: string;
-  delegates: Delegate[];
+  delegates: Array<
+    Delegate & {
+      infos: DelegateInfos;
+    }
+  >;
 };
 
 type ErrorContent = {
@@ -88,7 +96,7 @@ interface Props extends BaseProps, ICloseInterruptFormProps {
   // TODO rename to onSubmit
   onSelect: (delegate: Delegate) => void;
   isLoading: boolean;
-  votedDelegate: null | Delegate;
+  votedDelegate: Delegate | null;
   voteFee: RawAmount;
   content: Content;
 }
@@ -103,7 +111,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
     const { onQueryChange, onFormChanged } = this.props;
     onQueryChange(query);
     onFormChanged(Boolean(query));
-  }
+  };
 
   componentWillMount() {
     const { intl } = this.props;
@@ -142,7 +150,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
                   id="vote-delegate-dialog-content.insufficient-funds-error"
                   description="Error about not having enough funds to vote for a delegate"
                   defaultMessage={
-                    'You don\'t have enough funds in your account to pay the' +
+                    "You don't have enough funds in your account to pay the" +
                     ' network fee of {fee} for casting a vote for a delegate!'
                   }
                   values={{
@@ -208,7 +216,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
               const delegate = content.delegates[n] || null;
               const hasVote =
                 delegate && votedDelegate
-                  ? delegate.publicKey === votedDelegate.publicKey
+                  ? delegate.forgingPK === votedDelegate.forgingPK
                   : false;
               return (
                 <Grid

@@ -1,4 +1,4 @@
-import { Delegate } from 'dpos-api-wrapper';
+import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { throttle, sampleSize } from 'lodash';
 import { reaction, IReactionDisposer, observe, Lambda } from 'mobx';
 import { inject, observer } from 'mobx-react';
@@ -36,7 +36,11 @@ interface State extends ICloseInterruptControllerState {
   search: {
     isLoading: boolean;
     query: string;
-    delegates: Delegate[];
+    delegates: Array<
+      Delegate & {
+        infos: DelegateInfos;
+      }
+    >;
   };
   transaction: null | {
     add: string[];
@@ -145,7 +149,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
         delegates: match ? [match] : []
       }
     });
-  }
+  };
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     // @ts-ignore
@@ -160,18 +164,18 @@ class VoteDelegateDialog extends React.Component<Props, State>
     const { store, navigateBackLink } = this.injected;
     store.navigateTo(navigateBackLink);
     return false;
-  }
+  };
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  }
+  };
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     this.setState({
       step: 'vote',
       transaction: null
     });
-  }
+  };
 
   handleQueryChange = (query: string) => {
     this.setState({ query });
@@ -180,7 +184,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
     } else {
       this.suggestDelegates();
     }
-  }
+  };
 
   handleSelectDelegate = (delegate: Delegate) => {
     const { account } = this.injected;
@@ -195,7 +199,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
     let addNames = [];
 
     const isRemoveTx =
-      votedDelegate && votedDelegate.publicKey === delegate.publicKey;
+      votedDelegate && votedDelegate.forgingPK === delegate.forgingPK;
     if (votedDelegate) {
       removeNames.push(votedDelegate.username);
     }
@@ -211,7 +215,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
         delegate
       }
     });
-  }
+  };
 
   suggestDelegates() {
     const { walletStore } = this.injected;
@@ -237,7 +241,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
     } else {
       throw new Error('Invalid internal state');
     }
-  }
+  };
 
   resetState() {
     this.setState({

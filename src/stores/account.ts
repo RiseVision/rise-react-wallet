@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Delegate } from 'dpos-api-wrapper';
+import { Delegate } from 'risejs/dist/es5/types/beans';
 import { action, observable, runInAction } from 'mobx';
 import * as lstore from 'store';
 import { TConfig } from './index';

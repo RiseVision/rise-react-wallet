@@ -20,7 +20,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import LinkIcon from '@material-ui/icons/Link';
 import ContentCopyIcon from 'mdi-material-ui/ContentCopy';
 import * as classNames from 'classnames';
-import { TransactionType } from 'dpos-api-wrapper';
+import { TransactionType } from 'risejs/dist/es5/types/beans';
 import * as moment from 'moment/min/moment-with-locales';
 import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';

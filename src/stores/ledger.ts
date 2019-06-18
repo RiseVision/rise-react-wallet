@@ -7,7 +7,7 @@ import {
   LedgerAccount as DposAccount
 } from 'dpos-ledger-api';
 import { CommHandler } from 'dpos-ledger-api/dist/es5/commHandler';
-import { Rise } from 'dpos-offline';
+import { RiseV2 as Rise } from 'dpos-offline';
 import { observable, runInAction, action } from 'mobx';
 import * as React from 'react';
 import { As } from 'type-tagger';

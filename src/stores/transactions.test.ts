@@ -14,7 +14,9 @@ import {
 import TransactionsStore, { Transaction } from './transactions';
 import WalletStore, { parseTransactionsResponse } from './wallet';
 import * as sinon from 'sinon';
-import { TransactionType } from 'risejs';
+import {
+  TransactionType,
+} from 'risejs/dist/es5/types/beans';
 
 let stubs: sinon.SinonStub[];
 
@@ -102,7 +104,7 @@ describe('TransactionsStore', () => {
               senderId: '2655711995542512317R',
               type: 0,
               amount: 100000000,
-              senderPublicKey:
+              senderPubData:
                 '023bab3e17365565d7a796291f8d3bb6878a3083ea520fbd163db713d51b44f9',
               requesterPublicKey: null,
               timestamp: 1548772228000,
@@ -167,7 +169,7 @@ describe('Transaction class', () => {
       'relays',
       'receivedAt',
       'type',
-      'senderPublicKey',
+      'senderPubData',
       'requesterPublicKey',
       'asset',
       'recipientId',
