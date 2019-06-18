@@ -272,7 +272,7 @@ export default class WalletStore {
     if (this.io) {
       return;
     }
-    this.io = io.connect(this.config.api_url);
+    this.io = io.connect(this.nodeAddress);
     this.io.on('connect', this.setConnected.bind(this, LoadingState.LOADED));
     this.io.on('connecting', () => {
       if (navigator.onLine) {
@@ -831,7 +831,7 @@ export default class WalletStore {
     account.balanceFiat = account.balance.unit.toNumber() * rate;
   }
 
-  /** Fetches convertion rates from coingecko.com */
+  /** Fetches conversion rates from coingecko.com */
   async fetchFiatData() {
     const ret = await fetch(
       `https://api.coingecko.com/api/v3/coins/rise?
