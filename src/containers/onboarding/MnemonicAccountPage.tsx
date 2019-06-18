@@ -110,7 +110,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
   getAddressFromMnemonic = (mnemonic: string) => {
     const normalized = normalizeMnemonic(mnemonic);
     if (normalized) {
-      return Rise.calcAddress(Rise.deriveKeypair(normalized).publicKey);
+      return Rise.calcAddress(Rise.deriveKeypair(normalized).publicKey, 'main', 'v0');
     }
     return null;
   }

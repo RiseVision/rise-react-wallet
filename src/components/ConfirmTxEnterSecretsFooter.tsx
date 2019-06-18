@@ -197,7 +197,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
         isValid = derivedKey.toString('hex') === publicKey;
       } else {
         // Fallback to comparing addresses instead of publicKEy
-        isValid = Rise.calcAddress(derivedKey) === address;
+        isValid = Rise.calcAddress(derivedKey, 'main', 'v0') === address;
       }
     }
 

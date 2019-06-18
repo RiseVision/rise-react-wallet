@@ -1108,7 +1108,8 @@ class DelegateCache {
 
   private async fetchAndUpdate(publicKey: string): Promise<Delegate> {
     const res = await this.api.delegates.getByPublicKey(publicKey);
-    const delegate = res.delegate || null;
+    // @ts-ignore TODO: Fix types in dpos-api-wrapper - rise-ts
+    const delegate = res.account || res.delegate || null;
     this.set(publicKey, delegate);
     return delegate;
   }
