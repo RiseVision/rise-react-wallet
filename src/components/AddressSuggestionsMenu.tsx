@@ -10,8 +10,8 @@ import {
   withStyles
 } from '@material-ui/core/styles';
 import { PropGetters } from 'downshift';
-import * as classNames from 'classnames';
-import * as React from 'react';
+import classNames from 'classnames';
+import React from 'react';
 import { TAddressRecord } from '../utils/utils';
 import AccountIcon from './AccountIcon';
 

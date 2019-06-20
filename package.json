@@ -7,6 +7,7 @@
   "license": "GPL-3.0-only",
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.4.5",
     "@ledgerhq/hw-transport-webusb": "^4.48.0",
     "@material-ui/core": "^3.7.0",
     "@material-ui/icons": "^3.0.1",
@@ -34,12 +35,14 @@
     "mobx-react": "^5.4.3",
     "mobx-router-rise": "^0.0.13",
     "moment": "^2.23.0",
+    "parcel-bundler": "^1.12.3",
     "query-string": "^6.2.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-helmet": "^5.2.0",
     "react-intl": "^2.7.2",
     "react-scripts-ts": "3.1.0",
+    "regenerator-runtime": "^0.13.2",
     "risejs": "^1.4.1",
     "sinon": "^7.2.2",
     "socket.io-client": "^2.2.0",
@@ -47,11 +50,15 @@
     "svg-country-flags": "^1.2.6",
     "ts-jest": "^23.10.5",
     "typescript": "^3.2.2",
-    "unique-random": "^2.0.0"
+    "unique-random": "^2.0.0",
+    "utils": "^0.3.1"
   },
+  "browserlist": [
+    "last 1 Chrome version"
+  ],
   "scripts": {
-    "start": "react-scripts-ts start",
-    "start-http": "HTTPS=0 react-scripts-ts start",
+    "start": "parcel src/dev.html --https",
+    "start-http": "parcel src/dev.html",
     "build": "react-scripts-ts build",
     "bundle": "cd desktop; yarn bundle",
     "deploy-now": "yarn build; cd build && now && now alias rise-wallet",
@@ -80,6 +87,7 @@
     "precommit"
   ],
   "devDependencies": {
+    "@babel/core": "^7.4.5",
     "@bahmutov/add-typescript-to-cypress": "^2.0.0",
     "@types/bip39": "^2.4.1",
     "@types/bytebuffer": "^5.0.37",

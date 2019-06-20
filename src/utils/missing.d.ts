@@ -1,6 +1,6 @@
 /* tslint:disable */
 declare module 'mobx-router-rise' {
-  import * as React from 'react';
+  import React from 'react';
   export type RouteParams = {
     [name: string]: string;
   };
@@ -51,7 +51,7 @@ declare module 'mobx-router-rise' {
 }
 
 declare module 'moment/min/moment-with-locales' {
-  import * as moment from 'moment';
+  import moment from 'moment';
   export = moment;
 }
 

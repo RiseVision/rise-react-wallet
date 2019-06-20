@@ -6,7 +6,7 @@ import AppsIcon from '@material-ui/icons/Apps';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import ServerNetworkIcon from 'mdi-material-ui/ServerNetwork';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import FlagIcon from '../../components/FlagIcon';
 import Link from '../../components/Link';

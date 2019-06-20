@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import React from 'react';
 import {
   defineMessages,
   FormattedMessage,

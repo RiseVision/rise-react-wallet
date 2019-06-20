@@ -7,10 +7,10 @@ import {
   withStyles
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from './AccountIcon';
 import LoadingIndicator from './LoadingIndicator';

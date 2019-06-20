@@ -9,9 +9,9 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
 import blue from '@material-ui/core/colors/blue';
-import * as React from 'react';
+import React from 'react';
 import { ReactEventHandler } from 'react';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import autoId from '../utils/autoId';
 

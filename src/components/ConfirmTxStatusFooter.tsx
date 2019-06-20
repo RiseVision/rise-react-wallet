@@ -11,7 +11,7 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
-import * as React from 'react';
+import React from 'react';
 import { ReactEventHandler } from 'react';
 import {
   defineMessages,

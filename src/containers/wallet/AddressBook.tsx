@@ -19,9 +19,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SendIcon from '@material-ui/icons/Send';
 import PeopleIcon from '@material-ui/icons/People';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import Link from '../../components/Link';
 import {

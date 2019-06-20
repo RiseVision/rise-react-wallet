@@ -2,7 +2,7 @@ import { Rise } from 'dpos-offline';
 import { reaction, IReactionDisposer, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import React from 'react';
 import AddSecondPassphraseDialogContent from '../../components/content/AddSecondPassphraseDialogContent';
 import {
   ICloseInterruptController,

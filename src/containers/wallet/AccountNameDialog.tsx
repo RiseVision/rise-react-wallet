@@ -1,7 +1,7 @@
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import React from 'react';
 import AccountNameDialogContent from '../../components/content/AccountNameDialogContent';
 import Dialog, {
   ICloseInterruptController,

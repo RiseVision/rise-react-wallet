@@ -1,9 +1,9 @@
 import { groupBy } from 'lodash';
 import { computed, observable, runInAction, action } from 'mobx';
-import * as moment from 'moment/min/moment-with-locales';
+import moment from 'moment/min/moment-with-locales';
 import { defineMessages } from 'react-intl';
 import { TransactionType } from 'risejs/dist/es5/types/beans';
-import * as lstore from 'store';
+import lstore from '../utils/store';
 import { RawAmount } from '../utils/amounts';
 import { TConfig } from './index';
 import WalletStore, {

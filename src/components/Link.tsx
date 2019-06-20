@@ -1,6 +1,6 @@
 import { Overwrite } from '@material-ui/core';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import RootStore, { RouteLink } from '../stores/root';
 
 type BaseProps = Overwrite<

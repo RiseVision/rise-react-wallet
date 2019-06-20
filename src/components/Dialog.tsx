@@ -6,7 +6,7 @@ import {
   withStyles
 } from '@material-ui/core/styles';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { ReactElement } from 'react';
 import RootStore, { RouteLink } from '../stores/root';
 import autoId from '../utils/autoId';

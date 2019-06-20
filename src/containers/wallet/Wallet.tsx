@@ -12,7 +12,7 @@ import {
 import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import React from 'react';
 import DrawerContent from './DrawerContent';
 import WalletAppBar from './WalletAppBar';
 import Dialog from '../../components/Dialog';
@@ -21,7 +21,7 @@ import { onboardingAddAccountRoute } from '../../routes';
 import WalletStore from '../../stores/wallet';
 import { version } from '../../../package.json';
 // @ts-ignore TODO d.ts
-import * as inobounce from 'inobounce';
+import inobounce from 'inobounce';
 
 const drawerWidth = 280;
 

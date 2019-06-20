@@ -18,11 +18,11 @@ import AppsIcon from '@material-ui/icons/Apps';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import UsbIcon from '@material-ui/icons/Usb';
 import PeopleIcon from '@material-ui/icons/People';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import React from 'react';
 import {
   defineMessages,
   FormattedMessage,

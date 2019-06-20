@@ -7,8 +7,8 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
-import * as classNames from 'classnames';
-import * as React from 'react';
+import classNames from 'classnames';
+import React from 'react';
 import {
   defineMessages,
   FormattedMessage,

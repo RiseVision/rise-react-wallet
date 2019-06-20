@@ -1,14 +1,14 @@
 // tslint:disable:no-unused-expression
 // tslint:disable:no-shadowed-variable
-import * as bip39 from 'bip39';
+import bip39 from 'bip39';
 import { Rise } from 'dpos-offline';
 import 'isomorphic-fetch';
 import { last } from 'lodash';
 import { RouterStore } from 'mobx-router-rise';
 import { rise as dposAPI } from 'risejs';
 import { TransactionType } from 'risejs/dist/es5/types/beans';
-import * as sinon from 'sinon';
-import * as lstore from 'store';
+import sinon from 'sinon';
+import lstore from '../utils/store';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';
 import {

@@ -8,7 +8,7 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
-import * as React from 'react';
+import React from 'react';
 import { ChangeEvent, FormEvent } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from '../AccountIcon';

@@ -9,7 +9,7 @@ import {
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { Rise } from 'dpos-offline';
-import * as React from 'react';
+import React from 'react';
 import { FormEvent } from 'react';
 import {
   defineMessages,

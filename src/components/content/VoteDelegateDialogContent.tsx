@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core/styles';
 import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { range } from 'lodash';
-import * as React from 'react';
+import React from 'react';
 import { ReactEventHandler } from 'react';
 import { ChangeEvent } from 'react';
 import {

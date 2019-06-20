@@ -1,8 +1,8 @@
-import * as keyboardJS from 'keyboardjs';
+import keyboardJS from 'keyboardjs';
 import { KeyEvent } from 'keyboardjs';
 import { inject, observer } from 'mobx-react';
 import { MobxRouter, RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import React from 'react';
 import { IntlProvider } from 'react-intl';
 import LoadingIndicator from '../components/LoadingIndicator';
 import AppHelmet from '../components/AppHelmet';
@@ -11,7 +11,7 @@ import { accountSendNoIDRoute } from '../routes';
 import LangStore from '../stores/lang';
 import ThemeProvider from './ThemeProvider';
 // @ts-ignore TODO d.ts
-import * as inobounce from 'inobounce';
+import inobounce from 'inobounce';
 
 // store info if the current platform is supported
 inobounce.supported = inobounce.isEnabled();

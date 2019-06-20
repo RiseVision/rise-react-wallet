@@ -1,6 +1,6 @@
 // tslint:disable:no-unused-expression
 // tslint:disable:no-shadowed-variable
-import * as lstore from 'store';
+import lstore from '../utils/store';
 import { RawAmount } from '../utils/amounts';
 import { mockStoredContacts, stub } from '../utils/testHelpers';
 import { timestampToUnix } from '../utils/utils';
@@ -13,7 +13,7 @@ import {
 } from './fixtures';
 import TransactionsStore, { Transaction } from './transactions';
 import WalletStore, { parseTransactionsResponse } from './wallet';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import {
   TransactionType,
 } from 'risejs/dist/es5/types/beans';

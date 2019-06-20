@@ -7,7 +7,7 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
-import * as React from 'react';
+import React from 'react';
 import { FormEvent } from 'react';
 import {
   FormattedMessage,

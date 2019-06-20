@@ -10,8 +10,8 @@ import {
 } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import * as bip39 from 'bip39';
-import * as React from 'react';
+import bip39 from 'bip39';
+import React from 'react';
 import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
 import {
   defineMessages,

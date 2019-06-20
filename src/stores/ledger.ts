@@ -9,11 +9,11 @@ import {
 import { CommHandler } from 'dpos-ledger-api/dist/es5/commHandler';
 import { RiseV2 as Rise } from 'dpos-offline';
 import { observable, runInAction, action } from 'mobx';
-import * as React from 'react';
+import React from 'react';
 import { As } from 'type-tagger';
 import { PostableRiseTransaction, RiseTransaction } from './wallet';
 import { Mutex } from 'async-mutex';
-import * as assert from 'assert';
+import assert from 'assert';
 
 /** Simple logging util (linter friendly) */
 // tslint:disable-next-line:no-unused-expression

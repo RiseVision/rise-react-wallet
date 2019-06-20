@@ -1,11 +1,11 @@
 // tslint:disable:no-unused-expression
 // tslint:disable:no-shadowed-variable
-import * as lstore from 'store';
+import lstore from '../utils/store';
 import { stub, mockStoredContacts } from '../utils/testHelpers';
 import { TAddressRecord } from '../utils/utils';
 import AddressBookStore from './addressBook';
 import { storedContacts } from './fixtures';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 
 let stubs: sinon.SinonStub[];
 

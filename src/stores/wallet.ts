@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import {
   RiseV2Transaction as GenericRiseTransaction,
   PostableRiseV2Transaction as GenericPostableRiseTransaction,
@@ -16,9 +16,9 @@ import {
   runInAction
 } from 'mobx';
 import { RouterStore } from 'mobx-router-rise';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Moment } from 'moment';
-import * as queryString from 'query-string';
+import queryString from 'query-string';
 import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs';
 import { BaseApiResponse } from 'risejs/dist/es5/types/base';
 import {
@@ -27,8 +27,8 @@ import {
   Delegate,
   DelegateInfos
 } from 'risejs/dist/es5/types/beans';
-import * as io from 'socket.io-client';
-import * as lstore from 'store';
+import io from 'socket.io-client';
+import lstore from '../utils/store';
 import { As } from 'type-tagger';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';

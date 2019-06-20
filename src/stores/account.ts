@@ -1,7 +1,7 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import { Delegate } from 'risejs/dist/es5/types/beans';
 import { action, observable, runInAction } from 'mobx';
-import * as lstore from 'store';
+import lstore from '../utils/store';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
 import WalletStore from './wallet';

@@ -1,8 +1,8 @@
 // tslint:disable:no-unused-expression
 // tslint:disable:no-shadowed-variable
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { SinonStub } from 'sinon';
-import * as lstore from 'store';
+import lstore from '../utils/store';
 import { stub } from '../utils/testHelpers';
 import LangStore from './lang';
 import delay from 'delay';

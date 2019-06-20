@@ -1,5 +1,5 @@
-import * as sinon from 'sinon';
-import * as lstore from 'store';
+import sinon from 'sinon';
+import lstore from '../utils/store';
 import { TStoredContact } from '../stores/addressBook';
 import { TStoredAccount } from '../stores/wallet';
 

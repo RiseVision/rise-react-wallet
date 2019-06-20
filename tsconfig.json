@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "module": "esnext",
-    "target": "es5",
+    "target": "esnext",
     "lib": ["es6", "dom", "es7", "es2017.object"],
     "sourceMap": true,
     "allowJs": true,
@@ -14,7 +14,7 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "esModuleInterop": false,
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true,
     "strict": false,
     "resolveJsonModule": true,
     "isolatedModules": true,

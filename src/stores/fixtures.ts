@@ -1,6 +1,6 @@
 // tslint:disable:max-line-length
 import { TConfig } from './index';
-import * as assert from 'assert';
+import assert from 'assert';
 
 /** Account from localStorage. Need to match the data in `serverAccounts`. */
 export const storedAccounts = [

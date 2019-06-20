@@ -8,9 +8,9 @@ import {
   withStyles,
   WithStyles
 } from '@material-ui/core/styles';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';

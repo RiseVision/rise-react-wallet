@@ -1,4 +1,5 @@
 import '@babel/polyfill';
+import "regenerator-runtime";
 
 if (!Object.entries) {
   Object.entries = function(obj) {

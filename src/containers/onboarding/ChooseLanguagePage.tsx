@@ -6,7 +6,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TranslateIcon from '@material-ui/icons/Translate';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import FlagIcon from '../../components/FlagIcon';
 import ModalPaper from '../../components/ModalPaper';

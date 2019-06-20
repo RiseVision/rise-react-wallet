@@ -1,6 +1,6 @@
 import { Route, RouteParams } from 'mobx-router-rise';
-import * as React from 'react';
-import * as lstore from 'store';
+import React from 'react';
+import lstore from './utils/store';
 import AsyncComponent from './components/AsyncComponent';
 import LoadingIndicator from './components/LoadingIndicator';
 import RootStore from './stores/root';
