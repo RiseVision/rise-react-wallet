@@ -210,7 +210,7 @@ describe('accounts', () => {
   it('registerAccount', () => {
     const mnemonic = bip39.generateMnemonic();
     const liskWallet = Rise.deriveKeypair(mnemonic);
-    const addr = Rise.calcAddress(liskWallet.publicKey);
+    const addr = Rise.calcAddress(liskWallet.publicKey, 'main', 'v0');
     // stub wallet.login
     stub(stubs, wallet, 'login', () => true);
     expect(wallet.registerAccount(mnemonic.split(' '))).toEqual(addr);

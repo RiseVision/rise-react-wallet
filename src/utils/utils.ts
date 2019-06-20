@@ -3,7 +3,9 @@ import moment from 'moment/min/moment-with-locales';
 import BigNumber from 'bignumber.js';
 import { InjectedIntl } from 'react-intl';
 import { isNaN } from 'lodash';
+import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { RawAmount } from './amounts';
+import bech32 from 'bech32';
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
@@ -16,13 +18,26 @@ export function unixToTimestamp(timestamp: number) {
   return new Date((timestamp - epoch) * 1000).getTime() / 1000;
 }
 
-// TODO verify using `bech32-buffer` or `dpos-offline`
 export function normalizeAddress(address: string): string {
+  return normalizeAddressV1(address) || normalizeAddressV2(address);
+}
+
+export function normalizeAddressV1(address: string): string {
   const normalizedAddress = address.trim().toUpperCase();
   if (!normalizedAddress.match(/^\d{1,20}R$/)) {
     return '';
   } else {
     return normalizedAddress;
+  }
+}
+
+export function normalizeAddressV2(address: string): string {
+  const normalized = address.trim().toLowerCase();
+  try {
+    bech32.decode(normalized);
+    return normalized;
+  } catch {
+    return '';
   }
 }
 
@@ -33,7 +48,7 @@ export function normalizeUsername(value: string): string {
     return '';
   }
   // Make sure that the username doesn't resemble an address
-  if (normalizeAddress(value) !== '') {
+  if (normalizeAddress(value) || normalizeAddressV2(value)) {
     return '';
   }
 
@@ -145,3 +160,7 @@ export function formatFiat(
     currency
   });
 }
+
+export type FullDelegate = Delegate & {
+  infos: DelegateInfos;
+};

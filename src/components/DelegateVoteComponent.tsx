@@ -8,10 +8,11 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import classNames from 'classnames';
-import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import { Delegate } from 'risejs/dist/es5/types/beans';
+import { FullDelegate } from '../utils/utils';
 import AccountIcon from './AccountIcon';
 import LoadingIndicator from './LoadingIndicator';
 
@@ -77,10 +78,7 @@ const styles = (theme: Theme) =>
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
   delegate:
-    | Delegate & {
-        infos: DelegateInfos;
-      }
-    | null;
+    | FullDelegate| null;
   hasVote: boolean;
   isLoading: boolean;
 }

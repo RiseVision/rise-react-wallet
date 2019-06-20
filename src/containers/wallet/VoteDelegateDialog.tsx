@@ -1,21 +1,21 @@
-import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { throttle, sampleSize } from 'lodash';
 import { reaction, IReactionDisposer, observe, Lambda } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import React from 'react';
+import { Delegate } from 'risejs/dist/es5/types/beans';
+import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
-import LedgerStore from '../../stores/ledger';
-import { normalizeAddress } from '../../utils/utils';
-import ConfirmTransactionDialog from './ConfirmTransactionDialog';
-import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
-import RootStore, { RouteLink } from '../../stores/root';
 import AccountStore, { LoadingState, AccountType } from '../../stores/account';
+import LedgerStore from '../../stores/ledger';
+import RootStore, { RouteLink } from '../../stores/root';
 import WalletStore from '../../stores/wallet';
+import { normalizeAddress, FullDelegate } from '../../utils/utils';
+import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 
 interface Props {
   account: AccountStore;
@@ -36,11 +36,7 @@ interface State extends ICloseInterruptControllerState {
   search: {
     isLoading: boolean;
     query: string;
-    delegates: Array<
-      Delegate & {
-        infos: DelegateInfos;
-      }
-    >;
+    delegates: FullDelegate[];
   };
   transaction: null | {
     add: string[];

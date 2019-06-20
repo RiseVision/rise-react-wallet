@@ -95,7 +95,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
 
     walletStore.login(address, { type: AccountType.MNEMONIC }, true);
     routerStore.goTo(accountOverviewRoute, { id: address });
-  }
+  };
 
   handleMnemonicChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const mnemonic = ev.target.value;
@@ -105,22 +105,27 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
       mnemonic,
       mnemonicInvalid: false
     });
-  }
+  };
 
   getAddressFromMnemonic = (mnemonic: string) => {
     const normalized = normalizeMnemonic(mnemonic);
     if (normalized) {
-      return Rise.calcAddress(Rise.deriveKeypair(normalized).publicKey);
+      return Rise.calcAddress(
+        Rise.deriveKeypair(normalized).publicKey,
+        this.injected.walletStore.getTxNetwork(),
+        // TODO whats that?
+        'v0'
+      );
     }
     return null;
-  }
+  };
 
   handleMnemonicBlur = () => {
     const { mnemonic } = this.state;
     if (!this.getAddressFromMnemonic(mnemonic)) {
       this.setState({ mnemonicInvalid: true });
     }
-  }
+  };
 
   mnemonicError(): string | null {
     const { intl } = this.injected;

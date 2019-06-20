@@ -64,7 +64,7 @@ const messages = defineMessages({
     id: 'onboarding-existing-account.invalid-address-generic',
     description: 'Error label for invalid address text input',
     defaultMessage:
-      'Invalid RISE address. A valid address is in the format of "1234567890R".'
+      'Invalid RISE address.'
   },
   invalidAddressMnemonic: {
     id: 'onboarding-existing-account.invalid-address-mnemonic',

@@ -16,28 +16,28 @@ import {
   runInAction
 } from 'mobx';
 import { RouterStore } from 'mobx-router-rise';
-import moment from 'moment';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import queryString from 'query-string';
-import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs';
 import { BaseApiResponse } from 'risejs/dist/es5/types/base';
 import {
   Account as APIAccount,
   TransactionType,
-  Delegate,
-  DelegateInfos
+  Delegate
 } from 'risejs/dist/es5/types/beans';
+// import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs';
+import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs/src';
 import io from 'socket.io-client';
-import lstore from '../utils/store';
 import { As } from 'type-tagger';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';
+import lstore from '../utils/store';
 import {
   normalizeAddress,
   TAddressRecord,
   TAddressSource,
   isMainnet,
-  timestampToUnix
+  timestampToUnix,
+  FullDelegate
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
@@ -80,7 +80,7 @@ export default class WalletStore {
   @observable selectedAccount: AccountStore;
 
   @observable
-  suggestedDelegates: Array<Delegate & { infos: DelegateInfos }> = [];
+  suggestedDelegates: Array<FullDelegate> = [];
   suggestedDelegatesTime: Moment | null = null;
   suggestedDelegatesPromise: Promise<Delegate[]> | null;
 
@@ -568,10 +568,7 @@ export default class WalletStore {
     query: string
   ): Promise<
     Array<
-      Delegate & {
-        infos: DelegateInfos;
-      }
-    >
+      FullDelegate>
   > {
     assert(
       query === query.toLowerCase(),
@@ -920,7 +917,8 @@ export default class WalletStore {
     const wallet = Rise.deriveKeypair(mnemonic.join(' '));
 
     const account = {
-      id: Rise.calcAddress(wallet.publicKey),
+      // TODO check v0
+      id: Rise.calcAddress(wallet.publicKey, this.getTxNetwork(), 'v0'),
       publicKey: wallet.publicKey.toString('hex'),
       type: AccountType.MNEMONIC
     };
@@ -1046,10 +1044,7 @@ export default class WalletStore {
   async fetchDelegateByID(
     id: string
   ): Promise<
-    | Delegate & {
-        infos: DelegateInfos;
-      }
-    | null
+    | FullDelegate| null
   > {
     const res = await this.dposAPI.accounts.getAccount(id);
     const publicKey = get(res, 'account.forgingPK');
@@ -1102,20 +1097,11 @@ class DelegateCache {
     [key: string]:
       | {
           state: 'loading';
-          promise: Promise<
-            | Delegate & {
-                infos: DelegateInfos;
-              }
-            | null
-          >;
+          promise: Promise<FullDelegate | null>;
         }
       | {
           state: 'loaded';
-          delegate:
-            | Delegate & {
-                infos: DelegateInfos;
-              }
-            | null;
+          delegate: FullDelegate | null;
         };
   } = {};
 
@@ -1125,12 +1111,7 @@ class DelegateCache {
   async get(
     publicKey: string,
     opts: { reload?: boolean } = {}
-  ): Promise<
-    | Delegate & {
-        infos: DelegateInfos;
-      }
-    | null
-  > {
+  ): Promise<FullDelegate | null> {
     const reload = opts.reload !== undefined ? opts.reload : false;
 
     let entry = this.cached[publicKey];
@@ -1150,12 +1131,7 @@ class DelegateCache {
     }
   }
 
-  set(
-    publicKey: string,
-    delegate: Delegate & {
-      infos: DelegateInfos;
-    }
-  ) {
+  set(publicKey: string, delegate: FullDelegate) {
     this.cached[publicKey] = {
       state: 'loaded',
       delegate: delegate
@@ -1166,22 +1142,10 @@ class DelegateCache {
     this.cached = {};
   }
 
-  private async fetchAndUpdate(
-    publicKey: string
-  ): Promise<
-    Delegate & {
-      infos: DelegateInfos;
-    }
-  > {
+  private async fetchAndUpdate(publicKey: string): Promise<FullDelegate> {
     const res = await this.api.delegates.byForgingKey(publicKey);
-    let delegate:
-      | Delegate & {
-          infos: DelegateInfos;
-        }
-      | null = null;
-    if (res.delegate) {
-      delegate = { ...res.delegate, infos: res.info };
-    }
+    // @ts-ignore TODO types in dpos-offline
+    const delegate = res.account || res.delegate || null;
     this.set(publicKey, delegate);
     return delegate;
   }

@@ -96,7 +96,7 @@ const messages = defineMessages({
     id: 'send-coins-dialog-content.invalid-address',
     description: 'Error label for invalid address text input',
     defaultMessage:
-      'Invalid RISE address. A valid address is in the format of "1234567890R".'
+      'Invalid RISE address.'
   },
   invalidAmount: {
     id: 'send-coins-dialog-content.invalid-amount',

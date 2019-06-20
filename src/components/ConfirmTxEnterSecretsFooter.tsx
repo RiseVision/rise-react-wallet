@@ -196,8 +196,10 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
         // Prefer to validate against the account publicKey
         isValid = derivedKey.toString('hex') === publicKey;
       } else {
-        // Fallback to comparing addresses instead of publicKEy
-        isValid = Rise.calcAddress(derivedKey) === address;
+        // Fallback to comparing addresses instead of publicKey
+        // TODO get the second param from walletStore.getTxNetwork()
+        //  same for 'v0'
+        isValid = Rise.calcAddress(derivedKey, 'main', 'v0') === address;
       }
     }
 

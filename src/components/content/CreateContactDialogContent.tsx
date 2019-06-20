@@ -75,7 +75,7 @@ const messages = defineMessages({
     id: 'create-contact-dialog-content.invalid-address',
     description: 'Error label for invalid address text input',
     defaultMessage:
-      'Invalid RISE address. A valid address is in the format of "1234567890R".'
+      'Invalid RISE address.'
   },
   invalidAddressExists: {
     id: 'create-contact-dialog-content.invalid-address-exists',
