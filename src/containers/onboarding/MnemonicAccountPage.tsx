@@ -18,7 +18,7 @@ import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
 import { AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
-import { normalizeMnemonic } from '../../utils/utils';
+import { normalizeMnemonic, AccountIDType } from '../../utils/utils';
 import { Rise } from 'dpos-offline';
 
 const styles = createStyles({
@@ -113,8 +113,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
       return Rise.calcAddress(
         Rise.deriveKeypair(normalized).publicKey,
         this.injected.walletStore.getTxNetwork(),
-        // TODO whats that?
-        'v0'
+        AccountIDType.NEW
       );
     }
     return null;

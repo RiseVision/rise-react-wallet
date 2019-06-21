@@ -558,8 +558,7 @@ export default class WalletStore {
       });
     }
 
-    // @ts-ignore TODO array
-    const res = await this.dposAPI.transactions.put(signedTx);
+    const res = await this.dposAPI.transactions.postSingle(signedTx);
     await this.refreshAccount(account.id);
     return res;
   }

@@ -164,3 +164,8 @@ export function formatFiat(
 export type FullDelegate = Delegate & {
   infos: DelegateInfos;
 };
+
+export enum AccountIDType {
+  OLD = 'v0',
+  NEW = 'v1'
+}
