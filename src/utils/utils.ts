@@ -165,7 +165,23 @@ export type FullDelegate = Delegate & {
   infos: DelegateInfos;
 };
 
-export enum AccountIDType {
+export enum AccountIDVersion {
   OLD = 'v0',
   NEW = 'v1'
+}
+
+export enum NetworkTXType {
+  MAINNET = 'main',
+  TESTNET = 'test'
+}
+
+/**
+ * Return nework type from the address. Support new account IDs only.
+ * @param id
+ */
+export function idToTxNetworkType(id: string): NetworkTXType {
+  if (!id || !id[0]) {
+    throw new Error('Missing ID');
+  }
+  return id[0] === 'r' ? NetworkTXType.MAINNET : NetworkTXType.TESTNET;
 }

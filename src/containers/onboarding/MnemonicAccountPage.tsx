@@ -18,7 +18,7 @@ import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
 import { AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
-import { normalizeMnemonic, AccountIDType } from '../../utils/utils';
+import { normalizeMnemonic, AccountIDVersion } from '../../utils/utils';
 import { Rise } from 'dpos-offline';
 
 const styles = createStyles({
@@ -95,7 +95,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
 
     walletStore.login(address, { type: AccountType.MNEMONIC }, true);
     routerStore.goTo(accountOverviewRoute, { id: address });
-  };
+  }
 
   handleMnemonicChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const mnemonic = ev.target.value;
@@ -105,7 +105,7 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
       mnemonic,
       mnemonicInvalid: false
     });
-  };
+  }
 
   getAddressFromMnemonic = (mnemonic: string) => {
     const normalized = normalizeMnemonic(mnemonic);
@@ -113,18 +113,18 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
       return Rise.calcAddress(
         Rise.deriveKeypair(normalized).publicKey,
         this.injected.walletStore.getTxNetwork(),
-        AccountIDType.NEW
+        AccountIDVersion.NEW
       );
     }
     return null;
-  };
+  }
 
   handleMnemonicBlur = () => {
     const { mnemonic } = this.state;
     if (!this.getAddressFromMnemonic(mnemonic)) {
       this.setState({ mnemonicInvalid: true });
     }
-  };
+  }
 
   mnemonicError(): string | null {
     const { intl } = this.injected;

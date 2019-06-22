@@ -392,7 +392,7 @@ export const serverDelegatesSearch = {
   ]
 };
 
-//TODO add `infos`
+// TODO add `infos`
 export const serverAccountsDelegates = {
   success: true,
   delegates: [
@@ -412,7 +412,7 @@ export const serverAccountsDelegates = {
   ]
 };
 
-//TODO add `infos`
+// TODO add `infos`
 export const serverDelegatesGetByPublicKey = {
   success: true,
   delegate: {

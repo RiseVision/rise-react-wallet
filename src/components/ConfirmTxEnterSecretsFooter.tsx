@@ -17,6 +17,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { AccountIDVersion, NetworkTXType } from '../utils/utils';
 import AccountTip from './AccountTip';
 
 const styles = (theme: Theme) =>
@@ -82,6 +83,8 @@ type BaseProps = WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
   address: string;
+  addressVersion: AccountIDVersion;
+  networkType: NetworkTXType;
   publicKey: string | null;
   secondPublicKey: string | null;
   onConfirm: (data: { mnemonic: string; passphrase: null | string }) => void;
@@ -180,7 +183,13 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
   }
 
   mnemonicError(secret?: string): string | null {
-    const { intl, address, publicKey } = this.props;
+    const {
+      intl,
+      address,
+      publicKey,
+      networkType,
+      addressVersion
+    } = this.props;
     const mnemonic = secret || this.state.mnemonic;
 
     if (!mnemonic.trim()) {
@@ -199,7 +208,8 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
         // Fallback to comparing addresses instead of publicKey
         // TODO get the second param from walletStore.getTxNetwork()
         //  same for 'v0'
-        isValid = Rise.calcAddress(derivedKey, 'main', 'v0') === address;
+        isValid =
+          address === Rise.calcAddress(derivedKey, networkType, addressVersion);
       }
     }
 

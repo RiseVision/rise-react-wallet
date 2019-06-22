@@ -103,7 +103,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
     const { onQueryChange, onFormChanged } = this.props;
     onQueryChange(query);
     onFormChanged(Boolean(query));
-  };
+  }
 
   componentWillMount() {
     const { intl } = this.props;
@@ -142,7 +142,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
                   id="vote-delegate-dialog-content.insufficient-funds-error"
                   description="Error about not having enough funds to vote for a delegate"
                   defaultMessage={
-                    "You don't have enough funds in your account to pay the" +
+                    'You don\'t have enough funds in your account to pay the' +
                     ' network fee of {fee} for casting a vote for a delegate!'
                   }
                   values={{

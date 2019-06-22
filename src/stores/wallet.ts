@@ -24,8 +24,7 @@ import {
   TransactionType,
   Delegate
 } from 'risejs/dist/es5/types/beans';
-// import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs';
-import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs/src';
+import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs';
 import io from 'socket.io-client';
 import { As } from 'type-tagger';
 import { onboardingAddAccountRoute } from '../routes';
@@ -37,7 +36,10 @@ import {
   TAddressSource,
   isMainnet,
   timestampToUnix,
-  FullDelegate
+  FullDelegate,
+  AccountIDVersion,
+  NetworkTXType,
+  idToTxNetworkType
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
@@ -45,6 +47,8 @@ import { TConfig } from './index';
 import LangStore from './lang';
 import { Transaction } from './transactions';
 
+// TODO merge with NetworkTxType
+// TODO move to utils.ts
 export type NetworkType = 'mainnet' | 'testnet' | 'custom';
 
 // TODO move to /utils/utils.ts
@@ -79,8 +83,7 @@ export default class WalletStore {
   @observable accounts = observable.map<string, AccountStore>();
   @observable selectedAccount: AccountStore;
 
-  @observable
-  suggestedDelegates: Array<FullDelegate> = [];
+  @observable suggestedDelegates: Array<FullDelegate> = [];
   suggestedDelegatesTime: Moment | null = null;
   suggestedDelegatesPromise: Promise<Delegate[]> | null;
 
@@ -239,6 +242,20 @@ export default class WalletStore {
     lstore.set('network', { type, url });
     // invalidate cache
     lstore.remove('cache');
+    // check if the currently selected account belong to this network type
+    const selected = this.selectedAccount;
+    if (selected.version === AccountIDVersion.NEW) {
+      // select the first account if this one is going to be hidden
+      if (this.getTxNetwork() !== idToTxNetworkType(selected.id)) {
+        const accounts = this.listAccounts();
+        // in case theres no accounts
+        if (accounts.length) {
+          lstore.remove('lastSelectedAccount');
+        } else {
+          this.selectAccount(accounts[0].id);
+        }
+      }
+    }
     this.reload();
   }
 
@@ -258,9 +275,13 @@ export default class WalletStore {
 
   /**
    * Network ID required for the `transform()` method.
+   *
+   * TODO merge with NetworkType
    */
-  getTxNetwork(): 'main' | 'test' {
-    return this.getNetwork() === 'mainnet' ? 'main' : 'test';
+  getTxNetwork(): NetworkTXType {
+    return this.getNetwork() === 'mainnet'
+      ? NetworkTXType.MAINNET
+      : NetworkTXType.TESTNET;
   }
 
   @action
@@ -381,13 +402,26 @@ export default class WalletStore {
       'hwSlot',
       'fiatCurrency',
       'name',
-      'pinned'
+      'pinned',
     ];
     let stored = this.storedAccounts();
     stored = stored.filter(a => a.id !== account.id);
     // store the account, but only the selected fields
     stored.push(pick(account, fields) as TStoredAccount);
     lstore.set('accounts', stored);
+  }
+
+  /**
+   * Lists accounts depending on the current network.
+   */
+  listAccounts(
+    networkType: NetworkTXType = this.getTxNetwork()
+  ): AccountStore[] {
+    return [...this.accounts.values()].filter(
+      a =>
+        a.version === AccountIDVersion.OLD ||
+        idToTxNetworkType(a.id) === networkType
+    );
   }
 
   protected async fetchAccountData(id: string): Promise<TAccountResponse> {
@@ -563,12 +597,7 @@ export default class WalletStore {
     return res;
   }
 
-  async searchDelegates(
-    query: string
-  ): Promise<
-    Array<
-      FullDelegate>
-  > {
+  async searchDelegates(query: string): Promise<Array<FullDelegate>> {
     assert(
       query === query.toLowerCase(),
       'Delegate username query must be all lowercase'
@@ -656,6 +685,9 @@ export default class WalletStore {
     });
     const res = await this.dposAPI.accounts.getVotes(account.id);
     const delegateName = (res.votes && res.votes[0]) || null;
+    if (!delegateName) {
+      return;
+    }
     const delegateRes =
       res.votes && res.votes[0]
         ? await this.dposAPI.delegates.byUsername(delegateName)
@@ -912,18 +944,21 @@ export default class WalletStore {
   }
 
   @action
-  registerAccount(mnemonic: string[]) {
+  registerAccount(mnemonic: string[]): string {
     const wallet = Rise.deriveKeypair(mnemonic.join(' '));
 
-    const account = {
-      // TODO check v0
-      id: Rise.calcAddress(wallet.publicKey, this.getTxNetwork(), 'v0'),
+    const account: Partial<TAccount> = {
+      id: Rise.calcAddress(
+        wallet.publicKey,
+        this.getTxNetwork(),
+        AccountIDVersion.NEW
+      ),
       publicKey: wallet.publicKey.toString('hex'),
       type: AccountType.MNEMONIC
     };
     // pass async
-    this.login(account.id, account, true);
-    return account.id;
+    this.login(account.id!, account, true);
+    return account.id!;
   }
 
   @action
@@ -1040,11 +1075,7 @@ export default class WalletStore {
     return [...contactRecords, ...walletRecords];
   }
 
-  async fetchDelegateByID(
-    id: string
-  ): Promise<
-    | FullDelegate| null
-  > {
+  async fetchDelegateByID(id: string): Promise<FullDelegate | null> {
     const res = await this.dposAPI.accounts.getAccount(id);
     const publicKey = get(res, 'account.forgingPK');
     if (!publicKey) {
@@ -1161,7 +1192,7 @@ export function parseAccountReponse(
 ): TAccount {
   const parsed: Partial<TAccount> = {
     id: res.account.address,
-    publicKey: res.account.forgingPK,
+    publicKey: res.account.forgingPK || null,
     name: '',
     fiatCurrency: 'USD',
     type: AccountType.READONLY,
@@ -1260,7 +1291,7 @@ export type TTransactionsResponse = {
 export type TStoredAccount = {
   id: string;
   localId: number;
-  publicKey: string;
+  publicKey: string | null;
   type: AccountType;
   hwId: null | string;
   hwSlot: null | number;

@@ -2,6 +2,10 @@ import assert from 'assert';
 import { Delegate } from 'risejs/dist/es5/types/beans';
 import { action, observable, runInAction } from 'mobx';
 import lstore from '../utils/store';
+import {
+  AccountIDVersion,
+  normalizeAddressV1
+} from '../utils/utils';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
 import WalletStore from './wallet';
@@ -47,6 +51,7 @@ export default class AccountStore {
   @observable loaded: boolean = false;
 
   @observable id: string;
+  @observable version: AccountIDVersion;
   @observable localId: number;
   @observable publicKey: string | null = null;
   @observable broadcastedPublicKey: string | null = null;
@@ -106,6 +111,9 @@ export default class AccountStore {
       saveCache: false
     });
     this.config = config;
+    this.version = normalizeAddressV1(account.id!)
+      ? AccountIDVersion.OLD
+      : AccountIDVersion.NEW;
     this.recentTransactions = new TransactionsStore(
       this.config,
       account.id!,

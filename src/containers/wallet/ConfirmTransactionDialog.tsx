@@ -428,7 +428,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   renderConfirmTxContent() {
-    const { account, passphrasePublicKey, ledgerStore } = this.injected;
+    const { account, passphrasePublicKey, ledgerStore, walletStore } = this.injected;
     const { transaction } = this.state;
 
     return (
@@ -453,6 +453,8 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
           )
         ) : (
           <ConfirmTxEnterSecretsFooter
+            addressVersion={account.version}
+            networkType={walletStore.getTxNetwork()}
             address={account.id}
             publicKey={account.publicKey}
             secondPublicKey={passphrasePublicKey || account.secondPublicKey}

@@ -142,7 +142,7 @@ class DelegateVoteComponent extends React.Component<DecoratedProps> {
     if (delegate) {
       onSubmit(delegate, !hasVote);
     }
-  };
+  }
 
   render() {
     const { intl, classes, delegate, hasVote, isLoading } = this.props;

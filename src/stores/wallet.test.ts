@@ -27,7 +27,7 @@ import {
   serverTransactionsUnconfirmed,
   serverTransactionsConfirmed,
   serverDelegatesSearch,
-  serverAccountsDelegates,
+  // serverAccountsDelegates,
   serverDelegatesGetByPublicKey,
   serverTransactionDelegates,
   config

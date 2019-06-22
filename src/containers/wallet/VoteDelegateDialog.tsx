@@ -145,7 +145,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
         delegates: match ? [match] : []
       }
     });
-  };
+  }
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     // @ts-ignore
@@ -160,18 +160,18 @@ class VoteDelegateDialog extends React.Component<Props, State>
     const { store, navigateBackLink } = this.injected;
     store.navigateTo(navigateBackLink);
     return false;
-  };
+  }
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  };
+  }
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     this.setState({
       step: 'vote',
       transaction: null
     });
-  };
+  }
 
   handleQueryChange = (query: string) => {
     this.setState({ query });
@@ -180,7 +180,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
     } else {
       this.suggestDelegates();
     }
-  };
+  }
 
   handleSelectDelegate = (delegate: Delegate) => {
     const { account } = this.injected;
@@ -211,7 +211,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
         delegate
       }
     });
-  };
+  }
 
   suggestDelegates() {
     const { walletStore } = this.injected;
@@ -237,7 +237,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
     } else {
       throw new Error('Invalid internal state');
     }
-  };
+  }
 
   resetState() {
     this.setState({

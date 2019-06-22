@@ -106,7 +106,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
       <div className={classes.content}>
         <List aria-label={intl.formatMessage(messages.accountsListAriaLabel)}>
           {orderBy(
-            [...walletStore.accounts.values()],
+            walletStore.listAccounts(),
             ['pinned', 'name'],
             ['desc', 'asc']
           ).map((account: AccountStore) => (
