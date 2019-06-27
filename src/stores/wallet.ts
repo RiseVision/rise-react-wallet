@@ -18,13 +18,17 @@ import {
 import { RouterStore } from 'mobx-router-rise';
 import moment, { Moment } from 'moment';
 import queryString from 'query-string';
+import { TransactionsAPI } from 'risejs/dist/es5/types/apis/TransactionsAPI';
 import { BaseApiResponse } from 'risejs/dist/es5/types/base';
 import {
   Account as APIAccount,
   TransactionType,
   Delegate
 } from 'risejs/dist/es5/types/beans';
-import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs';
+import {
+  Rise as dposAPI,
+  RiseAPIWrapper as APIWrapper
+} from 'risejs';
 import io from 'socket.io-client';
 import { As } from 'type-tagger';
 import { onboardingAddAccountRoute } from '../routes';
@@ -889,14 +893,14 @@ export default class WalletStore {
         offset,
         orderBy: 'timestamp:desc',
         recipientId: account.id,
-        senderPubData: account.publicKey || undefined
+        senderId: account.id
       }),
       this.loadTransactions(
         accountID,
         {
           limit,
           address: account.id,
-          senderPubData: account.publicKey || undefined
+          senderId: account.id
         },
         false
       )
@@ -996,7 +1000,7 @@ export default class WalletStore {
 
   async loadTransactions(
     accountID: string,
-    params: TTransactionsRequest,
+    params: Parameters<TransactionsAPI['list']>,
     confirmed: boolean = true
   ): Promise<Transaction[]> {
     let res: TTransactionsResponse | TErrorResponse;
@@ -1007,14 +1011,6 @@ export default class WalletStore {
         // @ts-ignore
         throw new Error((res as TErrorResponse).error);
       }
-    } else if (!params.senderPubData) {
-      // Unconfirmed transactions require senderPubData to be available,
-      // so when the account hasn't broadcast it yet, skip this step
-      res = {
-        success: true,
-        count: 0,
-        transactions: []
-      };
     } else {
       const url = `${
         this.nodeAddress
