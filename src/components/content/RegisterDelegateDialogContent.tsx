@@ -8,6 +8,7 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
+import { Rise } from 'dpos-offline';
 import React from 'react';
 import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
 import {
@@ -16,6 +17,7 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import AccountIcon from '../AccountIcon';
 import {
   DialogContentProps,
   SetDialogContent,
@@ -26,7 +28,9 @@ import { RawAmount } from '../../utils/amounts';
 import {
   normalizeAddress,
   normalizeUsername,
-  formatAmount
+  formatAmount,
+  normalizeMnemonic,
+  AccountIDVersion
 } from '../../utils/utils';
 
 const styles = (theme: Theme) =>
@@ -34,6 +38,10 @@ const styles = (theme: Theme) =>
     content: {
       padding: theme.spacing.unit * 2,
       textAlign: 'center'
+    },
+    accountContainer: {
+      display: 'flex',
+      alignItems: 'center'
     }
   });
 
@@ -51,12 +59,16 @@ interface Props extends BaseProps, ICloseInterruptFormProps {
   username: string;
   onUsernameChange: (username: string) => void;
   error?: null | 'already-registered' | 'insufficient-funds';
+  getPublicKey(mnemonic: string): string;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface State {
   usernameInvalid: boolean;
+  address: string | null;
+  mnemonic: string;
+  mnemonicInvalid: boolean;
 }
 
 const messages = defineMessages({
@@ -92,6 +104,11 @@ const messages = defineMessages({
     defaultMessage:
       'Invalid delegate username. The username cannot contain ' +
       'uppercase characters'
+  },
+  invalidMnemonicGeneric: {
+    id: 'forms-register-delegate.invalid-mnemonic-generic',
+    description: 'Error label for invalid mnemonic text input',
+    defaultMessage: 'Invalid mnemonic. A valid mnemonic is a list of 12 words.'
   }
 });
 
@@ -102,15 +119,14 @@ class RegisterDelegateDialogContent extends React.Component<
   @autoId dialogContentId: string;
 
   state: State = {
-    usernameInvalid: false
+    usernameInvalid: false,
+    address: null,
+    mnemonic: null,
+    mnemonicInvalid: null
   };
 
   constructor(props: DecoratedProps) {
     super(props);
-
-    this.state = {
-      usernameInvalid: false
-    };
   }
 
   handleUsernameChange = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -123,13 +139,13 @@ class RegisterDelegateDialogContent extends React.Component<
 
     onUsernameChange(username);
     onFormChanged(Boolean(username));
-  }
+  };
 
   handleUsernameBlur = () => {
     const { username } = this.props;
     const usernameInvalid = !!username && !!this.usernameError();
     this.setState({ usernameInvalid });
-  }
+  };
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -145,7 +161,33 @@ class RegisterDelegateDialogContent extends React.Component<
     }
 
     onSubmit();
-  }
+  };
+
+  handleMnemonicChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const mnemonic = ev.target.value;
+
+    this.setState({
+      address: this.getAddressFromMnemonic(mnemonic),
+      mnemonic,
+      mnemonicInvalid: false
+    });
+  };
+
+  getAddressFromMnemonic = (mnemonic: string) => {
+    const { getPublicKey } = this.props;
+    const normalized = normalizeMnemonic(mnemonic);
+    if (normalized) {
+      return getPublicKey(mnemonic);
+    }
+    return null;
+  };
+
+  handleMnemonicBlur = () => {
+    const { mnemonic } = this.state;
+    if (!this.getAddressFromMnemonic(mnemonic)) {
+      this.setState({ mnemonicInvalid: true });
+    }
+  };
 
   usernameError(): string | null {
     const { intl, username } = this.props;
@@ -170,6 +212,17 @@ class RegisterDelegateDialogContent extends React.Component<
       title: intl.formatMessage(messages.dialogTitle),
       contentId: this.dialogContentId
     });
+  }
+
+  mnemonicError(): string | null {
+    const { intl } = this.props;
+    const { address } = this.state;
+
+    if (address) {
+      return null;
+    }
+
+    return intl.formatMessage(messages.invalidMnemonicGeneric);
   }
 
   render() {
@@ -212,7 +265,7 @@ class RegisterDelegateDialogContent extends React.Component<
                 id="forms-register-delegate.insufficient-funds-error"
                 description="Error about not having enough funds to register as a delegate"
                 defaultMessage={
-                  'You don\'t have enough funds in your account to pay the network fee ' +
+                  "You don't have enough funds in your account to pay the network fee " +
                   'of {fee} for registering as a delegate!'
                 }
                 values={{ fee: formatAmount(intl, delegateFee) }}
@@ -220,43 +273,8 @@ class RegisterDelegateDialogContent extends React.Component<
             </Typography>
           </Grid>
         )}
-        {error === 'already-registered' && (
-          <Grid item={true} xs={12}>
-            <Typography color="error">
-              <FormattedMessage
-                id="forms-register-delegate.already-delegate-error"
-                description="Error about already being registered as a delegate"
-                defaultMessage={
-                  'You\'ve already registered as a delegate ({username}). ' +
-                  'The name cannot be changed.'}
-                values={{ username: registeredUsername || '' }}
-              />
-            </Typography>
-          </Grid>
-        )}
-        {!error && (
-          <Grid item={true} xs={12}>
-            <TextField
-              autoFocus={true}
-              label={
-                <FormattedMessage
-                  id="forms-register-delegate.username-input-label"
-                  description="Label for delegate username text field."
-                  defaultMessage="Delegate username"
-                />
-              }
-              value={username}
-              fullWidth={true}
-              error={usernameInvalid}
-              FormHelperTextProps={{
-                error: usernameInvalid
-              }}
-              helperText={usernameInvalid ? this.usernameError() || '' : ''}
-              onChange={this.handleUsernameChange}
-              onBlur={this.handleUsernameBlur}
-            />
-          </Grid>
-        )}
+        {this.renderUsername()}
+        {this.renderForgingKey()}
         <Grid item={true} xs={12}>
           {!error && (
             <Button type="submit" fullWidth={true}>
@@ -278,6 +296,110 @@ class RegisterDelegateDialogContent extends React.Component<
           )}
         </Grid>
       </Grid>
+    );
+  }
+
+  renderForgingKey() {
+    const {
+      intl,
+      classes,
+      error,
+      delegateFee,
+      registeredUsername,
+      username
+    } = this.props;
+    const { usernameInvalid } = this.state;
+
+    return this.renderMnemonic();
+  }
+
+  renderUsername() {
+    const {
+      intl,
+      classes,
+      error,
+      delegateFee,
+      registeredUsername,
+      username
+    } = this.props;
+    const { usernameInvalid } = this.state;
+
+    return (
+      !error && (
+        <Grid item={true} xs={12}>
+          <TextField
+            autoFocus={true}
+            label={
+              <FormattedMessage
+                id="forms-register-delegate.username-input-label"
+                description="Label for delegate username text field."
+                defaultMessage="Delegate username"
+              />
+            }
+            value={username}
+            fullWidth={true}
+            error={usernameInvalid}
+            FormHelperTextProps={{
+              error: usernameInvalid
+            }}
+            helperText={usernameInvalid ? this.usernameError() || '' : ''}
+            onChange={this.handleUsernameChange}
+            onBlur={this.handleUsernameBlur}
+          />
+        </Grid>
+      )
+    );
+  }
+
+  renderMnemonic() {
+    const {
+      intl,
+      classes,
+      error,
+      delegateFee,
+      registeredUsername,
+      username
+    } = this.props;
+    const { mnemonic, mnemonicInvalid, address } = this.state;
+    const { usernameInvalid } = this.state;
+
+    return (
+      <>
+        <Grid item={true} xs={12}>
+          <div className={classes.accountContainer}>
+            <TextField
+              type="password"
+              label={
+                <FormattedMessage
+                  id="onboarding-mnemonic-account.mnemonic-input-label"
+                  description="Account mnemonic input label"
+                  defaultMessage="Account mnemonic"
+                />
+              }
+              error={mnemonicInvalid}
+              value={mnemonic}
+              FormHelperTextProps={{
+                error: mnemonicInvalid
+              }}
+              helperText={mnemonicInvalid ? this.mnemonicError() || '' : ''}
+              onChange={this.handleMnemonicChange}
+              onBlur={this.handleMnemonicBlur}
+            />
+          </div>
+        </Grid>;
+        {address && (
+          <Grid item={true} xs={12}>
+            <Typography>
+              <FormattedMessage
+                id="onboarding-mnemonic-account.account-address-text"
+                description="Account address for the inputted mnemonic"
+                defaultMessage="Your account address is {address}."
+                values={{ address }}
+              />
+            </Typography>
+          </Grid>
+        )}
+      </>
     );
   }
 }

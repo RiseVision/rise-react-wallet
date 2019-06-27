@@ -70,24 +70,24 @@ class RegisterDelegateDialog extends React.Component<Props, State>
     const { navigateBackLink, store } = this.injected;
     store.navigateTo(navigateBackLink);
     return false;
-  }
+  };
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  }
+  };
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     this.setState({
       step: 'form',
       transaction: null
     });
-  }
+  };
 
   handleUsernameChange = (username: string) => {
     this.setState({
       usernameInput: username
     });
-  }
+  };
 
   handleUsernameCommit = () => {
     const { usernameInput } = this.state;
@@ -103,7 +103,7 @@ class RegisterDelegateDialog extends React.Component<Props, State>
         username: usernameInput
       }
     });
-  }
+  };
 
   handleCreateTransaction = () => {
     const { account, walletStore } = this.injected;
@@ -117,7 +117,7 @@ class RegisterDelegateDialog extends React.Component<Props, State>
     } else {
       throw new Error('Invalid internal state');
     }
-  }
+  };
 
   resetState() {
     this.setState({
@@ -199,6 +199,9 @@ class RegisterDelegateDialog extends React.Component<Props, State>
         delegateFee={fee}
         registeredUsername={regUsername}
         username={usernameInput}
+        getPublicKey={mnemonic => {
+          return '1232jhiufhdsf1232';
+        }}
         error={
           registeredDelegate
             ? 'already-registered'
