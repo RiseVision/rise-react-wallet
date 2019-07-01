@@ -8,7 +8,6 @@ import {
   WithStyles,
   withStyles
 } from '@material-ui/core/styles';
-import { Rise } from 'dpos-offline';
 import React from 'react';
 import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
 import {
@@ -17,7 +16,6 @@ import {
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import AccountIcon from '../AccountIcon';
 import {
   DialogContentProps,
   SetDialogContent,
@@ -30,7 +28,6 @@ import {
   normalizeUsername,
   formatAmount,
   normalizeMnemonic,
-  AccountIDVersion
 } from '../../utils/utils';
 
 const styles = (theme: Theme) =>
@@ -58,8 +55,9 @@ interface Props extends BaseProps, ICloseInterruptFormProps {
   registeredUsername?: string;
   username: string;
   onUsernameChange: (username: string) => void;
-  error?: null | 'already-registered' | 'insufficient-funds';
   getPublicKey(mnemonic: string): string;
+  forgingPK: string;
+  error?: null | 'insufficient-funds';
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
@@ -301,67 +299,80 @@ class RegisterDelegateDialogContent extends React.Component<
 
   renderForgingKey() {
     const {
-      intl,
-      classes,
-      error,
-      delegateFee,
       registeredUsername,
-      username
+      username,
     } = this.props;
     const { usernameInvalid } = this.state;
+
+    const alreadyRegistered = Boolean(username)
+
+    return (
+      <Grid item={true} xs={12}>
+        <TextField
+          autoFocus={true}
+          label={
+            <FormattedMessage
+              id="forms-register-delegate.username-input-label"
+              description="Label for delegate username text field."
+              defaultMessage="Forging Key"
+            />
+          }
+          value={registeredUsername || username}
+          fullWidth={true}
+          error={usernameInvalid}
+          FormHelperTextProps={{
+            error: usernameInvalid
+          }}
+          helperText={usernameInvalid ? this.usernameError() || '' : ''}
+          onChange={!alreadyRegistered && this.handleUsernameChange}
+          onBlur={!alreadyRegistered && this.handleUsernameBlur}
+          disabled={alreadyRegistered}
+        />
+      </Grid>
+    );
 
     return this.renderMnemonic();
   }
 
   renderUsername() {
     const {
-      intl,
-      classes,
-      error,
-      delegateFee,
       registeredUsername,
-      username
+      username,
     } = this.props;
     const { usernameInvalid } = this.state;
+    const alreadyRegistered = Boolean(registeredUsername)
 
     return (
-      !error && (
-        <Grid item={true} xs={12}>
-          <TextField
-            autoFocus={true}
-            label={
-              <FormattedMessage
-                id="forms-register-delegate.username-input-label"
-                description="Label for delegate username text field."
-                defaultMessage="Delegate username"
-              />
-            }
-            value={username}
-            fullWidth={true}
-            error={usernameInvalid}
-            FormHelperTextProps={{
-              error: usernameInvalid
-            }}
-            helperText={usernameInvalid ? this.usernameError() || '' : ''}
-            onChange={this.handleUsernameChange}
-            onBlur={this.handleUsernameBlur}
-          />
-        </Grid>
-      )
+      <Grid item={true} xs={12}>
+        <TextField
+          autoFocus={true}
+          label={
+            <FormattedMessage
+              id="forms-register-delegate.username-input-label"
+              description="Label for delegate username text field."
+              defaultMessage="Delegate username"
+            />
+          }
+          value={registeredUsername || username}
+          fullWidth={true}
+          error={usernameInvalid}
+          FormHelperTextProps={{
+            error: usernameInvalid
+          }}
+          helperText={usernameInvalid ? this.usernameError() || '' : ''}
+          onChange={!alreadyRegistered && this.handleUsernameChange}
+          onBlur={!alreadyRegistered && this.handleUsernameBlur}
+          disabled={alreadyRegistered}
+        />
+      </Grid>
     );
   }
 
   renderMnemonic() {
     const {
-      intl,
       classes,
-      error,
-      delegateFee,
-      registeredUsername,
-      username
     } = this.props;
     const { mnemonic, mnemonicInvalid, address } = this.state;
-    const { usernameInvalid } = this.state;
 
     return (
       <>

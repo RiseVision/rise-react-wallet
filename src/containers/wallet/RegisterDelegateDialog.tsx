@@ -198,16 +198,16 @@ class RegisterDelegateDialog extends React.Component<Props, State>
         onUsernameChange={this.handleUsernameChange}
         delegateFee={fee}
         registeredUsername={regUsername}
+        forgingPK={registeredDelegate.forgingPK}
         username={usernameInput}
         getPublicKey={mnemonic => {
+          // TODO
           return '1232jhiufhdsf1232';
         }}
         error={
-          registeredDelegate
-            ? 'already-registered'
-            : account.balance.lt(fee)
-              ? 'insufficient-funds'
-              : null
+          !registeredDelegate && account.balance.lt(fee)
+            ? 'insufficient-funds'
+            : null
         }
       />
     );

@@ -25,10 +25,7 @@ import {
   TransactionType,
   Delegate
 } from 'risejs/dist/es5/types/beans';
-import {
-  Rise as dposAPI,
-  RiseAPIWrapper as APIWrapper
-} from 'risejs';
+import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs';
 import io from 'socket.io-client';
 import { As } from 'type-tagger';
 import { onboardingAddAccountRoute } from '../routes';
@@ -406,7 +403,7 @@ export default class WalletStore {
       'hwSlot',
       'fiatCurrency',
       'name',
-      'pinned',
+      'pinned'
     ];
     let stored = this.storedAccounts();
     stored = stored.filter(a => a.id !== account.id);
@@ -889,6 +886,7 @@ export default class WalletStore {
     // request
     const [recent, unconfirmed] = await Promise.all([
       this.loadTransactions(accountID, {
+        // @ts-ignore TODO TS error
         limit,
         offset,
         orderBy: 'timestamp:desc',
@@ -898,6 +896,7 @@ export default class WalletStore {
       this.loadTransactions(
         accountID,
         {
+          // @ts-ignore TODO TS error
           limit,
           address: account.id,
           senderId: account.id

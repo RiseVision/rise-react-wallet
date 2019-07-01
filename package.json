@@ -51,17 +51,18 @@
     "store": "^2.0.12",
     "svg-country-flags": "^1.2.6",
     "ts-jest": "^23.10.5",
-    "typescript": "^3.2.2",
+    "typescript": "^3.5.2",
     "unique-random": "^2.0.0",
     "utils": "^0.3.1"
   },
-  "browserlist": [
+  "browserslist": [
     "last 1 Chrome version"
   ],
   "scripts": {
     "start": "parcel src/dev.html --https",
     "start-http": "parcel src/dev.html",
     "build": "react-scripts-ts build",
+    "build-es6-module": "parcel build --out-dir dist/build-es6 src/dev.html",
     "bundle": "cd desktop; yarn bundle",
     "deploy-now": "yarn build; cd build && now && now alias rise-wallet",
     "cypress": "cypress open",
