@@ -59,10 +59,11 @@
     "last 1 Chrome version"
   ],
   "scripts": {
-    "start": "parcel --out-dir dist/build-es6 src/dev.html --https",
-    "start-http": "parcel --out-dir dist/build-es6 src/dev.html",
+    "clean-es6-module": "rm -R dist/build-es6",
+    "start": "yarn clean-es6-module; parcel --out-dir dist/build-es6 src/dev.html --https",
+    "start-http": "yarn clean-es6-module; parcel --out-dir dist/build-es6 src/dev.html",
     "build": "react-scripts-ts build",
-    "build-es6-module": "rm -R dist/build-es6; parcel build --out-dir dist/build-es6 src/dev.html",
+    "build-es6-module": "yarn clean-es6-module; parcel build --out-dir dist/build-es6 src/dev.html",
     "bundle": "cd desktop; yarn bundle",
     "deploy-now": "yarn build; cd build && now && now alias rise-wallet",
     "cypress": "cypress open",
