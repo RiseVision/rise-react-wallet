@@ -413,7 +413,7 @@ export const serverAccountsDelegates = {
 };
 
 // TODO add `infos`
-export const serverDelegatesGetByPublicKey = {
+export const serverDelegatesGetByUsername = {
   success: true,
   delegate: {
     username: 'testdelegate3242432',

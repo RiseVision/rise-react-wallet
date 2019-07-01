@@ -1,11 +1,13 @@
 // corrects the int amount from the server to a user-readable float
-import moment from 'moment/min/moment-with-locales';
-import BigNumber from 'bignumber.js';
-import { InjectedIntl } from 'react-intl';
-import { isNaN } from 'lodash';
-import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
-import { RawAmount } from './amounts';
 import bech32 from 'bech32';
+import BigNumber from 'bignumber.js';
+import { Rise } from 'dpos-offline';
+import { isNaN } from 'lodash';
+import moment from 'moment/min/moment-with-locales';
+import { InjectedIntl } from 'react-intl';
+import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
+import { As } from 'type-tagger';
+import { RawAmount } from './amounts';
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
@@ -184,4 +186,9 @@ export function idToTxNetworkType(id: string): NetworkTXType {
     throw new Error('Missing ID');
   }
   return id[0] === 'r' ? NetworkTXType.MAINNET : NetworkTXType.TESTNET;
+}
+
+export function derivePublicKey(secret: string): string & As<'publicKey'> {
+  const publicKey = Rise.deriveKeypair(secret).publicKey.toString('hex');
+  return publicKey as string & As<'publicKey'>;
 }

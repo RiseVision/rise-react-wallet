@@ -40,6 +40,7 @@ type ImportableFields =
   | 'balance'
   | 'unconfirmedBalance'
   | 'secondPublicKey'
+  | 'forgingPK'
   | 'secondSignature';
 
 export default class AccountStore {
@@ -64,6 +65,7 @@ export default class AccountStore {
   @observable fiatCurrency: string = 'USD';
   @observable balance: RawAmount = RawAmount.ZERO;
   @observable unconfirmedBalance: RawAmount = RawAmount.ZERO;
+  @observable forgingPK: string | null;
   @observable secondPublicKey: string | null;
   @observable secondSignature: boolean = false;
   // local only fields

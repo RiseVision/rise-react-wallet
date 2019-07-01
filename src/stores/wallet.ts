@@ -709,12 +709,16 @@ export default class WalletStore {
   async loadRegisteredDelegate(accountID: string) {
     const account = this.accounts.get(accountID) as AccountStore;
     assert(account, `Account ${accountID} doesn't exist`);
+    // check if registered as a delegate
+    if (!account.forgingPK) {
+      return;
+    }
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADING;
     });
     let delegate: Delegate | null = null;
     if (account.publicKey) {
-      delegate = await this.delegateCache.get(account.publicKey, {
+      delegate = await this.delegateCache.get(account.forgingPK, {
         reload: true
       });
     }
@@ -1134,19 +1138,19 @@ class DelegateCache {
 
   // TODO `opts.reload` -> `force`
   async get(
-    publicKey: string,
+    forgingPK: string,
     opts: { reload?: boolean } = {}
   ): Promise<FullDelegate | null> {
     const reload = opts.reload !== undefined ? opts.reload : false;
 
-    let entry = this.cached[publicKey];
+    let entry = this.cached[forgingPK];
     if (reload || !entry) {
-      const promise = this.fetchAndUpdate(publicKey);
+      const promise = this.fetchAndUpdate(forgingPK);
       entry = {
         state: 'loading',
         promise
       };
-      this.cached[publicKey] = entry;
+      this.cached[forgingPK] = entry;
     }
 
     if (entry.state === 'loading') {
@@ -1156,8 +1160,8 @@ class DelegateCache {
     }
   }
 
-  set(publicKey: string, delegate: FullDelegate) {
-    this.cached[publicKey] = {
+  set(forgingPK: string, delegate: FullDelegate) {
+    this.cached[forgingPK] = {
       state: 'loaded',
       delegate: delegate
     };
@@ -1167,12 +1171,12 @@ class DelegateCache {
     this.cached = {};
   }
 
-  private async fetchAndUpdate(publicKey: string): Promise<FullDelegate> {
-    const res = await this.api.delegates.byForgingKey(publicKey);
-    // @ts-ignore TODO types in dpos-offline
-    const delegate = res.account || res.delegate || null;
-    this.set(publicKey, delegate);
-    return delegate;
+  private async fetchAndUpdate(forgingPK: string): Promise<FullDelegate> {
+    const res = await this.api.delegates.byForgingKey(forgingPK);
+    // TODO fix `infos`
+    const parsed = { ...res.delegate, infos: res.info };
+    this.set(forgingPK, parsed);
+    return parsed;
   }
 }
 
@@ -1193,6 +1197,7 @@ export function parseAccountReponse(
     type: AccountType.READONLY,
     hwId: null,
     hwSlot: null,
+    forgingPK: res.account.forgingPK,
     pinned: false,
     secondSignature: Boolean(res.account.secondSignature),
     secondPublicKey: res.account.secondPublicKey,
@@ -1301,6 +1306,7 @@ export type TAccount = TStoredAccount & {
   unconfirmedBalance: RawAmount;
   secondPublicKey: string | null;
   secondSignature: boolean;
+  forgingPK: string | null;
 };
 
 export type TAccountResponse = { account: APIAccount } & BaseApiResponse;

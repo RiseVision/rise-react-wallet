@@ -28,7 +28,7 @@ import {
   serverTransactionsConfirmed,
   serverDelegatesSearch,
   // serverAccountsDelegates,
-  serverDelegatesGetByPublicKey,
+  serverDelegatesGetByUsername,
   serverTransactionDelegates,
   config
 } from './fixtures';
@@ -400,21 +400,21 @@ describe('API calls', () => {
   // });
   it('loadRegisteredDelegate', async () => {
     const account = wallet.selectedAccount;
-    stub(stubs, wallet.dposAPI.delegates, 'byForgingKey', () => {
-      return serverDelegatesGetByPublicKey;
+    stub(stubs, wallet.dposAPI.delegates, 'byUsername', () => {
+      return serverDelegatesGetByUsername;
     });
     await wallet.loadRegisteredDelegate(account.id);
     // @ts-ignore sinon spy
     expect(wallet.dposAPI.delegates.getByPublicKey.called).toBeTruthy();
     expect(account.registeredDelegateState).toEqual(LoadingState.LOADED);
     expect(account.registeredDelegate).toMatchObject(
-      serverDelegatesGetByPublicKey.delegate
+      serverDelegatesGetByUsername.delegate
     );
   });
   it('loadTransactionDelegates', async () => {
     const account = wallet.selectedAccount;
     stub(stubs, wallet.dposAPI.delegates, 'byForgingKey', () => {
-      return serverDelegatesGetByPublicKey;
+      return serverDelegatesGetByUsername;
     });
     let tx = parseTransactionsResponse(
       wallet,
@@ -426,7 +426,7 @@ describe('API calls', () => {
     await wallet.loadTransactionDelegates(tx);
     expect(tx.votes[0].op).toEqual('remove');
     expect(tx.votes[0].delegate).toMatchObject(
-      serverDelegatesGetByPublicKey.delegate
+      serverDelegatesGetByUsername.delegate
     );
   });
 });

@@ -44,6 +44,7 @@ class RegisterDelegateDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
   disposeOpenMonitor: null | IReactionDisposer = null;
   state: State = {
+    // TODO remove from state and pass when submitting the form
     usernameInput: '',
     step: 'form',
     transaction: null
@@ -198,12 +199,8 @@ class RegisterDelegateDialog extends React.Component<Props, State>
         onUsernameChange={this.handleUsernameChange}
         delegateFee={fee}
         registeredUsername={regUsername}
-        forgingPK={registeredDelegate.forgingPK}
+        forgingPK={account.forgingPK}
         username={usernameInput}
-        getPublicKey={mnemonic => {
-          // TODO
-          return '1232jhiufhdsf1232';
-        }}
         error={
           !registeredDelegate && account.balance.lt(fee)
             ? 'insufficient-funds'
