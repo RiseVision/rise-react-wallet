@@ -1,7 +1,7 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
+import Typography from '@material-ui/core/es/Typography';
+import CircularProgress from '@material-ui/core/es/CircularProgress';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import InfoIcon from '@material-ui/icons/Info';
 import DoneIcon from '@material-ui/icons/Done';
@@ -10,7 +10,7 @@ import {
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
+} from '@material-ui/core/es/styles';
 import React from 'react';
 import { ReactEventHandler } from 'react';
 import {

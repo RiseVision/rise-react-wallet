@@ -1,19 +1,19 @@
-import Fab from '@material-ui/core/Fab';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
+import Fab from '@material-ui/core/es/Fab';
+import IconButton from '@material-ui/core/es/IconButton';
+import Paper from '@material-ui/core/es/Paper';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
+import Table from '@material-ui/core/es/Table';
+import TableBody from '@material-ui/core/es/TableBody';
+import TableCell from '@material-ui/core/es/TableCell';
+import TableHead from '@material-ui/core/es/TableHead';
+import TableRow from '@material-ui/core/es/TableRow';
+import Tooltip from '@material-ui/core/es/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';

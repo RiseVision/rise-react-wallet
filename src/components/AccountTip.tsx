@@ -1,14 +1,14 @@
-import Paper from '@material-ui/core/Paper';
+import Paper from '@material-ui/core/es/Paper';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+} from '@material-ui/core/es/styles';
+import IconButton from '@material-ui/core/es/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
-import blue from '@material-ui/core/colors/blue';
+import blue from '@material-ui/core/es/colors/blue';
 import React from 'react';
 import { ReactEventHandler } from 'react';
 import classNames from 'classnames';

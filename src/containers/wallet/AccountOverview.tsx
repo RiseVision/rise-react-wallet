@@ -1,13 +1,13 @@
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
+import Button from '@material-ui/core/es/Button';
+import Fab from '@material-ui/core/es/Fab';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Tooltip from '@material-ui/core/es/Tooltip';
+import Typography from '@material-ui/core/es/Typography';
 import SendIcon from '@material-ui/icons/Send';
 import { toPairs } from 'lodash';
 import { action, runInAction } from 'mobx';

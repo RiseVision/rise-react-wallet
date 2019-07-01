@@ -1,6 +1,6 @@
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import Hidden from '@material-ui/core/Hidden';
-import Typography from '@material-ui/core/Typography';
+import SwipeableDrawer from '@material-ui/core/es/SwipeableDrawer';
+import Hidden from '@material-ui/core/es/Hidden';
+import Typography from '@material-ui/core/es/Typography';
 import {
   createStyles,
   Theme,
@@ -8,7 +8,7 @@ import {
   WithStyles,
   withTheme,
   WithTheme
-} from '@material-ui/core/styles';
+} from '@material-ui/core/es/styles';
 import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';

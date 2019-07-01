@@ -1,12 +1,12 @@
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/es/Button';
+import Paper from '@material-ui/core/es/Paper';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';

@@ -1,16 +1,16 @@
-import Avatar from '@material-ui/core/Avatar';
-import Fab from '@material-ui/core/Fab';
-import List from '@material-ui/core/List/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
+import Avatar from '@material-ui/core/es/Avatar';
+import Fab from '@material-ui/core/es/Fab';
+import List from '@material-ui/core/es/List/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemAvatar from '@material-ui/core/es/ListItemAvatar';
+import ListItemText from '@material-ui/core/es/ListItemText';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+} from '@material-ui/core/es/styles';
+import Tooltip from '@material-ui/core/es/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';

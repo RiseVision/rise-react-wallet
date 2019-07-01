@@ -1,11 +1,11 @@
-import Button from '@material-ui/core/Button';
+import Button from '@material-ui/core/es/Button';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import Close from '@material-ui/icons/Close';
 import classNames from 'classnames';

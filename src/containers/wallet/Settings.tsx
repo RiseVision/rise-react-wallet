@@ -1,17 +1,17 @@
-import red from '@material-ui/core/colors/red';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
+import red from '@material-ui/core/es/colors/red';
+import Divider from '@material-ui/core/es/Divider';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/es/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/es/ListItemText';
+import ListSubheader from '@material-ui/core/es/ListSubheader';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
+} from '@material-ui/core/es/styles';
+import Switch from '@material-ui/core/es/Switch';
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';

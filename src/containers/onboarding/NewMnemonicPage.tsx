@@ -1,12 +1,12 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
 import bip39 from 'bip39';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';

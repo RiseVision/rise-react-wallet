@@ -1,7 +1,7 @@
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemText from '@material-ui/core/es/ListItemText';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/es/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TranslateIcon from '@material-ui/icons/Translate';
 import { inject, observer } from 'mobx-react';

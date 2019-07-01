@@ -1,10 +1,10 @@
-import Button from '@material-ui/core/Button';
+import Button from '@material-ui/core/es/Button';
 import Radio from '@material-ui/core/es/Radio';
 import TextField from '@material-ui/core/es/TextField';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemText from '@material-ui/core/es/ListItemText';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/es/styles';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
 import { FormEvent } from 'react';

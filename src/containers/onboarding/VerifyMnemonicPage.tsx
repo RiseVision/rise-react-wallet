@@ -1,14 +1,14 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
+import Hidden from '@material-ui/core/es/Hidden';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';

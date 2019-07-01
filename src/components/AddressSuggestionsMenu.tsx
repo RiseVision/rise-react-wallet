@@ -1,14 +1,14 @@
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
+import Paper from '@material-ui/core/es/Paper';
+import MenuItem from '@material-ui/core/es/MenuItem';
+import ListItemAvatar from '@material-ui/core/es/ListItemAvatar';
+import ListItemText from '@material-ui/core/es/ListItemText';
+import Avatar from '@material-ui/core/es/Avatar';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
+} from '@material-ui/core/es/styles';
 import { PropGetters } from 'downshift';
 import classNames from 'classnames';
 import React from 'react';

@@ -1,6 +1,6 @@
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemText from '@material-ui/core/es/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';

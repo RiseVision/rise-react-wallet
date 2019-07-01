@@ -1,4 +1,4 @@
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/es/styles';
 import classNames from 'classnames';
 import React from 'react';
 import { CountryCode } from '../utils/i18n';

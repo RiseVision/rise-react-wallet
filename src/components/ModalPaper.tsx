@@ -1,9 +1,9 @@
-import { BackdropProps } from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import Modal from '@material-ui/core/Modal';
-import Paper from '@material-ui/core/Paper';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import { duration } from '@material-ui/core/styles/transitions';
+import { BackdropProps } from '@material-ui/core/es/Backdrop';
+import Fade from '@material-ui/core/es/Fade';
+import Modal from '@material-ui/core/es/Modal';
+import Paper from '@material-ui/core/es/Paper';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/es/styles';
+import { duration } from '@material-ui/core/es/styles/transitions';
 import React from 'react';
 import ModalBackdrop from './ModalBackdrop';
 

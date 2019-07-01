@@ -1,15 +1,15 @@
 import { Checkbox } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/es/Button';
+import FormControlLabel from '@material-ui/core/es/FormControlLabel/FormControlLabel';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
 import bip39 from 'bip39';
 import React from 'react';
 import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';

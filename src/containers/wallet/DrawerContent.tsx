@@ -1,17 +1,17 @@
-import Avatar from '@material-ui/core/Avatar';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import Avatar from '@material-ui/core/es/Avatar';
+import Divider from '@material-ui/core/es/Divider';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemAvatar from '@material-ui/core/es/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/es/ListItemIcon';
+import ListItemText from '@material-ui/core/es/ListItemText';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import AddIcon from '@material-ui/icons/Add';
 import AppsIcon from '@material-ui/icons/Apps';

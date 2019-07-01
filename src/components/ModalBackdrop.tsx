@@ -1,6 +1,6 @@
-import { BackdropProps } from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import { BackdropProps } from '@material-ui/core/es/Backdrop';
+import Fade from '@material-ui/core/es/Fade';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/es/styles';
 import classNames from 'classnames';
 import React from 'react';
 

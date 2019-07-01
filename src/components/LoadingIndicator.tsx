@@ -1,7 +1,7 @@
 import CircularProgress, {
   CircularProgressProps
-} from '@material-ui/core/CircularProgress';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+} from '@material-ui/core/es/CircularProgress';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/es/styles';
 import classNames from 'classnames';
 import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';

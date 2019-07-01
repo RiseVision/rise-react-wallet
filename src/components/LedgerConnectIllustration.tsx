@@ -1,5 +1,5 @@
 import { Button } from '@material-ui/core';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core/es/styles';
 import React from 'react';
 
 const styles = createStyles({

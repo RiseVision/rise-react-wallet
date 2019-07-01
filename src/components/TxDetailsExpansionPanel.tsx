@@ -1,19 +1,19 @@
 import { Omit } from '@material-ui/core';
-import green from '@material-ui/core/colors/green';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import green from '@material-ui/core/es/colors/green';
+import ExpansionPanel from '@material-ui/core/es/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/es/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/es/ExpansionPanelSummary';
+import ExpansionPanelActions from '@material-ui/core/es/ExpansionPanelActions';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
+import Button from '@material-ui/core/es/Button';
+import IconButton from '@material-ui/core/es/IconButton';
+import Tooltip from '@material-ui/core/es/Tooltip';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PersonIcon from '@material-ui/icons/Person';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
