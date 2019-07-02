@@ -142,7 +142,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     if (wordInputEl != null) {
       wordInputEl.focus();
     }
-  }
+  };
 
   handleCurrentWordChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     let value = ev.target.value;
@@ -151,7 +151,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     this.setState({
       currentWordValue: value
     });
-  }
+  };
 
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -175,13 +175,13 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     } else {
       this.finish();
     }
-  }
+  };
 
   handleContinueClick = () => {
     if (this.canFinish()) {
       this.finish();
     }
-  }
+  };
 
   canFinish() {
     const { mnemonic, uncheckedIndices } = this.state;
@@ -239,7 +239,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
                 className={classes.mnemonic}
               >
                 {words.map((state, idx) => (
-                  < key={idx}>
+                  <React.Fragment key={idx}>
                     <span
                       className={classes.wordGroup}
                       onClick={this.handlePlaceholderClick}
@@ -255,7 +255,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
                         {state === 'checked' && '✓'}
                       </span>
                     </span>
-                  </>
+                  </React.Fragment>
                 ))}
               </Typography>
             </Grid>

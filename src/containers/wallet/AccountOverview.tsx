@@ -327,7 +327,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
             recentTransactions.isLoading && <LoadingIndicator />}
           {toPairs(recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
-              < key={`${this.account.id}-${group}`}>
+              <React.Fragment key={`${this.account.id}-${group}`}>
                 <Typography className={classes.dateGroupTitle}>
                   {group}
                 </Typography>
@@ -348,7 +348,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                     );
                   })}
                 </div>
-              </>
+              </React.Fragment>
             )
           )}
           {recentTransactions.hasMore && (
