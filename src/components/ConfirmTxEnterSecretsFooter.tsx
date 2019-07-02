@@ -309,7 +309,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
               inputRef={ref => (this.mnemonicRef = ref)}
             />
           ) : (
-            <React.Fragment>
+            <>
               <AccountTip
                 key="__mnemonic_ok__"
                 open={true}
@@ -334,7 +334,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
                 fullWidth={true}
                 inputRef={ref => (this.passphraseRef = ref)}
               />
-            </React.Fragment>
+            </>
           )}
         </Grid>
         <Grid item={true} xs={12}>

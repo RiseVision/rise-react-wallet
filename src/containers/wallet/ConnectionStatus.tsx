@@ -81,29 +81,29 @@ class ConnectionStatus extends React.Component<DecoratedProps> {
     switch (walletStore.connected) {
       case LoadingState.LOADED:
         return (
-          <React.Fragment>
+          <>
             <span
               className={classNames(classes.connected, classes.connectionIcon)}
             />
             <Typography className={classes.text}>
               {intl.formatMessage(messages.connectedStatus)}
             </Typography>
-          </React.Fragment>
+          </>
         );
       case LoadingState.LOADING:
         return (
-          <React.Fragment>
+          <>
             <span
               className={classNames(classes.connecting, classes.connectionIcon)}
             />
             <Typography className={classes.text}>
               {intl.formatMessage(messages.connectingStatus)}
             </Typography>
-          </React.Fragment>
+          </>
         );
       default:
         return (
-          <React.Fragment>
+          <>
             <span
               className={classNames(
                 classes.disconnected,
@@ -113,7 +113,7 @@ class ConnectionStatus extends React.Component<DecoratedProps> {
             <Typography className={classes.text}>
               {intl.formatMessage(messages.disconnectedStatus)}
             </Typography>
-          </React.Fragment>
+          </>
         );
     }
   }

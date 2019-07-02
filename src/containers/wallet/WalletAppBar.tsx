@@ -194,7 +194,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
             )}
           </Typography>
           {state === 'accountOverview' && (
-            <React.Fragment>
+            <>
               <ConnectionStatus />
               <Tooltip
                 title={intl.formatMessage(messages.accountSettingsTooltip)}
@@ -215,7 +215,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
                   </IconButton>
                 </Link>
               </Tooltip>
-            </React.Fragment>
+            </>
           )}
         </Toolbar>
       </AppBar>

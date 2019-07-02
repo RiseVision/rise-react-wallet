@@ -342,7 +342,7 @@ class RegisterDelegateDialogContent extends React.Component<
     const alreadyRegistered = Boolean(registeredUsername);
 
     return (
-      <React.Fragment>
+      <>
         {alreadyRegistered && (
           <Grid item={true} xs={12}>
             <Typography>
@@ -393,7 +393,7 @@ class RegisterDelegateDialogContent extends React.Component<
             disabled={true}
           />
         </Grid>
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -187,7 +187,7 @@ class InstallToHomeScreen extends React.Component<Props, State> {
             )}
             {walletStore.isMobile &&
               !walletStore.supportsA2HS && (
-                <React.Fragment>
+                <>
                   <Typography>
                     <FormattedMessage
                       id="onboarding-install.howto-ios"
@@ -201,7 +201,7 @@ class InstallToHomeScreen extends React.Component<Props, State> {
                   <p className={classes.img}>
                     <img src="/a2hs-ios.png" style={{ maxWidth: '100%' }} />
                   </p>
-                </React.Fragment>
+                </>
               )}
           </Grid>
         </Grid>

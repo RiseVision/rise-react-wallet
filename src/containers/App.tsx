@@ -99,12 +99,12 @@ class App extends React.Component<Props, State> {
     return (
       <ThemeProvider>
         <IntlProvider key={locale} locale={locale} messages={translations}>
-          <React.Fragment>
+          <>
             <AppHelmet locale={locale} />
             {content}
             <MobxRouter />
             <UpdateAvailableSnackbar />
-          </React.Fragment>
+          </>
         </IntlProvider>
       </ThemeProvider>
     );

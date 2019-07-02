@@ -52,7 +52,7 @@ class LedgerConnectIllustration extends React.Component<Props> {
 
     // tslint:disable:max-line-length
     return (
-      <React.Fragment>
+      <>
         <svg
           className={classes.root}
           height="90px"
@@ -127,7 +127,7 @@ class LedgerConnectIllustration extends React.Component<Props> {
         <Button onClick={onClick} color="secondary" fullWidth={true}>
           Discover Device
         </Button>
-      </React.Fragment>
+      </>
     );
     // tslint:enable:max-line-length
   }

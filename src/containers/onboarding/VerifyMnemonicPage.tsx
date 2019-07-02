@@ -239,7 +239,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
                 className={classes.mnemonic}
               >
                 {words.map((state, idx) => (
-                  <React.Fragment key={idx}>
+                  < key={idx}>
                     <span
                       className={classes.wordGroup}
                       onClick={this.handlePlaceholderClick}
@@ -255,7 +255,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
                         {state === 'checked' && '✓'}
                       </span>
                     </span>
-                  </React.Fragment>
+                  </>
                 ))}
               </Typography>
             </Grid>

@@ -272,7 +272,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
     }
 
     return (
-      <React.Fragment>
+      <>
         <Grid className={classes.content} container={true} spacing={16}>
           <Grid
             item={true}
@@ -345,7 +345,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
           )}
         </Grid>
         {data.kind !== 'send' && (
-          <React.Fragment>
+          <>
             <Divider aria-hidden={true} />
             <Grid
               className={classNames(classes.content, classes.txDetails)}
@@ -376,7 +376,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
                   </Typography>
                 )}
                 {data.kind === 'vote' && (
-                  <React.Fragment>
+                  <>
                     {data.remove.length > 0 && (
                       <Typography>
                         <FormattedMessage
@@ -413,11 +413,11 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
                         />
                       </Typography>
                     )}
-                  </React.Fragment>
+                  </>
                 )}
               </Grid>
             </Grid>
-          </React.Fragment>
+          </>
         )}
         <Divider aria-hidden={true} />
         <Grid className={classes.content} container={true} spacing={16}>
@@ -459,7 +459,7 @@ class ConfirmTransactionDialogContent extends React.Component<DecoratedProps> {
         </Grid>
         <Divider aria-hidden={true} />
         {children}
-      </React.Fragment>
+      </>
     );
   }
 }
@@ -471,12 +471,12 @@ function emphasizeAndJoin(
   separator: string = ', '
 ): JSX.Element {
   return (
-    <React.Fragment>
+    <>
       {labels
         .map(u => <em key={u}>{u}</em>)
         .reduce((a, u) => a.concat(a.length ? ', ' : null, u), [] as Array<
           null | string | JSX.Element
         >)}
-    </React.Fragment>
+    </>
   );
 }

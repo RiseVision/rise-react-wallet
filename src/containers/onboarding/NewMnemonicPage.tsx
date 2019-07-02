@@ -155,7 +155,7 @@ class NewMnemonicPage extends React.Component<Props, State> {
           <Grid item={true} xs={12}>
             <Typography className={classes.mnemonic} component="p" variant="h6">
               {mnemonic.map((word, idx) => (
-                <React.Fragment key={idx}>
+                < key={idx}>
                   {idx > 0 && ' '}
                   <span
                     className={classNames(
@@ -165,7 +165,7 @@ class NewMnemonicPage extends React.Component<Props, State> {
                   >
                     {word}
                   </span>
-                </React.Fragment>
+                </>
               ))}
             </Typography>
           </Grid>

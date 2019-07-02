@@ -178,7 +178,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
     }
 
     return (
-      <React.Fragment>
+      <>
         <Typography
           className={classNames(classes.toolbar, classes.header)}
           variant="h6"
@@ -404,7 +404,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
             </ListItemText>
           </ListItem>
         </List>
-      </React.Fragment>
+      </>
     );
   }
 }

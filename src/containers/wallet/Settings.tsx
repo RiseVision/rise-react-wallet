@@ -239,7 +239,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     };
 
     return (
-      <React.Fragment>
+      <>
         <AccountNameDialog account={this.account} navigateBackLink={backLink} />
         <VoteDelegateDialog
           account={this.account}
@@ -423,7 +423,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             </Link>
           </List>
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }

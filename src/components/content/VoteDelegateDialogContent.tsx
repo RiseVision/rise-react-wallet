@@ -135,7 +135,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
           />
         </Grid>
         {content.kind === 'insufficient-funds' && (
-          <React.Fragment>
+          <>
             <Grid item={true} xs={12}>
               <Typography color="error">
                 <FormattedMessage
@@ -160,11 +160,11 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
                 />
               </Button>
             </Grid>
-          </React.Fragment>
+          </>
         )}
         {(content.kind === 'suggestions' ||
           content.kind === 'search-results') && (
-          <React.Fragment>
+          <>
             <Grid item={true} xs={12}>
               <TextField
                 autoFocus={true}
@@ -225,7 +225,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
                 </Grid>
               );
             })}
-          </React.Fragment>
+          </>
         )}
       </Grid>
     );

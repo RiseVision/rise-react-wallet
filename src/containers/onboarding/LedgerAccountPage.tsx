@@ -184,7 +184,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             </Grid>
           </Grid>
         ) : /* CONFIRM IMPORT */ selectedAccount !== null ? (
-          <React.Fragment>
+          <>
             <List>
               <ListItem key={selectedAccount.address} divider={true}>
                 <ListItemAvatar>
@@ -223,7 +223,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
                 />
               </Grid>
             </Grid>
-          </React.Fragment>
+          </>
         ) : (
           /* SELECT ACCOUNT */ <List>
             {this.accounts.map((data, index) => (

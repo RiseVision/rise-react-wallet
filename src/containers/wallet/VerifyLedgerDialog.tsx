@@ -301,7 +301,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
             </Grid>
           </Grid>
         ) : (
-          <React.Fragment>
+          <>
             <List>
               <ListItem key={account.hwSlot!} divider={true}>
                 <ListItemAvatar>
@@ -358,7 +358,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
                 </Grid>
               </Grid>
             )}
-          </React.Fragment>
+          </>
         )}
       </Dialog>
     );

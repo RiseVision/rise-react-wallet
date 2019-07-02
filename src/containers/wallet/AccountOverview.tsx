@@ -203,7 +203,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     }
 
     return (
-      <React.Fragment>
+      <>
         <AccountNameDialog
           // @ts-ignore TODO avoid rendering data-less dialogs
           account={wallet.accounts.get(id) || { id: '', name: '' }}
@@ -220,7 +220,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
           address={id || ''}
           open={showModifyContact}
         />
-      </React.Fragment>
+      </>
     );
   }
 
@@ -327,7 +327,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
             recentTransactions.isLoading && <LoadingIndicator />}
           {toPairs(recentTransactions.groupedByDay).map(
             ([group, transactions]) => (
-              <React.Fragment key={`${this.account.id}-${group}`}>
+              < key={`${this.account.id}-${group}`}>
                 <Typography className={classes.dateGroupTitle}>
                   {group}
                 </Typography>
@@ -348,7 +348,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
                     );
                   })}
                 </div>
-              </React.Fragment>
+              </>
             )
           )}
           {recentTransactions.hasMore && (
