@@ -8,7 +8,9 @@ import {
 } from '../../components/Dialog';
 import LedgerStore from '../../stores/ledger';
 import ConfirmTransactionDialog from './ConfirmTransactionDialog';
-import RegisterDelegateDialogContent from '../../components/content/RegisterDelegateDialogContent';
+import RegisterDelegateDialogContent, {
+  StateForm
+} from '../../components/content/RegisterDelegateDialogContent';
 import { accountSettingsDelegateRoute } from '../../routes';
 import RootStore, { RouteLink } from '../../stores/root';
 import AccountStore, { LoadingState, AccountType } from '../../stores/account';
@@ -28,11 +30,8 @@ interface PropsInjected extends Props {
 }
 
 interface State extends ICloseInterruptControllerState {
-  usernameInput: string;
   step: 'form' | 'transaction';
-  transaction: null | {
-    username: string;
-  };
+  transaction: null | StateForm;
 }
 
 @inject('store')
@@ -44,8 +43,6 @@ class RegisterDelegateDialog extends React.Component<Props, State>
   implements ICloseInterruptController {
   disposeOpenMonitor: null | IReactionDisposer = null;
   state: State = {
-    // TODO remove from state and pass when submitting the form
-    usernameInput: '',
     step: 'form',
     transaction: null
   };
@@ -84,15 +81,7 @@ class RegisterDelegateDialog extends React.Component<Props, State>
     });
   };
 
-  handleUsernameChange = (username: string) => {
-    this.setState({
-      usernameInput: username
-    });
-  };
-
-  handleUsernameCommit = () => {
-    const { usernameInput } = this.state;
-
+  handleFormSubmit = (data: StateForm) => {
     // ledger requires to be open in a click handler
     if (this.account.type === AccountType.LEDGER) {
       this.injected.ledgerStore.open();
@@ -100,9 +89,7 @@ class RegisterDelegateDialog extends React.Component<Props, State>
 
     this.setState({
       step: 'transaction',
-      transaction: {
-        username: usernameInput
-      }
+      transaction: data
     });
   };
 
@@ -113,6 +100,7 @@ class RegisterDelegateDialog extends React.Component<Props, State>
     if (step === 'transaction' && transaction !== null) {
       return walletStore.createRegisterDelegateTx(
         transaction.username,
+        transaction.forgingPK,
         account.id
       );
     } else {
@@ -122,7 +110,6 @@ class RegisterDelegateDialog extends React.Component<Props, State>
 
   resetState() {
     this.setState({
-      usernameInput: '',
       step: 'form',
       transaction: null
     });
@@ -156,6 +143,7 @@ class RegisterDelegateDialog extends React.Component<Props, State>
   render() {
     const { account, navigateBackLink } = this.injected;
     const { step, transaction } = this.state;
+    const { registeredDelegate } = account;
 
     const canGoBack = step !== 'form';
 
@@ -167,7 +155,8 @@ class RegisterDelegateDialog extends React.Component<Props, State>
           transaction
             ? {
                 kind: 'delegate',
-                username: transaction.username
+                forgingPK: transaction.forgingPK,
+                username: registeredDelegate ? null : transaction.username
               }
             : null
         }
@@ -182,7 +171,6 @@ class RegisterDelegateDialog extends React.Component<Props, State>
 
   renderDelegateContent() {
     const { account, walletStore } = this.injected;
-    const { usernameInput } = this.state;
     const { registeredDelegate } = account;
     const fee = walletStore.fees.get('delegate')!;
 
@@ -194,13 +182,11 @@ class RegisterDelegateDialog extends React.Component<Props, State>
     return (
       <RegisterDelegateDialogContent
         onFormChanged={this.handleFormChanged}
-        onSubmit={this.handleUsernameCommit}
+        onSubmit={this.handleFormSubmit}
         onClose={this.handleClose}
-        onUsernameChange={this.handleUsernameChange}
         delegateFee={fee}
         registeredUsername={regUsername}
         forgingPK={account.forgingPK}
-        username={usernameInput}
         error={
           !registeredDelegate && account.balance.lt(fee)
             ? 'insufficient-funds'

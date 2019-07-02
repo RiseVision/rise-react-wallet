@@ -203,6 +203,7 @@ type PassphraseTxData = {
 type DelegateTxData = {
   kind: 'delegate';
   username: string;
+  forgingPK: string;
 };
 
 type VoteTxData = {

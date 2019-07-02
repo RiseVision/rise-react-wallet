@@ -535,6 +535,7 @@ export default class WalletStore {
 
   async createRegisterDelegateTx(
     username: string,
+    forgingPK: string,
     accountID?: string
   ): Promise<RiseTransaction> {
     const account = accountID
@@ -554,10 +555,11 @@ export default class WalletStore {
     // TODO fix types in dpos-offline
     return Rise.txs.transform(
       {
-        kind: 'register-delegate',
+        kind: 'register-delegate-v2',
         sender: account.toSenderObject(),
-        // @ts-ignore TODO
-        identifier: username as string & As<'delegateName'>
+        identifier: username as string & As<'delegateName'>,
+        forgingPublicKey: Buffer.from(forgingPK, 'hex') as Buffer &
+          As<'publicKey'>
       },
       this.getTxNetwork()
     );
@@ -1271,15 +1273,6 @@ export type APITransaction = APIUncofirmedTransaction & {
 export type TTransactionVote = {
   op: 'add' | 'remove';
   delegate: Delegate;
-};
-
-export type TTransactionsRequest = {
-  limit?: number;
-  offset?: number;
-  orderBy?: string;
-  recipientId?: string;
-  senderPubData?: string;
-  address?: string;
 };
 
 export type TTransactionsResponse = {
