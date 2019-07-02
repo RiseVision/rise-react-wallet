@@ -12,8 +12,13 @@ import WalletStore, {
   APITransaction,
   APIUncofirmedTransaction
 } from './wallet';
-import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
 import { get } from 'lodash';
+
+interface MessageDescriptor {
+  id: string;
+  description?: string;
+  defaultMessage?: string;
+}
 
 const messages = defineMessages({
   lastWeek: {

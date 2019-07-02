@@ -309,20 +309,17 @@ class RegisterDelegateDialogContent extends React.Component<
       return null;
     }
 
-    // TODO move to msgs
-    const label = (
-      <FormattedMessage
-        id="forms-register-delegate.username-input-label"
-        description="Label for delegate username text field."
-        defaultMessage="Username"
-      />
-    );
-
     return (
       <Grid item={true} xs={12}>
         <TextField
           autoFocus={true}
-          label={label}
+          label={
+            <FormattedMessage
+              id="forms-register-delegate.username-input-label"
+              description="Label for delegate username text field."
+              defaultMessage="Username"
+            />
+          }
           value={usernameToShow}
           fullWidth={true}
           error={usernameInvalid}
@@ -341,17 +338,17 @@ class RegisterDelegateDialogContent extends React.Component<
     const { mnemonic, mnemonicInvalid } = this.state;
     const { registeredUsername, classes } = this.props;
 
-    const forgingPK = this.state.forgingPK || this.props.forgingPK
+    const forgingPK = this.state.forgingPK || this.props.forgingPK;
     const alreadyRegistered = Boolean(registeredUsername);
 
     return (
-      <>
+      <React.Fragment>
         {alreadyRegistered && (
           <Grid item={true} xs={12}>
             <Typography>
               <FormattedMessage
-                id="forms-register-delegate.instructions"
-                description="Instructions for delegate registration form"
+                id="forms-register-delegate.change-forging-pk"
+                description="Instructions for changing the forging public key"
                 defaultMessage={
                   'Type in a new secret to change your Forging Public Key.'
                 }
@@ -364,8 +361,8 @@ class RegisterDelegateDialogContent extends React.Component<
             fullWidth={true}
             label={
               <FormattedMessage
-                id="onboarding-mnemonic-account.mnemonic-input-label"
-                description="Account mnemonic input label"
+                id="forms-register-delegate.secret-input-label"
+                description="Secret for the forging key"
                 defaultMessage="Secret for the forging key"
               />
             }
@@ -382,8 +379,8 @@ class RegisterDelegateDialogContent extends React.Component<
         <Grid item={true} xs={12} className={classes.forgingLabel}>
           <Typography>
             <FormattedMessage
-              id="forms-register-delegate.username-input-label"
-              description="Label for delegate username text field."
+              id="forms-register-delegate.forging-pk-input-label"
+              description="Label for the forging key."
               defaultMessage="Forging Key"
             />
           </Typography>
@@ -396,7 +393,7 @@ class RegisterDelegateDialogContent extends React.Component<
             disabled={true}
           />
         </Grid>
-      </>
+      </React.Fragment>
     );
   }
 }

@@ -2,7 +2,12 @@ import { action, autorun, observable, runInAction } from 'mobx';
 import { addLocaleData, Locale as LocaleData } from 'react-intl';
 import lstore from '../utils/store';
 import { getUserLocales, Locale } from '../utils/i18n';
-import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
+
+interface MessageDescriptor {
+  id: string;
+  description?: string;
+  defaultMessage?: string;
+}
 
 export default class LangStore {
   @observable translations = observable.map<Locale, Messages>();
