@@ -40,7 +40,8 @@ import {
   FullDelegate,
   AccountIDVersion,
   NetworkTXType,
-  idToTxNetworkType
+  idToTxNetworkType,
+  normalizeAddressV1
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore from './addressBook';
@@ -1049,15 +1050,21 @@ export default class WalletStore {
    *
    * TODO implement delegates
    */
-  getContacts(): TAddressRecord[] {
+  getContacts(
+    networkType: NetworkTXType = this.getTxNetwork()
+  ): TAddressRecord[] {
     assert(this.selectedAccount);
 
-    const walletAccounts = [...this.accounts.values()];
+    const walletAccounts = this.listAccounts(networkType);
     const walletIDs = walletAccounts.map(({ id }) => id);
 
     const contactRecords: TAddressRecord[] = this.addressBook.asArray
-      // Wallet accounts take precedence, should there be a record in the address book
-      .filter(({ id }) => walletIDs.indexOf(id) < 0)
+      // remove wallet IDs from contacts (to avoid duplicates)
+      .filter(({ id }) => !walletIDs.includes(id))
+      // remove accounts from another network
+      .filter(({ id }) => {
+        return normalizeAddressV1(id) || idToTxNetworkType(id) === networkType;
+      })
       .map(({ id, name }) => ({
         id,
         name,
