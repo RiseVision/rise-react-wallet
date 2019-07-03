@@ -125,7 +125,16 @@ export default class AccountStore {
   }
 
   saveCache() {
-    const skipFields = ['recentTransactions', 'selected', 'config', 'isDirty'];
+    // TODO type as properties of AccountStore
+    const skipFields = [
+      'recentTransactions',
+      'selected',
+      'config',
+      'isDirty',
+      'load',
+      'votedDelegateState',
+      'registeredDelegateState'
+    ];
     const data: Partial<AccountStore> = {};
     for (const field in this) {
       if (skipFields.includes(field)) {

@@ -690,6 +690,9 @@ export default class WalletStore {
     const res = await this.dposAPI.accounts.getVotes(account.id);
     const delegateName = (res.votes && res.votes[0]) || null;
     if (!delegateName) {
+      runInAction(() => {
+        account.votedDelegateState = LoadingState.LOADED;
+      });
       return;
     }
     const delegateRes =
