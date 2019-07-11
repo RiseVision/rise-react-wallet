@@ -1,20 +1,20 @@
-import AppBar from '@material-ui/core/AppBar';
-import IconButton from '@material-ui/core/IconButton';
+import AppBar from '@material-ui/core/es/AppBar';
+import IconButton from '@material-ui/core/es/IconButton';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Toolbar from '@material-ui/core/es/Toolbar';
+import Tooltip from '@material-ui/core/es/Tooltip';
+import Typography from '@material-ui/core/es/Typography';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import {
   defineMessages,
   FormattedMessage,
@@ -194,7 +194,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
             )}
           </Typography>
           {state === 'accountOverview' && (
-            <React.Fragment>
+            <>
               <ConnectionStatus />
               <Tooltip
                 title={intl.formatMessage(messages.accountSettingsTooltip)}
@@ -215,7 +215,7 @@ class WalletAppBar extends React.Component<DecoratedProps> {
                   </IconButton>
                 </Link>
               </Tooltip>
-            </React.Fragment>
+            </>
           )}
         </Toolbar>
       </AppBar>

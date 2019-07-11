@@ -1,7 +1,7 @@
 import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import SendCoinsDialogContent
   from '../../components/content/SendCoinsDialogContent';
 import {

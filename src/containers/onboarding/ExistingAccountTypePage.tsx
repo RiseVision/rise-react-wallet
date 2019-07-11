@@ -1,10 +1,10 @@
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemText from '@material-ui/core/es/ListItemText';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
@@ -14,8 +14,8 @@ import {
   onboardingNoMnemonicNoticeRoute,
   onboardingAddAccountRoute
 } from '../../routes';
-import OnboardingStore from '../../stores/onboarding';
 import { AccountType } from '../../stores/account';
+import OnboardingStore from '../../stores/onboarding';
 import WalletStore from '../../stores/wallet';
 
 interface Props {}
@@ -62,14 +62,14 @@ class ExistingAccountTypePage extends React.Component<Props> {
     } else {
       routerStore.goTo(onboardingNoMnemonicNoticeRoute);
     }
-  }
+  };
 
   handleReadOnlyClick = () => {
     const { routerStore, onboardingStore, walletStore } = this.injected;
     const address = onboardingStore.address!;
     walletStore.login(address, { type: AccountType.READONLY }, true);
     routerStore.goTo(accountOverviewRoute, { id: address });
-  }
+  };
 
   render() {
     return (
@@ -115,7 +115,7 @@ class ExistingAccountTypePage extends React.Component<Props> {
                   id="onboarding-existing-account-type.read-access-tip"
                   description="Existing read access account button tip"
                   defaultMessage={
-                    'I don\'t know the secret mnemonic for this account'
+                    "I don't know the secret mnemonic for this account"
                   }
                 />
               }

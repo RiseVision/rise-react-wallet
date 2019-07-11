@@ -1,22 +1,22 @@
-import Avatar from '@material-ui/core/Avatar';
-import Fab from '@material-ui/core/Fab';
-import List from '@material-ui/core/List/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
+import Avatar from '@material-ui/core/es/Avatar';
+import Fab from '@material-ui/core/es/Fab';
+import List from '@material-ui/core/es/List/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemAvatar from '@material-ui/core/es/ListItemAvatar';
+import ListItemText from '@material-ui/core/es/ListItemText';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+} from '@material-ui/core/es/styles';
+import Tooltip from '@material-ui/core/es/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
+import classNames from 'classnames';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as classNames from 'classnames';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from '../../components/AccountIcon';
 import Link from '../../components/Link';
@@ -106,7 +106,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
       <div className={classes.content}>
         <List aria-label={intl.formatMessage(messages.accountsListAriaLabel)}>
           {orderBy(
-            [...walletStore.accounts.values()],
+            walletStore.listAccounts(),
             ['pinned', 'name'],
             ['desc', 'asc']
           ).map((account: AccountStore) => (

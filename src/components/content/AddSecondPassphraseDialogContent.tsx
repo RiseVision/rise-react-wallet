@@ -1,18 +1,17 @@
 import { Checkbox } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/es/Button';
+import FormControlLabel from '@material-ui/core/es/FormControlLabel/FormControlLabel';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import * as bip39 from 'bip39';
-import * as React from 'react';
-import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
+import bip39 from 'bip39';
+import React, { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
 import {
   defineMessages,
   FormattedMessage,
@@ -105,13 +104,13 @@ class AddSecondPassphraseDialogContent extends React.Component<
       passphrase,
       passphraseInvalid: false
     });
-  }
+  };
 
   handlePassphraseBlur = () => {
     const { passphrase } = this.state;
     const passphraseInvalid = !!passphrase && !!this.passphraseError();
     this.setState({ passphraseInvalid });
-  }
+  };
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -132,14 +131,14 @@ class AddSecondPassphraseDialogContent extends React.Component<
     }
 
     onSubmit(passphrase);
-  }
+  };
 
   handlePassphraseConfirmed = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       passphraseConfirmed: Boolean(ev.target.checked),
       passphraseConfirmedError: false
     });
-  }
+  };
 
   passphraseError(): string | null {
     const { intl } = this.props;
@@ -210,7 +209,7 @@ class AddSecondPassphraseDialogContent extends React.Component<
                 id="add-second-passphrase-dialog-content.insufficient-funds-error"
                 description="Error about not having enough funds to setup a passphrase"
                 defaultMessage={
-                  'You don\'t have enough funds in your account to pay the network fee ' +
+                  "You don't have enough funds in your account to pay the network fee " +
                   'of {fee} to setup a 2nd passphrase!'
                 }
                 values={{ fee: formatAmount(intl, passphraseFee) }}
@@ -225,7 +224,7 @@ class AddSecondPassphraseDialogContent extends React.Component<
                 id="add-second-passphrase-dialog-content.already-set-error"
                 description="Error about the 2nd passphrase being set already"
                 defaultMessage={
-                  'You\'ve already set a 2nd passphrase for this account. You need to ' +
+                  "You've already set a 2nd passphrase for this account. You need to " +
                   'create a new account if you wish to change your passphrase.'
                 }
               />

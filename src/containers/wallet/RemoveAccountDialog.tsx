@@ -1,12 +1,12 @@
-import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { accountSettingsRemoveRoute } from '../../routes';
+import React from 'react';
+import RemoveAccountDialogContent from '../../components/content/RemoveAccountDialogContent';
 import Dialog from '../../components/Dialog';
+import { accountSettingsRemoveRoute } from '../../routes';
 import AccountStore from '../../stores/account';
 import RouterStore, { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
-import RemoveAccountDialogContent from '../../components/content/RemoveAccountDialogContent';
 
 interface Props {
   account: AccountStore;
@@ -29,14 +29,19 @@ class RemoveAccountDialog extends React.Component<Props> {
 
   @action
   handleSubmit = (saveContact: boolean) => {
-    const { account, navigateBackLink, routerStore, walletStore } = this.injected;
+    const {
+      account,
+      navigateBackLink,
+      routerStore,
+      walletStore
+    } = this.injected;
     walletStore.removeAccount(account.id);
     // save the contact to the address book
     if (saveContact) {
       walletStore.addressBook.contacts.set(account.id, account.name);
     }
     routerStore.navigateTo(navigateBackLink);
-  }
+  };
 
   render() {
     const { account, navigateBackLink, routerStore, open } = this.injected;

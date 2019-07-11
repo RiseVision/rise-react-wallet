@@ -1,9 +1,7 @@
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import CreateContactDialogContent, {
-  TSubmitData
-} from '../../components/content/CreateContactDialogContent';
+import React from 'react';
+import CreateContactDialogContent, { TSubmitData } from '../../components/content/CreateContactDialogContent';
 import Dialog, {
   ICloseInterruptControllerState,
   ICloseInterruptController

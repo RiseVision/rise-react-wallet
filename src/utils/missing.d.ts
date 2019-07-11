@@ -1,6 +1,6 @@
 /* tslint:disable */
 declare module 'mobx-router-rise' {
-  import * as React from 'react';
+  import React from 'react';
   export type RouteParams = {
     [name: string]: string;
   };
@@ -50,8 +50,12 @@ declare module 'mobx-router-rise' {
   ): void;
 }
 
+declare module 'store/src/store-engine' {
+  export const createStore: any;
+}
+
 declare module 'moment/min/moment-with-locales' {
-  import * as moment from 'moment';
+  import moment from 'moment';
   export = moment;
 }
 
@@ -77,7 +81,6 @@ declare module 'uniqueRandom' {
  * @deprecated Only supported on Chrome and Android Webview.
  */
 interface BeforeInstallPromptEvent extends Event {
-
   /**
    * Returns an array of DOMString items containing the platforms on which the event was dispatched.
    * This is provided for user agents that want to present a choice of versions to the user such as,
@@ -90,8 +93,8 @@ interface BeforeInstallPromptEvent extends Event {
    * Returns a Promise that resolves to a DOMString containing either "accepted" or "dismissed".
    */
   readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed',
-    platform: string
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
   }>;
 
   /**
@@ -99,5 +102,4 @@ interface BeforeInstallPromptEvent extends Event {
    * This method returns a Promise.
    */
   prompt(): Promise<void>;
-
 }

@@ -1,6 +1,4 @@
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import Hidden from '@material-ui/core/Hidden';
-import Typography from '@material-ui/core/Typography';
+import Hidden from '@material-ui/core/es/Hidden';
 import {
   createStyles,
   Theme,
@@ -8,20 +6,23 @@ import {
   WithStyles,
   withTheme,
   WithTheme
-} from '@material-ui/core/styles';
+} from '@material-ui/core/es/styles';
+import SwipeableDrawer from '@material-ui/core/es/SwipeableDrawer';
+import Typography from '@material-ui/core/es/Typography';
+// @ts-ignore TODO d.ts
+import inobounce from 'inobounce';
 import { reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
-import DrawerContent from './DrawerContent';
-import WalletAppBar from './WalletAppBar';
+import RouterStore from '../../stores/router';
+import React from 'react';
+import { version } from '../../../package.json';
+import SignOutDialogContent
+  from '../../components/content/SignOutDialogContent';
 import Dialog from '../../components/Dialog';
-import SignOutDialogContent from '../../components/content/SignOutDialogContent';
 import { onboardingAddAccountRoute } from '../../routes';
 import WalletStore from '../../stores/wallet';
-import { version } from '../../../package.json';
-// @ts-ignore TODO d.ts
-import * as inobounce from 'inobounce';
+import DrawerContent from './DrawerContent';
+import WalletAppBar from './WalletAppBar';
 
 const drawerWidth = 280;
 
@@ -149,7 +150,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
     const { mobileDrawerOpen, signOutOpen } = this.state;
 
     const drawer = (
-      <React.Fragment>
+      <>
         <DrawerContent
           onSignOutClick={this.handleOpenSignOutPrompt}
           onAfterNavigate={this.handleAfterNavigate}
@@ -161,7 +162,7 @@ class Wallet extends React.Component<DecoratedProps, State> {
           aria-hidden={true}
           children={`v${version}`}
         />
-      </React.Fragment>
+      </>
     );
 
     return (

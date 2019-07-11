@@ -1,15 +1,16 @@
 import AccountStore from './account';
 import AddressBookStore from './addressBook';
 import LangStore from './lang';
+import LedgerStore from './ledger';
 import OnboardingStore from './onboarding';
 import RootStore from './root';
 import RouterStore from './router';
 import WalletStore from './wallet';
-import LedgerStore from './ledger';
 
 export type TConfig = {
   api_url: string;
   api_url_testnet: string;
+  api_url_devnet: string;
   domain: string;
   explorer_url: string;
   date_format: string;

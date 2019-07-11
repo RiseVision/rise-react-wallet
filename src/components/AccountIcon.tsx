@@ -1,6 +1,10 @@
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import * as classNames from 'classnames';
-import * as React from 'react';
+import {
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/es/styles';
+import classNames from 'classnames';
+import React from 'react';
 import jdenticon from '../utils/jdenticon';
 
 const riseIcon = require('../images/rise_icon.svg');

@@ -1,13 +1,17 @@
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemText from '@material-ui/core/es/ListItemText';
+import {
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/es/styles';
 import AppsIcon from '@material-ui/icons/Apps';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import ServerNetworkIcon from 'mdi-material-ui/ServerNetwork';
 import ImportExportIcon from 'mdi-material-ui/SwapVertical';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import FlagIcon from '../../components/FlagIcon';
 import Link from '../../components/Link';
@@ -20,7 +24,8 @@ import {
   onboardingSecurityNoticeRoute,
   accountOverviewNoIDRoute,
   onboardingChooseNetworkRoute,
-  onboardingInstallToHomeScreenRoute, onboardingImportExportRoute
+  onboardingInstallToHomeScreenRoute,
+  onboardingImportExportRoute
 } from '../../routes';
 import LangStore from '../../stores/lang';
 import LedgerStore from '../../stores/ledger';
@@ -93,6 +98,15 @@ class AddAccountPage extends React.Component<Props> {
             id="onboarding-add-account.official-test-network"
             description="Label for a test network"
             defaultMessage="official testnet"
+          />
+        );
+        break;
+      case 'devnet':
+        network = (
+          <FormattedMessage
+            id="onboarding-add-account.official-dev-network"
+            description="Label for a dev network"
+            defaultMessage="official devnet"
           />
         );
         break;

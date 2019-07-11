@@ -1,23 +1,26 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
 import { Rise } from 'dpos-offline';
-import * as React from 'react';
-import { FormEvent } from 'react';
+import React, { FormEvent } from 'react';
 import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { derivePublicKey } from '../utils/utils';
+import {
+  AccountIDVersion,
+  NetworkTXType,
+  derivePublicKey
+} from '../utils/utils';
 import AccountTip from './AccountTip';
 
 const styles = (theme: Theme) =>
@@ -83,6 +86,8 @@ type BaseProps = WithStyles<typeof styles>;
 
 interface Props extends BaseProps {
   address: string;
+  addressVersion: AccountIDVersion;
+  networkType: NetworkTXType;
   publicKey: string | null;
   secondPublicKey: string | null;
   onConfirm: (data: { mnemonic: string; passphrase: null | string }) => void;
@@ -181,7 +186,13 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
   }
 
   mnemonicError(secret?: string): string | null {
-    const { intl, address, publicKey } = this.props;
+    const {
+      intl,
+      address,
+      publicKey,
+      networkType,
+      addressVersion
+    } = this.props;
     const mnemonic = secret || this.state.mnemonic;
 
     if (!mnemonic.trim()) {
@@ -197,8 +208,10 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
         // Prefer to validate against the account publicKey
         isValid = derivedKey === publicKey;
       } else {
-        // Fallback to comparing addresses instead of publicKey
+        // Fallback to comparing addresses instead of public
         isValid = Rise.calcAddress(derivedKey) === address;
+        isValid =
+          address === Rise.calcAddress(derivedKey, networkType, addressVersion);
       }
     }
 
@@ -298,7 +311,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
               inputRef={ref => (this.mnemonicRef = ref)}
             />
           ) : (
-            <React.Fragment>
+            <>
               <AccountTip
                 key="__mnemonic_ok__"
                 open={true}
@@ -323,7 +336,7 @@ class ConfirmTxEnterSecretsFooter extends React.Component<
                 fullWidth={true}
                 inputRef={ref => (this.passphraseRef = ref)}
               />
-            </React.Fragment>
+            </>
           )}
         </Grid>
         <Grid item={true} xs={12}>

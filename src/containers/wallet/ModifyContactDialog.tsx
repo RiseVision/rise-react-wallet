@@ -1,15 +1,13 @@
-import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { addressBookModifyRoute } from '../../routes';
+import React from 'react';
+import ModifyContactDialogContent, { TSubmitData } from '../../components/content/ModifyContactDialogContent';
 import Dialog, {
   ICloseInterruptControllerState,
   ICloseInterruptController
 } from '../../components/Dialog';
+import { addressBookModifyRoute } from '../../routes';
 import AddressBookStore from '../../stores/addressBook';
-import ModifyContactDialogContent, {
-  TSubmitData
-} from '../../components/content/ModifyContactDialogContent';
 import RouterStore, { RouteLink } from '../../stores/router';
 
 interface Props {

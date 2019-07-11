@@ -1,37 +1,37 @@
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
+import Button from '@material-ui/core/es/Button';
+import Fab from '@material-ui/core/es/Fab';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Tooltip from '@material-ui/core/es/Tooltip';
+import Typography from '@material-ui/core/es/Typography';
 import SendIcon from '@material-ui/icons/Send';
+import classNames from 'classnames';
 import { toPairs } from 'lodash';
 import { action, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as classNames from 'classnames';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import AccountOverviewHeader from '../../components/AccountOverviewHeader';
+import AccountTip from '../../components/AccountTip';
+import Link from '../../components/Link';
+import LoadingIndicator from '../../components/LoadingIndicator';
+import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
+import { accountOverviewRoute, accountSendRoute } from '../../routes';
+import { accountStore } from '../../stores';
+import AccountStore, { AccountType, LoadingState } from '../../stores/account';
+import AddressBookStore from '../../stores/addressBook';
 import { RouteLink } from '../../stores/router';
+import WalletStore from '../../stores/wallet';
 import { RawAmount } from '../../utils/amounts';
 import AccountNameDialog from './AccountNameDialog';
 import CreateContactDialog from './CreateContactDialog';
 import ModifyContactDialog from './ModifyContactDialog';
 import SendCoinsDialog from './SendCoinsDialog';
-import AccountOverviewHeader from '../../components/AccountOverviewHeader';
-import AccountTip from '../../components/AccountTip';
-import TxDetailsExpansionPanel from '../../components/TxDetailsExpansionPanel';
-import LoadingIndicator from '../../components/LoadingIndicator';
-import Link from '../../components/Link';
-import { accountOverviewRoute, accountSendRoute } from '../../routes';
-import { accountStore } from '../../stores';
-import AccountStore, { AccountType, LoadingState } from '../../stores/account';
-import AddressBookStore from '../../stores/addressBook';
-import WalletStore from '../../stores/wallet';
 
 // TODO move to the config
 const HIGH_VALUE_ACCOUNT_THRESHOLD = RawAmount.fromUnit(1000);
@@ -105,7 +105,7 @@ const stylesDecorator = withStyles(styles, { name: 'AccountOverview' });
 const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'wallet-account-overview.unnamed-account-label',
-    description: 'Label for accounts that user hasn\'t named yet',
+    description: "Label for accounts that user hasn't named yet",
     defaultMessage: 'Unnamed account ({id})'
   },
   noPubkeyAccountTip: {
@@ -160,15 +160,15 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     this.injected.routerStore.goTo(accountOverviewRoute, {
       id: this.account.id
     });
-  }
+  };
 
   handleLoadMore = () => {
     this.account.recentTransactions.loadMore();
-  }
+  };
 
   handleContactEdit = (id: string) => {
     this.setState({ editContactID: id });
-  }
+  };
 
   renderContactDialog = () => {
     const {
@@ -204,7 +204,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     }
 
     return (
-      <React.Fragment>
+      <>
         <AccountNameDialog
           // @ts-ignore TODO avoid rendering data-less dialogs
           account={wallet.accounts.get(id) || { id: '', name: '' }}
@@ -221,9 +221,9 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
           address={id || ''}
           open={showModifyContact}
         />
-      </React.Fragment>
+      </>
     );
-  }
+  };
 
   getSendLinkProps = (address: string, amount: RawAmount) => {
     return {
@@ -236,7 +236,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
         amount: amount.unit.toString()
       }
     };
-  }
+  };
 
   @action
   handleExpand = (id: string, expanded: boolean) => {
@@ -246,7 +246,7 @@ class AccountOverview extends React.Component<DecoratedProps, State> {
     } else {
       account.recentTransactions.expanded.remove(id);
     }
-  }
+  };
 
   render() {
     const { intl, classes, walletStore } = this.injected;

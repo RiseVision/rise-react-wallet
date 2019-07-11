@@ -1,5 +1,5 @@
+import React from 'react';
 import { Helmet } from 'react-helmet';
-import * as React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 
 interface Props {

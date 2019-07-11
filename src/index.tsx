@@ -1,11 +1,11 @@
 /// <reference path="utils/missing.d.ts"/>
-import './polyfills';
 import { Provider } from 'mobx-react';
 import { startRouter } from 'mobx-router-rise';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as config from './config.json';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import config from './config.json';
 import App from './containers/App';
+import './polyfills';
 import * as serviceWorker from './registerServiceWorker';
 import * as routes from './routes';
 import { TConfig, TStores } from './stores';

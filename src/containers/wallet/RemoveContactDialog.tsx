@@ -1,10 +1,11 @@
-import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { addressBookRemoveRoute } from '../../routes';
+import React from 'react';
+import RemoveContactDialogContent
+  from '../../components/content/RemoveContactDialogContent';
 import Dialog from '../../components/Dialog';
+import { addressBookRemoveRoute } from '../../routes';
 import AddressBookStore from '../../stores/addressBook';
-import RemoveContactDialogContent from '../../components/content/RemoveContactDialogContent';
 import RouterStore, { RouteLink } from '../../stores/router';
 import { normalizeAddress } from '../../utils/utils';
 

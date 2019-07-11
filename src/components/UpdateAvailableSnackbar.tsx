@@ -1,16 +1,16 @@
+import Button from '@material-ui/core/es/Button';
+import IconButton from '@material-ui/core/es/IconButton';
+import Snackbar from '@material-ui/core/es/Snackbar';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Snackbar from '@material-ui/core/Snackbar';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
+} from '@material-ui/core/es/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import RootStore from '../stores/root';
 
@@ -64,13 +64,13 @@ class UpdateAvailableSnackbar extends React.Component<DecoratedProps> {
 
   handleReloadClick = () => {
     location.reload();
-  }
+  };
 
   @action
   handleDismissClick = () => {
     const { store } = this.injected;
     store.updateAvailable = false;
-  }
+  };
 
   render() {
     const { intl, store, classes } = this.injected;

@@ -1,19 +1,19 @@
 // @ts-ignore TODO type
 import Transport from '@ledgerhq/hw-transport';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import assert from 'assert';
+import { Mutex } from 'async-mutex';
 import {
   DposLedger,
   SupportedCoin,
   LedgerAccount as DposAccount
 } from 'dpos-ledger-api';
 import { CommHandler } from 'dpos-ledger-api/dist/es5/commHandler';
-import { Rise } from 'dpos-offline';
+import { RiseV2 as Rise } from 'dpos-offline';
 import { observable, runInAction, action } from 'mobx';
-import * as React from 'react';
+import React from 'react';
 import { As } from 'type-tagger';
 import { PostableRiseTransaction, RiseTransaction } from './wallet';
-import { Mutex } from 'async-mutex';
-import * as assert from 'assert';
 
 /** Simple logging util (linter friendly) */
 // tslint:disable-next-line:no-unused-expression
@@ -168,7 +168,7 @@ export default class LedgerStore {
 
       const account = await this.getAccountUnsafe(accountSlot, false);
 
-      unsignedTx.senderPublicKey = Buffer.from(
+      unsignedTx.senderPubData = Buffer.from(
         account.publicKey,
         'hex'
       ) as Buffer & As<'publicKey'>;
@@ -179,7 +179,7 @@ export default class LedgerStore {
       try {
         log('confirming on the ledger, check the device');
         const signature = await comm.signTX(accountPath, txBytes);
-        unsignedTx.signature = signature as Buffer & As<'signature'>;
+        unsignedTx.signatures = [signature as Buffer & As<'signature'>];
         signedTx = Rise.txs.toPostable(unsignedTx);
       } catch (e) {
         log('LedgerConfirmError', e);

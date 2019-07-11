@@ -1,18 +1,18 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
+import Hidden from '@material-ui/core/es/Hidden';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import * as classNames from 'classnames';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
+import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
@@ -142,7 +142,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     if (wordInputEl != null) {
       wordInputEl.focus();
     }
-  }
+  };
 
   handleCurrentWordChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     let value = ev.target.value;
@@ -151,7 +151,7 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     this.setState({
       currentWordValue: value
     });
-  }
+  };
 
   handleFormSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -175,13 +175,13 @@ class VerifyMnemonicPage extends React.Component<Props, State> {
     } else {
       this.finish();
     }
-  }
+  };
 
   handleContinueClick = () => {
     if (this.canFinish()) {
       this.finish();
     }
-  }
+  };
 
   canFinish() {
     const { mnemonic, uncheckedIndices } = this.state;

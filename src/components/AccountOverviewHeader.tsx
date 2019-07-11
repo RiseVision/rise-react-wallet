@@ -1,15 +1,15 @@
 import { Tooltip } from '@material-ui/core';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
+import Divider from '@material-ui/core/es/Divider';
+import Paper from '@material-ui/core/es/Paper';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import * as classNames from 'classnames';
-import * as React from 'react';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
+import classNames from 'classnames';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import AccountIcon from '../components/AccountIcon';
 import { RawAmount } from '../utils/amounts';

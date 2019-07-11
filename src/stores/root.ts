@@ -1,12 +1,12 @@
 import { configure, observable } from 'mobx';
 import AccountStore from './account';
 import AddressBookStore from './addressBook';
-import LangStore from './lang';
 import { TConfig } from './index';
+import LangStore from './lang';
+import LedgerStore from './ledger';
 import OnboardingStore from './onboarding';
 import RouterStore from './router';
 import WalletStore from './wallet';
-import LedgerStore from './ledger';
 
 // make sure only actions modify the store
 configure({ enforceActions: 'observed' });

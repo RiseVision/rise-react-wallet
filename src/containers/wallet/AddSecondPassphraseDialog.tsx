@@ -1,7 +1,8 @@
 import { reaction, IReactionDisposer, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import AddSecondPassphraseDialogContent from '../../components/content/AddSecondPassphraseDialogContent';
+import React from 'react';
+import AddSecondPassphraseDialogContent
+  from '../../components/content/AddSecondPassphraseDialogContent';
 import {
   ICloseInterruptController,
   ICloseInterruptControllerState

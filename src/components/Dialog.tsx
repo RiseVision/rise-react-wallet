@@ -1,13 +1,12 @@
-import MuiDialog from '@material-ui/core/Dialog';
+import MuiDialog from '@material-ui/core/es/Dialog';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
+} from '@material-ui/core/es/styles';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import RouterStore, { RouteLink } from '../stores/router';
 import autoId from '../utils/autoId';
 import { PropsOf } from '../utils/metaTypes';

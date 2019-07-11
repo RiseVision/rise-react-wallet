@@ -1,27 +1,27 @@
-import Avatar from '@material-ui/core/Avatar';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import Avatar from '@material-ui/core/es/Avatar';
+import Divider from '@material-ui/core/es/Divider';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemAvatar from '@material-ui/core/es/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/es/ListItemIcon';
+import ListItemText from '@material-ui/core/es/ListItemText';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import AddIcon from '@material-ui/icons/Add';
 import AppsIcon from '@material-ui/icons/Apps';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import UsbIcon from '@material-ui/icons/Usb';
 import PeopleIcon from '@material-ui/icons/People';
-import * as classNames from 'classnames';
+import UsbIcon from '@material-ui/icons/Usb';
+import classNames from 'classnames';
 import { orderBy } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import {
   defineMessages,
   FormattedMessage,
@@ -97,7 +97,7 @@ const stylesDecorator = withStyles(styles, { name: 'DrawerContent' });
 const messages = defineMessages({
   unnamedAccountLabel: {
     id: 'drawer-content.unnamed-account-label',
-    description: 'Label for accounts that user hasn\'t named yet',
+    description: "Label for accounts that user hasn't named yet",
     defaultMessage: 'Unnamed account ({id})'
   },
   accountsListAriaLabel: {
@@ -126,7 +126,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
     const { selectedAccount } = walletStore;
 
     const allAccounts = orderBy(
-      [...walletStore.accounts.values()],
+      walletStore.listAccounts(),
       ['pinned', a => Boolean(a.name), 'name'],
       ['desc', 'desc', 'asc']
     );
@@ -159,7 +159,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
     const { ledgerStore } = this.injected;
     ledgerStore.close();
     ledgerStore.forgetLastDevice();
-  }
+  };
 
   render() {
     const {
@@ -180,7 +180,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
     }
 
     return (
-      <React.Fragment>
+      <>
         <Typography
           className={classNames(classes.toolbar, classes.header)}
           variant="h6"
@@ -406,7 +406,7 @@ class DrawerContent extends React.Component<DecoratedProps> {
             </ListItemText>
           </ListItem>
         </List>
-      </React.Fragment>
+      </>
     );
   }
 }

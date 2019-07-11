@@ -1,10 +1,10 @@
-import { groupBy } from 'lodash';
+import { groupBy, get } from 'lodash';
 import { computed, observable, runInAction, action } from 'mobx';
-import * as moment from 'moment/min/moment-with-locales';
+import moment from 'moment/min/moment-with-locales';
 import { defineMessages } from 'react-intl';
-import { TransactionType } from 'risejs';
-import * as lstore from 'store';
+import { TransactionType } from 'risejs/dist/es5/types/beans';
 import { RawAmount } from '../utils/amounts';
+import lstore from '../utils/store';
 import { TConfig } from './index';
 import WalletStore, {
   TGroupedTransactions,
@@ -12,8 +12,12 @@ import WalletStore, {
   APITransaction,
   APIUncofirmedTransaction
 } from './wallet';
-import MessageDescriptor = ReactIntl.FormattedMessage.MessageDescriptor;
-import { get } from 'lodash';
+
+interface MessageDescriptor {
+  id: string;
+  description?: string;
+  defaultMessage?: string;
+}
 
 const messages = defineMessages({
   lastWeek: {
@@ -204,7 +208,7 @@ export class Transaction {
   recipientId?: string;
   recipientPublicKey?: string;
   senderId: string;
-  senderPublicKey: string;
+  senderPubData: string;
   signature: string;
   // TODO
   // tslint:disable-next-line:no-any
@@ -238,7 +242,7 @@ export class Transaction {
     'receivedAt',
     'type',
     'amount',
-    'senderPublicKey',
+    'senderPubData',
     'requesterPublicKey',
     'timestamp',
     'asset',

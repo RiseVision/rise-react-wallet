@@ -1,15 +1,16 @@
-import * as React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { accountSettingsFiatRoute } from '../../routes';
+import React from 'react';
+import ChooseFiatDialogContent
+  from '../../components/content/ChooseFiatDialogContent';
 import Dialog, {
   ICloseInterruptControllerState,
   ICloseInterruptController
 } from '../../components/Dialog';
+import { accountSettingsFiatRoute } from '../../routes';
 import AccountStore from '../../stores/account';
 import RouterStore, { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
-import ChooseFiatDialogContent from '../../components/content/ChooseFiatDialogContent';
 
 interface Props {
   account: AccountStore;

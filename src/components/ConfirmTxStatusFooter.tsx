@@ -1,18 +1,17 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import InfoIcon from '@material-ui/icons/Info';
-import DoneIcon from '@material-ui/icons/Done';
+import Button from '@material-ui/core/es/Button';
+import CircularProgress from '@material-ui/core/es/CircularProgress';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import * as React from 'react';
-import { ReactEventHandler } from 'react';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
+import DoneIcon from '@material-ui/icons/Done';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import InfoIcon from '@material-ui/icons/Info';
+import React, { ReactEventHandler } from 'react';
 import {
   defineMessages,
   FormattedMessage,
@@ -153,7 +152,8 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 id="confirm-tx-status-footer.error-msg"
                 description="Message for when a transaction failed to broadcast."
                 defaultMessage={
-                  'Failed to broadcast the transaction to the network: {error}'}
+                  'Failed to broadcast the transaction to the network: {error}'
+                }
                 values={{
                   error: reason || 'N/A'
                 }}
@@ -169,7 +169,7 @@ class ConfirmTxStatusFooter extends React.Component<DecoratedProps> {
                 id="confirm-tx-status-footer.ledger-another-device-msg"
                 description="Message for when the user has connected the wrong Ledger."
                 defaultMessage={
-                  'The connected Ledger doesn\'t manage this account. Either you used ' +
+                  "The connected Ledger doesn't manage this account. Either you used " +
                   'an additional passphrase (in your Ledger) when adding this account ' +
                   'or you have plugged in a device with a different mnemonic.'
                 }

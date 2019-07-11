@@ -1,21 +1,21 @@
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import * as React from 'react';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
+import React from 'react';
 import {
   FormattedMessage,
   defineMessages,
   injectIntl,
   InjectedIntlProps
 } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
 import autoId from '../../utils/autoId';
+import { DialogContentProps, SetDialogContent } from '../Dialog';
 
 const styles = (theme: Theme) =>
   createStyles({

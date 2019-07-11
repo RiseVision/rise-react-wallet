@@ -1,20 +1,20 @@
-import { Delegate } from 'dpos-api-wrapper';
 import { throttle, sampleSize } from 'lodash';
 import { reaction, IReactionDisposer, observe, Lambda } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
+import { Delegate } from 'risejs/dist/es5/types/beans';
+import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
-import LedgerStore from '../../stores/ledger';
-import RouterStore, { RouteLink } from '../../stores/router';
-import { normalizeAddress } from '../../utils/utils';
-import ConfirmTransactionDialog from './ConfirmTransactionDialog';
-import VoteDelegateDialogContent from '../../components/content/VoteDelegateDialogContent';
 import { accountSettingsVoteRoute } from '../../routes';
 import AccountStore, { LoadingState, AccountType } from '../../stores/account';
+import LedgerStore from '../../stores/ledger';
+import RouterStore, { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
+import { normalizeAddress, FullDelegate } from '../../utils/utils';
+import ConfirmTransactionDialog from './ConfirmTransactionDialog';
 
 interface Props {
   account: AccountStore;
@@ -34,7 +34,7 @@ interface State extends ICloseInterruptControllerState {
   search: {
     isLoading: boolean;
     query: string;
-    delegates: Delegate[];
+    delegates: FullDelegate[];
   };
   transaction: null | {
     add: string[];
@@ -142,7 +142,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
         delegates: match ? [match] : []
       }
     });
-  }
+  };
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     // @ts-ignore
@@ -157,18 +157,18 @@ class VoteDelegateDialog extends React.Component<Props, State>
     const { routerStore, navigateBackLink } = this.injected;
     routerStore.navigateTo(navigateBackLink);
     return false;
-  }
+  };
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  }
+  };
 
   handleNavigateBack = (ev: React.SyntheticEvent<{}>) => {
     this.setState({
       step: 'vote',
       transaction: null
     });
-  }
+  };
 
   handleQueryChange = (query: string) => {
     this.setState({ query });
@@ -177,7 +177,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
     } else {
       this.suggestDelegates();
     }
-  }
+  };
 
   handleSelectDelegate = (delegate: Delegate) => {
     const { account } = this.injected;
@@ -192,7 +192,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
     let addNames = [];
 
     const isRemoveTx =
-      votedDelegate && votedDelegate.publicKey === delegate.publicKey;
+      votedDelegate && votedDelegate.forgingPK === delegate.forgingPK;
     if (votedDelegate) {
       removeNames.push(votedDelegate.username);
     }
@@ -208,7 +208,7 @@ class VoteDelegateDialog extends React.Component<Props, State>
         delegate
       }
     });
-  }
+  };
 
   suggestDelegates() {
     const { walletStore } = this.injected;
@@ -228,13 +228,13 @@ class VoteDelegateDialog extends React.Component<Props, State>
 
     if (step === 'transaction' && transaction !== null) {
       return walletStore.createVoteTx(
-        transaction.delegate.publicKey,
+        transaction.delegate.username,
         account.id
       );
     } else {
       throw new Error('Invalid internal state');
     }
-  }
+  };
 
   resetState() {
     this.setState({

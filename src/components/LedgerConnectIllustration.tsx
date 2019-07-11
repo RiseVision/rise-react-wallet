@@ -1,6 +1,10 @@
 import { Button } from '@material-ui/core';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import * as React from 'react';
+import {
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/es/styles';
+import React from 'react';
 
 const styles = createStyles({
   root: {
@@ -52,7 +56,7 @@ class LedgerConnectIllustration extends React.Component<Props> {
 
     // tslint:disable:max-line-length
     return (
-      <React.Fragment>
+      <>
         <svg
           className={classes.root}
           height="90px"
@@ -127,7 +131,7 @@ class LedgerConnectIllustration extends React.Component<Props> {
         <Button onClick={onClick} color="secondary" fullWidth={true}>
           Discover Device
         </Button>
-      </React.Fragment>
+      </>
     );
     // tslint:enable:max-line-length
   }

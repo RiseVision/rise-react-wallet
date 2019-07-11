@@ -1,27 +1,27 @@
-import Fab from '@material-ui/core/Fab';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
+import Fab from '@material-ui/core/es/Fab';
+import IconButton from '@material-ui/core/es/IconButton';
+import Paper from '@material-ui/core/es/Paper';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
+} from '@material-ui/core/es/styles';
+import Table from '@material-ui/core/es/Table';
+import TableBody from '@material-ui/core/es/TableBody';
+import TableCell from '@material-ui/core/es/TableCell';
+import TableHead from '@material-ui/core/es/TableHead';
+import TableRow from '@material-ui/core/es/TableRow';
+import Tooltip from '@material-ui/core/es/Tooltip';
+import Typography from '@material-ui/core/es/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SendIcon from '@material-ui/icons/Send';
-import PeopleIcon from '@material-ui/icons/People';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import Link from '../../components/Link';
 import {
@@ -31,10 +31,10 @@ import {
   addressBookRemoveRoute,
   accountSendRoute
 } from '../../routes';
+import { AccountType } from '../../stores/account';
 import AddressBookStore from '../../stores/addressBook';
 import { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
-import { AccountType } from '../../stores/account';
 import CreateContactDialog from './CreateContactDialog';
 import ModifyContactDialog from './ModifyContactDialog';
 import RemoveContactDialog from './RemoveContactDialog';

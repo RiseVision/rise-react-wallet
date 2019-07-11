@@ -1,11 +1,10 @@
 // tslint:disable:no-unused-expression
+import delay from 'delay';
 // tslint:disable:no-shadowed-variable
-import * as sinon from 'sinon';
-import { SinonStub } from 'sinon';
-import * as lstore from 'store';
+import sinon, { SinonStub } from 'sinon';
+import lstore from '../utils/store';
 import { stub } from '../utils/testHelpers';
 import LangStore from './lang';
-import delay from 'delay';
 
 let stubs: sinon.SinonStub[];
 

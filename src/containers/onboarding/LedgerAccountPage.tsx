@@ -1,15 +1,19 @@
-import Avatar from '@material-ui/core/Avatar';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Avatar from '@material-ui/core/es/Avatar';
+import Grid from '@material-ui/core/es/Grid';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemAvatar from '@material-ui/core/es/ListItemAvatar';
+import ListItemText from '@material-ui/core/es/ListItemText';
+import {
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
 import { observable, runInAction, action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import {
   defineMessages,
   FormattedMessage,
@@ -17,8 +21,10 @@ import {
   injectIntl
 } from 'react-intl';
 import AccountIcon from '../../components/AccountIcon';
-import LedgerConfirmIllustration from '../../components/LedgerConfirmIllustration';
-import LedgerConnectIllustration from '../../components/LedgerConnectIllustration';
+import LedgerConfirmIllustration
+  from '../../components/LedgerConfirmIllustration';
+import LedgerConnectIllustration
+  from '../../components/LedgerConnectIllustration';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
@@ -184,7 +190,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
             </Grid>
           </Grid>
         ) : /* CONFIRM IMPORT */ selectedAccount !== null ? (
-          <React.Fragment>
+          <>
             <List>
               <ListItem key={selectedAccount.address} divider={true}>
                 <ListItemAvatar>
@@ -223,7 +229,7 @@ class LedgerAccountPage extends React.Component<DecoratedProps> {
                 />
               </Grid>
             </Grid>
-          </React.Fragment>
+          </>
         ) : (
           /* SELECT ACCOUNT */ <List>
             {this.accounts.map((data, index) => (

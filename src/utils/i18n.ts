@@ -4,8 +4,8 @@ export type Locale =
   // | 'es'
   | 'et'
   | 'fr'
-// | 'it'
-// | 'hu'
+  // | 'it'
+  // | 'hu'
   | 'nl'
   | 'pl';
 // | 'ro'
@@ -19,8 +19,8 @@ export type CountryCode =
   // | 'es'
   | 'ee'
   | 'fr'
-// | 'it'
-// | 'hu'
+  // | 'it'
+  // | 'hu'
   | 'nl'
   | 'pl';
 // | 'ro'

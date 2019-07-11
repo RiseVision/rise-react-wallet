@@ -2,11 +2,16 @@
   "compilerOptions": {
     "baseUrl": ".",
     "module": "esnext",
-    "target": "es5",
-    "lib": ["es6", "dom", "es7", "es2017.object"],
+    "target": "esnext",
+    "lib": [
+      "es6",
+      "dom",
+      "es7",
+      "es2017.object"
+    ],
     "sourceMap": true,
     "allowJs": true,
-    "jsx": "react",
+    "jsx": "preserve",
     "moduleResolution": "node",
     "downlevelIteration": true,
     "suppressImplicitAnyIndexErrors": true,
@@ -14,7 +19,7 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "esModuleInterop": false,
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true,
     "strict": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -22,6 +27,12 @@
     "forceConsistentCasingInFileNames": true,
     "skipDefaultLibCheck": true
   },
-  "exclude": ["src/setupTests.ts", "src/serve.js"],
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "exclude": [
+    "src/setupTests.ts",
+    "src/serve.js"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ]
 }

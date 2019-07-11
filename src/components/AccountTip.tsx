@@ -1,17 +1,16 @@
-import Paper from '@material-ui/core/Paper';
+import blue from '@material-ui/core/es/colors/blue';
+import IconButton from '@material-ui/core/es/IconButton';
+import Paper from '@material-ui/core/es/Paper';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
+} from '@material-ui/core/es/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import blue from '@material-ui/core/colors/blue';
-import * as React from 'react';
-import { ReactEventHandler } from 'react';
-import * as classNames from 'classnames';
+import InfoIcon from '@material-ui/icons/Info';
+import classNames from 'classnames';
+import React, { ReactEventHandler } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import autoId from '../utils/autoId';
 

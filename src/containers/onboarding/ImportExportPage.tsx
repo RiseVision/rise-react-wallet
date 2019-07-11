@@ -1,13 +1,13 @@
-import * as assert from 'assert';
 import { Checkbox, Theme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import * as assert from 'assert';
 import { saveAs } from 'file-saver';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
+import RouterStore from '../../stores/router';
 import * as moment from 'moment';
 import * as React from 'react';
 import { ChangeEvent } from 'react';
@@ -106,7 +106,7 @@ class ImportExportPage extends React.Component<Props, State> {
         importError: true
       });
     }
-  }
+  };
 
   handleExport = (event: React.MouseEvent<HTMLElement>) => {
     const { exportContactsChecked } = this.state;
@@ -115,19 +115,19 @@ class ImportExportPage extends React.Component<Props, State> {
       type: 'application/json'
     });
     saveAs(blob, `rise-wallet-${moment().toISOString()}.json`);
-  }
+  };
 
   handleImportOverrideClick = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       importOverride: !this.state.importOverride
     });
-  }
+  };
 
   handleExportContactsClick = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       exportContactsChecked: !this.state.exportContactsChecked
     });
-  }
+  };
 
   render() {
     const { classes } = this.injected;
@@ -197,7 +197,7 @@ class ImportExportPage extends React.Component<Props, State> {
             <FormattedMessage
               id="onboarding-import-export.import-override-confirm"
               description={
-                'Notice emphasizing that there\'s no undo after overriding'
+                "Notice emphasizing that there's no undo after overriding"
               }
               defaultMessage="Overriding cannot be undone!"
             />
@@ -230,7 +230,7 @@ class ImportExportPage extends React.Component<Props, State> {
               id="onboarding-import-export.import-error"
               description="Message when import was NOT successful"
               defaultMessage={
-                'Something wen\'t wrong. Check the file and try again.'
+                "Something wen't wrong. Check the file and try again."
               }
             />
           </Typography>

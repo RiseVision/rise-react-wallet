@@ -1,16 +1,16 @@
 import { withStyles, WithStyles } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar/Avatar';
-import Button from '@material-ui/core/Button/Button';
-import Grid from '@material-ui/core/Grid/Grid';
-import List from '@material-ui/core/List/List';
-import ListItem from '@material-ui/core/ListItem/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText/ListItemText';
-import { createStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography/Typography';
+import Avatar from '@material-ui/core/es/Avatar/Avatar';
+import Button from '@material-ui/core/es/Button/Button';
+import Grid from '@material-ui/core/es/Grid/Grid';
+import List from '@material-ui/core/es/List/List';
+import ListItem from '@material-ui/core/es/ListItem/ListItem';
+import ListItemAvatar from '@material-ui/core/es/ListItemAvatar/ListItemAvatar';
+import ListItemText from '@material-ui/core/es/ListItemText/ListItemText';
+import { createStyles } from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography/Typography';
 import { observable, action, runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import {
   defineMessages,
   injectIntl,
@@ -81,9 +81,9 @@ const messages = defineMessages({
   unsupportedBrowser: {
     id: 'verify-ledger-address.unsupported-browser',
     description:
-      'Message when trying to use a browser that doesn\'t support Ledger devices',
+      "Message when trying to use a browser that doesn't support Ledger devices",
     defaultMessage:
-      'Your browser doesn\'t support using a Ledger device. If you wish to access this feature, ' +
+      "Your browser doesn't support using a Ledger device. If you wish to access this feature, " +
       'you could try again with Google Chrome. It is a browser known to implement support for this.'
   },
   statusConnecting: {
@@ -170,11 +170,11 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       title: intl.formatMessage(messages.dialogTitle),
       contentId: this.dialogContentId
     });
-  }
+  };
 
   onDiscoverLedger = () => {
     this.injected.ledgerStore.open();
-  }
+  };
 
   onClose = () => {
     if (!this.open) {
@@ -190,7 +190,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     setTimeout(() => {
       this.setState({ confirmed: false });
     });
-  }
+  };
 
   @action
   updateSelectionCountdown = () => {
@@ -209,7 +209,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  }
+  };
 
   handleVerifyLedger = async () => {
     const { ledgerStore } = this.injected;
@@ -228,12 +228,12 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
     } catch (e) {
       // silent
     }
-  }
+  };
 
   handleCloseButton = () => {
     this.onClose();
     this.injected.routerStore.navigateTo(this.injected.navigateBackLink);
-  }
+  };
 
   render() {
     const {
@@ -298,7 +298,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
             </Grid>
           </Grid>
         ) : (
-          <React.Fragment>
+          <>
             <List>
               <ListItem key={account.hwSlot!} divider={true}>
                 <ListItemAvatar>
@@ -355,7 +355,7 @@ class VerifyLedgerDialog extends React.Component<DecoratedProps, State> {
                 </Grid>
               </Grid>
             )}
-          </React.Fragment>
+          </>
         )}
       </Dialog>
     );

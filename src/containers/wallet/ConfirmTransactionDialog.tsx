@@ -1,13 +1,15 @@
 import { observable, runInAction, reaction, IReactionDisposer } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
-import ConfirmTransactionDialogContent from '../../components/content/ConfirmTransactionDialogContent';
+import React from 'react';
+import ConfirmTxEnterSecretsFooter
+  from '../../components/ConfirmTxEnterSecretsFooter';
+import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
+import ConfirmTransactionDialogContent
+  from '../../components/content/ConfirmTransactionDialogContent';
 import Dialog, {
   ICloseInterruptController,
   ICloseInterruptControllerState
 } from '../../components/Dialog';
-import ConfirmTxEnterSecretsFooter from '../../components/ConfirmTxEnterSecretsFooter';
-import ConfirmTxStatusFooter from '../../components/ConfirmTxStatusFooter';
 import AccountStore, { AccountType } from '../../stores/account';
 import LedgerStore from '../../stores/ledger';
 import RouterStore from '../../stores/router';
@@ -109,7 +111,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     } else if (navigateBackLink) {
       routerStore.navigateTo(navigateBackLink);
     }
-  }
+  };
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     // close interrupt
@@ -138,11 +140,11 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       routerStore.navigateTo(onCloseRoute);
     }
     return false;
-  }
+  };
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  }
+  };
 
   handleConfirmTransaction = async (secrets: Secrets) => {
     const { account, walletStore, onCreateTransaction } = this.injected;
@@ -165,14 +167,14 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     );
 
     this.broadcastTransaction(signedTx);
-  }
+  };
 
   handleRetryTransaction = () => {
     const { signedTx } = this.state;
     if (signedTx !== null) {
       this.broadcastTransaction(signedTx);
     }
-  }
+  };
 
   async broadcastTransaction(signedTx: PostableRiseTransaction) {
     const { walletStore, onSuccess, onError } = this.injected;
@@ -297,7 +299,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       ledgerStore.hasSupport &&
       ledgerStore.isOpen
     );
-  }
+  };
 
   beginLedgerSigning = async () => {
     const { account, onCreateTransaction, ledgerStore } = this.injected;
@@ -347,7 +349,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
     } else {
       this.goBack();
     }
-  }
+  };
 
   render() {
     const { open } = this.injected;
@@ -428,7 +430,12 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
   }
 
   renderConfirmTxContent() {
-    const { account, passphrasePublicKey, ledgerStore } = this.injected;
+    const {
+      account,
+      passphrasePublicKey,
+      ledgerStore,
+      walletStore
+    } = this.injected;
     const { transaction } = this.state;
 
     return (
@@ -453,6 +460,8 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
           )
         ) : (
           <ConfirmTxEnterSecretsFooter
+            addressVersion={account.version}
+            networkType={walletStore.getTxNetwork()}
             address={account.id}
             publicKey={account.publicKey}
             secondPublicKey={passphrasePublicKey || account.secondPublicKey}
@@ -553,7 +562,7 @@ class ConfirmTransactionDialog extends React.Component<Props, State>
       window.clearInterval(this.countdownId);
       this.countdownId = null;
     }
-  }
+  };
 }
 
 export default ConfirmTransactionDialog;

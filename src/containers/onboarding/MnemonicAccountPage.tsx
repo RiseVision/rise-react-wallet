@@ -1,11 +1,16 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
+import {
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
+import { Rise } from 'dpos-offline';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import {
   defineMessages,
   FormattedMessage,
@@ -18,8 +23,11 @@ import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute, accountOverviewRoute } from '../../routes';
 import { AccountType } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
-import { normalizeMnemonic, derivePublicKey } from '../../utils/utils';
-import { Rise } from 'dpos-offline';
+import {
+  normalizeMnemonic,
+  derivePublicKey,
+  AccountIDVersion
+} from '../../utils/utils';
 
 const styles = createStyles({
   content: {
@@ -110,7 +118,11 @@ class MnemonicAccountPage extends React.Component<DecoratedProps, State> {
   getAddressFromMnemonic = (mnemonic: string) => {
     const normalized = normalizeMnemonic(mnemonic);
     if (normalized) {
-      return Rise.calcAddress(derivePublicKey(normalized));
+      return Rise.calcAddress(
+        derivePublicKey(normalized),
+        this.injected.walletStore.getTxNetwork(),
+        AccountIDVersion.NEW
+      );
     }
     return null;
   }

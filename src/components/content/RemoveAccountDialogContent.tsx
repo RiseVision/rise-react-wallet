@@ -1,25 +1,24 @@
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/es/Button';
+import Checkbox from '@material-ui/core/es/Checkbox/Checkbox';
+import FormControlLabel from '@material-ui/core/es/FormControlLabel/FormControlLabel';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import * as React from 'react';
-import { ChangeEvent, FormEvent } from 'react';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
+import React, { ChangeEvent, FormEvent } from 'react';
 import {
   FormattedMessage,
   defineMessages,
   injectIntl,
   InjectedIntlProps
 } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
 import autoId from '../../utils/autoId';
+import { DialogContentProps, SetDialogContent } from '../Dialog';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -61,7 +60,7 @@ const messages = defineMessages({
   invalidAddress: {
     id: 'remove-account-dialog-content.invalid-address',
     description: 'Error label for invalid account address',
-    defaultMessage: 'Account address doesn\'t match the one you want to remove'
+    defaultMessage: "Account address doesn't match the one you want to remove"
   }
 });
 
@@ -87,13 +86,13 @@ class RemoveAccountDialogContent extends React.Component<
       addressInput,
       addressInvalid: false
     });
-  }
+  };
 
   handleSaveContactChange = (ev: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       saveContact: Boolean(ev.target.checked)
     });
-  }
+  };
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     const { onSubmit } = this.props;
@@ -108,7 +107,7 @@ class RemoveAccountDialogContent extends React.Component<
     }
 
     onSubmit(this.state.saveContact);
-  }
+  };
 
   addressError(): null | string {
     const { intl, address } = this.props;
@@ -150,7 +149,8 @@ class RemoveAccountDialogContent extends React.Component<
                 description="Prompt for named account removal form"
                 defaultMessage={
                   'Are you sure you want to remove {name} ({address}) from the wallet? ' +
-                  'To confirm, enter the account address in the field below.'}
+                  'To confirm, enter the account address in the field below.'
+                }
                 values={{ name, address }}
               />
             ) : (
@@ -159,7 +159,8 @@ class RemoveAccountDialogContent extends React.Component<
                 description="Prompt for unnamed account removal form"
                 defaultMessage={
                   'Are you sure you want to remove account {address} from the wallet? ' +
-                  'To confirm, enter the account address in the field below.'}
+                  'To confirm, enter the account address in the field below.'
+                }
                 values={{ address }}
               />
             )}

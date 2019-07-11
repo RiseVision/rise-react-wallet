@@ -1,16 +1,16 @@
 import { Typography } from '@material-ui/core';
-import greenColor from '@material-ui/core/colors/green';
-import redColor from '@material-ui/core/colors/red';
-import yellowColor from '@material-ui/core/colors/yellow';
+import greenColor from '@material-ui/core/es/colors/green';
+import redColor from '@material-ui/core/es/colors/red';
+import yellowColor from '@material-ui/core/es/colors/yellow';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import * as classNames from 'classnames';
+} from '@material-ui/core/es/styles';
+import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import { LoadingState } from '../../stores/account';
 import WalletStore from '../../stores/wallet';
@@ -81,29 +81,29 @@ class ConnectionStatus extends React.Component<DecoratedProps> {
     switch (walletStore.connected) {
       case LoadingState.LOADED:
         return (
-          <React.Fragment>
+          <>
             <span
               className={classNames(classes.connected, classes.connectionIcon)}
             />
             <Typography className={classes.text}>
               {intl.formatMessage(messages.connectedStatus)}
             </Typography>
-          </React.Fragment>
+          </>
         );
       case LoadingState.LOADING:
         return (
-          <React.Fragment>
+          <>
             <span
               className={classNames(classes.connecting, classes.connectionIcon)}
             />
             <Typography className={classes.text}>
               {intl.formatMessage(messages.connectingStatus)}
             </Typography>
-          </React.Fragment>
+          </>
         );
       default:
         return (
-          <React.Fragment>
+          <>
             <span
               className={classNames(
                 classes.disconnected,
@@ -113,7 +113,7 @@ class ConnectionStatus extends React.Component<DecoratedProps> {
             <Typography className={classes.text}>
               {intl.formatMessage(messages.disconnectedStatus)}
             </Typography>
-          </React.Fragment>
+          </>
         );
     }
   }

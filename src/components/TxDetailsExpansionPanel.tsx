@@ -1,35 +1,35 @@
 import { Omit } from '@material-ui/core';
-import green from '@material-ui/core/colors/green';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import Button from '@material-ui/core/es/Button';
+import green from '@material-ui/core/es/colors/green';
+import ExpansionPanel from '@material-ui/core/es/ExpansionPanel';
+import ExpansionPanelActions from '@material-ui/core/es/ExpansionPanelActions';
+import ExpansionPanelDetails from '@material-ui/core/es/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/es/ExpansionPanelSummary';
+import IconButton from '@material-ui/core/es/IconButton';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+} from '@material-ui/core/es/styles';
+import Tooltip from '@material-ui/core/es/Tooltip';
+import Typography from '@material-ui/core/es/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LinkIcon from '@material-ui/icons/Link';
 import PersonIcon from '@material-ui/icons/Person';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import LinkIcon from '@material-ui/icons/Link';
+import classNames from 'classnames';
 import ContentCopyIcon from 'mdi-material-ui/ContentCopy';
-import * as classNames from 'classnames';
-import { TransactionType } from 'dpos-api-wrapper';
-import * as moment from 'moment/min/moment-with-locales';
-import * as React from 'react';
+import moment from 'moment/min/moment-with-locales';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
-import { formatAmount } from '../utils/utils';
-import Link from './Link';
+import { TransactionType } from 'risejs/dist/es5/types/beans';
 import { Transaction } from '../stores/transactions';
 import { RawAmount } from '../utils/amounts';
 import { copyToClipboard } from '../utils/clipboard';
 import { PropsOf } from '../utils/metaTypes';
+import { formatAmount } from '../utils/utils';
+import Link from './Link';
 
 type LinkProps = Omit<PropsOf<typeof Link>, 'children'>;
 

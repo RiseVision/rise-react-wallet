@@ -1,15 +1,15 @@
-import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
+import Button from '@material-ui/core/es/Button';
+import Collapse from '@material-ui/core/es/Collapse';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import * as classNames from 'classnames';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import Link from '../../components/Link';
 import ModalPaper from '../../components/ModalPaper';

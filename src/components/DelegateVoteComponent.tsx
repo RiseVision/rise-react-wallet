@@ -1,17 +1,18 @@
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/es/Button';
+import Paper from '@material-ui/core/es/Paper';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import * as classNames from 'classnames';
-import { Delegate } from 'dpos-api-wrapper';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import { Delegate } from 'risejs/dist/es5/types/beans';
+import { FullDelegate } from '../utils/utils';
 import AccountIcon from './AccountIcon';
 import LoadingIndicator from './LoadingIndicator';
 
@@ -76,7 +77,8 @@ const styles = (theme: Theme) =>
 
 interface Props extends WithStyles<typeof styles> {
   onSubmit: (delegate: Delegate, addVote: boolean) => void;
-  delegate: Delegate | null;
+  delegate:
+    | FullDelegate| null;
   hasVote: boolean;
   isLoading: boolean;
 }
@@ -151,15 +153,21 @@ class DelegateVoteComponent extends React.Component<DecoratedProps> {
       ? {
           username: delegate.username,
           address: delegate.address,
-          rank: intl.formatNumber(delegate.rank),
-          uptime: intl.formatNumber(delegate.productivity / 100, {
-            style: 'percent',
-            maximumFractionDigits: 2
-          }),
-          approval: intl.formatNumber(delegate.approval / 100, {
-            style: 'percent',
-            maximumFractionDigits: 2
-          })
+          rank: intl.formatNumber(delegate.infos.rankV2),
+          uptime: intl.formatNumber(
+            parseInt(delegate.infos.productivity, 10) / 100,
+            {
+              style: 'percent',
+              maximumFractionDigits: 2
+            }
+          ),
+          approval: intl.formatNumber(
+            parseInt(delegate.infos.approval, 10) / 100,
+            {
+              style: 'percent',
+              maximumFractionDigits: 2
+            }
+          )
         }
       : {
           username: 'N/A',

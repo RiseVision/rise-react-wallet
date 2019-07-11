@@ -1,24 +1,26 @@
-import Button from '@material-ui/core/Button';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import * as React from 'react';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
+import Downshift, { StateChangeOptions } from 'downshift';
+import { deburr, take } from 'lodash';
+import React, { ChangeEvent, FormEvent } from 'react';
 import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import Downshift, { StateChangeOptions } from 'downshift';
 import AccountIcon from '../../components/AccountIcon';
-import { ChangeEvent, FormEvent } from 'react';
+import AddressSuggestionsMenu from '../../components/AddressSuggestionsMenu';
 import { RawAmount } from '../../utils/amounts';
+import autoId from '../../utils/autoId';
 import {
   normalizeAddress,
   normalizeNumber,
@@ -26,14 +28,11 @@ import {
   TAddressSource,
   formatAmount
 } from '../../utils/utils';
-import AddressSuggestionsMenu from '../../components/AddressSuggestionsMenu';
-import { deburr, take } from 'lodash';
 import {
   DialogContentProps,
   SetDialogContent,
   ICloseInterruptFormProps
 } from '../Dialog';
-import autoId from '../../utils/autoId';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -96,7 +95,7 @@ const messages = defineMessages({
     id: 'send-coins-dialog-content.invalid-address',
     description: 'Error label for invalid address text input',
     defaultMessage:
-      'Invalid RISE address. A valid address is in the format of "1234567890R".'
+      'Invalid RISE address.'
   },
   invalidAmount: {
     id: 'send-coins-dialog-content.invalid-amount',

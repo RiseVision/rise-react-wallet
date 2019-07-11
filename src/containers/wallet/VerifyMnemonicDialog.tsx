@@ -42,20 +42,20 @@ class VerifyMnemonicDialog extends React.Component<Props>
     // TODO verify that the mnemonic matches the public key
     const publicKey = account.publicKey as string & As<'publicKey'>;
     return derivePublicKey(data.mnemonic) === publicKey;
-  }
+  };
 
   closeDialog = () => {
     const { navigateBackLink, routerStore } = this.injected;
     routerStore.navigateTo(navigateBackLink);
-  }
+  };
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     return Boolean(this.state.formChanged);
-  }
+  };
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  }
+  };
 
   render() {
     const { account, navigateBackLink, routerStore, open } = this.injected;

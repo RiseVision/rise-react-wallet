@@ -1,33 +1,31 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import { Delegate } from 'dpos-api-wrapper';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
 import { range } from 'lodash';
-import * as React from 'react';
-import { ReactEventHandler } from 'react';
-import { ChangeEvent } from 'react';
+import React, { ReactEventHandler, ChangeEvent } from 'react';
 import {
   FormattedMessage,
   defineMessages,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
-import { formatAmount } from '../../utils/utils';
+import { Delegate } from 'risejs/dist/es5/types/beans';
+import { RawAmount } from '../../utils/amounts';
+import autoId from '../../utils/autoId';
+import { formatAmount, FullDelegate } from '../../utils/utils';
+import DelegateVoteComponent from '../DelegateVoteComponent';
 import {
   DialogContentProps,
   SetDialogContent,
   ICloseInterruptFormProps
 } from '../Dialog';
-import autoId from '../../utils/autoId';
-import { RawAmount } from '../../utils/amounts';
-import DelegateVoteComponent from '../DelegateVoteComponent';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -64,13 +62,15 @@ const messages = defineMessages({
 
 type SuggestionsContent = {
   kind: 'suggestions';
-  delegates: Delegate[];
+  delegates:
+    FullDelegate[];
 };
 
 type ResultsContent = {
   kind: 'search-results';
   query: string;
-  delegates: Delegate[];
+  delegates:
+    FullDelegate[];
 };
 
 type ErrorContent = {
@@ -88,7 +88,7 @@ interface Props extends BaseProps, ICloseInterruptFormProps {
   // TODO rename to onSubmit
   onSelect: (delegate: Delegate) => void;
   isLoading: boolean;
-  votedDelegate: null | Delegate;
+  votedDelegate: Delegate | null;
   voteFee: RawAmount;
   content: Content;
 }
@@ -135,7 +135,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
           />
         </Grid>
         {content.kind === 'insufficient-funds' && (
-          <React.Fragment>
+          <>
             <Grid item={true} xs={12}>
               <Typography color="error">
                 <FormattedMessage
@@ -160,11 +160,11 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
                 />
               </Button>
             </Grid>
-          </React.Fragment>
+          </>
         )}
         {(content.kind === 'suggestions' ||
           content.kind === 'search-results') && (
-          <React.Fragment>
+          <>
             <Grid item={true} xs={12}>
               <TextField
                 autoFocus={true}
@@ -208,7 +208,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
               const delegate = content.delegates[n] || null;
               const hasVote =
                 delegate && votedDelegate
-                  ? delegate.publicKey === votedDelegate.publicKey
+                  ? delegate.forgingPK === votedDelegate.forgingPK
                   : false;
               return (
                 <Grid
@@ -225,7 +225,7 @@ class VoteDelegateDialogContent extends React.Component<DecoratedProps> {
                 </Grid>
               );
             })}
-          </React.Fragment>
+          </>
         )}
       </Grid>
     );

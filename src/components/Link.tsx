@@ -1,6 +1,6 @@
 import { Overwrite } from '@material-ui/core';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import RouterStore, { RouteLink } from '../stores/router';
 
 type BaseProps = Overwrite<
@@ -71,7 +71,7 @@ class Link extends React.Component<Props> {
       ev.preventDefault();
       routerStore.navigateTo(routeLink);
     }
-  }
+  };
 
   render() {
     const {

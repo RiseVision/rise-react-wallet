@@ -1,39 +1,43 @@
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import * as React from 'react';
-import { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
+import React, { ChangeEvent, FormEvent, ReactEventHandler } from 'react';
 import {
   defineMessages,
   FormattedMessage,
   InjectedIntlProps,
   injectIntl
 } from 'react-intl';
+import { RawAmount } from '../../utils/amounts';
+import autoId from '../../utils/autoId';
+import {
+  normalizeAddress,
+  normalizeUsername,
+  formatAmount,
+  derivePublicKey
+} from '../../utils/utils';
 import {
   DialogContentProps,
   SetDialogContent,
   ICloseInterruptFormProps
 } from '../Dialog';
-import autoId from '../../utils/autoId';
-import { RawAmount } from '../../utils/amounts';
-import {
-  normalizeAddress,
-  normalizeUsername,
-  formatAmount
-} from '../../utils/utils';
 
 const styles = (theme: Theme) =>
   createStyles({
     content: {
       padding: theme.spacing.unit * 2,
       textAlign: 'center'
+    },
+    forgingLabel: {
+      textAlign: 'left',
+      padding: 8
     }
   });
 
@@ -44,19 +48,25 @@ const stylesDecorator = withStyles(styles, {
 type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 
 interface Props extends BaseProps, ICloseInterruptFormProps {
-  onSubmit: () => void;
-  onClose: ReactEventHandler<{}>;
   delegateFee: RawAmount;
   registeredUsername?: string;
-  username: string;
-  onUsernameChange: (username: string) => void;
-  error?: null | 'already-registered' | 'insufficient-funds';
+  forgingPK: string | null;
+  error?: null | 'insufficient-funds';
+  onSubmit: (data: StateForm) => void;
+  onClose: ReactEventHandler<{}>;
 }
 
 type DecoratedProps = Props & InjectedIntlProps;
 
-interface State {
+export interface StateForm {
+  username: string;
+  mnemonic: string;
+  forgingPK: string;
+}
+
+interface State extends StateForm {
   usernameInvalid: boolean;
+  mnemonicInvalid: boolean;
 }
 
 const messages = defineMessages({
@@ -92,6 +102,11 @@ const messages = defineMessages({
     defaultMessage:
       'Invalid delegate username. The username cannot contain ' +
       'uppercase characters'
+  },
+  invalidMnemonicGeneric: {
+    id: 'forms-register-delegate.invalid-mnemonic-generic',
+    description: 'Error label for invalid mnemonic text input',
+    defaultMessage: 'Invalid secret. Any string is a valid one.'
   }
 });
 
@@ -102,53 +117,94 @@ class RegisterDelegateDialogContent extends React.Component<
   @autoId dialogContentId: string;
 
   state: State = {
-    usernameInvalid: false
+    username: '',
+    usernameInvalid: false,
+    mnemonic: '',
+    mnemonicInvalid: false,
+    forgingPK: ''
   };
 
-  constructor(props: DecoratedProps) {
-    super(props);
+  componentDidMount() {
+    const { intl } = this.props;
 
-    this.state = {
-      usernameInvalid: false
-    };
+    SetDialogContent(this, {
+      title: intl.formatMessage(messages.dialogTitle),
+      contentId: this.dialogContentId
+    });
+
+    this.mnemonicToForgingKey();
   }
 
   handleUsernameChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const username = ev.target.value.trim();
-    const { onUsernameChange, onFormChanged } = this.props;
+    const { onFormChanged } = this.props;
 
     this.setState({
+      username,
       usernameInvalid: false
     });
 
-    onUsernameChange(username);
-    onFormChanged(Boolean(username));
-  }
+    onFormChanged(true);
+  };
 
   handleUsernameBlur = () => {
-    const { username } = this.props;
-    const usernameInvalid = !!username && !!this.usernameError();
-    this.setState({ usernameInvalid });
-  }
+    this.setState({
+      usernameInvalid: Boolean(this.usernameError())
+    });
+  };
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
+    const { onSubmit, registeredUsername } = this.props;
+
     ev.preventDefault();
 
-    const { onSubmit } = this.props;
-
-    const usernameInvalid = !!this.usernameError();
-    if (usernameInvalid) {
+    const usernameError = Boolean(this.usernameError());
+    const mnemonicError = Boolean(this.mnemonicError());
+    if ((!registeredUsername && usernameError) || mnemonicError) {
       this.setState({
-        usernameInvalid
+        usernameInvalid: !registeredUsername ? usernameError : false,
+        mnemonicInvalid: mnemonicError
       });
       return;
     }
 
-    onSubmit();
+    const { username, mnemonic, forgingPK } = this.state;
+
+    onSubmit({
+      username,
+      mnemonic,
+      forgingPK
+    });
+  };
+
+  mnemonicToForgingKey() {
+    const mnemonic = (this.state.mnemonic || '').trim();
+    const forgingPK = mnemonic ? derivePublicKey(mnemonic) : '';
+    this.setState({
+      forgingPK
+    });
   }
 
+  handleMnemonicChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      mnemonic: ev.target.value,
+      mnemonicInvalid: false
+    });
+  };
+
+  handleMnemonicBlur = () => {
+    this.mnemonicToForgingKey();
+    const mnemonic = (this.state.mnemonic || '').trim();
+    const forgingPK = mnemonic ? derivePublicKey(mnemonic) : '';
+    this.setState({
+      mnemonicInvalid: !Boolean(mnemonic) || !Boolean(forgingPK)
+    });
+    this.props.onFormChanged(true);
+  };
+
   usernameError(): string | null {
-    const { intl, username } = this.props;
+    const { intl } = this.props;
+    const { username } = this.state;
 
     if (normalizeUsername(username)) {
       return null;
@@ -163,25 +219,18 @@ class RegisterDelegateDialogContent extends React.Component<
     }
   }
 
-  componentWillMount() {
+  mnemonicError(): string | null {
     const { intl } = this.props;
 
-    SetDialogContent(this, {
-      title: intl.formatMessage(messages.dialogTitle),
-      contentId: this.dialogContentId
-    });
+    if (!this.state.mnemonicInvalid) {
+      return null;
+    }
+
+    return intl.formatMessage(messages.invalidMnemonicGeneric);
   }
 
   render() {
-    const {
-      intl,
-      classes,
-      error,
-      delegateFee,
-      registeredUsername,
-      username
-    } = this.props;
-    const { usernameInvalid } = this.state;
+    const { intl, classes, error, delegateFee } = this.props;
 
     return (
       <Grid
@@ -190,9 +239,10 @@ class RegisterDelegateDialogContent extends React.Component<
         spacing={16}
         component="form"
         onSubmit={this.handleFormSubmit}
+        id={this.dialogContentId}
       >
         <Grid item={true} xs={12}>
-          <Typography id={this.dialogContentId}>
+          <Typography>
             <FormattedMessage
               id="forms-register-delegate.instructions"
               description="Instructions for delegate registration form"
@@ -212,7 +262,7 @@ class RegisterDelegateDialogContent extends React.Component<
                 id="forms-register-delegate.insufficient-funds-error"
                 description="Error about not having enough funds to register as a delegate"
                 defaultMessage={
-                  'You don\'t have enough funds in your account to pay the network fee ' +
+                  "You don't have enough funds in your account to pay the network fee " +
                   'of {fee} for registering as a delegate!'
                 }
                 values={{ fee: formatAmount(intl, delegateFee) }}
@@ -220,43 +270,8 @@ class RegisterDelegateDialogContent extends React.Component<
             </Typography>
           </Grid>
         )}
-        {error === 'already-registered' && (
-          <Grid item={true} xs={12}>
-            <Typography color="error">
-              <FormattedMessage
-                id="forms-register-delegate.already-delegate-error"
-                description="Error about already being registered as a delegate"
-                defaultMessage={
-                  'You\'ve already registered as a delegate ({username}). ' +
-                  'The name cannot be changed.'}
-                values={{ username: registeredUsername || '' }}
-              />
-            </Typography>
-          </Grid>
-        )}
-        {!error && (
-          <Grid item={true} xs={12}>
-            <TextField
-              autoFocus={true}
-              label={
-                <FormattedMessage
-                  id="forms-register-delegate.username-input-label"
-                  description="Label for delegate username text field."
-                  defaultMessage="Delegate username"
-                />
-              }
-              value={username}
-              fullWidth={true}
-              error={usernameInvalid}
-              FormHelperTextProps={{
-                error: usernameInvalid
-              }}
-              helperText={usernameInvalid ? this.usernameError() || '' : ''}
-              onChange={this.handleUsernameChange}
-              onBlur={this.handleUsernameBlur}
-            />
-          </Grid>
-        )}
+        {!error && this.renderUsername()}
+        {!error && this.renderMnemonic()}
         <Grid item={true} xs={12}>
           {!error && (
             <Button type="submit" fullWidth={true}>
@@ -278,6 +293,106 @@ class RegisterDelegateDialogContent extends React.Component<
           )}
         </Grid>
       </Grid>
+    );
+  }
+
+  renderUsername() {
+    const { registeredUsername } = this.props;
+    const { username, usernameInvalid } = this.state;
+
+    const usernameToShow = registeredUsername || username;
+
+    const alreadyRegistered = Boolean(registeredUsername);
+
+    if (alreadyRegistered) {
+      return null;
+    }
+
+    return (
+      <Grid item={true} xs={12}>
+        <TextField
+          autoFocus={true}
+          label={
+            <FormattedMessage
+              id="forms-register-delegate.username-input-label"
+              description="Label for delegate username text field."
+              defaultMessage="Username"
+            />
+          }
+          value={usernameToShow}
+          fullWidth={true}
+          error={usernameInvalid}
+          FormHelperTextProps={{
+            error: usernameInvalid
+          }}
+          helperText={usernameInvalid ? this.usernameError() || '' : ''}
+          onChange={this.handleUsernameChange}
+          onBlur={this.handleUsernameBlur}
+        />
+      </Grid>
+    );
+  }
+
+  renderMnemonic() {
+    const { mnemonic, mnemonicInvalid } = this.state;
+    const { registeredUsername, classes } = this.props;
+
+    const forgingPK = this.state.forgingPK || this.props.forgingPK || '';
+    const alreadyRegistered = Boolean(registeredUsername);
+
+    return (
+      <>
+        {alreadyRegistered && (
+          <Grid item={true} xs={12}>
+            <Typography>
+              <FormattedMessage
+                id="forms-register-delegate.change-forging-pk"
+                description="Instructions for changing the forging public key"
+                defaultMessage={
+                  'Type in a new secret to change your Forging Public Key.'
+                }
+              />
+            </Typography>
+          </Grid>
+        )}
+        <Grid item={true} xs={12}>
+          <TextField
+            fullWidth={true}
+            label={
+              <FormattedMessage
+                id="forms-register-delegate.secret-input-label"
+                description="Secret for the forging key"
+                defaultMessage="Secret for the forging key"
+              />
+            }
+            error={mnemonicInvalid}
+            value={mnemonic}
+            helperText={this.mnemonicError()}
+            FormHelperTextProps={{
+              error: mnemonicInvalid
+            }}
+            onChange={this.handleMnemonicChange}
+            onBlur={this.handleMnemonicBlur}
+          />
+        </Grid>
+        <Grid item={true} xs={12} className={classes.forgingLabel}>
+          <Typography>
+            <FormattedMessage
+              id="forms-register-delegate.forging-pk-input-label"
+              description="Label for the forging key."
+              defaultMessage="Forging Key"
+            />
+          </Typography>
+        </Grid>
+        <Grid item={true} xs={12}>
+          <TextField
+            autoFocus={true}
+            value={forgingPK}
+            fullWidth={true}
+            disabled={true}
+          />
+        </Grid>
+      </>
     );
   }
 }

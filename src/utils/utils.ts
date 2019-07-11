@@ -1,11 +1,13 @@
 // corrects the int amount from the server to a user-readable float
-import * as moment from 'moment/min/moment-with-locales';
+import bech32 from 'bech32';
 import BigNumber from 'bignumber.js';
-import { InjectedIntl } from 'react-intl';
+import { Rise } from 'dpos-offline';
 import { isNaN } from 'lodash';
+import moment from 'moment/min/moment-with-locales';
+import { InjectedIntl } from 'react-intl';
+import { Delegate, DelegateInfos } from 'risejs/dist/es5/types/beans';
 import { As } from 'type-tagger';
 import { RawAmount } from './amounts';
-import { Rise } from 'dpos-offline';
 
 // magic...
 const epoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
@@ -20,11 +22,25 @@ export function unixToTimestamp(timestamp: number) {
 }
 
 export function normalizeAddress(address: string): string {
+  return normalizeAddressV1(address) || normalizeAddressV2(address);
+}
+
+export function normalizeAddressV1(address: string): string {
   const normalizedAddress = address.trim().toUpperCase();
   if (!normalizedAddress.match(/^\d{1,20}R$/)) {
     return '';
   } else {
     return normalizedAddress;
+  }
+}
+
+export function normalizeAddressV2(address: string): string {
+  const normalized = address.trim().toLowerCase();
+  try {
+    bech32.decode(normalized);
+    return normalized;
+  } catch {
+    return '';
   }
 }
 
@@ -35,7 +51,7 @@ export function normalizeUsername(value: string): string {
     return '';
   }
   // Make sure that the username doesn't resemble an address
-  if (normalizeAddress(value) !== '') {
+  if (normalizeAddress(value) || normalizeAddressV2(value)) {
     return '';
   }
 
@@ -147,6 +163,32 @@ export function formatFiat(
     style: 'currency',
     currency
   });
+}
+
+export type FullDelegate = Delegate & {
+  infos: DelegateInfos;
+};
+
+export enum AccountIDVersion {
+  OLD = 'v0',
+  NEW = 'v1'
+}
+
+export enum NetworkTXType {
+  MAINNET = 'main',
+  TESTNET = 'test',
+  DEVNET = 'dev',
+}
+
+/**
+ * Return nework type from the address. Support new account IDs only.
+ * @param id
+ */
+export function idToTxNetworkType(id: string): NetworkTXType {
+  if (!id || !id[0]) {
+    throw new Error('Missing ID');
+  }
+  return id[0] === 'r' ? NetworkTXType.MAINNET : NetworkTXType.TESTNET;
 }
 
 export function derivePublicKey(secret: string): string & As<'publicKey'> {

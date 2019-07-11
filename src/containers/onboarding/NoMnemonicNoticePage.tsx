@@ -1,14 +1,14 @@
-import Button from '@material-ui/core/Button';
+import Button from '@material-ui/core/es/Button';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import Link from '../../components/Link';
 import ModalPaper from '../../components/ModalPaper';

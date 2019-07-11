@@ -1,24 +1,23 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import * as React from 'react';
-import { ChangeEvent, FormEvent } from 'react';
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
+import React, { ChangeEvent, FormEvent } from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
+import autoId from '../../utils/autoId';
+import { normalizeAddress } from '../../utils/utils';
 import AccountIcon from '../AccountIcon';
 import {
   DialogContentProps,
   SetDialogContent,
   ICloseInterruptFormProps
 } from '../Dialog';
-import autoId from '../../utils/autoId';
-import { normalizeAddress } from '../../utils/utils';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -74,8 +73,7 @@ const messages = defineMessages({
   invalidAddress: {
     id: 'create-contact-dialog-content.invalid-address',
     description: 'Error label for invalid address text input',
-    defaultMessage:
-      'Invalid RISE address. A valid address is in the format of "1234567890R".'
+    defaultMessage: 'Invalid RISE address.'
   },
   invalidAddressExists: {
     id: 'create-contact-dialog-content.invalid-address-exists',
@@ -137,13 +135,13 @@ class CreateContactDialogContent extends React.Component<
       nameInvalid: false
     });
     this.props.onFormChanged(this.formHasChanges(name, this.state.address));
-  }
+  };
 
   handleNameBlur = () => {
     const { name } = this.state;
     const nameInvalid = !!name && !!this.nameError();
     this.setState({ nameInvalid });
-  }
+  };
 
   handleAddressChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const address = ev.target.value;
@@ -153,13 +151,13 @@ class CreateContactDialogContent extends React.Component<
       addressInvalid: false
     });
     this.props.onFormChanged(this.formHasChanges(this.state.name, address));
-  }
+  };
 
   handleAddressBlur = () => {
     const { address } = this.state;
     const addressInvalid = !!address && !!this.addressError();
     this.setState({ addressInvalid });
-  }
+  };
 
   handleFormSubmit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -183,7 +181,7 @@ class CreateContactDialogContent extends React.Component<
       address: address || addressNormalized,
       name: nameNormalized
     });
-  }
+  };
 
   nameError(): string | null {
     const { intl } = this.props;

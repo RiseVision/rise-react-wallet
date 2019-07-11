@@ -1,13 +1,14 @@
-import * as assert from 'assert';
-import { Delegate } from 'dpos-api-wrapper';
+import assert from 'assert';
+import { Address, SenderType } from 'dpos-offline';
 import { action, observable, runInAction } from 'mobx';
-import * as lstore from 'store';
+import { Delegate } from 'risejs/dist/es5/types/beans';
+import { As } from 'type-tagger';
+import { RawAmount } from '../utils/amounts';
+import lstore from '../utils/store';
+import { AccountIDVersion, normalizeAddressV1 } from '../utils/utils';
 import { TConfig } from './index';
 import TransactionsStore from './transactions';
 import WalletStore from './wallet';
-import { RawAmount } from '../utils/amounts';
-import { As } from 'type-tagger';
-import { Address, SenderType } from 'dpos-offline';
 
 // TODO rename to ProgressState (NOT_STARTED, STARTED, DONE)
 export enum LoadingState {
@@ -36,6 +37,7 @@ type ImportableFields =
   | 'balance'
   | 'unconfirmedBalance'
   | 'secondPublicKey'
+  | 'forgingPK'
   | 'secondSignature';
 
 export default class AccountStore {
@@ -47,6 +49,7 @@ export default class AccountStore {
   @observable loaded: boolean = false;
 
   @observable id: string;
+  @observable version: AccountIDVersion;
   @observable localId: number;
   @observable publicKey: string | null = null;
   @observable broadcastedPublicKey: string | null = null;
@@ -59,6 +62,7 @@ export default class AccountStore {
   @observable fiatCurrency: string = 'USD';
   @observable balance: RawAmount = RawAmount.ZERO;
   @observable unconfirmedBalance: RawAmount = RawAmount.ZERO;
+  @observable forgingPK: string | null;
   @observable secondPublicKey: string | null;
   @observable secondSignature: boolean = false;
   // local only fields
@@ -106,6 +110,9 @@ export default class AccountStore {
       saveCache: false
     });
     this.config = config;
+    this.version = normalizeAddressV1(account.id!)
+      ? AccountIDVersion.OLD
+      : AccountIDVersion.NEW;
     this.recentTransactions = new TransactionsStore(
       this.config,
       account.id!,
@@ -115,7 +122,16 @@ export default class AccountStore {
   }
 
   saveCache() {
-    const skipFields = ['recentTransactions', 'selected', 'config', 'isDirty'];
+    // TODO type as properties of AccountStore
+    const skipFields = [
+      'recentTransactions',
+      'selected',
+      'config',
+      'isDirty',
+      'load',
+      'votedDelegateState',
+      'registeredDelegateState'
+    ];
     const data: Partial<AccountStore> = {};
     for (const field in this) {
       if (skipFields.includes(field)) {

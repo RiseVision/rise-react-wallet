@@ -1,4 +1,4 @@
-import * as localeData from 'react-intl/locale-data/pl';
+import localeData from 'react-intl/locale-data/pl';
 
 export default {
   data: localeData,

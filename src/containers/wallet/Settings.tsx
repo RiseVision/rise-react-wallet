@@ -1,20 +1,20 @@
-import red from '@material-ui/core/colors/red';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
+import red from '@material-ui/core/es/colors/red';
+import Divider from '@material-ui/core/es/Divider';
+import List from '@material-ui/core/es/List';
+import ListItem from '@material-ui/core/es/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/es/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/es/ListItemText';
+import ListSubheader from '@material-ui/core/es/ListSubheader';
 import {
   createStyles,
   Theme,
   withStyles,
   WithStyles
-} from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
+} from '@material-ui/core/es/styles';
+import Switch from '@material-ui/core/es/Switch';
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import { defineMessages, InjectedIntlProps, injectIntl } from 'react-intl';
 import Link from '../../components/Link';
 import {
@@ -89,7 +89,7 @@ const messages = defineMessages({
   },
   unnamedAccountLabel: {
     id: 'account-settings.unnamed-account-label',
-    description: 'Label for accounts that user hasn\'t named yet',
+    description: "Label for accounts that user hasn't named yet",
     defaultMessage: 'Unnamed account ({id})'
   },
   accountName: {
@@ -160,8 +160,7 @@ const messages = defineMessages({
   },
   verifyMnemonic: {
     id: 'account-settings.verify-mnemonic',
-    description:
-      'Label for opening a dialog verifying the account\'s mnemonic',
+    description: "Label for opening a dialog verifying the account's mnemonic",
     defaultMessage: 'Verify your mnemonic'
   },
   delegateRegistrationUnsetLabel: {
@@ -200,7 +199,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
 
   handleVerifyLedgerClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     this.injected.ledgerStore.open();
-  }
+  };
 
   handlePinnedClicked = () => {
     runInAction(() => {
@@ -208,7 +207,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
       const selectedAccount = walletStore.selectedAccount;
       selectedAccount.pinned = !selectedAccount.pinned;
     });
-  }
+  };
 
   componentDidMount() {
     this.loadVotedDelegate();
@@ -246,7 +245,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
     };
 
     return (
-      <React.Fragment>
+      <>
         <AccountNameDialog account={this.account} navigateBackLink={backLink} />
         <VoteDelegateDialog
           account={this.account}
@@ -358,7 +357,8 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             subheader={
               <ListSubheader className={classes.groupTitle}>
                 {intl.formatMessage(messages.advancedSettings)}
-              </ListSubheader>}
+              </ListSubheader>
+            }
           >
             {accountType === AccountType.MNEMONIC && (
               <Link
@@ -448,7 +448,7 @@ class AccountSettings extends React.Component<DecoratedProps, State> {
             </Link>
           </List>
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }

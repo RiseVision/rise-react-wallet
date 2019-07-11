@@ -1,11 +1,10 @@
-import * as assert from 'assert';
-import { BaseApiResponse } from 'dpos-api-wrapper/src/types/base';
-import { Account as APIAccount } from 'dpos-api-wrapper/src/types/beans';
+import assert from 'assert';
 import {
-  RiseTransaction as GenericRiseTransaction,
-  PostableRiseTransaction as GenericPostableRiseTransaction,
+  RiseV2Transaction as GenericRiseTransaction,
+  PostableRiseV2Transaction as GenericPostableRiseTransaction,
   RecipientId,
-  Rise
+  RiseV2 as Rise,
+  ISendRiseV2Tx
 } from 'dpos-offline';
 import { isMobile } from 'is-mobile';
 import { get, pick } from 'lodash';
@@ -17,23 +16,34 @@ import {
   observe,
   runInAction
 } from 'mobx';
-import { RouterStore } from 'mobx-router-rise';
-import * as moment from 'moment';
-import { Moment } from 'moment';
-import * as queryString from 'query-string';
-import { Delegate, rise as dposAPI, TransactionType, APIWrapper } from 'risejs';
-import * as io from 'socket.io-client';
-import * as lstore from 'store';
+import RouterStore from './router';
+import moment, { Moment } from 'moment';
+import queryString from 'query-string';
+import { Rise as dposAPI, RiseAPIWrapper as APIWrapper } from 'risejs';
+import { TransactionsAPI } from 'risejs/dist/es5/types/apis/TransactionsAPI';
+import { BaseApiResponse } from 'risejs/dist/es5/types/base';
+import {
+  Account as APIAccount,
+  TransactionType,
+  Delegate
+} from 'risejs/dist/es5/types/beans';
+import io from 'socket.io-client';
 import { As } from 'type-tagger';
 import { onboardingAddAccountRoute } from '../routes';
 import { RawAmount } from '../utils/amounts';
+import lstore from '../utils/store';
 import {
   normalizeAddress,
   TAddressRecord,
   TAddressSource,
   isMainnet,
   timestampToUnix,
-  derivePublicKey
+  derivePublicKey,
+  FullDelegate,
+  AccountIDVersion,
+  NetworkTXType,
+  idToTxNetworkType,
+  normalizeAddressV1
 } from '../utils/utils';
 import AccountStore, { AccountType, LoadingState } from './account';
 import AddressBookStore, { TStoredContact } from './addressBook';
@@ -41,7 +51,9 @@ import { TConfig } from './index';
 import LangStore from './lang';
 import { Transaction } from './transactions';
 
-export type NetworkType = 'mainnet' | 'testnet' | 'custom';
+// TODO merge with NetworkTxType
+// TODO move to utils.ts
+export type NetworkType = 'mainnet' | 'testnet' | 'devnet' | 'custom';
 
 // TODO move to /utils/utils.ts
 // TODO proper type instead of any
@@ -80,7 +92,7 @@ export default class WalletStore {
   @observable accounts = observable.map<string, AccountStore>();
   @observable selectedAccount: AccountStore;
 
-  @observable suggestedDelegates: Delegate[] = [];
+  @observable suggestedDelegates: Array<FullDelegate> = [];
   suggestedDelegatesTime: Moment | null = null;
   suggestedDelegatesPromise: Promise<Delegate[]> | null;
 
@@ -107,6 +119,8 @@ export default class WalletStore {
         return this.config.api_url;
       case 'testnet':
         return this.config.api_url_testnet;
+      case 'devnet':
+        return this.config.api_url_devnet;
       case 'custom':
         return url;
       default:
@@ -209,9 +223,7 @@ export default class WalletStore {
       this.io = null;
     }
     // init the API
-    dposAPI.nodeAddress = this.nodeAddress;
-    dposAPI.timeout = 10 * 1000;
-    this.dposAPI = dposAPI;
+    this.dposAPI = dposAPI.newWrapper(this.nodeAddress);
     // tslint:disable-next-line:no-use-before-declare
     this.delegateCache = new DelegateCache(this.dposAPI);
 
@@ -241,6 +253,20 @@ export default class WalletStore {
     lstore.set('network', { type, url });
     // invalidate cache
     lstore.remove('cache');
+    // check if the currently selected account belong to this network type
+    const selected = this.selectedAccount;
+    if (selected.version === AccountIDVersion.NEW) {
+      // select the first account if this one is going to be hidden
+      if (this.getTxNetwork() !== idToTxNetworkType(selected.id)) {
+        const accounts = this.listAccounts();
+        // in case theres no accounts
+        if (accounts.length) {
+          lstore.remove('lastSelectedAccount');
+        } else {
+          this.selectAccount(accounts[0].id);
+        }
+      }
+    }
     this.reload();
   }
 
@@ -255,6 +281,22 @@ export default class WalletStore {
         return 'testnet';
       default:
         return type;
+    }
+  }
+
+  /**
+   * Network ID required for the `transform()` method.
+   *
+   * TODO merge with NetworkType
+   */
+  getTxNetwork(): NetworkTXType {
+    switch (this.getNetwork()) {
+      case 'testnet':
+        return NetworkTXType.TESTNET;
+      case 'devnet':
+        return NetworkTXType.DEVNET;
+      default:
+        return NetworkTXType.MAINNET;
     }
   }
 
@@ -336,17 +378,12 @@ export default class WalletStore {
   @action
   // refreshes the fees from the server
   async updateFees() {
-    try {
-      const fees: TFeesResponse = await this.dposAPI.blocks.getFeeSchedule();
-      runInAction(() => {
-        for (const [fee, value] of Object.entries(fees.fees)) {
-          this.fees.set(fee as TFeeTypes, new RawAmount(value));
-        }
-      });
-    } catch {
-      console.error(`Couldn't load fees`);
-      // TODO try to redo later
-    }
+    const fees: TFeesResponse = await this.dposAPI.blocks.fees();
+    runInAction(() => {
+      for (const [fee, value] of Object.entries(fees.fees)) {
+        this.fees.set(fee as TFeeTypes, new RawAmount(value));
+      }
+    });
   }
 
   async checkNodesNethash(nodeURL: string): Promise<string> {
@@ -390,10 +427,24 @@ export default class WalletStore {
     lstore.set('accounts', stored);
   }
 
+  /**
+   * Lists accounts depending on the current network.
+   */
+  listAccounts(
+    networkType: NetworkTXType = this.getTxNetwork()
+  ): AccountStore[] {
+    return [...this.accounts.values()].filter(
+      a =>
+        a.version === AccountIDVersion.OLD ||
+        idToTxNetworkType(a.id) === networkType
+    );
+  }
+
   protected async fetchAccountData(id: string): Promise<TAccountResponse> {
-    const res:
-      | TAccountResponse
-      | TErrorResponse = await this.dposAPI.accounts.getAccount(id);
+    // const res:
+    //   | TAccountResponse
+    //   | TErrorResponse = await this.dposAPI.accounts.getAccount(id);
+    const res = await this.dposAPI.accounts.getAccount(id);
     if (!res.success) {
       // fake the account
       // @ts-ignore
@@ -402,7 +453,7 @@ export default class WalletStore {
       };
       // throw new Error((json as TErrorResponse).error);
     }
-    return res as TAccountResponse;
+    return res;
   }
 
   async createPassphraseTx(
@@ -414,13 +465,16 @@ export default class WalletStore {
       ? (this.accounts.get(accountID) as AccountStore)
       : this.selectedAccount;
     assert(account, 'Account required');
-    const keys = Rise.deriveKeypair(passphrase);
+    const wallet2 = Rise.deriveKeypair(passphrase);
 
-    return Rise.txs.transform({
-      kind: 'second-signature',
-      publicKey: keys.publicKey,
-      sender: account.toSenderObject()
-    });
+    return Rise.txs.transform(
+      {
+        kind: 'second-signature-v2',
+        publicKey: wallet2.publicKey,
+        sender: account.toSenderObject()
+      },
+      this.getTxNetwork()
+    );
   }
 
   async createSendTx(
@@ -433,21 +487,24 @@ export default class WalletStore {
       : this.selectedAccount;
     assert(account, 'Account required');
 
-    return Rise.txs.transform({
-      kind: 'send',
-      amount: amount.toString(),
-      recipient: recipientId as RecipientId,
-      sender: account.toSenderObject()
-    });
+    return Rise.txs.transform<ISendRiseV2Tx>(
+      {
+        kind: 'send-v2',
+        amount: amount.toString(),
+        recipient: recipientId as RecipientId,
+        sender: account.toSenderObject()
+      },
+      this.getTxNetwork()
+    );
   }
 
   /**
-   * @param delegatePublicKey Delegate you want to vote for.
+   * @param delegateUsername The delegate username you want to vote for.
    * @param accountID Optional - the voter's account ID.
    *   Defaults to the currently selected one.
    */
   async createVoteTx(
-    delegatePublicKey: string,
+    delegateUsername: string,
     accountID?: string
   ): Promise<RiseTransaction> {
     const account = accountID
@@ -460,38 +517,38 @@ export default class WalletStore {
       await this.loadVotedDelegate(account.id);
     }
 
-    return Rise.txs.transform({
-      kind: 'vote',
-      sender: account.toSenderObject(),
-      preferences: [
-        ...(account.votedDelegate
-          ? [
-              {
-                action: '-' as '-',
-                delegateIdentifier: Buffer.from(
-                  account.votedDelegate.publicKey,
-                  'hex'
-                ) as Buffer & As<'publicKey'>
-              }
-            ]
-          : []),
-        ...(!account.votedDelegate || account.votedDelegate!.publicKey
-          ? [
-              {
-                action: '+' as '+',
-                delegateIdentifier: Buffer.from(
-                  delegatePublicKey,
-                  'hex'
-                ) as Buffer & As<'publicKey'>
-              }
-            ]
-          : [])
-      ]
-    });
+    // Create transaction that removes prev voted delegate (if available)
+    // and votes for the new delegate.
+    return Rise.txs.transform(
+      {
+        kind: 'vote-v2',
+        sender: account.toSenderObject(),
+        preferences: [
+          ...(account.votedDelegate
+            ? [
+                {
+                  action: '-' as '-',
+                  delegateIdentifier: account.votedDelegate.username
+                }
+              ]
+            : []),
+          ...(!account.votedDelegate || account.votedDelegate!.username
+            ? [
+                {
+                  action: '+' as '+',
+                  delegateIdentifier: delegateUsername
+                }
+              ]
+            : [])
+        ]
+      },
+      this.getTxNetwork()
+    );
   }
 
   async createRegisterDelegateTx(
     username: string,
+    forgingPK: string,
     accountID?: string
   ): Promise<RiseTransaction> {
     const account = accountID
@@ -503,16 +560,17 @@ export default class WalletStore {
     if (account.registeredDelegateState !== LoadingState.LOADED) {
       await this.loadRegisteredDelegate(account.id);
     }
-    // delegate registrations arent mutable
-    if (account.registeredDelegate) {
-      throw new Error('Already registered as a delegate');
-    }
 
-    return Rise.txs.transform({
-      kind: 'register-delegate',
-      sender: account.toSenderObject(),
-      identifier: username as string & As<'delegateName'>
-    });
+    return Rise.txs.transform(
+      {
+        kind: 'register-delegate-v2',
+        sender: account.toSenderObject(),
+        identifier: username as string & As<'delegateName'>,
+        forgingPublicKey: Buffer.from(forgingPK, 'hex') as Buffer &
+          As<'publicKey'>
+      },
+      this.getTxNetwork()
+    );
   }
 
   signTransaction(
@@ -521,8 +579,9 @@ export default class WalletStore {
     passphrase: string | null = null
   ): PostableRiseTransaction {
     const signedTx = Rise.txs.sign(unsignedTx, mnemonic);
+    // TODO check if correct
     if (passphrase) {
-      signedTx.signSignature = Rise.txs.calcSignature(signedTx, passphrase);
+      Rise.txs.sign(signedTx, passphrase);
     }
     return Rise.txs.toPostable(signedTx);
   }
@@ -544,13 +603,12 @@ export default class WalletStore {
       });
     }
 
-    // @ts-ignore TODO array
-    const res = await this.dposAPI.transactions.put(signedTx);
+    const res = await this.dposAPI.transactions.postSingle(signedTx);
     await this.refreshAccount(account.id);
     return res;
   }
 
-  async searchDelegates(query: string): Promise<Delegate[]> {
+  async searchDelegates(query: string): Promise<Array<FullDelegate>> {
     assert(
       query === query.toLowerCase(),
       'Delegate username query must be all lowercase'
@@ -636,10 +694,21 @@ export default class WalletStore {
     runInAction(() => {
       account.votedDelegateState = LoadingState.LOADING;
     });
-    const res = await this.dposAPI.accounts.getDelegates(account.id);
+    const res = await this.dposAPI.accounts.getVotes(account.id);
+    const delegateName = (res.votes && res.votes[0]) || null;
+    if (!delegateName) {
+      runInAction(() => {
+        account.votedDelegateState = LoadingState.LOADED;
+      });
+      return;
+    }
+    const delegateRes =
+      res.votes && res.votes[0]
+        ? await this.dposAPI.delegates.byUsername(delegateName)
+        : null;
     runInAction(() => {
       account.votedDelegateState = LoadingState.LOADED;
-      account.votedDelegate = (res.delegates && res.delegates[0]) || null;
+      account.votedDelegate = (delegateRes && delegateRes.delegate) || null;
     });
   }
 
@@ -653,12 +722,16 @@ export default class WalletStore {
   async loadRegisteredDelegate(accountID: string) {
     const account = this.accounts.get(accountID) as AccountStore;
     assert(account, `Account ${accountID} doesn't exist`);
+    // check if registered as a delegate
+    if (!account.forgingPK) {
+      return;
+    }
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADING;
     });
     let delegate: Delegate | null = null;
     if (account.publicKey) {
-      delegate = await this.delegateCache.get(account.publicKey, {
+      delegate = await this.delegateCache.get(account.forgingPK, {
         reload: true
       });
     }
@@ -830,18 +903,20 @@ export default class WalletStore {
     // request
     const [recent, unconfirmed] = await Promise.all([
       this.loadTransactions(accountID, {
+        // @ts-ignore TODO TS error
         limit,
         offset,
         orderBy: 'timestamp:desc',
         recipientId: account.id,
-        senderPublicKey: account.publicKey || undefined
+        senderId: account.id
       }),
       this.loadTransactions(
         accountID,
         {
+          // @ts-ignore TODO TS error
           limit,
           address: account.id,
-          senderPublicKey: account.publicKey || undefined
+          senderId: account.id
         },
         false
       )
@@ -889,17 +964,21 @@ export default class WalletStore {
   }
 
   @action
-  registerAccount(mnemonic: string[]) {
+  registerAccount(mnemonic: string[]): string {
     const publicKey = derivePublicKey(mnemonic.join(' '));
 
-    const account = {
-      id: Rise.calcAddress(publicKey),
+    const account: Partial<TAccount> = {
+      id: Rise.calcAddress(
+        publicKey,
+        this.getTxNetwork(),
+        AccountIDVersion.NEW
+      ),
       publicKey,
       type: AccountType.MNEMONIC
     };
     // pass async
-    this.login(account.id, account, true);
-    return account.id;
+    this.login(account.id!, account, true);
+    return account.id!;
   }
 
   @action
@@ -937,24 +1016,17 @@ export default class WalletStore {
 
   async loadTransactions(
     accountID: string,
-    params: TTransactionsRequest,
+    params: Parameters<TransactionsAPI['list']>,
     confirmed: boolean = true
   ): Promise<Transaction[]> {
     let res: TTransactionsResponse | TErrorResponse;
     if (confirmed) {
-      res = await this.dposAPI.transactions.getList(params);
+      // @ts-ignore TODO type errors in dposAPI
+      res = await this.dposAPI.transactions.list(params);
       if (!res.success) {
         // @ts-ignore
         throw new Error((res as TErrorResponse).error);
       }
-    } else if (!params.senderPublicKey) {
-      // Unconfirmed transactions require senderPublicKey to be available,
-      // so when the account hasn't broadcast it yet, skip this step
-      res = {
-        success: true,
-        count: 0,
-        transactions: []
-      };
     } else {
       const url = `${
         this.nodeAddress
@@ -988,15 +1060,21 @@ export default class WalletStore {
    *
    * TODO implement delegates
    */
-  getContacts(): TAddressRecord[] {
+  getContacts(
+    networkType: NetworkTXType = this.getTxNetwork()
+  ): TAddressRecord[] {
     assert(this.selectedAccount);
 
-    const walletAccounts = [...this.accounts.values()];
+    const walletAccounts = this.listAccounts(networkType);
     const walletIDs = walletAccounts.map(({ id }) => id);
 
     const contactRecords: TAddressRecord[] = this.addressBook.asArray
-      // Wallet accounts take precedence, should there be a record in the address book
-      .filter(({ id }) => walletIDs.indexOf(id) < 0)
+      // remove wallet IDs from contacts (to avoid duplicates)
+      .filter(({ id }) => !walletIDs.includes(id))
+      // remove accounts from another network
+      .filter(({ id }) => {
+        return normalizeAddressV1(id) || idToTxNetworkType(id) === networkType;
+      })
       .map(({ id, name }) => ({
         id,
         name,
@@ -1015,9 +1093,9 @@ export default class WalletStore {
     return [...contactRecords, ...walletRecords];
   }
 
-  async fetchDelegateByID(id: string): Promise<Delegate | null> {
+  async fetchDelegateByID(id: string): Promise<FullDelegate | null> {
     const res = await this.dposAPI.accounts.getAccount(id);
-    const publicKey = get(res, 'account.publicKey');
+    const publicKey = get(res, 'account.forgingPK');
     if (!publicKey) {
       return null;
     }
@@ -1040,7 +1118,7 @@ export default class WalletStore {
       // mutex (init)
       this.suggestedDelegatesPromise = new Promise(async (resolve, reject) => {
         try {
-          const res = await this.dposAPI.delegates.getList();
+          const res = await this.dposAPI.delegates.list();
           // update the observable
           runInAction(() => {
             this.suggestedDelegates = res.delegates || [];
@@ -1110,11 +1188,11 @@ class DelegateCache {
     [key: string]:
       | {
           state: 'loading';
-          promise: Promise<Delegate | null>;
+          promise: Promise<FullDelegate | null>;
         }
       | {
           state: 'loaded';
-          delegate: Delegate | null;
+          delegate: FullDelegate | null;
         };
   } = {};
 
@@ -1122,19 +1200,19 @@ class DelegateCache {
 
   // TODO `opts.reload` -> `force`
   async get(
-    publicKey: string,
+    forgingPK: string,
     opts: { reload?: boolean } = {}
-  ): Promise<Delegate | null> {
+  ): Promise<FullDelegate | null> {
     const reload = opts.reload !== undefined ? opts.reload : false;
 
-    let entry = this.cached[publicKey];
+    let entry = this.cached[forgingPK];
     if (reload || !entry) {
-      const promise = this.fetchAndUpdate(publicKey);
+      const promise = this.fetchAndUpdate(forgingPK);
       entry = {
         state: 'loading',
         promise
       };
-      this.cached[publicKey] = entry;
+      this.cached[forgingPK] = entry;
     }
 
     if (entry.state === 'loading') {
@@ -1144,8 +1222,8 @@ class DelegateCache {
     }
   }
 
-  set(publicKey: string, delegate: Delegate) {
-    this.cached[publicKey] = {
+  set(forgingPK: string, delegate: FullDelegate) {
+    this.cached[forgingPK] = {
       state: 'loaded',
       delegate: delegate
     };
@@ -1155,11 +1233,12 @@ class DelegateCache {
     this.cached = {};
   }
 
-  private async fetchAndUpdate(publicKey: string): Promise<Delegate> {
-    const res = await this.api.delegates.getByPublicKey(publicKey);
-    const delegate = res.delegate || null;
-    this.set(publicKey, delegate);
-    return delegate;
+  private async fetchAndUpdate(forgingPK: string): Promise<FullDelegate> {
+    const res = await this.api.delegates.byForgingKey(forgingPK);
+    // TODO fix `infos`
+    const parsed = { ...res.delegate, infos: res.info };
+    this.set(forgingPK, parsed);
+    return parsed;
   }
 }
 
@@ -1174,12 +1253,13 @@ export function parseAccountReponse(
 ): TAccount {
   const parsed: Partial<TAccount> = {
     id: res.account.address,
-    publicKey: res.account.publicKey,
+    publicKey: res.account.forgingPK || null,
     name: '',
     fiatCurrency: 'USD',
     type: AccountType.READONLY,
     hwId: null,
     hwSlot: null,
+    forgingPK: res.account.forgingPK,
     pinned: false,
     secondSignature: Boolean(res.account.secondSignature),
     secondPublicKey: res.account.secondPublicKey,
@@ -1230,7 +1310,7 @@ export type APIUncofirmedTransaction = {
   recipientId?: string;
   recipientPublicKey?: string;
   senderId: string;
-  senderPublicKey: string;
+  senderPubData: string;
   signature: string;
   timestamp: number;
   type: TransactionType;
@@ -1255,15 +1335,6 @@ export type TTransactionVote = {
   delegate: Delegate;
 };
 
-export type TTransactionsRequest = {
-  limit?: number;
-  offset?: number;
-  orderBy?: string;
-  recipientId?: string;
-  senderPublicKey?: string;
-  address?: string;
-};
-
 export type TTransactionsResponse = {
   count: number;
   success: boolean;
@@ -1273,7 +1344,7 @@ export type TTransactionsResponse = {
 export type TStoredAccount = {
   id: string;
   localId: number;
-  publicKey: string;
+  publicKey: string | null;
   type: AccountType;
   hwId: null | string;
   hwSlot: null | number;
@@ -1288,6 +1359,7 @@ export type TAccount = TStoredAccount & {
   unconfirmedBalance: RawAmount;
   secondPublicKey: string | null;
   secondSignature: boolean;
+  forgingPK: string | null;
 };
 
 export type TAccountResponse = { account: APIAccount } & BaseApiResponse;
@@ -1299,12 +1371,10 @@ export type TErrorResponse = {
 
 export type TFeesResponse = {
   fees: {
-    send: number;
-    vote: number;
-    secondsignature: number;
-    delegate: number;
-    multisignature: number;
-    dapp: number;
+    send: string;
+    vote: string;
+    secondsignature: string;
+    delegate: string;
   };
 };
 

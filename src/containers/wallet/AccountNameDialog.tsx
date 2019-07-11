@@ -1,6 +1,6 @@
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import * as React from 'react';
+import React from 'react';
 import AccountNameDialogContent from '../../components/content/AccountNameDialogContent';
 import Dialog, {
   ICloseInterruptController,
@@ -39,15 +39,15 @@ class AccountNameDialog extends React.Component<Props>
     const { account, navigateBackLink, routerStore } = this.injected;
     account.name = data.name;
     routerStore.navigateTo(navigateBackLink);
-  }
+  };
 
   handleClose = (ev: React.SyntheticEvent<{}>) => {
     return Boolean(this.state.formChanged);
-  }
+  };
 
   handleFormChanged = (changed: boolean) => {
     this.setState({ formChanged: changed });
-  }
+  };
 
   render() {
     const { account, navigateBackLink, routerStore, open } = this.injected;

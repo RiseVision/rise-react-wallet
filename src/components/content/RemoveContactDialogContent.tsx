@@ -1,22 +1,21 @@
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
 import {
   createStyles,
   Theme,
   WithStyles,
   withStyles
-} from '@material-ui/core/styles';
-import * as React from 'react';
-import { FormEvent } from 'react';
+} from '@material-ui/core/es/styles';
+import Typography from '@material-ui/core/es/Typography';
+import React, { FormEvent } from 'react';
 import {
   FormattedMessage,
   defineMessages,
   injectIntl,
   InjectedIntlProps
 } from 'react-intl';
-import { DialogContentProps, SetDialogContent } from '../Dialog';
 import autoId from '../../utils/autoId';
+import { DialogContentProps, SetDialogContent } from '../Dialog';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -57,7 +56,7 @@ class RemoveContactDialogContent extends React.Component<DecoratedProps> {
     ev.preventDefault();
 
     onConfirm();
-  }
+  };
 
   componentWillMount() {
     const { intl } = this.props;
@@ -86,7 +85,8 @@ class RemoveContactDialogContent extends React.Component<DecoratedProps> {
               description="Prompt for contact removal form"
               defaultMessage={
                 'Are you sure you want to remove {name} ({address}) ' +
-                'from your address book?'}
+                'from your address book?'
+              }
               values={{ name, address }}
             />
           </Typography>

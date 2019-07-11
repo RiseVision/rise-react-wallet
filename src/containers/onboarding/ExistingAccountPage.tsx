@@ -1,11 +1,15 @@
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/es/Button';
+import Grid from '@material-ui/core/es/Grid';
+import {
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/es/styles';
+import TextField from '@material-ui/core/es/TextField';
+import Typography from '@material-ui/core/es/Typography';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-router-rise';
-import * as React from 'react';
+import RouterStore from '../../stores/router';
+import React from 'react';
 import {
   defineMessages,
   FormattedMessage,
@@ -64,7 +68,7 @@ const messages = defineMessages({
     id: 'onboarding-existing-account.invalid-address-generic',
     description: 'Error label for invalid address text input',
     defaultMessage:
-      'Invalid RISE address. A valid address is in the format of "1234567890R".'
+      'Invalid RISE address.'
   },
   invalidAddressMnemonic: {
     id: 'onboarding-existing-account.invalid-address-mnemonic',
