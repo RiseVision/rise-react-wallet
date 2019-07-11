@@ -3,10 +3,15 @@
     "baseUrl": ".",
     "module": "esnext",
     "target": "esnext",
-    "lib": ["es6", "dom", "es7", "es2017.object"],
+    "lib": [
+      "es6",
+      "dom",
+      "es7",
+      "es2017.object"
+    ],
     "sourceMap": true,
     "allowJs": true,
-    "jsx": "react",
+    "jsx": "preserve",
     "moduleResolution": "node",
     "downlevelIteration": true,
     "suppressImplicitAnyIndexErrors": true,
@@ -22,6 +27,12 @@
     "forceConsistentCasingInFileNames": true,
     "skipDefaultLibCheck": true
   },
-  "exclude": ["src/setupTests.ts", "src/serve.js"],
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "exclude": [
+    "src/setupTests.ts",
+    "src/serve.js"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ]
 }

@@ -44,3 +44,6 @@ yarn-error.log*
 /sync
 /.cache
 /now.json
+
+.browserslistrc
+

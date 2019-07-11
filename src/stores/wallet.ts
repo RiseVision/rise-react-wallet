@@ -3,7 +3,7 @@ import {
   RiseV2Transaction as GenericRiseTransaction,
   PostableRiseV2Transaction as GenericPostableRiseTransaction,
   RecipientId,
-  RiseV2 as Rise
+  RiseV2 as Rise, ISendRiseV2Tx
 } from 'dpos-offline';
 import { isMobile } from 'is-mobile';
 import { get, pick } from 'lodash';
@@ -51,7 +51,7 @@ import { Transaction } from './transactions';
 
 // TODO merge with NetworkTxType
 // TODO move to utils.ts
-export type NetworkType = 'mainnet' | 'testnet' | 'custom';
+export type NetworkType = 'mainnet' | 'testnet' | 'devnet' | 'custom';
 
 // TODO move to /utils/utils.ts
 // TODO proper type instead of any
@@ -112,6 +112,8 @@ export default class WalletStore {
         return this.config.api_url;
       case 'testnet':
         return this.config.api_url_testnet;
+      case 'devnet':
+        return this.config.api_url_devnet;
       case 'custom':
         return url;
       default:
@@ -281,9 +283,14 @@ export default class WalletStore {
    * TODO merge with NetworkType
    */
   getTxNetwork(): NetworkTXType {
-    return this.getNetwork() === 'mainnet'
-      ? NetworkTXType.MAINNET
-      : NetworkTXType.TESTNET;
+    switch (this.getNetwork()) {
+      case 'testnet':
+        return NetworkTXType.TESTNET;
+      case 'devnet':
+        return NetworkTXType.DEVNET;
+      default:
+        return NetworkTXType.MAINNET;
+    }
   }
 
   @action
@@ -475,9 +482,9 @@ export default class WalletStore {
       : this.selectedAccount;
     assert(account, 'Account required');
 
-    return Rise.txs.transform(
+    return Rise.txs.transform<ISendRiseV2Tx>(
       {
-        kind: 'send',
+        kind: 'send-v2',
         amount: amount.toString(),
         recipient: recipientId as RecipientId,
         sender: account.toSenderObject()
@@ -509,7 +516,7 @@ export default class WalletStore {
     // and votes for the new delegate.
     return Rise.txs.transform(
       {
-        kind: 'vote',
+        kind: 'vote-v2',
         sender: account.toSenderObject(),
         preferences: [
           ...(account.votedDelegate
@@ -548,12 +555,7 @@ export default class WalletStore {
     if (account.registeredDelegateState !== LoadingState.LOADED) {
       await this.loadRegisteredDelegate(account.id);
     }
-    // delegate registrations arent mutable
-    if (account.registeredDelegate) {
-      throw new Error('Already registered as a delegate');
-    }
 
-    // TODO fix types in dpos-offline
     return Rise.txs.transform(
       {
         kind: 'register-delegate-v2',

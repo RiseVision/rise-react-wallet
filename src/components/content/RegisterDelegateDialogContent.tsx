@@ -51,7 +51,7 @@ type BaseProps = WithStyles<typeof styles> & DialogContentProps;
 interface Props extends BaseProps, ICloseInterruptFormProps {
   delegateFee: RawAmount;
   registeredUsername?: string;
-  forgingPK: string;
+  forgingPK: string | null;
   error?: null | 'insufficient-funds';
   onSubmit: (data: StateForm) => void;
   onClose: ReactEventHandler<{}>;
@@ -120,8 +120,8 @@ class RegisterDelegateDialogContent extends React.Component<
   state: State = {
     username: '',
     usernameInvalid: false,
-    mnemonic: null,
-    mnemonicInvalid: null,
+    mnemonic: '',
+    mnemonicInvalid: false,
     forgingPK: ''
   };
 
@@ -338,7 +338,7 @@ class RegisterDelegateDialogContent extends React.Component<
     const { mnemonic, mnemonicInvalid } = this.state;
     const { registeredUsername, classes } = this.props;
 
-    const forgingPK = this.state.forgingPK || this.props.forgingPK;
+    const forgingPK = this.state.forgingPK || this.props.forgingPK || '';
     const alreadyRegistered = Boolean(registeredUsername);
 
     return (

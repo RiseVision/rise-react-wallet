@@ -95,6 +95,15 @@ class AddAccountPage extends React.Component<Props> {
           />
         );
         break;
+      case 'devnet':
+        network = (
+          <FormattedMessage
+            id="onboarding-add-account.official-dev-network"
+            description="Label for a dev network"
+            defaultMessage="official devnet"
+          />
+        );
+        break;
       case 'custom':
         network = (
           <FormattedMessage

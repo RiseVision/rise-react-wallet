@@ -1,20 +1,22 @@
 import Button from '@material-ui/core/es/Button';
-import Radio from '@material-ui/core/es/Radio';
-import TextField from '@material-ui/core/es/TextField';
 import List from '@material-ui/core/es/List';
 import ListItem from '@material-ui/core/es/ListItem';
 import ListItemText from '@material-ui/core/es/ListItemText';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/es/styles';
+import Radio from '@material-ui/core/es/Radio';
+import {
+  createStyles,
+  withStyles,
+  WithStyles
+} from '@material-ui/core/es/styles';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-router-rise';
-import { FormEvent } from 'react';
-import React from 'react';
+import React, { FormEvent } from 'react';
 import { FormattedMessage } from 'react-intl';
-import lstore from '../../utils/store';
 import ModalPaper from '../../components/ModalPaper';
 import ModalPaperHeader from '../../components/ModalPaperHeader';
 import { onboardingAddAccountRoute } from '../../routes';
 import WalletStore, { NetworkType } from '../../stores/wallet';
+import lstore from '../../utils/store';
 import { isMainnet } from '../../utils/utils';
 
 const styles = createStyles({
@@ -76,18 +78,18 @@ class ChooseNetworkPage extends React.Component<Props, State> {
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ network: event.target.value as NetworkType });
-  }
+  };
 
   handleSetNetwork = (network: NetworkType) => () => {
     this.setState({ network });
-  }
+  };
 
   handleCustomURL = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       url: event.target.value,
       urlError: false
     });
-  }
+  };
 
   handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -116,11 +118,12 @@ class ChooseNetworkPage extends React.Component<Props, State> {
       walletStore.setNetwork(network, url);
       routerStore.goTo(onboardingAddAccountRoute);
     }
-  }
+  };
 
   render() {
     const { classes } = this.injected;
-    const { network, url, urlError } = this.state;
+    const { network } = this.state;
+    // const { network, url, urlError } = this.state;
 
     return (
       <ModalPaper open={true}>
@@ -165,7 +168,23 @@ class ChooseNetworkPage extends React.Component<Props, State> {
                 />
               </ListItemText>
             </ListItem>
-            <ListItem button={true}>
+            <ListItem button={true} onClick={this.handleSetNetwork('devnet')}>
+              <ListItemText>
+                <Radio
+                  className={classes.radio}
+                  name="network"
+                  value="devnet"
+                  onChange={this.handleChange}
+                  checked={network === 'devnet'}
+                />
+                <FormattedMessage
+                  id="onboarding-choose-network.official-dev-network"
+                  description="Label for official dev network"
+                  defaultMessage="Official devnet"
+                />
+              </ListItemText>
+            </ListItem>
+            {/*<ListItem button={true}>
               <ListItemText onClick={this.handleSetNetwork('custom')}>
                 <Radio
                   name="network"
@@ -195,7 +214,7 @@ class ChooseNetworkPage extends React.Component<Props, State> {
                   value={url}
                 />
               </ListItemText>
-            </ListItem>
+            </ListItem>*/}
             <ListItem>
               <Button type="submit" fullWidth={true}>
                 <FormattedMessage

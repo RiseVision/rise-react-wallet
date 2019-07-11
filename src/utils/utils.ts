@@ -174,7 +174,8 @@ export enum AccountIDVersion {
 
 export enum NetworkTXType {
   MAINNET = 'main',
-  TESTNET = 'test'
+  TESTNET = 'test',
+  DEVNET = 'dev',
 }
 
 /**

@@ -7,7 +7,7 @@ cache:
   - node_modules
   - desktop/node_modules
   - "~/.cache/Cypress"
-  - build
+  - dist
 before_install:
 - openssl aes-256-cbc -K $encrypted_63d69a2d54d1_key -iv $encrypted_63d69a2d54d1_iv
   -in cypress/fixtures/accounts.json.enc -out cypress/fixtures/accounts.json -d
@@ -55,7 +55,7 @@ deploy:
       condition: $TRAVIS_JOB_NAME = Release
   - provider: pages
     verbose: true
-    local-dir: build
+    local-dir: dist/build
     skip-cleanup: true
     github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
     on:

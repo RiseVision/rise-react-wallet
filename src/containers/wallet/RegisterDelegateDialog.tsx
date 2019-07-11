@@ -156,7 +156,7 @@ class RegisterDelegateDialog extends React.Component<Props, State>
             ? {
                 kind: 'delegate',
                 forgingPK: transaction.forgingPK,
-                username: registeredDelegate ? null : transaction.username
+                username: registeredDelegate ? '' : transaction.username
               }
             : null
         }
