@@ -38,7 +38,6 @@
     "react-dom": "^16.6.3",
     "react-helmet": "^5.2.0",
     "react-intl": "^2.7.2",
-    "react-scripts": "^3.0.1",
     "regenerator-runtime": "^0.13.2",
     "risejs": "^1.4.1",
     "sinon": "^7.2.2",
