@@ -1,6 +1,6 @@
 {
   "name": "rise-wallet",
-  "version": "1.3.0-beta1",
+  "version": "1.4.0-beta1",
   "engines": {
     "yarn": "^1.10.1"
   },
@@ -56,9 +56,8 @@
     "clean:build": "rm -Rf dist/build",
     "start": "yarn set-build:dev; yarn clean:build-dev; parcel --out-dir dist/build-dev src/index.html --https",
     "start-http": "yarn set-build:dev; yarn clean:build-dev; parcel --out-dir dist/build-dev src/index.html",
-    "build": "yarn clean:build; yarn set-build:compat; rm -R dist/build; parcel build --out-dir dist/build src/index.html; cp -f src/assets dist/build/",
+    "build": "yarn clean:build; yarn set-build:compat; rm -Rf dist/build; parcel build --out-dir dist/build src/index.html; cp -fR src/assets dist/build/",
     "build-dev": "yarn clean:build-dev; yarn set-build:dev; yarn clean:build-dev; mkdirp build/dev; parcel build --out-dir dist/build-dev src/index.html; cp -f src/assets dist/build/",
-    "bundle": "cd desktop; yarn bundle",
     "deploy-now": "yarn build; cp -f now.json dist/build; cd build && now --target production",
     "cypress": "cypress open",
     "test": "run-p --race serve test-cypress",

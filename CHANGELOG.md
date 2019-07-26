@@ -1,5 +1,10 @@
 # RISE Wallet changelog
 
+### RISE Wallet 1.4 beta
+
+- support RISE v2 network
+- new build system
+
 ### RISE Wallet 1.3 beta
 
 - import / export of accounts and contacts
