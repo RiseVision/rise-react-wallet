@@ -31,7 +31,7 @@ export function register(store: RootStore) {
   }
   // The URL constructor is available in all browsers that support SW.
   const publicUrl = new URL(
-    process.env.PUBLIC_URL!,
+    // process.env.PUBLIC_URL!,
     window.location.toString()
   );
   if (publicUrl.origin !== window.location.origin) {
@@ -42,7 +42,8 @@ export function register(store: RootStore) {
   }
 
   window.addEventListener('load', () => {
-    const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+    // const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+    const swUrl = `/service-worker.js`;
 
     if (!isLocalhost) {
       // Is not local host. Just register service worker
@@ -98,11 +99,9 @@ async function checkValidServiceWorker(store: RootStore, swUrl: string) {
       response.headers.get('content-type')!.indexOf('javascript') === -1
     ) {
       // No service worker found. Probably a different app. Reload the page.
-      navigator.serviceWorker.ready.then(registration => {
-        registration.unregister().then(() => {
-          window.location.reload();
-        });
-      });
+      const registration = await navigator.serviceWorker.ready
+      await registration.unregister()
+      window.location.reload();
     } else {
       // Service worker found. Proceed as normal.
       registerValidSW(store, swUrl);
