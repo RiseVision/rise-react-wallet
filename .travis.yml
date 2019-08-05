@@ -4,8 +4,6 @@ node_js:
 cache:
   yarn: true
   directories:
-  - node_modules
-  - desktop/node_modules
   - "~/.cache/Cypress"
   - dist
 before_install:
