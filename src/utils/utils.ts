@@ -188,7 +188,14 @@ export function idToTxNetworkType(id: string): NetworkTXType {
   if (!id || !id[0]) {
     throw new Error('Missing ID');
   }
-  return id[0] === 'r' ? NetworkTXType.MAINNET : NetworkTXType.TESTNET;
+  switch (id[0]) {
+    case 't':
+      return NetworkTXType.TESTNET;
+    case 'd':
+      return NetworkTXType.DEVNET;
+    default:
+      return NetworkTXType.MAINNET;
+  }
 }
 
 export function derivePublicKey(secret: string): string & As<'publicKey'> {

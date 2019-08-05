@@ -32,7 +32,6 @@ import {
   accountSendRoute
 } from '../../routes';
 import { AccountType } from '../../stores/account';
-import AddressBookStore from '../../stores/addressBook';
 import { RouteLink } from '../../stores/router';
 import WalletStore from '../../stores/wallet';
 import CreateContactDialog from './CreateContactDialog';
@@ -115,7 +114,6 @@ interface Props extends WithStyles<typeof styles> {}
 type DecoratedProps = Props & InjectedIntlProps;
 
 interface PropsInjected extends DecoratedProps {
-  addressBookStore: AddressBookStore;
   walletStore: WalletStore;
 }
 
@@ -175,7 +173,6 @@ const messages = defineMessages({
   }
 });
 
-@inject('addressBookStore')
 @inject('walletStore')
 @observer
 class AddressBook extends React.Component<DecoratedProps> {
@@ -184,13 +181,13 @@ class AddressBook extends React.Component<DecoratedProps> {
   }
 
   render() {
-    const { intl, classes, addressBookStore, walletStore } = this.injected;
+    const { intl, classes, walletStore } = this.injected;
 
     const backLink: RouteLink = {
       route: addressBookRoute
     };
 
-    const contacts = addressBookStore.asArray;
+    const contacts = walletStore.getAddressBook();
     const selectedAccount = walletStore.selectedAccount;
 
     return (

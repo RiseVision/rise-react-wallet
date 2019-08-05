@@ -1061,7 +1061,7 @@ export default class WalletStore {
    * TODO implement delegates
    */
   getContacts(
-    networkType: NetworkTXType = this.getTxNetwork()
+    networkType: NetworkTXType | null = this.getTxNetwork()
   ): TAddressRecord[] {
     assert(this.selectedAccount);
 
@@ -1073,7 +1073,11 @@ export default class WalletStore {
       .filter(({ id }) => !walletIDs.includes(id))
       // remove accounts from another network
       .filter(({ id }) => {
-        return normalizeAddressV1(id) || idToTxNetworkType(id) === networkType;
+        return (
+          normalizeAddressV1(id) ||
+          !networkType ||
+          idToTxNetworkType(id) === networkType
+        );
       })
       .map(({ id, name }) => ({
         id,
@@ -1091,6 +1095,24 @@ export default class WalletStore {
       }));
 
     return [...contactRecords, ...walletRecords];
+  }
+
+  getAddressBook(
+    networkType: NetworkTXType | null = this.getTxNetwork()
+  ): TStoredContact[] {
+    assert(this.selectedAccount);
+
+    return (
+      this.addressBook.asArray
+        // remove accounts from another network
+        .filter(({ id }) => {
+          return (
+            normalizeAddressV1(id) ||
+            !networkType ||
+            idToTxNetworkType(id) === networkType
+          );
+        })
+    );
   }
 
   async fetchDelegateByID(id: string): Promise<FullDelegate | null> {
