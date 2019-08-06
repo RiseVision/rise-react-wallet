@@ -1,6 +1,6 @@
 {
   "name": "rise-wallet",
-  "version": "1.4.0-beta1",
+  "version": "1.4.0-beta2",
   "engines": {
     "yarn": "^1.10.1"
   },
@@ -47,7 +47,8 @@
     "ts-jest": "^23.10.5",
     "typescript": "^3.5.2",
     "unique-random": "^2.0.0",
-    "utils": "^0.3.1"
+    "utils": "^0.3.1",
+    "workbox-cli": "^4.3.1"
   },
   "scripts": {
     "set-build:dev": "rm .browserslistrc; cp scripts/browserslistrc-dev .browserslistrc",
@@ -56,9 +57,9 @@
     "clean:build": "rm -Rf dist/build",
     "start": "yarn set-build:dev; yarn clean:build-dev; parcel --out-dir dist/build-dev src/index.html --https",
     "start-http": "yarn set-build:dev; yarn clean:build-dev; parcel --out-dir dist/build-dev src/index.html",
-    "build": "yarn clean:build; yarn set-build:compat; rm -Rf dist/build; parcel build --out-dir dist/build src/index.html; cp -fR src/assets dist/build/",
-    "build-dev": "yarn clean:build-dev; yarn set-build:dev; yarn clean:build-dev; mkdirp build/dev; parcel build --out-dir dist/build-dev src/index.html; cp -f src/assets dist/build/",
-    "deploy-now": "yarn build; cp -f now.json dist/build; cd build && now --target production",
+    "build": "yarn clean:build; yarn set-build:compat; rm -Rf dist/build; parcel build --out-dir dist/build src/index.html; cp -fR src/assets dist/build/; workbox generateSW scripts/workbox-prod.js",
+    "build-dev": "yarn clean:build-dev; yarn set-build:dev; yarn clean:build-dev; mkdirp build/dev; parcel build --out-dir dist/build-dev src/index.html; cp -fR src/assets dist/build-dev/; workbox generateSW scripts/workbox-dev.js",
+    "deploy-now": "yarn build-dev; cp -f now.json dist/build-dev; cd dist/build-dev && now --target production",
     "cypress": "cypress open",
     "test": "run-p --race serve test-cypress",
     "test-ci": "yarn build; run-p --race serve test-cypress",
@@ -96,6 +97,7 @@
     "@types/bip39": "^2.4.1",
     "@types/bytebuffer": "^5.0.37",
     "@types/classnames": "^2.2.6",
+    "@types/file-saver": "^2.0.1",
     "@types/jest": "^23.3.10",
     "@types/keyboardjs": "^2.4.0",
     "@types/ledgerhq__hw-transport-u2f": "^4.21.0",
@@ -108,7 +110,6 @@
     "@types/react-helmet": "^5.0.7",
     "@types/react-intl": "^2.3.14",
     "@types/socket.io-client": "^1.4.32",
-    "@types/file-saver": "^2.0.1",
     "babel-plugin-react-intl": "^3.5.0",
     "cypress": "^3.3.1",
     "cypress-run": "^1.0.6",

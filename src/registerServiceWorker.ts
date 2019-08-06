@@ -43,6 +43,7 @@ export function register(store: RootStore) {
 
   window.addEventListener('load', () => {
     // const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+    console.log('asdasdasd')
     const swUrl = `/service-worker.js`;
 
     if (!isLocalhost) {
