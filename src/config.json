@@ -1,7 +1,7 @@
 {
   "api_url": "https://wallet.rise.vision",
   "api_url_testnet": "https://twallet.rise.vision",
-  "api_url_devnet": "https://dwallet.rise.vision",
+  "api_url_devnet": "https://devnet-wallet.rise.vision",
   "domain": "rise.vision",
   "explorer_url": "https://explorer.rise.vision",
   "date_format": "LLLL",
