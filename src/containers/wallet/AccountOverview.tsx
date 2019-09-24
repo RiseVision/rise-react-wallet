@@ -121,7 +121,7 @@ const messages = defineMessages({
     description:
       'Tip about using more secure ways to store RISE for high value accounts',
     defaultMessage:
-      'You have quite a few RISE in this account. You should consider using a ' +
+      'You have quite a few RISE on this account. You should consider using a ' +
       'hardware wallet for added security. If that is not an option, at the very ' +
       'least you should start using the RISE desktop application instead of the ' +
       'web app.'
