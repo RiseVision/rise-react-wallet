@@ -730,11 +730,9 @@ export default class WalletStore {
       account.registeredDelegateState = LoadingState.LOADING;
     });
     let delegate: Delegate | null = null;
-    if (account.publicKey) {
-      delegate = await this.delegateCache.get(account.forgingPK, {
-        reload: true
-      });
-    }
+    delegate = await this.delegateCache.get(account.forgingPK, {
+      reload: true
+    });
     runInAction(() => {
       account.registeredDelegateState = LoadingState.LOADED;
       account.registeredDelegate = delegate;
@@ -1117,11 +1115,11 @@ export default class WalletStore {
 
   async fetchDelegateByID(id: string): Promise<FullDelegate | null> {
     const res = await this.dposAPI.accounts.getAccount(id);
-    const publicKey = get(res, 'account.forgingPK');
-    if (!publicKey) {
+    const forgingPK = get(res, 'account.forgingPK');
+    if (!forgingPK) {
       return null;
     }
-    return await this.delegateCache.get(publicKey);
+    return await this.delegateCache.get(forgingPK);
   }
 
   async fetchSuggestedDelegates(): Promise<Delegate[]> {
