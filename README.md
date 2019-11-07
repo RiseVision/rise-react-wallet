@@ -58,6 +58,11 @@ Production build:
 1.  Clone the repo
 1.  Run `yarn build; yarn serve`
 
+Release files:
+
+1.  Clone the repo
+1.  Run `yarn build; yarn release; yarn release:desktop`
+
 Translations:
 
 - You can help with [translating the wallet](https://github.com/RiseVision/rise-react-wallet/blob/master/docs/managing-translations.md)
@@ -68,7 +73,7 @@ To get the wallet working with a custom RISE deployment by default:
 
 1.  Checkout a working copy
 1.  Edit `src/config.json` and change both `api_url` and `api_url_testnet`
-1.  Build a release with `yarn build` or `yarn release`
+1.  Build a release with `yarn build; yarn release; yarn release:desktop`
 
 Keep in mind that you can simply use Node Switcher to connect to your node manually.
 

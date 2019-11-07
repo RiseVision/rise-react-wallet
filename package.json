@@ -57,7 +57,7 @@
     "clean:build": "rm -Rf dist/build",
     "start": "yarn set-build:dev; yarn clean:build-dev; parcel --out-dir dist/build-dev src/index.html --https",
     "start-http": "yarn set-build:dev; yarn clean:build-dev; parcel --out-dir dist/build-dev src/index.html",
-    "build": "yarn clean:build; yarn set-build:compat; rm -Rf dist/build; parcel build --out-dir dist/build src/index.html; cp -fR src/assets dist/build/; workbox generateSW scripts/workbox-prod.js",
+    "build": "yarn clean:build; yarn set-build:compat; yarn install; rm -Rf dist/build; parcel build --out-dir dist/build src/index.html; cp -fR src/assets dist/build/; workbox generateSW scripts/workbox-prod.js",
     "build-dev": "yarn clean:build-dev; yarn set-build:dev; yarn clean:build-dev; mkdirp build/dev; parcel build --out-dir dist/build-dev src/index.html; cp -fR src/assets dist/build-dev/; workbox generateSW scripts/workbox-dev.js",
     "deploy-now": "yarn build-dev; cp -f now.json dist/build-dev; cd dist/build-dev && now --target production",
     "cypress": "cypress open",
