@@ -19,7 +19,7 @@
     "start": "yarn set-env testnet; yarn prepare; node src/main.js"
   },
   "devDependencies": {
-    "pkg": "^4.3.5",
+    "pkg": "^4.4.0",
     "typescript": "^3.2.2"
   },
   "bin": {
