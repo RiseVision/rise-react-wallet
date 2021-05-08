@@ -26,7 +26,7 @@
     "is-mobile": "^2.0.0",
     "jdenticon": "^2.1.0",
     "keyboardjs": "^2.5.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "mdi-material-ui": "^5.7.0",
     "mobx": "^5.8.0",
     "mobx-react": "^5.4.3",
